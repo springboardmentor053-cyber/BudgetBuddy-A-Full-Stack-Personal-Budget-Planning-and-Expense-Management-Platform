@@ -1,74 +1,82 @@
 # 💰 BudgetBuddy – Personal Budget Planning & Expense Management Platform
 
-A full-stack web application designed to help users efficiently manage their personal finances by tracking income, expenses, budgets, and savings goals. BudgetBuddy provides a secure, user-friendly interface with JWT authentication and a modern React frontend.
+BudgetBuddy is a full-stack web application that helps users manage their personal finances efficiently. The application enables users to securely register, log in, and maintain their financial records through a modern and user-friendly interface.
+
+This project is being developed using **Django REST Framework** for the backend and **React (Vite)** for the frontend.
 
 ---
 
-## 📌 Project Overview
+# 📌 Project Overview
 
-BudgetBuddy is a Personal Budget Planning & Expense Management Platform developed using **Django REST Framework** for the backend and **React (Vite)** for the frontend.
+Managing personal finances manually can be time-consuming and error-prone. BudgetBuddy aims to simplify financial management by providing a centralized platform for tracking income, expenses, budgets, and savings goals.
 
-The application enables users to securely register, log in, and manage their financial information while providing an organized dashboard for future expense analysis and budgeting.
+Currently, Milestone 1 focuses on establishing the project architecture, authentication system, backend APIs, and frontend setup.
 
 ---
 
-## 🚀 Features
+# ✨ Features
 
-### ✅ Completed (Milestone 1)
+## ✅ Implemented (Milestone 1)
 
 - User Registration
 - User Login
 - JWT Authentication
-- Secure Password Storage
-- React Frontend
-- Django REST API
-- Dashboard (Basic)
+- Secure Password Encryption
+- React Frontend Setup
+- Django REST Framework Backend
+- Basic Dashboard
 - Django Admin Panel
 - SQLite Database Integration
-- REST API Testing with Postman
+- REST API Testing using Postman
 
-### 🔄 Upcoming Features
+---
+
+## 🚧 Upcoming Features
 
 - Income Management
 - Expense Management
 - Budget Planning
 - Savings Goals
-- Monthly Reports
+- Financial Reports
 - Charts & Analytics
 - Notifications
-- Profile Management
+- User Profile Management
 
 ---
 
-## 🛠️ Technology Stack
+# 🛠️ Technology Stack
 
-### Frontend
+## Frontend
+
 - React 19
 - Vite
 - React Router DOM
-- JavaScript
 - HTML5
 - CSS3
+- JavaScript
 
-### Backend
+## Backend
+
 - Python
 - Django
 - Django REST Framework
-- JWT Authentication (Simple JWT)
+- Simple JWT Authentication
 
-### Database
+## Database
+
 - SQLite (Development)
 - PostgreSQL (Future Deployment)
 
-### Tools
+## Development Tools
+
 - Git
 - GitHub
-- VS Code
+- Visual Studio Code
 - Postman
 
 ---
 
-## 📂 Project Structure
+# 📂 Project Structure
 
 ```
 BudgetBuddy/
@@ -89,32 +97,33 @@ BudgetBuddy/
 ├── screenshots/
 │
 ├── README.md
-├── ANALYSIS.md
 ├── PROJECT_SCOPE.md
 ├── DATABASE_SCHEMA.md
+├── ANALYSIS.md
 ├── MILESTONE_1_REPORT.md
-└── LICENSE
+├── LICENSE
+└── .gitignore
 ```
 
 ---
 
-## 🔐 Authentication
+# 🔐 Authentication
 
-The project uses **JWT (JSON Web Tokens)** for secure authentication.
+BudgetBuddy uses **JWT (JSON Web Token)** authentication for secure user access.
 
-### Available Authentication APIs
+## Authentication APIs
 
 | Method | Endpoint | Description |
 |---------|----------|-------------|
 | POST | `/api/users/register/` | Register a new user |
-| POST | `/api/token/` | User Login |
-| POST | `/api/token/refresh/` | Refresh JWT Token |
+| POST | `/api/token/` | Login |
+| POST | `/api/token/refresh/` | Refresh Access Token |
 
 ---
 
-## ⚙️ Installation
+# ⚙️ Installation Guide
 
-### Clone Repository
+## 1. Clone the Repository
 
 ```bash
 git clone https://github.com/your-username/BudgetBuddy.git
@@ -122,15 +131,15 @@ git clone https://github.com/your-username/BudgetBuddy.git
 
 ---
 
-### Backend Setup
+## 2. Backend Setup
 
 ```bash
 cd backend
 
 python -m venv .venv
-
-source .venv/bin/activate
 ```
+
+### Activate Virtual Environment
 
 Windows
 
@@ -138,19 +147,25 @@ Windows
 .venv\Scripts\activate
 ```
 
-Install dependencies
+Linux / macOS
+
+```bash
+source .venv/bin/activate
+```
+
+Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Run migrations
+Run Database Migrations
 
 ```bash
 python manage.py migrate
 ```
 
-Start server
+Start Django Server
 
 ```bash
 python manage.py runserver
@@ -158,7 +173,7 @@ python manage.py runserver
 
 ---
 
-### Frontend Setup
+## 3. Frontend Setup
 
 ```bash
 cd frontend
@@ -170,110 +185,116 @@ npm run dev
 
 ---
 
-## 📸 Screenshots
+# 📸 Screenshots
 
-### Login Page
+## Login Page
 
-> Add image
-
-```
-screenshots/login.png
-```
+![Login Page](screenshots/login.png)
 
 ---
 
-### Register Page
+## Register Page
 
-> Add image
-
-```
-screenshots/register.png
-```
+![Register Page](screenshots/register.png)
 
 ---
 
-### Dashboard
+## Dashboard
 
-> Add image
-
-```
-screenshots/dashboard.png
-```
+![Dashboard](screenshots/dashboard.png)
 
 ---
 
-### Django Admin
+## Django Admin Panel
 
-> Add image
-
-```
-screenshots/admin.png
-```
+![Django Admin](screenshots/admin.png)
 
 ---
 
-### Postman API Testing
+## User Registration API
 
-> Add image
-
-```
-screenshots/postman-login.png
-
-screenshots/postman-register.png
-```
+![Register API](screenshots/postman-register.png)
 
 ---
 
-## 📊 Milestone 1 Progress
+## User Login API
+
+![Login API](screenshots/postman-login.png)
+
+---
+
+## Project Structure
+
+![Project Structure](screenshots/project-structure.png)
+
+---
+
+## Backend Server
+
+![Backend](screenshots/backend-server.png)
+
+---
+
+## Frontend Server
+
+![Frontend](screenshots/frontend-server.png)
+
+---
+
+## Database
+
+![Database](screenshots/database.png)
+
+---
+
+# 📊 Milestone 1 Progress
 
 | Module | Status |
-|----------|---------|
-| Project Planning | ✅ Completed |
-| Backend Setup | ✅ Completed |
-| Database Setup | ✅ Completed |
-| Authentication | ✅ Completed |
-| React Setup | ✅ Completed |
+|---------|--------|
+| Requirement Analysis | ✅ Completed |
+| Database Design | ✅ Completed |
+| Django Backend Setup | ✅ Completed |
+| React Frontend Setup | ✅ Completed |
+| JWT Authentication | ✅ Completed |
+| User Registration | ✅ Completed |
+| User Login | ✅ Completed |
 | Dashboard Skeleton | ✅ Completed |
-| Income Module | ⏳ Pending |
-| Expense Module | ⏳ Pending |
+| Income Module | ⏳ In Progress |
+| Expense Module | ⏳ In Progress |
 | Budget Module | ⏳ Pending |
 | Savings Goals | ⏳ Pending |
-| Reports | ⏳ Pending |
+| Reports & Analytics | ⏳ Pending |
 
 ---
 
-## 🎯 Future Enhancements
+# 🎯 Future Enhancements
 
-- Expense Analytics
-- Budget Alerts
-- Monthly Reports
-- Graphical Dashboard
-- Export Reports (PDF/Excel)
+- Income & Expense CRUD Operations
+- Budget Management
+- Savings Goal Tracking
+- Interactive Charts & Analytics
+- Monthly Financial Reports
 - Email Notifications
+- PDF & Excel Report Export
+- Responsive Dashboard
 - Cloud Deployment
-- Mobile Responsive UI
 
 ---
 
-## 👨‍💻 Author
+# 👨‍💻 Developer
 
 **Karuna**
 
-B.Tech – Computer Science & Engineering (AI & ML)
+**B.Tech – Computer Science & Engineering (AI & ML)**
+
+Malla Reddy University, Hyderabad
 
 ---
 
-## 📄 License
+# 📄 License
 
-This project is developed for educational and internship purposes.
-
-```
+This project has been developed for learning, academic, and internship purposes.
 
 ---
 
-## ✅ After pasting this
-
-1. Save it as **`README.md`** in the root of your repository.
-2. Commit and push it if you're ready.
-
-**Next**, we'll create **`PROJECT_SCOPE.md`**, followed by **`DATABASE_SCHEMA.md`**, **`ANALYSIS.md`**, and finally **`MILESTONE_1_REPORT.md`**, all tailored to your actual implementation.
+⭐ If you found this project useful, consider giving it a **Star** on GitHub!
