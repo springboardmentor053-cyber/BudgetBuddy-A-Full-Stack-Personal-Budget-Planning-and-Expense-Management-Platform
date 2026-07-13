@@ -2,6 +2,7 @@ from django.urls import path
 from .views import (
     ExpenseListCreateView,
     ExpenseRetrieveUpdateDestroyView,
+    TotalExpenseAPIView,
     IncomeListCreateView,
     IncomeRetrieveUpdateDestroyView,
     BudgetListCreateView,
@@ -11,6 +12,7 @@ from .views import (
 
 urlpatterns = [
     # Expense Endpoints
+    path('expenses/total/', TotalExpenseAPIView.as_view(), name='expense-total'),
     path('expenses/', ExpenseListCreateView.as_view(), name='expense-list-create'),
     path('expenses/<int:pk>/', ExpenseRetrieveUpdateDestroyView.as_view(), name='expense-detail'),
 

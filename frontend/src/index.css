@@ -9,3 +9,34 @@ html, body, #root {
   width: 100%;
   height: 100%;
 }
+
+/* Back to Home Button/Link styles */
+.back-home-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  transition: color var(--transition-fast);
+  padding: 8px 0;
+  border-radius: var(--radius-sm);
+}
+
+.back-home-link:hover {
+  color: var(--primary);
+}
+
+.back-home-link i {
+  transition: transform var(--transition-fast);
+}
+
+.back-home-link:hover i {
+  transform: translateX(-4px);
+}
+
+.back-home-link:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}

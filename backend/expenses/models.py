@@ -2,6 +2,18 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+CATEGORY_CHOICES = [
+    ('FOOD', 'FOOD'),
+    ('TRAVEL', 'TRAVEL'),
+    ('SHOPPING', 'SHOPPING'),
+    ('EDUCATION', 'EDUCATION'),
+    ('ENTERTAINMENT', 'ENTERTAINMENT'),
+    ('HEALTHCARE', 'HEALTHCARE'),
+    ('BILLS', 'BILLS'),
+    ('MISCELLANEOUS', 'MISCELLANEOUS'),
+]
+
+
 class UserProfile(models.Model):
     """
     UserProfile model to extend the default Django User model with additional details.
@@ -46,7 +58,11 @@ class Expense(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='expenses')
     title = models.CharField(max_length=200, help_text="What the expense was for.")
     amount = models.DecimalField(max_digits=10, decimal_places=2, help_text="The amount spent.")
-    category = models.CharField(max_length=100, help_text="Category of the expense (e.g., Food, Rent).")
+    category = models.CharField(
+        max_length=100,
+        choices=CATEGORY_CHOICES,
+        help_text="Category of the expense (e.g., FOOD, TRAVEL)."
+    )
     description = models.TextField(blank=True, null=True, help_text="A description of the expense.")
     expense_date = models.DateField(help_text="The date when the expense occurred.")
     created_at = models.DateTimeField(auto_now_add=True, help_text="Timestamp when the expense was created.")
@@ -64,7 +80,11 @@ class Budget(models.Model):
     Budget model to define monthly/periodic spending limits per category for a user.
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='budgets')
-    category = models.CharField(max_length=100, help_text="Category for this budget (e.g., Food, Travel).")
+    category = models.CharField(
+        max_length=100,
+        choices=CATEGORY_CHOICES,
+        help_text="Category for this budget (e.g., FOOD, TRAVEL)."
+    )
     budget_amount = models.DecimalField(max_digits=10, decimal_places=2, help_text="Budget allocation amount.")
     month = models.PositiveIntegerField(help_text="Month of the budget (1-12).")
     year = models.PositiveIntegerField(help_text="Year of the budget (e.g., 2026).")

@@ -46,16 +46,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return user
 
 
-VALID_CATEGORIES = [
-    'Food',
-    'Travel',
-    'Shopping',
-    'Bills',
-    'Education',
-    'Medical',
-    'Entertainment',
-    'Other'
-]
 
 
 from .models import Expense, Income, Budget
@@ -70,11 +60,6 @@ class ExpenseSerializer(serializers.ModelSerializer):
     def validate_amount(self, value):
         if value <= 0:
             raise serializers.ValidationError("Amount must be greater than zero.")
-        return value
-
-    def validate_category(self, value):
-        if value not in VALID_CATEGORIES:
-            raise serializers.ValidationError(f"Category must be one of: {', '.join(VALID_CATEGORIES)}.")
         return value
 
 
@@ -101,11 +86,6 @@ class BudgetSerializer(serializers.ModelSerializer):
     def validate_budget_amount(self, value):
         if value <= 0:
             raise serializers.ValidationError("Budget amount must be greater than zero.")
-        return value
-
-    def validate_category(self, value):
-        if value not in VALID_CATEGORIES:
-            raise serializers.ValidationError(f"Category must be one of: {', '.join(VALID_CATEGORIES)}.")
         return value
 
     def validate_month(self, value):

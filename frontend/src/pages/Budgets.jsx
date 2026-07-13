@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 
 const CATEGORIES = [
-  'Food',
-  'Travel',
-  'Shopping',
-  'Bills',
-  'Education',
-  'Medical',
-  'Entertainment',
-  'Other'
+  'FOOD',
+  'TRAVEL',
+  'SHOPPING',
+  'EDUCATION',
+  'ENTERTAINMENT',
+  'HEALTHCARE',
+  'BILLS',
+  'MISCELLANEOUS'
 ];
 
 const MONTHS = [
@@ -28,14 +28,14 @@ const MONTHS = [
 ];
 
 const categoryColors = {
-  Food: '#3b82f6',
-  Travel: '#d97706',
-  Shopping: '#0284c7',
-  Bills: '#9333ea',
-  Education: '#15803d',
-  Medical: '#dc2626',
-  Entertainment: '#db2777',
-  Other: '#4b5563'
+  FOOD: '#3b82f6',
+  TRAVEL: '#d97706',
+  SHOPPING: '#0284c7',
+  BILLS: '#9333ea',
+  EDUCATION: '#15803d',
+  HEALTHCARE: '#dc2626',
+  ENTERTAINMENT: '#db2777',
+  MISCELLANEOUS: '#4b5563'
 };
 
 const Budgets = () => {
@@ -50,7 +50,7 @@ const Budgets = () => {
   const [filterYear, setFilterYear] = useState(new Date().getFullYear());
 
   // Form State
-  const [category, setCategory] = useState('Food');
+  const [category, setCategory] = useState('FOOD');
   const [budgetAmount, setBudgetAmount] = useState('');
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(new Date().getFullYear());
@@ -76,7 +76,7 @@ const Budgets = () => {
   }, []);
 
   const clearForm = () => {
-    setCategory('Food');
+    setCategory('FOOD');
     setBudgetAmount('');
     setMonth(filterMonth);
     setYear(filterYear);

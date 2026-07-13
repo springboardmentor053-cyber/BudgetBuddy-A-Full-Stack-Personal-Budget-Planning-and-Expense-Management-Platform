@@ -21,13 +21,13 @@ const Home = () => {
       <header className="landing-hero">
         <div className="container">
           <div className="badge badge-info mb-4" style={{ padding: '8px 16px', fontSize: 'var(--text-xs)' }}>
-            <i className="fas fa-sparkles"></i> AI-Backed Personal Finance Assistant
+            <i className="fas fa-shield-halved"></i> 100% Secure Personal Finance Tracker
           </div>
           <h1 className="landing-hero-headline">
             Take Control of Your <span style={{ color: 'var(--primary)' }}>Personal Finances</span>
           </h1>
           <p className="landing-hero-subtitle">
-            Track expenses, manage income, create monthly budgets, and gain deep financial insights—all in one secure place.
+            Track expenses, manage income, create monthly budgets, monitor spending, and achieve your financial goals—all in one secure place.
           </p>
           <div className="d-flex gap-4 justify-center">
             <Link to="/register" className="btn btn-primary">Get Started</Link>

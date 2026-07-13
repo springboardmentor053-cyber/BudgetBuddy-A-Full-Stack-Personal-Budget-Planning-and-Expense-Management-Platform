@@ -50,7 +50,25 @@ class ExpenseListCreateView(generics.ListCreateAPIView):
     serializer_class = ExpenseSerializer
 
     def get_queryset(self):
-        return Expense.objects.filter(user=self.request.user)
+        queryset = Expense.objects.filter(user=self.request.user)
+        
+        # Category filtering
+        category = self.request.query_params.get('category')
+        if category:
+            queryset = queryset.filter(category=category.upper())
+
+        # Sorting
+        sort = self.request.query_params.get('sort')
+        if sort == 'latest':
+            queryset = queryset.order_by('-expense_date', '-created_at', '-id')
+        elif sort == 'oldest':
+            queryset = queryset.order_by('expense_date', 'created_at', 'id')
+        elif sort == 'highest':
+            queryset = queryset.order_by('-amount')
+        elif sort == 'lowest':
+            queryset = queryset.order_by('amount')
+
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -62,6 +80,14 @@ class ExpenseRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return Expense.objects.filter(user=self.request.user)
+
+
+class TotalExpenseAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        total = Expense.objects.filter(user=request.user).aggregate(total=Sum('amount'))['total'] or 0.00
+        return Response({"total_expense": float(total)}, status=status.HTTP_200_OK)
 
 
 # Income CRUD Views

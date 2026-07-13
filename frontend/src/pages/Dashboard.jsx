@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 
 const categoryColors = {
-  Food: { bg: '#eef2f6', text: '#3b82f6' },
-  Travel: { bg: '#fef3c7', text: '#d97706' },
-  Shopping: { bg: '#e0f2fe', text: '#0284c7' },
-  Bills: { bg: '#f3e8ff', text: '#9333ea' },
-  Education: { bg: '#dcfce7', text: '#15803d' },
-  Medical: { bg: '#fee2e2', text: '#dc2626' },
-  Entertainment: { bg: '#fce7f3', text: '#db2777' },
-  Other: { bg: '#f3f4f6', text: '#4b5563' }
+  FOOD: { bg: '#eef2f6', text: '#3b82f6' },
+  TRAVEL: { bg: '#fef3c7', text: '#d97706' },
+  SHOPPING: { bg: '#e0f2fe', text: '#0284c7' },
+  BILLS: { bg: '#f3e8ff', text: '#9333ea' },
+  EDUCATION: { bg: '#dcfce7', text: '#15803d' },
+  HEALTHCARE: { bg: '#fee2e2', text: '#dc2626' },
+  ENTERTAINMENT: { bg: '#fce7f3', text: '#db2777' },
+  MISCELLANEOUS: { bg: '#f3f4f6', text: '#4b5563' }
 };
 
 const Dashboard = () => {
@@ -140,7 +140,7 @@ const Dashboard = () => {
             <div className="d-flex flex-column gap-3">
               {recent_transactions.map((tx) => {
                 const isIncome = tx.type === 'income';
-                const colors = !isIncome ? (categoryColors[tx.category] || categoryColors.Other) : null;
+                const colors = !isIncome ? (categoryColors[tx.category] || categoryColors.MISCELLANEOUS) : null;
                 
                 return (
                   <div key={`${tx.type}-${tx.id}`} className="d-flex align-center justify-between p-4" style={{

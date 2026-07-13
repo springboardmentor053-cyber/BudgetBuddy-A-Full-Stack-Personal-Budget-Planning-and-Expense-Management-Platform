@@ -68,7 +68,12 @@ const Register = () => {
   };
 
   return (
-    <div className="d-flex align-center justify-center" style={{ minHeight: '100vh', backgroundColor: 'var(--bg-secondary)' }}>
+    <div className="d-flex flex-column align-center justify-center" style={{ minHeight: '100vh', backgroundColor: 'var(--bg-secondary)', padding: '20px' }}>
+      <div style={{ width: '100%', maxWidth: '400px', marginBottom: '12px' }}>
+        <Link to="/" className="back-home-link">
+          <i className="fas fa-arrow-left"></i> Back to Home
+        </Link>
+      </div>
       <div className="card" style={{ width: '100%', maxWidth: '400px', padding: '32px' }}>
         <h2 className="mb-6 text-center">Register for BudgetBuddy</h2>
 

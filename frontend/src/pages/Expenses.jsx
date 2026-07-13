@@ -2,25 +2,25 @@ import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 
 const CATEGORIES = [
-  'Food',
-  'Travel',
-  'Shopping',
-  'Bills',
-  'Education',
-  'Medical',
-  'Entertainment',
-  'Other'
+  'FOOD',
+  'TRAVEL',
+  'SHOPPING',
+  'EDUCATION',
+  'ENTERTAINMENT',
+  'HEALTHCARE',
+  'BILLS',
+  'MISCELLANEOUS'
 ];
 
 const categoryColors = {
-  Food: { bg: '#eef2f6', text: '#3b82f6' },
-  Travel: { bg: '#fef3c7', text: '#d97706' },
-  Shopping: { bg: '#e0f2fe', text: '#0284c7' },
-  Bills: { bg: '#f3e8ff', text: '#9333ea' },
-  Education: { bg: '#dcfce7', text: '#15803d' },
-  Medical: { bg: '#fee2e2', text: '#dc2626' },
-  Entertainment: { bg: '#fce7f3', text: '#db2777' },
-  Other: { bg: '#f3f4f6', text: '#4b5563' }
+  FOOD: { bg: '#eef2f6', text: '#3b82f6' },
+  TRAVEL: { bg: '#fef3c7', text: '#d97706' },
+  SHOPPING: { bg: '#e0f2fe', text: '#0284c7' },
+  BILLS: { bg: '#f3e8ff', text: '#9333ea' },
+  EDUCATION: { bg: '#dcfce7', text: '#15803d' },
+  HEALTHCARE: { bg: '#fee2e2', text: '#dc2626' },
+  ENTERTAINMENT: { bg: '#fce7f3', text: '#db2777' },
+  MISCELLANEOUS: { bg: '#f3f4f6', text: '#4b5563' }
 };
 
 const Expenses = () => {
@@ -32,7 +32,7 @@ const Expenses = () => {
   // Form State
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState('Food');
+  const [category, setCategory] = useState('FOOD');
   const [description, setDescription] = useState('');
   const [expenseDate, setExpenseDate] = useState('');
   const [editingId, setEditingId] = useState(null);
@@ -57,7 +57,7 @@ const Expenses = () => {
   const clearForm = () => {
     setTitle('');
     setAmount('');
-    setCategory('Food');
+    setCategory('FOOD');
     setDescription('');
     setExpenseDate('');
     setEditingId(null);
@@ -272,7 +272,7 @@ const Expenses = () => {
                 </thead>
                 <tbody>
                   {expenses.map((exp) => {
-                    const colors = categoryColors[exp.category] || categoryColors.Other;
+                    const colors = categoryColors[exp.category] || categoryColors.MISCELLANEOUS;
                     return (
                       <tr key={exp.id}>
                         <td>
