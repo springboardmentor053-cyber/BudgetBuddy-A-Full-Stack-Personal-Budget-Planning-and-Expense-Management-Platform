@@ -1,16 +1,12 @@
-# Virtual environment
+# Python
 venv/
-
-# Python cache
 __pycache__/
-*.py[cod]
+*.pyc
+db.sqlite3
 
-# SQLite database (optional)
-# Uncomment the next line if your team doesn't want to track the database
-# db.sqlite3
+# Node
+node_modules/
+dist/
 
-# VS Code settings
-.vscode/
-
-# Environment variables
+# Env files
 .env
