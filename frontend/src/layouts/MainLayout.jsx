@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 function MainLayout({ children, pageTitle }) {
@@ -9,10 +9,23 @@ function MainLayout({ children, pageTitle }) {
     navigate('/login'); // Send back to login
   };
 
+  // Automatically blast away any high-level center-aligning container limits
+  useEffect(() => {
+    const rootElement = document.getElementById('root');
+    if (rootElement) {
+      rootElement.style.width = '100vw';
+      rootElement.style.maxWidth = '100vw';
+      rootElement.style.margin = '0';
+      rootElement.style.padding = '0';
+    }
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+  }, []);
+
   return (
-    <div style={{ display: 'flex', height: '100vh', fontFamily: 'sans-serif' }}>
+    <div style={{ display: 'flex', height: '100vh', width: '100vw', margin: 0, padding: 0, overflowX: 'hidden', fontFamily: 'sans-serif', position: 'absolute', left: 0, top: 0 }}>
       {/* Sidebar */}
-      <div style={{ width: '240px', backgroundColor: '#2c3e50', color: 'white', padding: '20px', display: 'flex', flexDirection: 'column', justifyBetween: 'space-between' }}>
+      <div style={{ width: '240px', minWidth: '240px', backgroundColor: '#2c3e50', color: 'white', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxSizing: 'border-box' }}>
         <div>
           <h2 style={{ fontSize: '20px', marginBottom: '30px', textAlign: 'center' }}>BudgetBuddy 💰</h2>
           <nav style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -32,11 +45,11 @@ function MainLayout({ children, pageTitle }) {
       </div>
 
       {/* Main Content Window */}
-      <div style={{ flex: 1, backgroundColor: '#f5f6fa', padding: '30px', overflowY: 'auto' }}>
+      <div style={{ flex: 1, minWidth: 0, backgroundColor: '#f5f6fa', padding: '30px', overflowY: 'auto', boxSizing: 'border-box' }}>
         <header style={{ borderBottom: '1px solid #e1e4e8', paddingBottom: '15px', marginBottom: '20px' }}>
           <h1 style={{ margin: 0, color: '#333' }}>{pageTitle}</h1>
         </header>
-        <main>{children}</main>
+        <main style={{ width: '100%' }}>{children}</main>
       </div>
     </div>
   );

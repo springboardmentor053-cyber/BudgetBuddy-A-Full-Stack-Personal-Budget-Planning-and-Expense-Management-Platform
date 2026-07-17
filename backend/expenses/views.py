@@ -61,7 +61,8 @@ class ExpenseDetailView(APIView):
     def delete(self, request, pk):
         expense = get_object_or_404(Expense, pk=pk, user=request.user)
         expense.delete()
-        return Response({"message": "Expense deleted successfully!"}, status=status.HTTP_204_NO_CONTENT)
+        # Return a completely empty response body to respect the 204 HTTP specification
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # Handles Task 5 (Calculate Total Expenses)

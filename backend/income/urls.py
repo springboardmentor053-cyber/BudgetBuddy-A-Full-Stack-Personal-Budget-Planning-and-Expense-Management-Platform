@@ -1,0 +1,11 @@
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import IncomeViewSet, FinancialSummaryView
+
+router = DefaultRouter()
+router.register(r'income', IncomeViewSet, basename='income')
+
+urlpatterns = [
+    path('', include(router.urls)),
+    path('summary/', FinancialSummaryView.as_view(), name='financial-summary'),
+]
