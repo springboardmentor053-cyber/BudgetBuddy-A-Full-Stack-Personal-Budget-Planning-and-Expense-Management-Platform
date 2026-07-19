@@ -139,7 +139,7 @@ const Dashboard = () => {
           ) : (
             <div className="d-flex flex-column gap-3">
               {recent_transactions.map((tx) => {
-                const isIncome = tx.type === 'income';
+                const isIncome = tx.type?.toLowerCase() === 'income';
                 const colors = !isIncome ? (categoryColors[tx.category] || categoryColors.MISCELLANEOUS) : null;
                 
                 return (
