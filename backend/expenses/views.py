@@ -137,29 +137,34 @@ class DashboardAPIView(APIView):
     def get(self, request, *args, **kwargs):
         user = request.user
 
-        # Calculations
+        # Calculations using Sum aggregate
         total_income_agg = Income.objects.filter(user=user).aggregate(total=Sum('amount'))
         total_expense_agg = Expense.objects.filter(user=user).aggregate(total=Sum('amount'))
+        total_budget_agg = Budget.objects.filter(user=user).aggregate(total=Sum('budget_amount'))
 
         total_income = float(total_income_agg['total'] or 0.0)
         total_expense = float(total_expense_agg['total'] or 0.0)
-        remaining_balance = total_income - total_expense
+        total_budget = float(total_budget_agg['total'] or 0.0)
+
+        current_balance = total_income - total_expense
+        remaining_budget = total_budget - total_expense
 
         income_count = Income.objects.filter(user=user).count()
         expense_count = Expense.objects.filter(user=user).count()
 
-        # Fetch and format recent items
-        recent_incomes = Income.objects.filter(user=user).order_by('-income_date', '-created_at')[:10]
-        recent_expenses = Expense.objects.filter(user=user).order_by('-expense_date', '-created_at')[:10]
+        # Fetch and format recent items (fetch up to 5 of each, then merge and sort)
+        recent_incomes = Income.objects.filter(user=user).order_by('-income_date', '-created_at')[:5]
+        recent_expenses = Expense.objects.filter(user=user).order_by('-expense_date', '-created_at')[:5]
 
         serialized_incomes = [
             {
                 "id": inc.id,
-                "type": "income",
-                "title": inc.source,
+                "type": "Income",
+                "category": None,
                 "amount": float(inc.amount),
-                "description": inc.description,
                 "date": inc.income_date.isoformat(),
+                "description": inc.description,
+                "title": inc.source,  # Maintain title for UI display
                 "created_at": inc.created_at.isoformat()
             }
             for inc in recent_incomes
@@ -168,12 +173,12 @@ class DashboardAPIView(APIView):
         serialized_expenses = [
             {
                 "id": exp.id,
-                "type": "expense",
-                "title": exp.title,
-                "amount": float(exp.amount),
+                "type": "Expense",
                 "category": exp.category,
-                "description": exp.description,
+                "amount": float(exp.amount),
                 "date": exp.expense_date.isoformat(),
+                "description": exp.description,
+                "title": exp.title,  # Maintain title for UI display
                 "created_at": exp.created_at.isoformat()
             }
             for exp in recent_expenses
@@ -182,14 +187,18 @@ class DashboardAPIView(APIView):
         # Combine and sort by date descending, then created_at descending
         recent_transactions = serialized_incomes + serialized_expenses
         recent_transactions.sort(key=lambda x: (x['date'], x['created_at']), reverse=True)
-        recent_transactions = recent_transactions[:10]
+        recent_transactions = recent_transactions[:5]
 
         return Response({
             "total_income": total_income,
             "total_expense": total_expense,
-            "remaining_balance": remaining_balance,
+            "current_balance": current_balance,
+            "remaining_balance": current_balance,  # Backward compatibility for UI
+            "total_budget": total_budget,
+            "remaining_budget": remaining_budget,
             "income_count": income_count,
             "expense_count": expense_count,
             "recent_transactions": recent_transactions
         }, status=status.HTTP_200_OK)
+
 
