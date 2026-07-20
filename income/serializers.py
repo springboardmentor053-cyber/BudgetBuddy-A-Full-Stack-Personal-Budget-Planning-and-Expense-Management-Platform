@@ -1,10 +1,9 @@
 from rest_framework import serializers
-from .models import Budget
+from .models import Income
 
 
-class BudgetSerializer(serializers.ModelSerializer):
-
+class IncomeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Budget
+        model = Income
         fields = "__all__"
         read_only_fields = ["user"]

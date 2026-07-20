@@ -1,107 +1,177 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Navbar from "../components/Navbar";
 
 function Dashboard() {
-  const [totalIncome, setTotalIncome] = useState(0);
-  const [totalExpenses, setTotalExpenses] = useState(0);
-  const [totalBudget, setTotalBudget] = useState(0);
+
+  const [dashboard, setDashboard] = useState({
+    total_income: 0,
+    total_expense: 0,
+    current_balance: 0,
+    total_budget: 0,
+    remaining_budget: 0,
+    recent_transactions: [],
+  });
 
   useEffect(() => {
-    fetchDashboardData();
+    fetchDashboard();
   }, []);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboard = async () => {
     try {
-      // Fetch data from all APIs
-      const incomeResponse = await axios.get("http://127.0.0.1:8000/api/income/");
-      const expenseResponse = await axios.get("http://127.0.0.1:8000/api/expenses/");
-      const budgetResponse = await axios.get("http://127.0.0.1:8000/api/budgets/");
 
-      // Calculate total income
-      const income = incomeResponse.data.reduce(
-        (sum, item) => sum + Number(item.amount),
-        0
+      const token = localStorage.getItem("access");
+
+      const response = await axios.get(
+        "http://127.0.0.1:8000/api/dashboard/",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
-      // Calculate total expenses
-      const expenses = expenseResponse.data.reduce(
-        (sum, item) => sum + Number(item.amount),
-        0
-      );
-
-      // Calculate total budget
-      const budget = budgetResponse.data.reduce(
-        (sum, item) => sum + Number(item.limit),
-        0
-      );
-
-      setTotalIncome(income);
-      setTotalExpenses(expenses);
-      setTotalBudget(budget);
+      setDashboard(response.data);
 
     } catch (error) {
-      console.error("Dashboard Error:", error);
+
+      console.error(error);
+
+      if (error.response?.status === 401) {
+        alert("Session Expired. Please login again.");
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+        window.location.href = "/login";
+      }
+
     }
   };
 
-  const savings = totalIncome - totalExpenses;
-
   return (
-    <div className="container mt-5">
+    <>
+      <Navbar />
 
-      <h1 className="text-primary mb-4">
-        BudgetBuddy Dashboard
-      </h1>
+      <div className="container mt-5">
 
-      <div className="row">
+        <h1 className="text-center text-primary mb-5">
+          BudgetBuddy Dashboard
+        </h1>
 
-        <div className="col-md-3 mb-3">
-          <div className="card text-center shadow border-success">
-            <div className="card-body">
-              <h5>Total Income</h5>
-              <h2 className="text-success">
-                ₹ {totalIncome}
-              </h2>
+        <div className="row">
+
+          <div className="col-md-4 mb-4">
+            <div className="card shadow border-success">
+              <div className="card-body text-center">
+                <h5>Total Income</h5>
+                <h2 className="text-success">
+                  ₹ {dashboard.total_income}
+                </h2>
+              </div>
             </div>
           </div>
+
+          <div className="col-md-4 mb-4">
+            <div className="card shadow border-danger">
+              <div className="card-body text-center">
+                <h5>Total Expense</h5>
+                <h2 className="text-danger">
+                  ₹ {dashboard.total_expense}
+                </h2>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-md-4 mb-4">
+            <div className="card shadow border-primary">
+              <div className="card-body text-center">
+                <h5>Current Balance</h5>
+                <h2 className="text-primary">
+                  ₹ {dashboard.current_balance}
+                </h2>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-md-6 mb-4">
+            <div className="card shadow border-info">
+              <div className="card-body text-center">
+                <h5>Total Budget</h5>
+                <h2 className="text-info">
+                  ₹ {dashboard.total_budget}
+                </h2>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-md-6 mb-4">
+            <div className="card shadow border-warning">
+              <div className="card-body text-center">
+                <h5>Remaining Budget</h5>
+                <h2 className="text-warning">
+                  ₹ {dashboard.remaining_budget}
+                </h2>
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        <div className="col-md-3 mb-3">
-          <div className="card text-center shadow border-danger">
-            <div className="card-body">
-              <h5>Total Expenses</h5>
-              <h2 className="text-danger">
-                ₹ {totalExpenses}
-              </h2>
-            </div>
-          </div>
-        </div>
+        <div className="card shadow">
 
-        <div className="col-md-3 mb-3">
-          <div className="card text-center shadow border-primary">
-            <div className="card-body">
-              <h5>Total Budget</h5>
-              <h2 className="text-primary">
-                ₹ {totalBudget}
-              </h2>
-            </div>
+          <div className="card-header bg-dark text-white">
+            Recent Expenses
           </div>
-        </div>
 
-        <div className="col-md-3 mb-3">
-          <div className="card text-center shadow border-warning">
-            <div className="card-body">
-              <h5>Savings</h5>
-              <h2 className="text-warning">
-                ₹ {savings}
-              </h2>
-            </div>
+          <div className="card-body">
+
+            <table className="table table-bordered">
+
+              <thead>
+
+                <tr>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>Date</th>
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                {dashboard.recent_transactions.length > 0 ? (
+
+                  dashboard.recent_transactions.map((item) => (
+
+                    <tr key={item.id}>
+                      <td>{item.title}</td>
+                      <td>{item.category}</td>
+                      <td>₹ {item.amount}</td>
+                      <td>{item.date}</td>
+                    </tr>
+
+                  ))
+
+                ) : (
+
+                  <tr>
+                    <td colSpan="4" className="text-center">
+                      No Recent Transactions
+                    </td>
+                  </tr>
+
+                )}
+
+              </tbody>
+
+            </table>
+
           </div>
+
         </div>
 
       </div>
-
-    </div>
+    </>
   );
 }
 

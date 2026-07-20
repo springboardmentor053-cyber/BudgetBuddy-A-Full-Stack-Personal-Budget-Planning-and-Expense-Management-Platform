@@ -3,17 +3,34 @@ import axios from "axios";
 
 function Income() {
   const [incomeList, setIncomeList] = useState([]);
-  const [source, setSource] = useState("");
+  const [title, setTitle] = useState("");
+  const [source, setSource] = useState("SALARY");
+  const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
-  const [date, setDate] = useState("");
+  const [incomeDate, setIncomeDate] = useState("");
   const [editingId, setEditingId] = useState(null);
 
+  const token = localStorage.getItem("access");
+  console.log("Access Token:", token);
+
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  // Fetch Income
   const fetchIncome = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/income/");
+      const response = await axios.get(
+        "http://127.0.0.1:8000/api/income/",
+        config
+      );
+
       setIncomeList(response.data);
     } catch (error) {
       console.error(error);
+      alert("Please login first.");
     }
   };
 
@@ -21,63 +38,76 @@ function Income() {
     fetchIncome();
   }, []);
 
+  // Edit
   const editIncome = (income) => {
     setEditingId(income.id);
+    setTitle(income.title);
     setSource(income.source);
+    setDescription(income.description);
     setAmount(income.amount);
-    setDate(income.date);
+    setIncomeDate(income.income_date);
   };
 
-  const addIncome = async (e) => {
+  // Add / Update
+  const saveIncome = async (e) => {
     e.preventDefault();
+
+    const incomeData = {
+      title,
+      amount,
+      source,
+      description,
+      income_date: incomeDate,
+    };
 
     try {
       if (editingId) {
         await axios.put(
           `http://127.0.0.1:8000/api/income/${editingId}/`,
-          {
-            source,
-            amount,
-            date,
-            user: 1,
-          }
+          incomeData,
+          config
         );
 
         alert("Income Updated Successfully");
-        setEditingId(null);
-
       } else {
-
         await axios.post(
           "http://127.0.0.1:8000/api/income/",
-          {
-            source,
-            amount,
-            date,
-            user: 1,
-          }
+          incomeData,
+          config
         );
 
         alert("Income Added Successfully");
       }
 
-      setSource("");
+      setEditingId(null);
+      setTitle("");
       setAmount("");
-      setDate("");
+      setSource("SALARY");
+      setDescription("");
+      setIncomeDate("");
 
       fetchIncome();
 
     } catch (error) {
-      console.error(error);
-    }
+  console.error(error);
+
+  if (error.response) {
+    console.log("Backend Error:", error.response.data);
+    alert(JSON.stringify(error.response.data));
+  } else {
+    alert(error.message);
+  }
+}
   };
 
+  // Delete
   const deleteIncome = async (id) => {
     if (!window.confirm("Delete this income?")) return;
 
     try {
       await axios.delete(
-        `http://127.0.0.1:8000/api/income/${id}/`
+        `http://127.0.0.1:8000/api/income/${id}/`,
+        config
       );
 
       alert("Income Deleted Successfully");
@@ -85,8 +115,15 @@ function Income() {
       fetchIncome();
 
     } catch (error) {
-      console.error(error);
-    }
+  console.error(error);
+
+  if (error.response) {
+    console.log(error.response.data);
+    alert(JSON.stringify(error.response.data));
+  } else {
+    alert(error.message);
+  }
+}
   };
 
   return (
@@ -96,14 +133,34 @@ function Income() {
         Income Management
       </h2>
 
-      <form onSubmit={addIncome}>
+      <form onSubmit={saveIncome}>
 
         <input
           className="form-control mb-3"
-          placeholder="Income Source"
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
+
+        <select
+          className="form-control mb-3"
           value={source}
           onChange={(e) => setSource(e.target.value)}
-          required
+        >
+          <option value="SALARY">Salary</option>
+          <option value="POCKET_MONEY">Pocket Money</option>
+          <option value="SCHOLARSHIP">Scholarship</option>
+          <option value="FREELANCING">Freelancing</option>
+          <option value="BUSINESS">Business</option>
+          <option value="OTHER">Other</option>
+        </select>
+
+        <textarea
+          className="form-control mb-3"
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
         />
 
         <input
@@ -118,8 +175,8 @@ function Income() {
         <input
           type="date"
           className="form-control mb-3"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+          value={incomeDate}
+          onChange={(e) => setIncomeDate(e.target.value)}
           required
         />
 
@@ -137,6 +194,7 @@ function Income() {
 
         <thead className="table-dark">
           <tr>
+            <th>Title</th>
             <th>Source</th>
             <th>Amount</th>
             <th>Date</th>
@@ -150,9 +208,10 @@ function Income() {
             incomeList.map((income) => (
               <tr key={income.id}>
 
+                <td>{income.title}</td>
                 <td>{income.source}</td>
                 <td>₹ {income.amount}</td>
-                <td>{income.date}</td>
+                <td>{income.income_date}</td>
 
                 <td>
 
@@ -176,7 +235,7 @@ function Income() {
             ))
           ) : (
             <tr>
-              <td colSpan="4" className="text-center">
+              <td colSpan="5" className="text-center">
                 No Income Found
               </td>
             </tr>

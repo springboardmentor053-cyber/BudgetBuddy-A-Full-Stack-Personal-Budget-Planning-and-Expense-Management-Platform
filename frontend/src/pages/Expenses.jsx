@@ -5,19 +5,31 @@ function Expenses() {
   const [expenses, setExpenses] = useState([]);
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("FOOD");
   const [date, setDate] = useState("");
   const [editingId, setEditingId] = useState(null);
+
+  const token = localStorage.getItem("access");
+
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
 
   // Fetch Expenses
   const fetchExpenses = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/expenses/"
+        "http://127.0.0.1:8000/api/expenses/",
+        config
       );
+
       setExpenses(response.data);
+
     } catch (error) {
       console.error(error);
+      alert("Please login first.");
     }
   };
 
@@ -35,64 +47,86 @@ function Expenses() {
   };
 
   // Add / Update Expense
-  const addExpense = async (e) => {
+  const saveExpense = async (e) => {
     e.preventDefault();
+
+    const expenseData = {
+      title,
+      amount,
+      category,
+      date,
+    };
 
     try {
       if (editingId) {
+
         await axios.put(
           `http://127.0.0.1:8000/api/expenses/${editingId}/`,
-          {
-            title,
-            amount,
-            category,
-            date,
-            user: 1,
-          }
+          expenseData,
+          config
         );
 
         alert("Expense Updated Successfully");
-        setEditingId(null);
+
       } else {
+
         await axios.post(
           "http://127.0.0.1:8000/api/expenses/",
-          {
-            title,
-            amount,
-            category,
-            date,
-            user: 1,
-          }
+          expenseData,
+          config
         );
 
         alert("Expense Added Successfully");
       }
 
+      setEditingId(null);
       setTitle("");
       setAmount("");
-      setCategory("");
+      setCategory("FOOD");
       setDate("");
 
       fetchExpenses();
+
     } catch (error) {
+
       console.error(error);
+
+      if (error.response) {
+        console.log(error.response.data);
+        alert(JSON.stringify(error.response.data));
+      } else {
+        alert(error.message);
+      }
+
     }
   };
 
   // Delete Expense
   const deleteExpense = async (id) => {
+
     if (!window.confirm("Delete this expense?")) return;
 
     try {
+
       await axios.delete(
-        `http://127.0.0.1:8000/api/expenses/${id}/`
+        `http://127.0.0.1:8000/api/expenses/${id}/`,
+        config
       );
 
       alert("Expense Deleted Successfully");
 
       fetchExpenses();
+
     } catch (error) {
+
       console.error(error);
+
+      if (error.response) {
+        alert(JSON.stringify(error.response.data));
+      } else {
+        alert(error.message);
+      }
+
     }
   };
 
@@ -103,7 +137,7 @@ function Expenses() {
         Expense Management
       </h2>
 
-      <form onSubmit={addExpense}>
+      <form onSubmit={saveExpense}>
 
         <input
           className="form-control mb-3"
@@ -126,18 +160,15 @@ function Expenses() {
           className="form-control mb-3"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          required
         >
-          <option value="">Select Category</option>
-          <option value="Food">Food</option>
-          <option value="Travel">Travel</option>
-          <option value="Shopping">Shopping</option>
-          <option value="Bills">Bills</option>
-          <option value="Education">Education</option>
-          <option value="Entertainment">Entertainment</option>
-          <option value="Health">Health</option>
-          <option value="Fuel">Fuel</option>
-          <option value="Others">Others</option>
+          <option value="FOOD">Food</option>
+          <option value="TRAVEL">Travel</option>
+          <option value="SHOPPING">Shopping</option>
+          <option value="EDUCATION">Education</option>
+          <option value="ENTERTAINMENT">Entertainment</option>
+          <option value="HEALTHCARE">Healthcare</option>
+          <option value="BILLS">Bills</option>
+          <option value="MISCELLANEOUS">Miscellaneous</option>
         </select>
 
         <input
