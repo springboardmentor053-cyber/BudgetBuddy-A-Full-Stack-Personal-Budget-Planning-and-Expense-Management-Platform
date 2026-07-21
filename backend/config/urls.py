@@ -7,7 +7,7 @@ from rest_framework_simplejwt.views import (
 )
 from users.views import RegisterView, LogoutView, ProtectedView
 from expenses.views import ExpenseViewSet, IncomeViewSet as OldIncomeViewSet, TotalExpensesView
-from budgets.views import BudgetViewSet, SavingsGoalViewSet
+from budgets.views import BudgetViewSet, SavingsGoalViewSet, BudgetSummaryView
 from income.views import IncomeViewSet, FinancialSummaryView
 
 router = DefaultRouter()
@@ -25,5 +25,6 @@ urlpatterns = [
     path('api/protected/', ProtectedView.as_view(), name='protected'),
     path('api/expenses/total/', TotalExpensesView.as_view(), name='total-expenses'),
     path('api/summary/', FinancialSummaryView.as_view(), name='financial-summary'),
+    path('api/budgets/summary/', BudgetSummaryView.as_view(), name='budget-summary'),
     path('api/', include(router.urls)),
 ]

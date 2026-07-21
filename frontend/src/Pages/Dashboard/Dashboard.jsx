@@ -12,7 +12,7 @@ function Dashboard() {
       try {
         const [expRes, incRes, budRes] = await Promise.all([
           api.get('/expenses/'),
-          api.get('/incomes/'),
+          api.get('/income/'),
           api.get('/budgets/'),
         ]);
         setExpenses(expRes.data);
