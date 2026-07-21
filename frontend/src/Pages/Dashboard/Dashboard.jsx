@@ -54,7 +54,7 @@ function Dashboard() {
       <h3>Budgets</h3>
       <ul>
         {budgets.map((b) => (
-          <li key={b.id}>{b.category} — Limit: ₹{b.monthly_limit}</li>
+          <li key={b.id}>{b.category} — Limit: ₹{b.budget_amount}</li>
         ))}
       </ul>
     </div>
