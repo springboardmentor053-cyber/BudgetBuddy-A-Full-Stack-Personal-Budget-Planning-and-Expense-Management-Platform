@@ -44,6 +44,17 @@ class ExpenseAPITests(APITestCase):
         self.assertEqual(float(response.data['amount']), 120.00)
         self.assertEqual(response.data['category'], 'SHOPPING')
 
+    def test_create_expense_normalized_category(self):
+        data = {
+            'category': 'Food',
+            'amount': '45.00',
+            'date': '2026-07-16',
+            'description': 'Dinner'
+        }
+        response = self.client.post('/api/expenses/', data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['category'], 'FOOD')
+
     def test_create_expense_invalid_category(self):
         data = {
             'category': 'INVALID_CAT',

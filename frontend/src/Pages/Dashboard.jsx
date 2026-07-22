@@ -9,6 +9,7 @@ import {
   notificationService,
   reportService
 } from '../services/api';
+import AnalyticsCharts from '../components/AnalyticsCharts';
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -52,15 +53,26 @@ function Dashboard() {
 
   // Form states
   const [incomeForm, setIncomeForm] = useState({ title: '', amount: '', source: 'SALARY', description: '', income_date: '' });
-  const [expenseForm, setExpenseForm] = useState({ category: 'Food', amount: '', date: '', description: '' });
-  const [budgetForm, setBudgetForm] = useState({ category: 'Food', limit_amount: '', month: '' });
+  const [expenseForm, setExpenseForm] = useState({ category: 'FOOD', amount: '', date: '', description: '' });
+  const [budgetForm, setBudgetForm] = useState({ category: 'FOOD', limit_amount: '', month: '' });
   const [savingsForm, setSavingsForm] = useState({ goal_name: '', target_amount: '', saved_amount: 0, deadline: '' });
   const [quickSavingsAmount, setQuickSavingsAmount] = useState({});
 
   // Editing state
   const [editingItem, setEditingItem] = useState(null); // { type, id }
 
-  const CATEGORIES = ['Food', 'Transport', 'Shopping', 'Bills', 'Health', 'Other'];
+  const CATEGORIES = ['FOOD', 'TRAVEL', 'SHOPPING', 'EDUCATION', 'ENTERTAINMENT', 'HEALTHCARE', 'BILLS', 'MISCELLANEOUS'];
+  const CATEGORY_LABELS = {
+    FOOD: 'Food',
+    TRAVEL: 'Travel & Transport',
+    SHOPPING: 'Shopping',
+    EDUCATION: 'Education',
+    ENTERTAINMENT: 'Entertainment',
+    HEALTHCARE: 'Healthcare',
+    BILLS: 'Bills & Utilities',
+    MISCELLANEOUS: 'Miscellaneous'
+  };
+  const getCategoryLabel = (cat) => CATEGORY_LABELS[cat] || cat;
   const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
   // Fetch all initial data
@@ -142,7 +154,7 @@ function Dashboard() {
       } else {
         await expenseService.create(expenseForm);
       }
-      setExpenseForm({ category: 'Food', amount: '', date: '', description: '' });
+      setExpenseForm({ category: 'FOOD', amount: '', date: '', description: '' });
       setEditingItem(null);
       fetchData();
     } catch {
@@ -170,7 +182,7 @@ function Dashboard() {
       } else {
         await budgetService.create(budgetForm);
       }
-      setBudgetForm({ category: 'Food', limit_amount: '', month: '' });
+      setBudgetForm({ category: 'FOOD', limit_amount: '', month: '' });
       setEditingItem(null);
       fetchData();
     } catch {
@@ -341,6 +353,18 @@ function Dashboard() {
             }`}
           >
             <span className="text-base">📊</span> <span>Dashboard</span>
+          </button>
+          <button
+            onClick={() => { setActiveTab('analytics'); setEditingItem(null); }}
+            className={`flex items-center space-x-3 px-4 py-3.5 rounded-xl text-sm font-bold transition-all duration-200 shrink-0 border cursor-pointer w-full text-left ${
+              activeTab === 'analytics'
+                ? 'bg-rose-500/10 border-rose-500/40 text-rose-500 dark:text-rose-400'
+                : isDark
+                ? 'bg-slate-900 border-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-900/80'
+                : 'bg-white border-slate-200 text-slate-600 hover:text-rose-600 hover:bg-slate-100'
+            }`}
+          >
+            <span className="text-base">📈</span> <span>Analytics & Charts</span>
           </button>
           <button
             onClick={() => { setActiveTab('income'); setEditingItem(null); }}
@@ -522,7 +546,7 @@ function Dashboard() {
                                     idx % 5 === 2 ? 'bg-fuchsia-500' :
                                     idx % 5 === 3 ? 'bg-rose-400' : 'bg-violet-500'
                                   }`}></span>
-                                  <span className="font-semibold">{category}</span>
+                                  <span className="font-semibold">{getCategoryLabel(category)}</span>
                                 </div>
                                 <span className={`${secondaryText} font-bold`}>${amount.toFixed(2)} ({percentage}%)</span>
                               </div>
@@ -587,6 +611,18 @@ function Dashboard() {
               </div>
 
             </div>
+          )}
+
+          {/* TAB: ANALYTICS & CHARTS */}
+          {activeTab === 'analytics' && (
+            <AnalyticsCharts
+              incomes={incomes}
+              expenses={expenses}
+              budgets={budgets}
+              savings={savings}
+              theme={theme}
+              CATEGORIES={CATEGORIES}
+            />
           )}
 
           {/* TAB 2: INCOME PANEL */}
@@ -759,7 +795,7 @@ function Dashboard() {
                       className={`w-full px-4 py-2.5 rounded-xl outline-none text-sm border transition-all ${selectBg}`}
                     >
                       {CATEGORIES.map((c, i) => (
-                        <option key={i} value={c}>{c}</option>
+                        <option key={i} value={c}>{getCategoryLabel(c)}</option>
                       ))}
                     </select>
                   </div>
@@ -806,7 +842,7 @@ function Dashboard() {
                         type="button"
                         onClick={() => {
                           setEditingItem(null);
-                          setExpenseForm({ category: 'Food', amount: '', date: '', description: '' });
+                          setExpenseForm({ category: 'FOOD', amount: '', date: '', description: '' });
                         }}
                         className={`px-4 py-2.5 rounded-xl text-sm transition-all border cursor-pointer ${
                           isDark ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300' : 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700'
@@ -839,7 +875,7 @@ function Dashboard() {
                       <tbody className={`text-sm divide-y ${tableRowBorder}`}>
                         {expenses.map((exp) => (
                           <tr key={exp.id} className="hover:bg-slate-800/5">
-                            <td className="py-4 font-bold">{exp.category}</td>
+                            <td className="py-4 font-bold">{getCategoryLabel(exp.category)}</td>
                             <td className="py-4 max-w-[150px] truncate text-slate-500">{exp.description || '-'}</td>
                             <td className={`py-4 ${secondaryText}`}>{exp.date}</td>
                             <td className="py-4 text-right font-black text-rose-500">₹{parseFloat(exp.amount).toFixed(2)}</td>
@@ -891,7 +927,7 @@ function Dashboard() {
                       className={`w-full px-4 py-2.5 rounded-xl outline-none text-sm border transition-all ${selectBg}`}
                     >
                       {CATEGORIES.map((c, i) => (
-                        <option key={i} value={c}>{c}</option>
+                        <option key={i} value={c}>{getCategoryLabel(c)}</option>
                       ))}
                     </select>
                   </div>
@@ -933,7 +969,7 @@ function Dashboard() {
                         type="button"
                         onClick={() => {
                           setEditingItem(null);
-                          setBudgetForm({ category: 'Food', limit_amount: '', month: '' });
+                          setBudgetForm({ category: 'FOOD', limit_amount: '', month: '' });
                         }}
                         className={`px-4 py-2.5 rounded-xl text-sm transition-all border cursor-pointer ${
                           isDark ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300' : 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700'
@@ -965,7 +1001,7 @@ function Dashboard() {
                       <tbody className={`text-sm divide-y ${tableRowBorder}`}>
                         {budgets.map((b) => (
                           <tr key={b.id} className="hover:bg-slate-800/5">
-                            <td className="py-4 font-bold">{b.category}</td>
+                            <td className="py-4 font-bold">{getCategoryLabel(b.category)}</td>
                             <td className="py-4 text-slate-500 font-semibold">{b.month}</td>
                             <td className="py-4 text-right font-black text-rose-500">₹{parseFloat(b.limit_amount).toFixed(2)}</td>
                             <td className="py-4 text-center">
