@@ -677,8 +677,8 @@ If you'd like to contribute:
 
 ### Connect with Me
 
-- GitHub: https://github.com/YOUR_GITHUB_USERNAME
-- LinkedIn: https://www.linkedin.com/in/YOUR_LINKEDIN_USERNAME/
+- GitHub: https://github.com/Karuna-1512/
+- LinkedIn: https://www.linkedin.com/in/koppadi-karuna-560230333/
 
 > Replace the links above with your actual GitHub and LinkedIn profiles.
 
