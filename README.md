@@ -1,4 +1,4 @@
-<h1 align="center">💰 BudgetBuddy</h1>
+<h1 align="center"> 💰 BudgetBuddy</h1>
 
 <h3 align="center">
 Personal Budget Planning & Expense Management Platform
