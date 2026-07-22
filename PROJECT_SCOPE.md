@@ -4,17 +4,17 @@
 
 ## 1. Introduction
 
-BudgetBuddy is a web-based Personal Budget Planning and Expense Management Platform developed to help users efficiently manage their daily finances. The application enables users to record income and expenses, create budgets, monitor savings goals, and generate financial reports through a secure and user-friendly interface.
+BudgetBuddy is a web-based Personal Budget Planning and Expense Management Platform designed to help users efficiently manage their personal finances. The application provides a secure and user-friendly environment where users can record income, track expenses, create monthly budgets, and monitor their financial activities.
 
-The project is being developed using **Django REST Framework** for the backend and **React (Vite)** for the frontend.
+The project is developed using **React (Vite)** for the frontend, **Django REST Framework** for the backend, and **PostgreSQL** as the database. The application follows a RESTful architecture with JWT-based authentication to ensure secure access to user data.
 
 ---
 
 # 2. Problem Statement
 
-Managing personal finances manually can be difficult and time-consuming. Many people struggle to track their income, expenses, and savings using notebooks or spreadsheets, which often leads to inaccurate records and poor financial planning.
+Managing personal finances manually through notebooks or spreadsheets is often time-consuming and prone to errors. Many individuals struggle to maintain accurate records of their income and expenses, making effective budgeting and financial planning difficult.
 
-BudgetBuddy provides a digital solution that allows users to securely manage their financial information in one place.
+BudgetBuddy addresses these challenges by providing a centralized digital platform that allows users to securely manage their financial records, monitor spending, and maintain organized budgets.
 
 ---
 
@@ -22,19 +22,20 @@ BudgetBuddy provides a digital solution that allows users to securely manage the
 
 The primary objectives of BudgetBuddy are:
 
-- Develop a secure user authentication system.
-- Allow users to register and log in securely.
-- Track income and expenses.
-- Manage personal budgets.
-- Set savings goals.
-- Generate financial reports.
+- Develop a secure authentication system using JWT.
+- Enable users to register and log in securely.
+- Manage income records through CRUD operations.
+- Manage expense records through CRUD operations.
+- Create and manage monthly budgets.
 - Provide a responsive and user-friendly interface.
+- Maintain secure financial records using PostgreSQL.
+- Build a scalable REST API for future enhancements.
 
 ---
 
 # 4. Target Users
 
-The application is designed for:
+BudgetBuddy is designed for:
 
 - Students
 - Working Professionals
@@ -50,7 +51,7 @@ The application is designed for:
 
 A guest user can:
 
-- View the login page.
+- Access the home page.
 - Register a new account.
 - Log in using valid credentials.
 
@@ -60,15 +61,12 @@ A guest user can:
 
 An authenticated user can:
 
-- Access the dashboard.
-- Manage income records.
-- Manage expense records.
-- Create budgets.
-- Track savings goals.
-- View reports.
-- Update profile information.
-
-*(Only authentication and dashboard access are implemented in Milestone 1.)*
+- Access the Dashboard.
+- Add, view, edit, and delete income records.
+- Add, view, edit, and delete expense records.
+- Create, update, and delete budgets.
+- Securely manage personal financial data.
+- Log out securely.
 
 ---
 
@@ -79,23 +77,32 @@ The administrator can:
 - Access the Django Admin Panel.
 - Manage registered users.
 - Monitor application data.
-- Maintain database records.
+- Manage database records.
+- Perform administrative operations.
 
 ---
 
 # 6. Project Modules
 
-The BudgetBuddy application consists of the following modules:
+## Implemented Modules
 
 - User Authentication
 - Dashboard
 - Income Management
 - Expense Management
 - Budget Management
-- Savings Goals
+- PostgreSQL Database Integration
+- REST APIs
+- JWT Authentication
+
+## Planned Modules
+
+- Savings Goal Management
 - Reports & Analytics
 - Notifications
 - Profile Management
+- Dashboard Charts
+- PDF & Excel Export
 
 ---
 
@@ -105,20 +112,29 @@ The BudgetBuddy application consists of the following modules:
 
 - React
 - Vite
+- JavaScript
 - HTML5
 - CSS3
-- JavaScript
+- Axios
+- React Router
+- React Icons
+
+---
 
 ## Backend
 
 - Python
 - Django
 - Django REST Framework
-- JWT Authentication
+- Simple JWT
+
+---
 
 ## Database
 
-- SQLite / Postger SQl
+- PostgreSQL
+
+---
 
 ## Development Tools
 
@@ -126,22 +142,29 @@ The BudgetBuddy application consists of the following modules:
 - GitHub
 - Visual Studio Code
 - Postman
+- pgAdmin
 
 ---
 
-# 8. Milestone 1 Scope
+# 8. Current Project Scope (Milestone 2)
 
-The following components are completed in Milestone 1:
+The following components have been successfully implemented:
 
-- Project planning
-- Backend setup
-- Frontend setup
-- Database configuration
-- User registration
-- User login
-- JWT authentication
-- Django Admin configuration
-- Basic dashboard
+- Project Planning
+- Backend Development
+- Frontend Development
+- PostgreSQL Database Configuration
+- User Registration
+- User Login
+- JWT Authentication
+- Dashboard
+- Income Management (CRUD)
+- Expense Management (CRUD)
+- Budget Management (CRUD)
+- Django Admin Panel
+- REST API Development
+- API Testing using Postman
+- Responsive Navigation
 
 ---
 
@@ -149,19 +172,35 @@ The following components are completed in Milestone 1:
 
 Future versions of BudgetBuddy will include:
 
-- Complete Income Management
-- Complete Expense Management
-- Budget Planning
-- Savings Goal Tracking
-- Financial Reports
-- Interactive Charts
+- Savings Goal Management
+- Reports & Analytics Dashboard
+- Interactive Charts and Graphs
+- Monthly Financial Reports
+- Budget Notifications
 - Email Notifications
-- PDF Report Export
+- PDF Report Generation
+- Excel Export
+- AI-Based Spending Analysis
 - Cloud Deployment
-- Mobile Responsive Design
+- Mobile Application
 
 ---
 
-# 10. Conclusion
+# 10. Project Benefits
 
-BudgetBuddy aims to simplify personal financial management through a secure and easy-to-use web application. Milestone 1 establishes the project's foundation by implementing authentication, backend architecture, frontend setup, and database configuration. Future milestones will expand the application with advanced financial management features.
+BudgetBuddy provides several benefits, including:
+
+- Secure authentication using JWT.
+- Efficient financial record management.
+- Easy budget planning.
+- Responsive and modern user interface.
+- Secure PostgreSQL database.
+- RESTful API architecture.
+- Scalable modular design.
+- Easy future feature expansion.
+
+---
+
+# 11. Conclusion
+
+BudgetBuddy is a secure, scalable, and user-friendly personal finance management application that enables users to manage income, expenses, and budgets efficiently. As of **Milestone 2**, the application includes complete CRUD functionality for the core financial modules, secure JWT authentication, PostgreSQL integration, and a responsive React frontend. Future development will focus on advanced analytics, savings goal tracking, financial reporting, and intelligent budgeting features.

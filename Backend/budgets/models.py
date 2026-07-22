@@ -37,5 +37,8 @@ class Budget(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # ADD THIS LINE
+    updated_at = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         return f"{self.user.username} - {self.category}"

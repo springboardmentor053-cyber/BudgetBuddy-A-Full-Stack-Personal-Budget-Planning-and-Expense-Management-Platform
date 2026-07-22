@@ -6,7 +6,7 @@
 
 BudgetBuddy is a web-based application developed to simplify personal financial management. It enables users to securely register, log in, and manage their financial data through an intuitive interface. The application is built using Django REST Framework for the backend and React (Vite) for the frontend.
 
-The primary goal of the project is to provide users with a centralized platform to monitor income, expenses, budgets, savings goals, and financial reports.
+The primary goal of the project is to provide users with a centralized platform to securely manage income, expenses, and budgets while offering a responsive and user-friendly interface. The application now includes complete CRUD operations for Income, Expenses, and Budget Management, forming the core of a personal financial management system.
 
 ---
 
@@ -35,7 +35,7 @@ BudgetBuddy offers a centralized system where users can:
 - View reports and analytics
 - Track savings goals
 
-Milestone 1 establishes the project's foundation by implementing authentication, backend configuration, and frontend integration.
+BudgetBuddy now provides a complete financial management platform where authenticated users can securely manage their income, expenses, and monthly budgets. Users can perform Create, Read, Update, and Delete (CRUD) operations through a responsive React frontend integrated with Django REST APIs.
 
 ---
 
@@ -57,11 +57,27 @@ Milestone 1 establishes the project's foundation by implementing authentication,
 
 ---
 
-## Financial Modules (Planned)
+## Financial Modules
 
 - Income Management
-- Expense Management
-- Budget Management
+   - Add Income
+   - View Income
+   - Update Income
+   - Delete Income
+Expense Management
+   - Add Expense
+   - View Expenses
+   - Update Expense
+   - Delete Expense
+Budget Management
+   - Create Budget
+   - View Budget
+   - Update Budget
+   - Delete Budget
+Dashboard
+   - User Dashboard
+   - Quick Navigation
+   - Authentication-based Access
 - Savings Goals
 - Notifications
 - Reports
@@ -96,21 +112,23 @@ Milestone 1 establishes the project's foundation by implementing authentication,
 
 # 6. System Architecture
 
-```
-+----------------------+
-|   React Frontend     |
-+----------------------+
-           |
-           | HTTP Requests
-           ▼
-+----------------------+
-| Django REST API      |
-+----------------------+
-           |
-           ▼
-+----------------------+
-| SQLite Database      |
-+----------------------+
+```                 +---------------------------+
+                    |      React Frontend       |
+                    |        (Vite + React)     |
+                    +---------------------------+
+                               |
+                               | HTTP / REST API
+                               ▼
+                    +---------------------------+
+                    | Django REST Framework API |
+                    +---------------------------+
+                               |
+                     JWT Authentication
+                               |
+                               ▼
+                    +---------------------------+
+                    |     PostgreSQL Database   |
+                    +---------------------------+
 ```
 
 ---
@@ -133,8 +151,7 @@ Milestone 1 establishes the project's foundation by implementing authentication,
 - Simple JWT
 
 ## Database
-
-- SQLite / PostgerSql
+- PostgerSql
 
 ## Development Tools
 
@@ -148,17 +165,22 @@ Milestone 1 establishes the project's foundation by implementing authentication,
 # 8. Current Implementation (Milestone 1)
 
 The following features have been completed:
+The following features have been completed:
 
-- Project setup
-- Django backend configuration
-- React frontend setup
-- SQLite database configuration
-- JWT authentication
-- User registration API
-- User login API
-- Dashboard page
-- Django Admin configuration
-- API testing with Postman
+• Django project setup
+• React frontend setup
+• PostgreSQL database configuration
+• JWT Authentication
+• User Registration
+• User Login
+• Dashboard
+• Expense CRUD
+• Income CRUD
+• Budget CRUD
+• Django Admin
+• REST APIs
+• API Testing using Postman
+• Responsive Sidebar Navigation
 
 ---
 
@@ -166,13 +188,17 @@ The following features have been completed:
 
 The following modules will be implemented in upcoming milestones:
 
-- Income Management
-- Expense Management
-- Budget Management
-- Savings Goals
-- Reports & Analytics
-- Notifications
-- User Profile Management
+-Savings Goal Management
+
+-Reports & Analytics
+
+-Notifications
+
+-Profile Management
+
+-Data Visualization
+
+-PDF & Excel Export
 
 ---
 
@@ -185,6 +211,13 @@ The following modules will be implemented in upcoming milestones:
 - Modular backend
 - RESTful API design
 - Future-ready for analytics and reporting
+-Complete CRUD functionality
+-Secure JWT Authentication
+-PostgreSQL Database Integration
+-Responsive React User Interface
+-RESTful API Architecture
+-Easy Data Management
+-Modular and Scalable Design
 
 ---
 
@@ -192,17 +225,17 @@ The following modules will be implemented in upcoming milestones:
 
 The application will be extended with:
 
-- Complete CRUD operations
-- Interactive charts
-- Monthly financial reports
-- Budget alerts
-- Email notifications
-- PDF and Excel report export
-- Cloud deployment
-- Mobile responsive design
+-Interactive Charts and Graphs
+-Monthly Financial Reports
+-Budget Notifications
+-Savings Goal Tracking
+-PDF & Excel Report Export
+-Email Notifications
+-Cloud Deployment
+-AI-based Spending Analysis
+-Mobile Application
 
 ---
 
 # 12. Conclusion
-
-BudgetBuddy provides a strong foundation for a modern personal finance management system. Milestone 1 successfully establishes the project architecture, authentication mechanism, backend APIs, and frontend integration. Future milestones will focus on implementing complete financial management features and enhancing the user experience.
+BudgetBuddy has successfully completed its second development milestone by implementing secure authentication along with complete CRUD functionality for Income, Expense, and Budget Management. The system is powered by Django REST Framework, PostgreSQL, and a React frontend, providing a secure, scalable, and user-friendly financial management platform. Future milestones will focus on advanced analytics, savings management, reporting, and intelligent financial insights.

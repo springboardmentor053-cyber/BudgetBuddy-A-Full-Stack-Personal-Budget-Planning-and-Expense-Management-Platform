@@ -4,213 +4,258 @@
 
 ## Introduction
 
-The BudgetBuddy application uses a relational database to securely store user information, financial records, budgets, and reports. During development, SQLite is used as the database, while PostgreSQL is planned for future deployment.
+BudgetBuddy uses a **PostgreSQL relational database** to securely store user information and financial records. The database is designed using the Django ORM, providing a scalable, secure, and well-structured architecture for managing user authentication, income, expenses, and budgets. The schema follows relational database principles with proper foreign key relationships to maintain data integrity and consistency.
 
 ---
 
 # Database Overview
 
-The database consists of the following major entities:
+The current database consists of the following entities:
+
+## Implemented Modules
 
 - Users
-- Profiles
+- Profile
 - Income
-- Expenses
-- Budgets
+- Expense
+- Budget
+
+## Planned Modules
+
 - Savings Goals
 - Notifications
 - Reports
 
 ---
 
-# Entity Relationship Overview
+# Entity Relationship Diagram (ERD)
 
-```
-User
- │
- ├── Profile
- ├── Income
- ├── Expense
- ├── Budget
- ├── Savings Goal
- ├── Notification
- └── Report
+```text
+                            User
+                              │
+                 ┌────────────┼────────────┐
+                 │            │            │
+             Profile       Income      Expense
+                 │            │            │
+                 └────────────┼────────────┘
+                              │
+                           Budget
+
+               (Future Modules)
+
+        Savings Goal
+        Notification
+        Report
 ```
 
 ---
 
-# 1. Users Table
+# Database Tables
 
-Stores user authentication information.
+## 1. Users Table
+
+Stores user authentication and login information.
 
 | Field | Data Type | Description |
 |--------|-----------|-------------|
 | id | Integer | Primary Key |
-| username | String | Username |
-| email | String | Email Address |
-| password | String | Encrypted Password |
+| username | Varchar | Unique Username |
+| email | EmailField | User Email Address |
+| password | Varchar | Encrypted Password |
 | date_joined | DateTime | Account Creation Date |
 
 ---
 
-# 2. Profile Table
+## 2. Profile Table
 
-Stores additional user information.
+Stores additional information about each user.
 
 | Field | Data Type | Description |
 |--------|-----------|-------------|
 | id | Integer | Primary Key |
-| user_id | Foreign Key | References User |
-| phone | String | Phone Number |
-| gender | String | Gender |
-| profile_image | Image | Profile Picture |
+| user_id | Foreign Key | References Users Table |
+| phone | Varchar | Phone Number |
+| gender | Varchar | Gender |
+| profile_image | ImageField | Profile Picture |
 | created_at | DateTime | Record Creation Time |
 
 ---
 
-# 3. Income Table
+## 3. Income Table
 
-Stores user income records.
+Stores all income records created by users.
 
 | Field | Data Type | Description |
 |--------|-----------|-------------|
 | id | Integer | Primary Key |
-| user_id | Foreign Key | References User |
-| title | String | Income Source |
+| user_id | Foreign Key | References Users Table |
+| title | Varchar | Income Source |
 | amount | Decimal | Income Amount |
-| category | String | Income Category |
+| category | Varchar | Income Category |
 | date | Date | Income Date |
 | description | Text | Additional Notes |
 
 ---
 
-# 4. Expense Table
+## 4. Expense Table
 
-Stores user expenses.
+Stores all expense transactions.
 
 | Field | Data Type | Description |
 |--------|-----------|-------------|
 | id | Integer | Primary Key |
-| user_id | Foreign Key | References User |
-| title | String | Expense Title |
+| user_id | Foreign Key | References Users Table |
+| title | Varchar | Expense Title |
 | amount | Decimal | Expense Amount |
-| category | String | Expense Category |
+| category | Varchar | Expense Category |
 | date | Date | Expense Date |
 | description | Text | Additional Notes |
 
 ---
 
-# 5. Budget Table
+## 5. Budget Table
 
-Stores monthly or yearly budgets.
+Stores monthly budget information for different categories.
 
 | Field | Data Type | Description |
 |--------|-----------|-------------|
 | id | Integer | Primary Key |
-| user_id | Foreign Key | References User |
-| category | String | Budget Category |
-| budget_amount | Decimal | Budget Limit |
-| month | Integer | Month |
-| year | Integer | Year |
+| user_id | Foreign Key | References Users Table |
+| category | Varchar | Budget Category |
+| monthly_limit | Decimal | Monthly Budget Limit |
+| month | Integer | Budget Month |
+| year | Integer | Budget Year |
 
 ---
 
-# 6. Savings Goal Table
+## 6. Savings Goal Table *(Planned)*
 
-Stores savings goals.
+Stores user savings goals.
 
 | Field | Data Type | Description |
 |--------|-----------|-------------|
 | id | Integer | Primary Key |
-| user_id | Foreign Key | References User |
-| goal_name | String | Goal Title |
+| user_id | Foreign Key | References Users Table |
+| goal_name | Varchar | Goal Name |
 | target_amount | Decimal | Target Amount |
-| current_amount | Decimal | Saved Amount |
-| deadline | Date | Goal Deadline |
-| status | Boolean | Completed or Not |
+| current_amount | Decimal | Current Saved Amount |
+| deadline | Date | Target Completion Date |
+| status | Boolean | Goal Status |
 
 ---
 
-# 7. Notification Table
+## 7. Notification Table *(Planned)*
 
-Stores application notifications.
+Stores notifications generated by the application.
 
 | Field | Data Type | Description |
 |--------|-----------|-------------|
 | id | Integer | Primary Key |
-| user_id | Foreign Key | References User |
+| user_id | Foreign Key | References Users Table |
 | message | Text | Notification Message |
 | is_read | Boolean | Read Status |
-| created_at | DateTime | Notification Time |
+| created_at | DateTime | Notification Timestamp |
 
 ---
 
-# 8. Report Table
+## 8. Report Table *(Planned)*
 
-Stores generated reports.
+Stores monthly financial reports.
 
 | Field | Data Type | Description |
 |--------|-----------|-------------|
 | id | Integer | Primary Key |
-| user_id | Foreign Key | References User |
+| user_id | Foreign Key | References Users Table |
 | month | Integer | Report Month |
 | total_income | Decimal | Total Income |
 | total_expense | Decimal | Total Expenses |
-| savings | Decimal | Savings |
+| savings | Decimal | Net Savings |
 | generated_at | DateTime | Report Generation Time |
 
 ---
 
-# Relationships
+# Database Relationships
 
-- One User can have one Profile.
-- One User can have multiple Income records.
-- One User can have multiple Expense records.
-- One User can create multiple Budgets.
-- One User can create multiple Savings Goals.
-- One User can receive multiple Notifications.
-- One User can generate multiple Reports.
+The database follows a **One-to-One** and **One-to-Many** relational model.
+
+| Parent Table | Child Table | Relationship |
+|---------------|-------------|--------------|
+| User | Profile | One-to-One |
+| User | Income | One-to-Many |
+| User | Expense | One-to-Many |
+| User | Budget | One-to-Many |
+| User | Savings Goal | One-to-Many *(Planned)* |
+| User | Notification | One-to-Many *(Planned)* |
+| User | Report | One-to-Many *(Planned)* |
 
 ---
 
 # Database Features
 
-- Secure user authentication
-- Relational database design
-- Foreign key relationships
-- Data consistency
-- Scalable architecture
-- Easy migration to PostgreSQL
+- PostgreSQL Relational Database
+- Django ORM Integration
+- Foreign Key Constraints
+- Normalized Database Design
+- Secure User Authentication
+- REST API Integration
+- CRUD Support for Financial Modules
+- High Data Integrity
+- Scalable Architecture
+- Efficient Query Processing
 
 ---
 
-# Current Database Status (Milestone 1)
+# Current Database Status (Milestone 2)
 
 | Module | Status |
 |--------|--------|
-| User Authentication | ✅ Implemented |
-| SQLite Configuration | ✅ Implemented |
+| User Authentication | ✅ Completed |
+| PostgreSQL Configuration | ✅ Completed |
 | Database Migrations | ✅ Completed |
-| Admin Panel | ✅ Configured |
-| Income Table | 🚧 Planned |
-| Expense Table | 🚧 Planned |
-| Budget Table | 🚧 Planned |
+| Django Admin Panel | ✅ Configured |
+| User Registration | ✅ Completed |
+| User Login | ✅ Completed |
+| Income Management (CRUD) | ✅ Completed |
+| Expense Management (CRUD) | ✅ Completed |
+| Budget Management (CRUD) | ✅ Completed |
+| REST APIs | ✅ Completed |
+| API Testing (Postman) | ✅ Completed |
 | Savings Goals | 🚧 Planned |
-| Reports | 🚧 Planned |
+| Reports & Analytics | 🚧 Planned |
 | Notifications | 🚧 Planned |
 
 ---
 
-# Future Improvements
+# Database Design Advantages
 
-- PostgreSQL deployment
-- Database indexing
-- Automatic backups
-- Performance optimization
-- Data encryption for sensitive fields
+- Secure and reliable data storage
+- Well-defined relational structure
+- Eliminates redundant data
+- Supports scalable application development
+- Efficient querying using PostgreSQL
+- Easy integration with Django REST Framework
+- Simplifies future feature expansion
+- Ensures data consistency using foreign keys
+
+---
+
+# Future Enhancements
+
+The following database modules will be added in upcoming milestones:
+
+- Savings Goal Management
+- Financial Reports
+- Notification System
+- Budget Alert Mechanism
+- Dashboard Analytics
+- PDF Report Generation
+- Excel Report Export
+- AI-Based Spending Analysis
+- Database Indexing for Performance Optimization
+- Automated Backup and Recovery
 
 ---
 
 # Conclusion
 
-The proposed database schema provides a scalable and secure foundation for the BudgetBuddy application. While Milestone 1 establishes the database environment and user authentication, future milestones will implement the remaining financial management modules using this schema.
+The BudgetBuddy database schema provides a robust, secure, and scalable foundation for personal financial management. As of **Milestone 2**, the application successfully integrates **PostgreSQL** with **Django ORM** and implements complete CRUD functionality for **Income, Expense, and Budget Management**. The relational design ensures data integrity through foreign key relationships while supporting efficient data retrieval and secure user authentication. The modular database architecture also enables seamless expansion for future features such as savings goals, financial analytics, reports, and intelligent budgeting.

@@ -1,4 +1,4 @@
-import Navbar from "../../components/navbar/Navbar";
+import PublicNavbar from "../../components/navbar/PublicNavbar";
 import Footer from "../../components/common/Footer";
 import { motion } from "framer-motion";
 import { FaChartPie, FaPiggyBank, FaWallet } from "react-icons/fa";
@@ -7,7 +7,7 @@ export default function Home() {
   const navigate = useNavigate();
   return (
     <>
-      <Navbar />
+      <PublicNavbar />
 
       <section className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-black text-white flex flex-col justify-center items-center px-8">
 

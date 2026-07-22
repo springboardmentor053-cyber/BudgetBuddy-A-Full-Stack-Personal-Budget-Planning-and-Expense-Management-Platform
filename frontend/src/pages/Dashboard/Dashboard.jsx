@@ -1,197 +1,260 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ExpenseChart from "../../components/charts/ExpenseChart";
+import { getExpenseCategories } from "../../api/categoryApi";
+import { getIncome } from "../../api/incomeApi";
 import {
   FaWallet,
   FaArrowUp,
   FaArrowDown,
   FaPiggyBank,
   FaPlus,
-  FaFileInvoiceDollar,
   FaChartPie,
 } from "react-icons/fa";
 
+import { getDashboard } from "../../api/dashboardApi";
+
+import StatCard from "../../components/cards/StatCard";
+import RecentTransactions from "../../components/common/RecentTransactions";
+// import DashboardLayout from "../../layouts/DashboardLayout";
 export default function Dashboard() {
+  const navigate = useNavigate();
+
+  const [dashboard, setDashboard] = useState({
+  total_income: 0,
+  total_expense: 0,
+  current_balance: 0,
+  total_budget: 0,
+  remaining_budget: 0,
+  recent_transactions: [],
+  recent_income: [],
+  recent_expenses: [],
+});
+const [income,setIncome] = useState([]);
+
+useEffect(()=>{
+  getIncome()
+   .then(res=>{
+      setIncome(res.data);
+   })
+},[]);
+  const [loading, setLoading] = useState(true);
+  const [categoryData, setCategoryData] = useState([]);
+useEffect(() => {
+  loadDashboard();
+  loadCategories();
+}, []);
+
+  const loadDashboard = async () => {
+    try {
+      const response = await getDashboard();
+      setDashboard(response.data);
+    } catch (error) {
+      console.error("Dashboard Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const loadCategories = async () => {
+  try {
+    const response = await getExpenseCategories();
+    setCategoryData(response.data);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+  const hour = new Date().getHours();
+
+const greeting =
+  hour < 11
+    ? "Good Morning"
+    : hour < 16
+    ? "Good Afternoon"
+    : "Good Evening";
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center bg-slate-900 text-white">
+        <h1 className="text-2xl font-bold">
+          Loading Dashboard...
+        </h1>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-black text-white p-8">
+      // <DashboardLayout>
+   <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-black text-white rounded-2xl p-8">
 
       {/* Header */}
 
       <div className="flex flex-col md:flex-row justify-between items-center mb-10">
 
         <div>
+
           <h1 className="text-4xl font-bold">
-            Dashboard
+            {greeting} 👋
           </h1>
 
           <p className="text-gray-400 mt-2">
             Welcome back! Here's your financial overview.
           </p>
+
         </div>
 
-        <button className="mt-5 md:mt-0 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold px-6 py-3 rounded-xl flex items-center gap-2">
+        <button
+          onClick={() => navigate("/expenses")}
+          className="mt-5 md:mt-0 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold px-6 py-3 rounded-xl flex items-center gap-2"
+        >
           <FaPlus />
-          Add Transaction
+          Add Expense
         </button>
 
       </div>
 
-      {/* Statistics */}
+      {/* Stats */}
 
-      <div className="grid lg:grid-cols-4 md:grid-cols-2 gap-6">
+     <div className="grid xl:grid-cols-4 lg:grid-cols-2 md:grid-cols-2 gap-6 mt-8">
+        <StatCard
+          title="Total Balance"
+          amount={dashboard.current_balance}
+          icon={<FaWallet />}
+          color="text-cyan-400"
+        />
 
-        <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
+        <StatCard
+          title="Total Income"
+          amount={dashboard.total_income}
+          icon={<FaArrowUp />}
+          color="text-green-400"
+        />
 
-          <FaWallet className="text-cyan-400 text-4xl mb-4" />
+        <StatCard
+          title="Total Expense"
+          amount={dashboard.total_expense}
+          icon={<FaArrowDown />}
+          color="text-red-400"
+        />
 
-          <h3 className="text-gray-400">
-            Total Balance
-          </h3>
+        <StatCard
+          title="Savings"
+          amount={dashboard.current_balance}
+          icon={<FaPiggyBank />}
+          color="text-yellow-400"
+        />
 
-          <h2 className="text-3xl font-bold mt-2">
-            ₹75,000
+      </div>
+
+      {/* Budget Progress */}
+
+      <div className="bg-slate-800 rounded-2xl p-6 mt-8">
+
+        <div className="flex justify-between mb-3">
+
+          <h2 className="text-xl font-semibold">
+            Monthly Budget Usage
           </h2>
+
+          <span className="text-cyan-400">
+            {dashboard.total_expense > 0
+              ? Math.min(
+                  100,
+                  Math.round(
+                    (dashboard.total_expense /
+                      (dashboard.total_income || 1)) *
+                      100
+                  )
+                )
+              : 0}
+            %
+          </span>
 
         </div>
 
-        <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
+        <div className="w-full bg-slate-700 rounded-full h-3">
 
-          <FaArrowUp className="text-green-400 text-4xl mb-4" />
-
-          <h3 className="text-gray-400">
-            Monthly Income
-          </h3>
-
-          <h2 className="text-3xl font-bold mt-2">
-            ₹45,000
-          </h2>
-
-        </div>
-
-        <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
-
-          <FaArrowDown className="text-red-400 text-4xl mb-4" />
-
-          <h3 className="text-gray-400">
-            Monthly Expenses
-          </h3>
-
-          <h2 className="text-3xl font-bold mt-2">
-            ₹18,500
-          </h2>
+          <div
+            className="bg-cyan-400 h-3 rounded-full"
+            style={{
+              width: `${
+                dashboard.total_expense > 0
+                  ? Math.min(
+                      100,
+                      (dashboard.total_expense /
+                        (dashboard.total_income || 1)) *
+                        100
+                    )
+                  : 0
+              }%`,
+            }}
+          ></div>
 
         </div>
 
-        <div className="bg-slate-800 rounded-2xl p-6 shadow-lg">
+      </div>
 
-          <FaPiggyBank className="text-yellow-400 text-4xl mb-4" />
+      {/* Analytics */}
 
-          <h3 className="text-gray-400">
-            Savings
-          </h3>
+      <div className="bg-slate-800 rounded-2xl p-6 mt-8">
 
-          <h2 className="text-3xl font-bold mt-2">
-            ₹26,500
+        <div className="flex items-center gap-3 mb-5">
+
+          <FaChartPie className="text-pink-400 text-2xl" />
+
+          <h2 className="text-2xl font-semibold">
+            Expense Analytics
           </h2>
 
         </div>
+<ExpenseChart data={categoryData} />
 
       </div>
 
       {/* Recent Transactions */}
 
-      <div className="mt-10 grid lg:grid-cols-2 gap-8">
-
-        <div className="bg-slate-800 rounded-2xl p-6">
-
-          <div className="flex items-center gap-3 mb-5">
-
-            <FaFileInvoiceDollar className="text-cyan-400 text-2xl" />
-
-            <h2 className="text-2xl font-semibold">
-              Recent Transactions
-            </h2>
-
-          </div>
-
-          <div className="space-y-4">
-
-            <div className="flex justify-between border-b border-slate-700 pb-3">
-              <span>🍔 Food</span>
-              <span className="text-red-400">
-                - ₹450
-              </span>
-            </div>
-
-            <div className="flex justify-between border-b border-slate-700 pb-3">
-              <span>💼 Salary</span>
-              <span className="text-green-400">
-                + ₹45,000
-              </span>
-            </div>
-
-            <div className="flex justify-between border-b border-slate-700 pb-3">
-              <span>🛒 Shopping</span>
-              <span className="text-red-400">
-                - ₹1,250
-              </span>
-            </div>
-
-            <div className="flex justify-between">
-              <span>🚗 Travel</span>
-              <span className="text-red-400">
-                - ₹800
-              </span>
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* Analytics */}
-
-        <div className="bg-slate-800 rounded-2xl p-6">
-
-          <div className="flex items-center gap-3 mb-5">
-
-            <FaChartPie className="text-pink-400 text-2xl" />
-
-            <h2 className="text-2xl font-semibold">
-              Analytics
-            </h2>
-
-          </div>
-
-          <div className="h-72 rounded-xl border-2 border-dashed border-slate-600 flex items-center justify-center text-gray-500 text-lg">
-
-            Charts will appear here
-
-          </div>
-
-        </div>
-
-      </div>
+      <RecentTransactions
+        income={dashboard.recent_income}
+        expenses={dashboard.recent_expenses}
+      />
 
       {/* Quick Actions */}
 
       <div className="mt-10">
 
-        <h2 className="text-2xl font-bold mb-6">
+        <h2 className="text-2xl font-bold mb-5">
+
           Quick Actions
+
         </h2>
 
         <div className="grid md:grid-cols-4 gap-5">
 
-          <button className="bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold rounded-xl py-4">
+          <button
+            onClick={() => navigate("/expenses")}
+            className="bg-cyan-500 hover:bg-cyan-400 rounded-xl py-4 font-semibold text-slate-900"
+          >
             Add Expense
           </button>
 
-          <button className="bg-green-500 hover:bg-green-400 text-slate-900 font-semibold rounded-xl py-4">
+          <button
+            onClick={() => navigate("/income")}
+            className="bg-green-500 hover:bg-green-400 rounded-xl py-4 font-semibold text-slate-900"
+          >
             Add Income
           </button>
 
-          <button className="bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-semibold rounded-xl py-4">
+          <button
+            onClick={() => navigate("/budget")}
+            className="bg-yellow-500 hover:bg-yellow-400 rounded-xl py-4 font-semibold text-slate-900"
+          >
             Create Budget
           </button>
 
-          <button className="bg-pink-500 hover:bg-pink-400 text-slate-900 font-semibold rounded-xl py-4">
+          <button
+            onClick={() => navigate("/reports")}
+            className="bg-pink-500 hover:bg-pink-400 rounded-xl py-4 font-semibold text-slate-900"
+          >
             View Reports
           </button>
 
@@ -200,5 +263,6 @@ export default function Dashboard() {
       </div>
 
     </div>
+    //  </DashboardLayout> 
   );
 }

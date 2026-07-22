@@ -21,29 +21,34 @@ export default function Login() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const res = await axios.post("http://127.0.0.1:8000/api/token/", {
-      username: formData.username,
-      password: formData.password,
-    });
+    try {
+      const res = await axios.post("http://127.0.0.1:8000/api/token/", {
+        username: formData.username,
+        password: formData.password,
+      });
 
-    localStorage.setItem("access", res.data.access);
-    localStorage.setItem("refresh", res.data.refresh);
+      console.log("Response:", res.data);
 
-    alert("Login successful");
+      localStorage.setItem("access", res.data.access);
+      localStorage.setItem("refresh", res.data.refresh);
 
-    navigate("/dashboard");
-  } catch (err) {
-    console.log(err.response?.data);
-    alert("Invalid credentials");
-  }
-};
+      console.log("Access:", localStorage.getItem("access"));
+      console.log("Refresh:", localStorage.getItem("refresh"));
+
+      alert("Login successful");
+
+      navigate("/dashboard");
+    } catch (err) {
+      console.log(err.response?.data);
+      alert("Invalid credentials");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-black flex items-center justify-center px-6">
       <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-slate-700 rounded-3xl shadow-2xl p-8">
-
         {/* Logo */}
         <div className="text-center mb-8">
           <FaWallet className="mx-auto text-5xl text-cyan-400 mb-4" />
@@ -58,7 +63,6 @@ export default function Login() {
         </div>
 
         <form className="space-y-5" onSubmit={handleSubmit}>
-
           {/* Username */}
           <div>
             <label className="text-gray-300 block mb-2">
@@ -109,7 +113,6 @@ export default function Login() {
           >
             Login
           </button>
-
         </form>
 
         <div className="my-6 flex items-center">
@@ -127,7 +130,6 @@ export default function Login() {
             Create Account
           </Link>
         </p>
-
       </div>
     </div>
   );

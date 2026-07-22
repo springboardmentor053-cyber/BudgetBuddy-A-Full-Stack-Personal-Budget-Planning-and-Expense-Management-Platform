@@ -1,10 +1,10 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import IncomeViewSet
-
-router = DefaultRouter()
-router.register(r'incomes', IncomeViewSet)
+from django.urls import path
+from .views import (
+    IncomeListCreateView,
+    IncomeRetrieveUpdateDestroyView
+)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', IncomeListCreateView.as_view(), name='income-list-create'),
+    path('<int:pk>/', IncomeRetrieveUpdateDestroyView.as_view(), name='income-detail'),
 ]

@@ -1,10 +1,34 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import ExpenseViewSet
+from django.urls import path
 
-router = DefaultRouter()
-router.register(r'expenses', ExpenseViewSet)
+from .views import (
+    ExpenseListCreateView,
+    ExpenseRetrieveUpdateDestroyView,
+    ExpenseCategorySummaryView,
+    TotalExpenseView,
+)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path(
+        "",
+        ExpenseListCreateView.as_view(),
+        name="expense-list-create",
+    ),
+
+    path(
+        "<int:pk>/",
+        ExpenseRetrieveUpdateDestroyView.as_view(),
+        name="expense-detail",
+    ),
+
+    path(
+        "category-summary/",
+        ExpenseCategorySummaryView.as_view(),
+        name="expense-category-summary",
+    ),
+
+    path(
+        "total/",
+        TotalExpenseView.as_view(),
+        name="total-expense",
+    ),
 ]
