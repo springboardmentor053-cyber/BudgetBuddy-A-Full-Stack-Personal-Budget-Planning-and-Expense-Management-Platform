@@ -1,5 +1,4 @@
 from django.contrib import admin
-from .models import Budget, SavingsGoal
+from .models import Budget
 
 admin.site.register(Budget)
-admin.site.register(SavingsGoal)
