@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'savings',
     'notifications',
     'reports',
-    'rest_framework', #installed in last task
+    'rest_framework', 
     'rest_framework_simplejwt',
     'corsheaders',
 ]

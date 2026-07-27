@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Register() {
   const [username, setUsername] = useState('');
@@ -27,7 +27,7 @@ function Register() {
 
       if (response.ok) {
         setSuccess(true);
-        // After 2 seconds, redirect them straight to the login page automatically
+        // Redirect automatically to login page after 2 seconds
         setTimeout(() => {
           navigate('/login');
         }, 2000);
@@ -40,42 +40,184 @@ function Register() {
   };
 
   return (
-    <div style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '400px', margin: '50px auto', backgroundColor: '#f8f9fa', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-      <h2 style={{ textAlign: 'center', marginBottom: '20px', color: '#333' }}>Create an Account</h2>
-      
-      {error && <p style={{ color: 'red', textAlign: 'center', fontWeight: 'bold' }}>{error}</p>}
-      {success && <p style={{ color: 'green', textAlign: 'center', fontWeight: 'bold' }}>Account created! Redirecting to login...</p>}
+    <div style={{
+      minHeight: '100vh',
+      width: '100vw',
+      background: '#1a252f', // Matching sidebar dark navy tone
+      color: '#ecf0f1',
+      fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: '20px',
+      boxSizing: 'border-box'
+    }}>
+      <div style={{
+        maxWidth: '400px',
+        width: '100%',
+        backgroundColor: '#243342', // Mid-tone slate card
+        borderRadius: '12px',
+        padding: '35px 30px',
+        boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
+        border: '1px solid rgba(255, 255, 255, 0.08)'
+      }}>
+        
+        {/* Title Block */}
+        <h2 style={{ 
+          textAlign: 'center', 
+          marginBottom: '8px', 
+          color: '#ffffff',
+          fontSize: '1.75rem',
+          fontWeight: '700'
+        }}>
+          Create an Account 
+        </h2>
+        
+        <p style={{ 
+          textAlign: 'center', 
+          color: '#bdc3c7', 
+          fontSize: '0.9rem', 
+          marginBottom: '24px' 
+        }}>
+          Join BudgetBuddy to start tracking your finances
+        </p>
 
-      <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        <input 
-          type="text" 
-          placeholder="Username" 
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-          style={{ padding: '12px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '16px' }} 
-        />
-        <input 
-          type="email" 
-          placeholder="Email Address" 
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={{ padding: '12px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '16px' }} 
-        />
-        <input 
-          type="password" 
-          placeholder="Password" 
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{ padding: '12px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '16px' }} 
-        />
-        <button type="submit" style={{ padding: '12px', background: '#28a745', color: 'white', border: 'none', borderRadius: '4px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}>Register</button>
-      </form>
-      <p style={{ marginTop: '20px', textAlign: 'center', color: '#666' }}>
-        Already have an account? <a href="/login" style={{ color: '#007bff', textDecoration: 'none', fontWeight: 'bold' }}>Login here</a>
-      </p>
+        {/* Error Alert */}
+        {error && (
+          <div style={{ 
+            background: 'rgba(231, 76, 60, 0.15)', 
+            border: '1px solid #e74c3c', 
+            color: '#e74c3c', 
+            padding: '10px', 
+            borderRadius: '6px', 
+            textAlign: 'left', 
+            fontSize: '0.88rem',
+            marginBottom: '20px',
+            fontWeight: '600'
+          }}>
+            {error}
+          </div>
+        )}
+
+        {/* Success Alert */}
+        {success && (
+          <div style={{ 
+            background: 'rgba(46, 204, 113, 0.15)', 
+            border: '1px solid #2ecc71', 
+            color: '#2ecc71', 
+            padding: '10px', 
+            borderRadius: '6px', 
+            textAlign: 'left', 
+            fontSize: '0.88rem',
+            marginBottom: '20px',
+            fontWeight: '600'
+          }}>
+            Account created! Redirecting to login...
+          </div>
+        )}
+
+        <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '16px', textAlign: 'left' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: '#bdc3c7', fontWeight: '600' }}>
+              Username
+            </label>
+            <input 
+              type="text" 
+              placeholder="e.g. john_doe" 
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              style={{ 
+                width: '100%', 
+                padding: '12px', 
+                borderRadius: '6px', 
+                border: '1px solid rgba(255, 255, 255, 0.15)', 
+                background: '#1a252f', 
+                color: 'white',
+                fontSize: '0.95rem',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }} 
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: '#bdc3c7', fontWeight: '600' }}>
+              Email Address
+            </label>
+            <input 
+              type="email" 
+              placeholder="e.g. john@example.com" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              style={{ 
+                width: '100%', 
+                padding: '12px', 
+                borderRadius: '6px', 
+                border: '1px solid rgba(255, 255, 255, 0.15)', 
+                background: '#1a252f', 
+                color: 'white',
+                fontSize: '0.95rem',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }} 
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: '#bdc3c7', fontWeight: '600' }}>
+              Password
+            </label>
+            <input 
+              type="password" 
+              placeholder="••••••••" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              style={{ 
+                width: '100%', 
+                padding: '12px', 
+                borderRadius: '6px', 
+                border: '1px solid rgba(255, 255, 255, 0.15)', 
+                background: '#1a252f', 
+                color: 'white',
+                fontSize: '0.95rem',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }} 
+            />
+          </div>
+
+          <button 
+            type="submit" 
+            style={{ 
+              padding: '12px', 
+              background: '#2ecc71', // App Success Green
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '6px', 
+              fontSize: '1rem', 
+              fontWeight: '700', 
+              cursor: 'pointer',
+              marginTop: '8px',
+              transition: 'background 0.2s ease',
+              boxShadow: '0 4px 10px rgba(46, 204, 113, 0.25)'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.background = '#27ae60'}
+            onMouseOut={(e) => e.currentTarget.style.background = '#2ecc71'}
+          >
+            Register
+          </button>
+        </form>
+
+        <p style={{ marginTop: '24px', textAlign: 'center', color: '#bdc3c7', fontSize: '0.9rem' }}>
+          Already have an account?{' '}
+          <Link to="/login" style={{ color: '#3498db', textDecoration: 'none', fontWeight: 'bold' }}>
+            Login here
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

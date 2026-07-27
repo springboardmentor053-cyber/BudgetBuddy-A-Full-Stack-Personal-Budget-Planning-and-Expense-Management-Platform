@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -23,9 +23,11 @@ function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        // Save the access token in localStorage so the browser remembers we are logged in
+        // Save access token & username for header greetings
         localStorage.setItem('token', data.access);
-        // Take us straight to the dashboard!
+        localStorage.setItem('username', data.username || username);
+        
+        // Navigate directly to dashboard
         navigate('/dashboard');
       } else {
         setError(data.detail || 'Invalid username or password');
@@ -36,33 +38,145 @@ function Login() {
   };
 
   return (
-    <div style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '400px', margin: '50px auto', backgroundColor: '#f8f9fa', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-      <h2 style={{ textAlign: 'center', marginBottom: '20px', color: '#333' }}>Login to BudgetBuddy</h2>
-      
-      {error && <p style={{ color: 'red', textAlign: 'center', fontWeight: 'bold' }}>{error}</p>}
-      
-      <form onSubmit={handleSignIn} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        <input 
-          type="text" 
-          placeholder="Username" 
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-          style={{ padding: '12px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '16px' }} 
-        />
-        <input 
-          type="password" 
-          placeholder="Password" 
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{ padding: '12px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '16px' }} 
-        />
-        <button type="submit" style={{ padding: '12px', background: '#007bff', color: 'white', border: 'none', borderRadius: '4px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}>Sign In</button>
-      </form>
-      <p style={{ marginTop: '20px', textAlign: 'center', color: '#666' }}>
-        Don't have an account? <a href="/register" style={{ color: '#007bff', textDecoration: 'none', fontWeight: 'bold' }}>Register here</a>
-      </p>
+    <div style={{
+      minHeight: '100vh',
+      width: '100vw',
+      background: '#1a252f', // Matching sidebar navy tone
+      color: '#ecf0f1',
+      fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: '20px',
+      boxSizing: 'border-box'
+    }}>
+      <div style={{
+        maxWidth: '400px',
+        width: '100%',
+        backgroundColor: '#243342', // Mid-tone slate card
+        borderRadius: '12px',
+        padding: '35px 30px',
+        boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
+        border: '1px solid rgba(255, 255, 255, 0.08)'
+      }}>
+        
+        {/* Title Block */}
+        <h2 style={{ 
+          textAlign: 'center', 
+          marginBottom: '8px', 
+          color: '#ffffff',
+          fontSize: '1.75rem',
+          fontWeight: '700'
+        }}>
+          Login to <span style={{ color: '#3498db' }}>BudgetBuddy</span> 
+        </h2>
+        
+        <p style={{ 
+          textAlign: 'center', 
+          color: '#bdc3c7', 
+          fontSize: '0.9rem', 
+          marginBottom: '24px' 
+        }}>
+          Enter your details below to log in
+        </p>
+
+        {/* Error Alert */}
+        {error && (
+          <div style={{ 
+            background: 'rgba(231, 76, 60, 0.15)', 
+            border: '1px solid #e74c3c', 
+            color: '#e74c3c', 
+            padding: '10px', 
+            borderRadius: '6px', 
+            textAlign: 'left', 
+            fontSize: '0.88rem',
+            marginBottom: '20px',
+            fontWeight: '600'
+          }}>
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSignIn} style={{ display: 'flex', flexDirection: 'column', gap: '16px', textAlign: 'left' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: '#bdc3c7', fontWeight: '600', textAlign: 'left' }}>
+              Username
+            </label>
+            <input 
+              type="text" 
+              placeholder="e.g. john_doe" 
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              style={{ 
+                width: '100%', 
+                padding: '12px', 
+                borderRadius: '6px', 
+                border: '1px solid rgba(255, 255, 255, 0.15)', 
+                background: '#1a252f', 
+                color: 'white',
+                fontSize: '0.95rem',
+                outline: 'none',
+                boxSizing: 'border-box',
+                textAlign: 'left'
+              }} 
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: '#bdc3c7', fontWeight: '600', textAlign: 'left' }}>
+              Password
+            </label>
+            <input 
+              type="password" 
+              placeholder="••••••••" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              style={{ 
+                width: '100%', 
+                padding: '12px', 
+                borderRadius: '6px', 
+                border: '1px solid rgba(255, 255, 255, 0.15)', 
+                background: '#1a252f', 
+                color: 'white',
+                fontSize: '0.95rem',
+                outline: 'none',
+                boxSizing: 'border-box',
+                textAlign: 'left'
+              }} 
+            />
+          </div>
+
+          <button 
+            type="submit" 
+            style={{ 
+              padding: '12px', 
+              background: '#3498db', 
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '6px', 
+              fontSize: '1rem', 
+              fontWeight: '700', 
+              cursor: 'pointer',
+              marginTop: '8px',
+              transition: 'background 0.2s ease',
+              boxShadow: '0 4px 10px rgba(52, 152, 219, 0.3)'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.background = '#2980b9'}
+            onMouseOut={(e) => e.currentTarget.style.background = '#3498db'}
+          >
+            Sign In
+          </button>
+        </form>
+
+        <p style={{ marginTop: '24px', textAlign: 'center', color: '#bdc3c7', fontSize: '0.9rem' }}>
+          Don't have an account?{' '}
+          <Link to="/register" style={{ color: '#3498db', textDecoration: 'none', fontWeight: 'bold' }}>
+            Register here
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

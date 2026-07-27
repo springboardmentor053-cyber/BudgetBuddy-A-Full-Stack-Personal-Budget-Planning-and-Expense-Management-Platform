@@ -58,6 +58,15 @@ class ExpenseDetailView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    # Added explicit patch routing to handle the partial frontend updates
+    def patch(self, request, pk):
+        expense = get_object_or_404(Expense, pk=pk, user=request.user)
+        serializer = ExpenseSerializer(expense, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def delete(self, request, pk):
         expense = get_object_or_404(Expense, pk=pk, user=request.user)
         expense.delete()

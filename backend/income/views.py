@@ -1,6 +1,4 @@
 from django.shortcuts import render
-
-# Create your views here.
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -16,7 +14,7 @@ class IncomeViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        # Changed .order_set to .order_by
+        # Fetches transaction elements sorted by date
         return Income.objects.filter(user=self.request.user).order_by('-income_date')
 
     def perform_create(self, serializer):
