@@ -1,0 +1,92 @@
+Complete Demo Flow (2–3 minutes)
+✅ Open VS Code.
+✅ Show the project folder structure.
+✅ Run the Django backend (python manage.py runserver).
+✅ Open http://127.0.0.1:8000/ and show BudgetBuddy Backend Running Successfully!
+✅ Open http://127.0.0.1:8000/api/users/register/ and show the Register API.
+✅ Open http://127.0.0.1:8000/api/token/ and mention it's the JWT login endpoint.
+✅ Run the React frontend (npm run dev).
+✅ Open http://localhost:5173/ and show the React/Vite page.
+✅ Show your GitHub repository with the project and screenshots.
+✅ Show README.md and requirements.txt.
+
+
+step 1::;
+Run the Backend:
+cd Backend
+
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\venv\Scripts\Activate
+
+Watching for file changes with StatReloader
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.
+
+show backend:
+http://127.0.0.1:8000/
+
+it shows:
+ BudgetBuddy Backend Running Successfully!
+
+step 2:::
+Show the Registration API:
+http://127.0.0.1:8000/api/users/register/
+
+it contains:
+username
+email
+password
+
+step 3::
+show JWT Authentication:
+http://127.0.0.1:8000/api/token/
+
+
+Run the Frontend:::
+open second termial:
+
+cd frontend
+
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+npm run dev
+
+it shows::
+VITE v8.1.3 ready in 562 ms
+
+➜ Local: http://localhost:5173/
+➜ Network: use --host to expose
+
+
+
+completed fronted and backend is running this way..
+
+
+
+
+Based on everything you've shown me over the last few days, yes—you have completed the Milestone 1 tasks.
+
+Here's a checklist:
+
+Milestone 1 Task	Status
+✅ Define project scope and user roles	Completed
+✅ Design database schema (Users, Profiles, Income, Expenses, Budgets, Savings Goals, Notifications, Reports)	Completed
+✅ Initialize Django REST backend	Completed
+✅ Configure SQLite/PostgreSQL	Completed (SQLite)
+✅ Implement JWT Authentication	Completed
+✅ Create React frontend skeleton	Completed
+✅ Django backend runs successfully	Completed
+✅ React frontend runs successfully	Completed
+✅ Registration API works	Completed
+✅ JWT token endpoint works	Completed
+✅ Push project to GitHub	Completed
+✅ Upload required screenshots	Complete
+
+
+
+complete milstone 1 work
+
+
+
+
+

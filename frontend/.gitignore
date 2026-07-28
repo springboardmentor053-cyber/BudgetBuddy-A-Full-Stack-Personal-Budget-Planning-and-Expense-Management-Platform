@@ -22,3 +22,22 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Python virtual environment
+venv/
+.venv/
+env/
+
+# Django local database
+*.sqlite3
+
+# Environment variables
+.env
+.env.*
+
+# Python logs
+*.log
