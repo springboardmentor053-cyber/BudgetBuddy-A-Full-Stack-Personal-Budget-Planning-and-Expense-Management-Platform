@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'income',
     'savings',
     'notifications_app',
-    "corsheaders",
+    'analytics_app',
+    'corsheaders',
     'dashboard',
 
 ]

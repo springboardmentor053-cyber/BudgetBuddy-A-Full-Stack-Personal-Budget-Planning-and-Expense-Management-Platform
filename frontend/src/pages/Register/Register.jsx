@@ -11,9 +11,7 @@ import {
 
 export default function Register() {
   const navigate = useNavigate();
-
   const [showPassword, setShowPassword] = useState(false);
-
   const [formData, setFormData] = useState({
     full_name: "",
     username: "",
@@ -39,17 +37,16 @@ export default function Register() {
 
     try {
       await axios.post("http://127.0.0.1:8000/api/users/register/", {
+        full_name: formData.full_name,
         username: formData.username,
         email: formData.email,
         password: formData.password,
       });
 
       alert("Registration Successful!");
-
       navigate("/login");
     } catch (error) {
-      console.log(error);
-
+      console.error(error);
       if (error.response) {
         alert(JSON.stringify(error.response.data));
       } else {
@@ -61,29 +58,20 @@ export default function Register() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-black flex items-center justify-center px-6 py-10">
       <div className="w-full max-w-lg bg-white/10 backdrop-blur-xl border border-slate-700 rounded-3xl shadow-2xl p-8">
-
+        {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white">
-            Create Account
-          </h1>
-
+          <h1 className="text-4xl font-bold text-white">Create Account</h1>
           <p className="text-gray-400 mt-2">
             Join BudgetBuddy and start managing your finances.
           </p>
         </div>
 
         <form className="space-y-5" onSubmit={handleSubmit}>
-
           {/* Full Name */}
-
           <div>
-            <label className="text-gray-300 mb-2 block">
-              Full Name
-            </label>
-
+            <label className="text-gray-300 mb-2 block">Full Name</label>
             <div className="relative">
               <FaUser className="absolute left-4 top-4 text-gray-400" />
-
               <input
                 type="text"
                 name="full_name"
@@ -97,15 +85,10 @@ export default function Register() {
           </div>
 
           {/* Username */}
-
           <div>
-            <label className="text-gray-300 mb-2 block">
-              Username
-            </label>
-
+            <label className="text-gray-300 mb-2 block">Username</label>
             <div className="relative">
               <FaUser className="absolute left-4 top-4 text-gray-400" />
-
               <input
                 type="text"
                 name="username"
@@ -119,15 +102,10 @@ export default function Register() {
           </div>
 
           {/* Email */}
-
           <div>
-            <label className="text-gray-300 mb-2 block">
-              Email
-            </label>
-
+            <label className="text-gray-300 mb-2 block">Email</label>
             <div className="relative">
               <FaEnvelope className="absolute left-4 top-4 text-gray-400" />
-
               <input
                 type="email"
                 name="email"
@@ -141,15 +119,10 @@ export default function Register() {
           </div>
 
           {/* Password */}
-
           <div>
-            <label className="text-gray-300 mb-2 block">
-              Password
-            </label>
-
+            <label className="text-gray-300 mb-2 block">Password</label>
             <div className="relative">
               <FaLock className="absolute left-4 top-4 text-gray-400" />
-
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
@@ -159,7 +132,6 @@ export default function Register() {
                 required
                 className="w-full pl-12 pr-12 p-3 rounded-xl bg-slate-800 border border-slate-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400"
               />
-
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
@@ -171,15 +143,10 @@ export default function Register() {
           </div>
 
           {/* Confirm Password */}
-
           <div>
-            <label className="text-gray-300 mb-2 block">
-              Confirm Password
-            </label>
-
+            <label className="text-gray-300 mb-2 block">Confirm Password</label>
             <div className="relative">
               <FaLock className="absolute left-4 top-4 text-gray-400" />
-
               <input
                 type={showPassword ? "text" : "password"}
                 name="confirm_password"
@@ -198,7 +165,6 @@ export default function Register() {
           >
             Register
           </button>
-
         </form>
 
         <div className="mt-8 text-center text-gray-400">
@@ -210,7 +176,6 @@ export default function Register() {
             Login
           </Link>
         </div>
-
       </div>
     </div>
   );

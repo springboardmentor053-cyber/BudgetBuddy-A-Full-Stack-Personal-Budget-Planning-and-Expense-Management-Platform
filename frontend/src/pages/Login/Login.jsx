@@ -5,9 +5,7 @@ import { FaEye, FaEyeSlash, FaWallet } from "react-icons/fa";
 
 export default function Login() {
   const navigate = useNavigate();
-
   const [showPassword, setShowPassword] = useState(false);
-
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -29,19 +27,13 @@ export default function Login() {
         password: formData.password,
       });
 
-      console.log("Response:", res.data);
-
       localStorage.setItem("access", res.data.access);
       localStorage.setItem("refresh", res.data.refresh);
 
-      console.log("Access:", localStorage.getItem("access"));
-      console.log("Refresh:", localStorage.getItem("refresh"));
-
       alert("Login successful");
-
       navigate("/dashboard");
     } catch (err) {
-      console.log(err.response?.data);
+      console.error(err.response?.data);
       alert("Invalid credentials");
     }
   };
@@ -52,23 +44,14 @@ export default function Login() {
         {/* Logo */}
         <div className="text-center mb-8">
           <FaWallet className="mx-auto text-5xl text-cyan-400 mb-4" />
-
-          <h1 className="text-4xl font-bold text-white">
-            BudgetBuddy
-          </h1>
-
-          <p className="text-gray-400 mt-2">
-            Welcome back! Login to continue.
-          </p>
+          <h1 className="text-4xl font-bold text-white">BudgetBuddy</h1>
+          <p className="text-gray-400 mt-2">Welcome back! Login to continue.</p>
         </div>
 
         <form className="space-y-5" onSubmit={handleSubmit}>
           {/* Username */}
           <div>
-            <label className="text-gray-300 block mb-2">
-              Username
-            </label>
-
+            <label className="text-gray-300 block mb-2">Username</label>
             <input
               type="text"
               name="username"
@@ -82,10 +65,7 @@ export default function Login() {
 
           {/* Password */}
           <div>
-            <label className="text-gray-300 block mb-2">
-              Password
-            </label>
-
+            <label className="text-gray-300 block mb-2">Password</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -96,7 +76,6 @@ export default function Login() {
                 required
                 className="w-full rounded-xl bg-slate-800 border border-slate-600 p-3 pr-12 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400"
               />
-
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}

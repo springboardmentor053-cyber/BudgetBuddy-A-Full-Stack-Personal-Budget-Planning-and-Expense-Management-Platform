@@ -85,33 +85,54 @@ const greeting =
 
   return (
       // <DashboardLayout>
-   <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-black text-white rounded-2xl p-8">
+  <div className="space-y-8">
 
       {/* Header */}
+<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
 
-      <div className="flex flex-col md:flex-row justify-between items-center mb-10">
+  <div>
 
-        <div>
+    <p className="text-slate-500 text-sm">
+      {new Date().toLocaleDateString("en-IN", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })}
+    </p>
 
-          <h1 className="text-4xl font-bold">
-            {greeting} 👋
-          </h1>
+    <h1 className="text-4xl font-bold text-white">
+      {greeting} 👋
+    </h1>
 
-          <p className="text-gray-400 mt-2">
-            Welcome back! Here's your financial overview.
-          </p>
+    <p className="text-slate-500 mt-2">
+      Here's an overview of your finances today.
+    </p>
 
-        </div>
+  </div>
 
-        <button
-          onClick={() => navigate("/expenses")}
-          className="mt-5 md:mt-0 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-semibold px-6 py-3 rounded-xl flex items-center gap-2"
-        >
-          <FaPlus />
-          Add Expense
-        </button>
+  <button
+    onClick={() => navigate("/expenses")}
+    className="
+      flex
+      items-center
+      gap-2
+      rounded-2xl
+      bg-blue-600
+      hover:bg-blue-700
+      px-6
+      py-3
+      text-white
+      font-semibold
+      shadow-md
+      transition
+    "
+  >
+    <FaPlus />
+    Add Expense
+  </button>
 
-      </div>
+</div>
 
       {/* Stats */}
 
@@ -145,72 +166,108 @@ const greeting =
         />
 
       </div>
+<div className="grid xl:grid-cols-3 gap-6 mt-8">
 
-      {/* Budget Progress */}
+  {/* Expense Analytics */}
+  <div className="xl:col-span-2 bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
 
-      <div className="bg-slate-800 rounded-2xl p-6 mt-8">
+    <div className="flex items-center gap-3 mb-5">
+      <FaChartPie className="text-pink-500 text-2xl" />
+       <h2 className="text-2xl font-bold text-slate-900">
+        Expense Analytics
+    </h2>
 
-        <div className="flex justify-between mb-3">
+    <p className="text-sm text-slate-500 mt-1">
+        Track your spending across different categories.
+    </p>
+    </div>
 
-          <h2 className="text-xl font-semibold">
-            Monthly Budget Usage
-          </h2>
+    <ExpenseChart data={categoryData} />
 
-          <span className="text-cyan-400">
-            {dashboard.total_expense > 0
-              ? Math.min(
-                  100,
-                  Math.round(
+  </div>
+
+
+{/* Monthly Budget */}
+<div className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm">
+
+  <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">
+    Monthly Budget
+  </h2>
+
+  <div className="space-y-5">
+
+    <div className="flex justify-between">
+      <span className="text-slate-500 dark:text-slate-400">
+        Total Budget
+      </span>
+      <span className="font-bold text-slate-900 dark:text-white">
+        ₹{Number(dashboard.total_budget).toLocaleString("en-IN")}
+      </span>
+    </div>
+
+    <div className="flex justify-between">
+      <span className="text-slate-500 dark:text-slate-400">
+        Spent
+      </span>
+      <span className="font-bold text-red-600">
+        ₹{Number(dashboard.total_expense).toLocaleString("en-IN")}
+      </span>
+    </div>
+
+    <div className="flex justify-between">
+      <span className="text-slate-500 dark:text-slate-400">
+        Remaining
+      </span>
+      <span className="font-bold text-green-600">
+        ₹{Number(dashboard.remaining_budget).toLocaleString("en-IN")}
+      </span>
+    </div>
+
+    <div className="pt-2">
+
+      <div className="flex justify-between text-sm mb-2">
+        <span className="text-slate-500 dark:text-slate-400">
+          Usage
+        </span>
+
+        <span className="font-semibold text-blue-600">
+          {dashboard.total_budget > 0
+            ? Math.round(
+                (dashboard.total_expense /
+                  dashboard.total_budget) *
+                  100
+              )
+            : 0}
+          %
+        </span>
+      </div>
+
+      <div className="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+
+        <div
+          className="h-3 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-700"
+          style={{
+            width: `${
+              dashboard.total_budget > 0
+                ? Math.min(
+                    100,
                     (dashboard.total_expense /
-                      (dashboard.total_income || 1)) *
+                      dashboard.total_budget) *
                       100
                   )
-                )
-              : 0}
-            %
-          </span>
-
-        </div>
-
-        <div className="w-full bg-slate-700 rounded-full h-3">
-
-          <div
-            className="bg-cyan-400 h-3 rounded-full"
-            style={{
-              width: `${
-                dashboard.total_expense > 0
-                  ? Math.min(
-                      100,
-                      (dashboard.total_expense /
-                        (dashboard.total_income || 1)) *
-                        100
-                    )
-                  : 0
-              }%`,
-            }}
-          ></div>
-
-        </div>
+                : 0
+            }%`,
+          }}
+        />
 
       </div>
 
-      {/* Analytics */}
+    </div>
 
-      <div className="bg-slate-800 rounded-2xl p-6 mt-8">
+  </div>
 
-        <div className="flex items-center gap-3 mb-5">
-
-          <FaChartPie className="text-pink-400 text-2xl" />
-
-          <h2 className="text-2xl font-semibold">
-            Expense Analytics
-          </h2>
-
-        </div>
-<ExpenseChart data={categoryData} />
-
-      </div>
-
+</div>
+</div>
       {/* Recent Transactions */}
 
       <RecentTransactions
@@ -228,38 +285,69 @@ const greeting =
 
         </h2>
 
-        <div className="grid md:grid-cols-4 gap-5">
+        <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-5">
 
-          <button
-            onClick={() => navigate("/expenses")}
-            className="bg-cyan-500 hover:bg-cyan-400 rounded-xl py-4 font-semibold text-slate-900"
-          >
-            Add Expense
-          </button>
+  <button
+    onClick={() => navigate("/expenses")}
+    className="bg-white border border-slate-200 rounded-3xl p-6 text-left shadow-sm hover:shadow-lg transition"
+  >
+    <FaPlus className="text-3xl text-red-500 mb-4" />
 
-          <button
-            onClick={() => navigate("/income")}
-            className="bg-green-500 hover:bg-green-400 rounded-xl py-4 font-semibold text-slate-900"
-          >
-            Add Income
-          </button>
+    <h3 className="font-bold text-slate-900">
+      Add Expense
+    </h3>
 
-          <button
-            onClick={() => navigate("/budget")}
-            className="bg-yellow-500 hover:bg-yellow-400 rounded-xl py-4 font-semibold text-slate-900"
-          >
-            Create Budget
-          </button>
+    <p className="text-sm text-slate-500 mt-2">
+      Record a new expense.
+    </p>
+  </button>
 
-          <button
-            onClick={() => navigate("/reports")}
-            className="bg-pink-500 hover:bg-pink-400 rounded-xl py-4 font-semibold text-slate-900"
-          >
-            View Reports
-          </button>
+  <button
+    onClick={() => navigate("/income")}
+    className="bg-white border border-slate-200 rounded-3xl p-6 text-left shadow-sm hover:shadow-lg transition"
+  >
+    <FaArrowUp className="text-3xl text-green-500 mb-4" />
 
-        </div>
+    <h3 className="font-bold text-slate-900">
+      Add Income
+    </h3>
 
+    <p className="text-sm text-slate-500 mt-2">
+      Add a new income source.
+    </p>
+  </button>
+
+  <button
+    onClick={() => navigate("/budget")}
+    className="bg-white border border-slate-200 rounded-3xl p-6 text-left shadow-sm hover:shadow-lg transition"
+  >
+    <FaWallet className="text-3xl text-blue-500 mb-4" />
+
+    <h3 className="font-bold text-slate-900">
+      Create Budget
+    </h3>
+
+    <p className="text-sm text-slate-500 mt-2">
+      Set monthly spending limits.
+    </p>
+  </button>
+
+  <button
+    onClick={() => navigate("/reports")}
+    className="bg-white border border-slate-200 rounded-3xl p-6 text-left shadow-sm hover:shadow-lg transition"
+  >
+    <FaChartPie className="text-3xl text-purple-500 mb-4" />
+
+    <h3 className="font-bold text-slate-900">
+      View Reports
+    </h3>
+
+    <p className="text-sm text-slate-500 mt-2">
+      Analyze your financial reports.
+    </p>
+  </button>
+
+</div>
       </div>
 
     </div>

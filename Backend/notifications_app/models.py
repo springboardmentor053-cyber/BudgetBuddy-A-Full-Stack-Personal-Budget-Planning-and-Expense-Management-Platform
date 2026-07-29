@@ -5,10 +5,10 @@ from django.contrib.auth.models import User
 class Notification(models.Model):
 
     NOTIFICATION_TYPES = [
-        ('Budget Alert', 'Budget Alert'),
-        ('Savings Reminder', 'Savings Reminder'),
-        ('Goal Milestone', 'Goal Milestone'),
-        ('Monthly Report', 'Monthly Report'),
+        ("BUDGET_ALERT", "Budget Alert"),
+        ("SAVINGS_REMINDER", "Savings Reminder"),
+        ("GOAL_MILESTONE", "Goal Milestone"),
+        ("MONTHLY_REPORT", "Monthly Report"),
     ]
 
     user = models.ForeignKey(
@@ -23,7 +23,8 @@ class Notification(models.Model):
 
     notification_type = models.CharField(
         max_length=30,
-        choices=NOTIFICATION_TYPES
+        choices=NOTIFICATION_TYPES,
+        default="BUDGET_ALERT"
     )
 
     is_read = models.BooleanField(default=False)

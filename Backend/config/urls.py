@@ -13,8 +13,10 @@ urlpatterns = [
     path("api/expenses/", include("expenses.urls")),
     path('api/dashboard/', include('dashboard.urls')),
     path("api/budgets/", include("budgets.urls")),
-    # path("api/savings/", include("savings.urls")),
-    # path("api/reports/", include("reports.urls")),
+    path("api/savings/", include("savings.urls")),
+    path("api/notifications/", include("notifications_app.urls")),
+    path("api/analytics/", include("analytics_app.urls")),
+    path("api/reports/", include("reports.urls")),
     # path("api/profile/", include("profile.urls")),
 
 

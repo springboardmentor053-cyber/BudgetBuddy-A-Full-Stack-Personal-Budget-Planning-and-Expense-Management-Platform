@@ -1,0 +1,13 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django
+*.sqlite3
+*.log
+.env
+
+# Virtual Environment
+.venv/
+venv/

@@ -17,125 +17,97 @@ import Settings from "./pages/Settings/Settings";
 
 import DashboardLayout from "./layout/DashboardLayout";
 
+// Import SettingsProvider
+import { SettingsProvider } from "./context/SettingsContext";
 
 function App() {
-
   return (
+    <SettingsProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Public Pages */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-    <BrowserRouter>
+          {/* Dashboard Pages With Sidebar */}
+          <Route element={<DashboardLayout />}>
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
 
-      <Routes>
+            <Route
+              path="/expenses"
+              element={
+                <ProtectedRoute>
+                  <Expenses />
+                </ProtectedRoute>
+              }
+            />
 
-        {/* Public Pages */}
+            <Route
+              path="/income"
+              element={
+                <ProtectedRoute>
+                  <Income />
+                </ProtectedRoute>
+              }
+            />
 
-        <Route 
-          path="/" 
-          element={<Home />} 
-        />
+            <Route
+              path="/budget"
+              element={
+                <ProtectedRoute>
+                  <Budget />
+                </ProtectedRoute>
+              }
+            />
 
-        <Route 
-          path="/login" 
-          element={<Login />} 
-        />
+            <Route
+              path="/savings"
+              element={
+                <ProtectedRoute>
+                  <Savings />
+                </ProtectedRoute>
+              }
+            />
 
-        <Route 
-          path="/register" 
-          element={<Register />} 
-        />
+            <Route
+              path="/reports"
+              element={
+                <ProtectedRoute>
+                  <Reports />
+                </ProtectedRoute>
+              }
+            />
 
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
 
-        {/* Dashboard Pages With Sidebar */}
-
-        <Route element={<DashboardLayout />}>
-
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-
-
-          <Route
-            path="/expenses"
-            element={
-              <ProtectedRoute>
-                <Expenses />
-              </ProtectedRoute>
-            }
-          />
-
-
-          <Route
-            path="/income"
-            element={
-              <ProtectedRoute>
-                <Income />
-              </ProtectedRoute>
-            }
-          />
-
-
-          <Route
-            path="/budget"
-            element={
-              <ProtectedRoute>
-                <Budget />
-              </ProtectedRoute>
-            }
-          />
-
-
-          <Route
-            path="/savings"
-            element={
-              <ProtectedRoute>
-                <Savings />
-              </ProtectedRoute>
-            }
-          />
-
-
-          <Route
-            path="/reports"
-            element={
-              <ProtectedRoute>
-                <Reports />
-              </ProtectedRoute>
-            }
-          />
-
-
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
-
-
-          <Route
-            path="/settings"
-            element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            }
-          />
-
-        </Route>
-
-
-      </Routes>
-
-    </BrowserRouter>
-
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </SettingsProvider>
   );
-
 }
 
 export default App;
