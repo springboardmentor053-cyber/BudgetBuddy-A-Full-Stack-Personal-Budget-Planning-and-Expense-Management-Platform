@@ -1,3 +1,4 @@
+from notifications.models import Notification
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -19,7 +20,24 @@ class BudgetViewSet(viewsets.ModelViewSet):
         return context
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        budget = serializer.save(user=self.request.user)
+        Notification.objects.create(
+            user=self.request.user,
+            title='Budget Created',
+            message=f'Your budget for "{budget.category}" ({budget.month}/{budget.year}) has been created.',
+            notification_type='budget_alert',
+            priority='medium'
+        )
+
+    def perform_update(self, serializer):
+        budget = serializer.save()
+        Notification.objects.create(
+            user=self.request.user,
+            title='Budget Updated',
+            message=f'Your budget for "{budget.category}" ({budget.month}/{budget.year}) has been updated.',
+            notification_type='budget_alert',
+            priority='medium'
+        )
 
 
 class SavingsGoalViewSet(viewsets.ModelViewSet):
