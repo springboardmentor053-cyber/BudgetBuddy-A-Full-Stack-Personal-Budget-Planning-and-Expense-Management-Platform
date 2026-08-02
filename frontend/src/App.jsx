@@ -7,6 +7,8 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import IncomeDashboard from './pages/IncomeDashboard';
 import ExpenseDashboard from './pages/ExpenseDashboard';
+import BudgetTracker from './pages/BudgetTracker';
+import NotificationsPage from './pages/NotificationsPage';
 
 // Public Route helper: redirects to dashboard if already authenticated
 function PublicRoute({ children }) {
@@ -82,6 +84,24 @@ export default function App() {
                 <AppLayout>
                   <ExpenseDashboard />
                 </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/budgets"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <BudgetTracker />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <NotificationsPage />
               </ProtectedRoute>
             }
           />

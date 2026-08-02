@@ -1,13 +1,35 @@
 import { NavLink, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import api from '../api/axios';
 
 const navItems = [
   { label: 'Dashboard Overview', path: '/dashboard', color: 'bg-sky-400' },
   { label: 'Income Tracker', path: '/income', color: 'bg-emerald-400' },
   { label: 'Expense Tracker', path: '/expenses', color: 'bg-rose-400' },
+  { label: 'Budget Tracker', path: '/budgets', color: 'bg-emerald-400' },
+  { label: 'Notifications', path: '/notifications', color: 'bg-cyan-400' },
 ];
 
-export default function Sidebar({ onLogout }) {
+export default function Sidebar({ onLogout, notifications: sharedNotifications }) {
   const navigate = useNavigate();
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    const loadUnreadCount = async () => {
+      try {
+        const response = await api.get('/api/notifications/');
+        setNotifications(Array.isArray(response.data) ? response.data : []);
+      } catch (error) {
+        console.error('Unable to load notification count', error);
+      }
+    };
+
+    if (!sharedNotifications) {
+      void loadUnreadCount();
+    }
+  }, [sharedNotifications]);
+
+  const unreadCount = (sharedNotifications ?? notifications).filter((notification) => !notification.is_read).length;
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');
@@ -21,7 +43,7 @@ export default function Sidebar({ onLogout }) {
   };
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-slate-950 flex flex-col border-r border-slate-900 z-30">
+    <aside className="fixed left-0 top-0 z-30 flex h-screen w-64 flex-col justify-between border-r border-slate-900 bg-slate-950">
       {/* Brand logo section */}
       <div className="p-6 border-b border-slate-900">
         <div className="flex items-center gap-3">
@@ -36,7 +58,7 @@ export default function Sidebar({ onLogout }) {
       </div>
 
       {/* Navigation items */}
-      <nav className="flex-1 px-4 py-6 space-y-1">
+      <nav className="flex-1 space-y-1 px-4 py-6">
         {navItems.map((item) => (
           <NavLink
             key={item.path}
@@ -57,13 +79,18 @@ export default function Sidebar({ onLogout }) {
                   } transition-all duration-200`}
                 />
                 <span>{item.label}</span>
+                {item.path === '/notifications' && unreadCount > 0 && (
+                  <span className="ml-auto rounded-full bg-[#00f5a0] px-2 py-0.5 text-[11px] font-extrabold text-black">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
               </>
             )}
           </NavLink>
         ))}
       </nav>
 
-      {/* Logout / profile section (margins fixed to prevent overlapping) */}
+      {/* Profile and logout section */}
       <div className="p-4 border-t border-slate-900 space-y-4">
         {/* User Card */}
         <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/40 border border-slate-900">

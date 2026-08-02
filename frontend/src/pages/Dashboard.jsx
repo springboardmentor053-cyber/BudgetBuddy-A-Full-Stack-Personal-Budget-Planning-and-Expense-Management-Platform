@@ -1,27 +1,25 @@
-import { useEffect, useState, useMemo } from 'react';
-import { incomeService } from '../services/incomeService';
-import { expenseService } from '../services/expenseService';
+import { useEffect, useState } from 'react';
+import api from '../api/axios';
 
 export default function Dashboard() {
-  const [incomes, setIncomes] = useState([]);
-  const [expenses, setExpenses] = useState([]);
+  const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
-  // Timeframe filter state: 'ALL_TIME', 'THIS_MONTH', 'PAST_30_DAYS'
-  const [timeframe, setTimeframe] = useState('ALL_TIME');
+  const [timeframe, setTimeframe] = useState('all');
   // Category filter state
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState('All Categories');
 
-  const loadData = async () => {
+  const loadData = async (activeTimeframe, activeCategory) => {
     try {
       setLoading(true);
-      const [incomeData, expenseData] = await Promise.all([
-        incomeService.getIncomes(),
-        expenseService.getExpenses()
-      ]);
-      setIncomes(Array.isArray(incomeData) ? incomeData : []);
-      setExpenses(Array.isArray(expenseData) ? expenseData : []);
+      const dashboardResponse = await api.get('/api/auth/dashboard/', {
+        params: {
+          timeframe: activeTimeframe,
+          category: activeCategory,
+        },
+      });
+      setDashboardData(dashboardResponse.data);
       setError('');
     } catch (err) {
       setError('Unable to load your financial dashboard overview.');
@@ -31,53 +29,14 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    void loadData();
-  }, []);
+    void loadData(timeframe, selectedCategory);
+  }, [timeframe, selectedCategory]);
 
-  // Compute filtered arrays in real-time
-  const summaryData = useMemo(() => {
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const past30DaysLimit = new Date();
-    past30DaysLimit.setDate(now.getDate() - 30);
-
-    const applyFilters = (items, type) => {
-      return items.filter(item => {
-        // Date check
-        const dateStr = type === 'income' ? (item.income_date || item.date) : (item.expense_date || item.date);
-        if (!dateStr) return true;
-        const itemDate = new Date(dateStr);
-
-        let matchesTimeframe = true;
-        if (timeframe === 'THIS_MONTH') {
-          matchesTimeframe = itemDate >= startOfMonth;
-        } else if (timeframe === 'PAST_30_DAYS') {
-          matchesTimeframe = itemDate >= past30DaysLimit;
-        }
-
-        // Category check
-        let matchesCategory = true;
-        if (selectedCategory !== 'All') {
-          const cat = (item.category || '').toUpperCase();
-          matchesCategory = cat === selectedCategory.toUpperCase();
-        }
-
-        return matchesTimeframe && matchesCategory;
-      });
-    };
-
-    const finalIncomes = applyFilters(incomes, 'income');
-    const finalExpenses = applyFilters(expenses, 'expense');
-
-    const totalIncome = finalIncomes.reduce((sum, item) => sum + Number(item.amount || 0), 0);
-    const totalExpense = finalExpenses.reduce((sum, item) => sum + Number(item.amount || 0), 0);
-
-    return {
-      total_income: totalIncome,
-      total_expense: totalExpense,
-      balance: totalIncome - totalExpense
-    };
-  }, [incomes, expenses, timeframe, selectedCategory]);
+  const summaryData = {
+    total_income: Number(dashboardData?.total_income || 0),
+    total_expense: Number(dashboardData?.total_expense || 0),
+    balance: Number(dashboardData?.current_balance || 0),
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-8 ml-64">
@@ -99,17 +58,22 @@ export default function Dashboard() {
         <div className="flex items-center gap-3">
           <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Timeframe</span>
           <div className="inline-flex rounded-lg p-1 bg-slate-950 border border-slate-800">
-            {['ALL_TIME', 'THIS_MONTH', 'PAST_30_DAYS'].map((t) => (
+            {[
+              { label: 'ALL TIME', value: 'all' },
+              { label: 'THIS MONTH', value: 'this_month' },
+              { label: 'PAST 30 DAYS', value: 'past_30_days' },
+            ].map(({ label, value }) => (
               <button
-                key={t}
-                onClick={() => setTimeframe(t)}
+                key={value}
+                onClick={() => setTimeframe(value)}
+                aria-pressed={timeframe === value}
                 className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
-                  timeframe === t 
+                  timeframe === value
                     ? 'bg-slate-800 text-white shadow-md' 
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
-                {t.replace('_', ' ')}
+                {label}
               </button>
             ))}
           </div>
@@ -122,11 +86,18 @@ export default function Dashboard() {
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="bg-slate-950 border border-slate-800 text-slate-200 text-xs font-medium rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500/40 focus:outline-none transition-all cursor-pointer"
           >
-            <option value="All">All Categories</option>
+            <option value="All Categories">All Categories</option>
             <option value="SALARY">Salary</option>
             <option value="POCKET_MONEY">Pocket Money</option>
+            <option value="SCHOLARSHIP">Scholarship</option>
             <option value="FREELANCING">Freelancing</option>
             <option value="BUSINESS">Business</option>
+            <option value="FOOD">Food</option>
+            <option value="TRAVEL">Travel</option>
+            <option value="HEALTHCARE">Healthcare</option>
+            <option value="ENTERTAINMENT">Entertainment</option>
+            <option value="EDUCATION">Education</option>
+            <option value="BILLS">Bills</option>
             <option value="OTHER">Other</option>
           </select>
         </div>
@@ -168,6 +139,31 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Current-month budget metrics from the transaction dashboard API */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="bg-slate-900 border border-slate-800/80 rounded-xl p-6 shadow-md hover:border-slate-700/50 transition-all">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Budget Ceiling</span>
+          <div className="text-3xl font-black text-white tracking-tight mt-4">
+            ₹{Number(dashboardData?.total_budget || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </div>
+          <p className="text-xs text-slate-500 mt-2">All budget limits set for this month</p>
+        </div>
+
+        <div className="bg-slate-900 border border-slate-800/80 rounded-xl p-6 shadow-md hover:border-slate-700/50 transition-all">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Remaining Budget</span>
+          <div className="text-3xl font-black text-emerald-400 tracking-tight mt-4">
+            {timeframe === 'this_month'
+              ? `₹${Number(dashboardData?.remaining_budget || 0).toFixed(2)}`
+              : 'N/A'}
+          </div>
+          <p className="text-xs text-slate-500 mt-2">
+            {timeframe === 'this_month'
+              ? 'Available after this month’s expenses'
+              : "Switch to 'THIS MONTH' for active budget tracking"}
+          </p>
+        </div>
+      </div>
+
       {/* Secondary Informational Workspace Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1 bg-slate-900 border border-slate-800/80 rounded-xl p-6 flex flex-col justify-between">
@@ -179,16 +175,23 @@ export default function Dashboard() {
         </div>
 
         <div className="lg:col-span-2 bg-slate-900 border border-slate-800/80 rounded-xl p-6">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Action Center</h3>
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Recent Transactions</h3>
           <div className="space-y-3">
-            <div className="p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-400 flex items-center gap-3">
-              <span className="text-base">💡</span>
-              <span>Track monthly wages, student allowances, and freelance earnings under the <strong className="text-slate-200">Income Tracker</strong> tab.</span>
-            </div>
-            <div className="p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs text-slate-400 flex items-center gap-3">
-              <span className="text-base">💸</span>
-              <span>Log daily transport expenses, educational materials, and leisure spending under the <strong className="text-slate-200">Expense Tracker</strong> tab.</span>
-            </div>
+            {dashboardData?.recent_transactions?.length ? dashboardData.recent_transactions.map((transaction) => (
+              <div key={`${transaction.type}-${transaction.id}`} className="p-3 bg-slate-950 border border-slate-800 rounded-lg flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-slate-100 truncate">{transaction.title}</p>
+                  <p className="text-xs text-slate-500 mt-1">{transaction.category} · {transaction.type}</p>
+                </div>
+                <span className={`text-sm font-bold whitespace-nowrap ${transaction.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  {transaction.type === 'income' ? '+' : '-'}₹{Number(transaction.amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+              </div>
+            )) : <>
+              <div className="p-4 bg-slate-950 border border-slate-800 rounded-lg text-sm text-slate-500 text-center">
+                No recent transactions yet.
+              </div>
+            </>}
           </div>
         </div>
       </div>

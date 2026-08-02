@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'users',
     'income',
+    'budgets',
+    'savings',
+    'notifications',
 ]
 
 MIDDLEWARE = [
@@ -152,4 +155,3 @@ SIMPLE_JWT = {
     'SIGNING_KEY': SECRET_KEY,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
-
