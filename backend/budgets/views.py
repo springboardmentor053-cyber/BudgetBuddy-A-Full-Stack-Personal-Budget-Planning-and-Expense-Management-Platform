@@ -8,6 +8,43 @@ from .models import Budget
 from .serializers import BudgetSerializer
 from expenses.models import Expense
 from income.models import Income
+from .services import check_and_trigger_budget_alert
+
+
+# Task 5 – Create Budget Alert API (Protected with JWT Authentication)
+class BudgetAlertStatusView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        budgets = Budget.objects.filter(user=user)
+        response_data = []
+
+        for budget in budgets:
+            # Aggregate expenses for the matching category, month, and year
+            total_expense = Expense.objects.filter(
+                user=user,
+                category=budget.category,
+                created_at__month=budget.month,
+                created_at__year=budget.year
+            ).aggregate(total=Sum('amount'))['total'] or 0.00
+
+            # Calculate utilization and trigger warning/alerts
+            utilization, alert_level, alert_message = check_and_trigger_budget_alert(
+                budget, total_expense
+            )
+
+            response_data.append({
+                "budget_category": budget.get_category_display(),
+                "budget_amount": float(budget.budget_amount),
+                "total_expense": float(total_expense),
+                "budget_utilization_percentage": float(utilization),
+                "alert_level": alert_level,
+                "alert_message": alert_message
+            })
+
+        return Response(response_data, status=status.HTTP_200_OK)
+
 
 # Handles GET (View Budgets) and POST (Create Budget)
 class BudgetListCreateView(generics.ListCreateAPIView):
@@ -19,7 +56,18 @@ class BudgetListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         try:
-            serializer.save(user=self.request.user)
+            budget = serializer.save(user=self.request.user)
+            
+            # Check spending immediately after a new budget is created
+            total_expense = Expense.objects.filter(
+                user=self.request.user,
+                category=budget.category,
+                created_at__month=budget.month,
+                created_at__year=budget.year
+            ).aggregate(total=Sum('amount'))['total'] or 0.00
+            
+            check_and_trigger_budget_alert(budget, total_expense)
+
         except IntegrityError:
             from rest_framework.exceptions import ValidationError
             raise ValidationError({
@@ -37,6 +85,21 @@ class BudgetDetailView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Budget.objects.filter(user=self.request.user)
 
+    def perform_update(self, serializer):
+        # Save updated budget parameters
+        budget = serializer.save()
+
+        # Recalculate spending against the updated budget limit/category
+        total_expense = Expense.objects.filter(
+            user=self.request.user,
+            category=budget.category,
+            created_at__month=budget.month,
+            created_at__year=budget.year
+        ).aggregate(total=Sum('amount'))['total'] or 0.00
+
+        # Check and trigger threshold alerts if updated amount changes utilization
+        check_and_trigger_budget_alert(budget, total_expense)
+
 
 class BudgetSummaryView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -46,7 +109,6 @@ class BudgetSummaryView(APIView):
         budget = get_object_or_404(Budget, pk=pk, user=request.user)
 
         # 2. Filter expenses matching the budget's category, month, and year
-        # (Fix: Changed 'expense_date' lookup to 'created_at')
         expenses_in_period = Expense.objects.filter(
             user=request.user,
             category=budget.category,
@@ -58,6 +120,9 @@ class BudgetSummaryView(APIView):
         total_expense = expenses_in_period.aggregate(total=Sum('amount'))['total'] or 0.00
         total_expense = float(total_expense)
         budget_amount = float(budget.budget_amount)
+
+        # Evaluate and trigger alerts if checked via summary
+        check_and_trigger_budget_alert(budget, total_expense)
 
         # 4. Calculate formulas
         remaining_budget = budget_amount - total_expense
@@ -99,18 +164,21 @@ class TransactionDashboardView(APIView):
         total_budget = Budget.objects.filter(user=user).aggregate(total=Sum('budget_amount'))['total'] or 0.00
         total_budget = float(total_budget)
 
-        # 5. Calculate global remaining budget (Total Budgets defined - Matching Month/Year Expenses)
+        # 5. Calculate global remaining budget
         all_budgets = Budget.objects.filter(user=user)
         total_spent_against_budgets = 0.00
 
         for b in all_budgets:
-            # Fix: Changed 'expense_date' to 'created_at'
             spent = Expense.objects.filter(
                 user=user,
                 category=b.category,
                 created_at__month=b.month,
                 created_at__year=b.year
             ).aggregate(total=Sum('amount'))['total'] or 0.00
+            
+            # Auto-check alerts on dashboard load
+            check_and_trigger_budget_alert(b, spent)
+            
             total_spent_against_budgets += float(spent)
 
         remaining_budget = total_budget - total_spent_against_budgets
@@ -118,7 +186,6 @@ class TransactionDashboardView(APIView):
             remaining_budget = 0.00
 
         # 6. Recent Combined Transactions (Top 5)
-        # Note: Assuming income uses 'income_date' and expense uses 'created_at'
         recent_incomes = Income.objects.filter(user=user).order_by('-income_date')[:5]
         recent_expenses = Expense.objects.filter(user=user).order_by('-created_at')[:5]
 
@@ -135,7 +202,7 @@ class TransactionDashboardView(APIView):
                 "type": "expense",
                 "title": e.title,
                 "amount": float(e.amount),
-                "date": str(e.created_at.date())  # Convert DateTimeField to date string
+                "date": str(e.created_at.date())
             })
 
         # Sort combined list by date descending and slice top 5

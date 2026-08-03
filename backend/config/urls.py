@@ -1,7 +1,7 @@
 # C:\Users\Anagha\OneDrive\Desktop\BudgetBuddy\backend\urls.py
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include  # Added 'include' here
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from users.views import RegisterView, LogoutView, ProtectedTestView
 from expenses.views import ExpenseListCreateView, ExpenseDetailView, ExpenseTotalView 
@@ -71,4 +71,11 @@ urlpatterns = [
     # ==================== UNIFIED DASHBOARD ENDPOINT ====================
     # Global Transaction Dashboard (Income, Expense, Balance, Budgets, and Recent Transactions)
     path('api/summary/', TransactionDashboardView.as_view(), name='transaction_dashboard'),
+
+    # ==================== SAVINGS GOALS ENDPOINTS ====================
+    path('api/savings/', include('savings.urls')),
+
+# ==================== NOTIFICATIONS ENDPOINTS ====================
+    path('api/notifications/', include('notifications.urls')),
+    path('api/users/', include('users.urls'))
 ]

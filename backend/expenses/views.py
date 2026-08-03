@@ -6,6 +6,48 @@ from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from .models import Expense
 from .serializers import ExpenseSerializer
+from budgets.models import Budget
+from budgets.services import check_and_trigger_budget_alert
+
+# Import the SendGrid email function you created in notifications/utils.py
+from notifications.utils import send_budget_alert_email
+
+
+# Helper function to recalculate budget utilization & trigger alerts
+def sync_budget_alert(user, category, expense_date):
+    if not category or not expense_date:
+        return
+
+    # Find the corresponding budget for category, month, and year
+    budget = Budget.objects.filter(
+        user=user,
+        category=category,
+        month=expense_date.month,
+        year=expense_date.year
+    ).first()
+
+    if budget:
+        # Sum total expenses matching user, category, month, and year
+        total_expense = Expense.objects.filter(
+            user=user,
+            category=category,
+            created_at__month=budget.month,
+            created_at__year=budget.year
+        ).aggregate(total=Sum('amount'))['total'] or 0.00
+
+        # 1. Evaluate threshold logic and create Notification in DB
+        check_and_trigger_budget_alert(budget, total_expense)
+
+        # 2. If the user spent more than their budget limit, send SendGrid email!
+        if total_expense > budget.budget_amount:
+            send_budget_alert_email(
+                user_email=user.email,
+                username=user.username,
+                category_name=category,
+                current_spent=float(total_expense),
+                budget_limit=float(budget.budget_amount)
+            )
+
 
 class ExpenseListCreateView(APIView):
     permission_classes = [IsAuthenticated]
@@ -36,41 +78,72 @@ class ExpenseListCreateView(APIView):
         serializer = ExpenseSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # Handles Task 1 (Create Expense)
+    # Handles Task 1 (Create Expense) + Triggers Budget Alert Check & SendGrid Email
     def post(self, request):
         serializer = ExpenseSerializer(data=request.data)
         if serializer.is_valid():
-            # Automatically save the expense to the current logged-in user
-            serializer.save(user=request.user)
+            expense = serializer.save(user=request.user)
+            
+            # Recalculate budget utilization and check threshold
+            expense_date = getattr(expense, 'created_at', None) or getattr(expense, 'date', None)
+            sync_budget_alert(request.user, expense.category, expense_date)
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# Handles Task 1 (Update Expense & Delete Expense)
+# Handles Task 1 (Update Expense & Delete Expense) + Triggers Budget Alert Check
 class ExpenseDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
     def put(self, request, pk):
         expense = get_object_or_404(Expense, pk=pk, user=request.user)
+        old_category = expense.category
+        old_date = getattr(expense, 'created_at', None) or getattr(expense, 'date', None)
+
         serializer = ExpenseSerializer(expense, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save()
+            updated_expense = serializer.save()
+
+            # Recalculate budget for the updated category/date
+            new_date = getattr(updated_expense, 'created_at', None) or getattr(updated_expense, 'date', None)
+            sync_budget_alert(request.user, updated_expense.category, new_date)
+
+            # If category changed, recalculate the old category as well
+            if old_category != updated_expense.category:
+                sync_budget_alert(request.user, old_category, old_date)
+
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # Added explicit patch routing to handle the partial frontend updates
     def patch(self, request, pk):
         expense = get_object_or_404(Expense, pk=pk, user=request.user)
+        old_category = expense.category
+        old_date = getattr(expense, 'created_at', None) or getattr(expense, 'date', None)
+
         serializer = ExpenseSerializer(expense, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save()
+            updated_expense = serializer.save()
+
+            new_date = getattr(updated_expense, 'created_at', None) or getattr(updated_expense, 'date', None)
+            sync_budget_alert(request.user, updated_expense.category, new_date)
+
+            if old_category != updated_expense.category:
+                sync_budget_alert(request.user, old_category, old_date)
+
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
         expense = get_object_or_404(Expense, pk=pk, user=request.user)
+        category = expense.category
+        expense_date = getattr(expense, 'created_at', None) or getattr(expense, 'date', None)
+
         expense.delete()
-        # Return a completely empty response body to respect the 204 HTTP specification
+
+        # Recalculate budget utilization after deletion
+        sync_budget_alert(request.user, category, expense_date)
+
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

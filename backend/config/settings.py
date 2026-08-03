@@ -11,6 +11,12 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
+import os
+from dotenv import load_dotenv
+load_dotenv()
+SECRET_KEY = os.environ.get('SECRET_KEY', 'default-dev-key')
+EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_API_KEY')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9hu&l_ej#9n#rz2pic$l!6qydq_kehcn$jj%te=$e$ukj=c=1b'
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -46,6 +52,7 @@ INSTALLED_APPS = [
     'reports',
     'rest_framework', 
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
 ]
 
@@ -141,3 +148,28 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
+
+
+SIMPLE_JWT = {
+    # ⏰ Increase access token life (e.g., 1 day or 7 days)
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    
+    # 🔄 Refresh token lifetime
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+# Email Configuration (SendGrid)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'apikey'  # Keep this EXACT word 'apikey' string
+EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_API_KEY')
+  
+
+# Use the exact email address you verified in SendGrid
+DEFAULT_FROM_EMAIL = 'budgetbuddyassistant@gmail.com'

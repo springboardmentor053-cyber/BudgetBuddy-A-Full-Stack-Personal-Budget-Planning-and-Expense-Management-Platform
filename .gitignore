@@ -1,0 +1,63 @@
+# ==========================================
+# Secret Files & Environment Variables
+# ==========================================
+.env
+.env.local
+.env.*.local
+*.pem
+firebase-service-account.json
+
+# ==========================================
+# Python / Django Temporary Files & Virtual Envs
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+venv/
+.venv/
+env/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ==========================================
+# Django Database & Media
+# ==========================================
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# ==========================================
+# Frontend / Node Modules
+# ==========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+dist/
+dist-ssr/
+*.local
+
+# ==========================================
+# IDE & Operating System Files
+# ==========================================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

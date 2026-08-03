@@ -41,8 +41,11 @@ function Register() {
 
   return (
     <div style={{
-      minHeight: '100vh',
+      position: 'fixed',
+      top: 0,
+      left: 0,
       width: '100vw',
+      height: '100vh',
       background: '#1a252f', // Matching sidebar dark navy tone
       color: '#ecf0f1',
       fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
@@ -50,7 +53,8 @@ function Register() {
       justifyContent: 'center',
       alignItems: 'center',
       padding: '20px',
-      boxSizing: 'border-box'
+      boxSizing: 'border-box',
+      zIndex: 9999
     }}>
       <div style={{
         maxWidth: '400px',

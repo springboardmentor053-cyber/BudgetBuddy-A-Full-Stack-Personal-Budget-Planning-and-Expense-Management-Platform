@@ -12,10 +12,13 @@ BudgetBuddy is a personal finance management platform designed to help users (es
     *   Initialized backend skeleton and configured JWT authentication[cite: 1].
     *   Created React frontend skeleton[cite: 1].
 *   **Milestone 2 (Expense, Income & Budget Management):**  **Completed**[cite: 1]  
-    *   **Expense Module:**  **Completed** (Successfully implemented expense tracking, categorization, and transaction logs)[cite: 1].
-    *   **Income Module:**  **Completed** (Successfully implemented tracking for pocket money, scholarships, and freelance earnings)[cite: 1].
+    *   **Expense Module:**  **Completed** (Expense tracking, categorization, and transaction logs)[cite: 1].
+    *   **Income Module:**  **Completed** (Pocket money, scholarships, and freelance earnings)[cite: 1].
     *   **Budget Planning:**  **Completed** (Category-wise monthly budget creation, allocation, and tracking)[cite: 1].
-*   **Milestone 3 (Savings Goals & Notifications):** ⏳ **Pending**[cite: 1].
+*   **Milestone 3 (Savings Goals, Notifications & Reports):**  **In Progress**[cite: 1]  
+    *   **Savings Goals Module:**  **Completed** (Goal creation, target amount management, and progress visualization)[cite: 1].
+    *   **Notification & Reminder System:**  **Completed** (Budget limit alerts, savings reminders, and milestone notifications)[cite: 1].
+    *   **Report Generation:** ⏳ **Pending** (PDF/Excel exports and detailed monthly reports)[cite: 1].
 *   **Milestone 4 (Analytics, Testing & Deployment):** ⏳ **Pending**[cite: 1].
 
 ---
@@ -43,9 +46,14 @@ BudgetBuddy is a personal finance management platform designed to help users (es
 *   **Budget Planning System:**[cite: 1]
     *   Monthly budget creation and category-wise allocation[cite: 1].
     *   Budget utilization tracking and spending monitors[cite: 1].
+*   **Savings Goal Management:**[cite: 1]
+    *   Create and track target savings goals (e.g., Laptop Fund, Emergency Fund)[cite: 1].
+    *   Visual progress tracking and goal completion updates[cite: 1].
+*   **Notification System:**[cite: 1]
+    *   Automated alerts for budget limit breaches[cite: 1].
+    *   Savings progress reminders and goal milestone notifications[cite: 1].
 
 ### 2. Pending Features (To Be Implemented)
-*   **Savings Goals:** Goal creation and visual progress tracking (e.g., Laptop Fund, Emergency Fund)[cite: 1].
+*   **Report Generation & Export:** Export financial summaries and expense history to PDF/Excel[cite: 1].
 *   **Analytics Dashboard:** Interactive charts showing monthly trends and category-wise spending insights[cite: 1].
-*   **Notification System:** Automated alerts for budget limit breaches and savings reminders[cite: 1].
-*   **Reports & Export:** Export financial summaries and expense history to PDF/Excel[cite: 1].
+*   **Final Deployment & Validation:** End-to-end testing and production deployment[cite: 1].

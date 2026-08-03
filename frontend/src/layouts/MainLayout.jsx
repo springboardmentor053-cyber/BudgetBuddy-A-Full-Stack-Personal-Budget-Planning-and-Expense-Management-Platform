@@ -1,40 +1,69 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import api from '../services/api'; // Adjust path if your api service is elsewhere
+import api from '../services/api';
 
 function MainLayout({ children, pageTitle }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [username, setUsername] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('refresh_token');
     localStorage.removeItem('username');
+    localStorage.removeItem('selectedAvatarUrl');
+    localStorage.removeItem('selectedAvatarId');
     navigate('/login');
   };
 
-  // Fetch current user details or retrieve from localStorage
-  useEffect(() => {
+  const loadUserProfile = () => {
     const storedUsername = localStorage.getItem('username');
-    if (storedUsername) {
-      setUsername(storedUsername);
-    } else {
-      // Fallback: Fetch user profile directly from API if endpoints exist
-      api.get('user/profile/') // Or your custom user endpoint e.g., 'auth/user/'
-        .then((res) => {
-          if (res.data?.username) {
-            setUsername(res.data.username);
-            localStorage.setItem('username', res.data.username);
+    const storedAvatarUrl = localStorage.getItem('selectedAvatarUrl');
+
+    if (storedUsername) setUsername(storedUsername);
+    if (storedAvatarUrl) setAvatarUrl(storedAvatarUrl);
+
+    // Optional API Sync
+    api.get('users/user/')
+      .then((res) => {
+        if (res.data) {
+          const userData = res.data;
+          const name = userData.username || userData.user?.username;
+          if (name) {
+            setUsername(name);
+            localStorage.setItem('username', name);
           }
-        })
-        .catch((err) => console.log('User profile fetch skipped/failed:', err));
-    }
+        }
+      })
+      .catch((err) => console.log('API sync skipped/failed:', err));
+  };
+
+  useEffect(() => {
+    loadUserProfile();
+
+    // Listen to the EXACT event dispatched by Settings.jsx
+    const handleProfileUpdate = () => loadUserProfile();
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+
+    return () => window.removeEventListener('profileUpdated', handleProfileUpdate);
   }, []);
 
-  // Helper function to dynamically check if link is active
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const isActive = (path) => location.pathname === path;
 
-  // Dynamic styling for active sidebar links
   const getLinkStyle = (path) => ({
     color: 'white',
     textDecoration: 'none',
@@ -84,7 +113,7 @@ function MainLayout({ children, pageTitle }) {
       {/* Main Content Window */}
       <div style={{ flex: 1, minWidth: 0, backgroundColor: '#f5f6fa', padding: '30px', overflowY: 'auto', boxSizing: 'border-box' }}>
         
-        {/* Header with Welcome Greeting */}
+        {/* Header with Welcome Greeting & Profile Dropdown */}
         <header style={{ 
           borderBottom: '1px solid #e1e4e8', 
           paddingBottom: '15px', 
@@ -97,22 +126,128 @@ function MainLayout({ children, pageTitle }) {
             <h1 style={{ margin: 0, color: '#2c3e50', fontSize: '1.8rem' }}>{pageTitle}</h1>
           </div>
           
-          {/* Welcome User Badge */}
-          <div style={{ 
-            background: 'white', 
-            padding: '8px 16px', 
-            borderRadius: '20px', 
-            boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-            border: '1px solid #e1e8ed',
-            fontSize: '0.95rem',
-            color: '#34495e',
-            fontWeight: '600',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            <span>👋</span>
-            <span>Welcome, <span style={{ color: '#3498db' }}>{username || 'User'}</span>!</span>
+          {/* Interactive Profile Pill Container */}
+          <div ref={dropdownRef} style={{ position: 'relative' }}>
+            <button 
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              style={{
+                background: 'white', 
+                padding: '6px 12px 6px 16px', 
+                borderRadius: '25px', 
+                boxShadow: '0 2px 6px rgba(0,0,0,0.06)',
+                border: '1px solid #e1e8ed',
+                fontSize: '0.95rem',
+                color: '#34495e',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                cursor: 'pointer',
+                outline: 'none',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {/* Text Greeting on the LEFT */}
+              <span>👋 Welcome, <span style={{ color: '#3498db' }}>{username || 'anagha'}</span>!</span>
+
+              {/* Profile Avatar on the RIGHT */}
+              {avatarUrl ? (
+                <img 
+                  src={avatarUrl} 
+                  alt="Profile" 
+                  style={{ 
+                    width: '32px', 
+                    height: '32px', 
+                    borderRadius: '50%', 
+                    objectFit: 'cover',
+                    border: '2px solid #3498db',
+                    backgroundColor: '#1a252f'
+                  }} 
+                />
+              ) : (
+                <div style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  backgroundColor: '#3498db',
+                  color: 'white',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '0.85rem',
+                  fontWeight: 'bold'
+                }}>
+                  {username ? username.charAt(0).toUpperCase() : 'A'}
+                </div>
+              )}
+
+              <span style={{ fontSize: '0.75rem', color: '#95a5a6' }}>{dropdownOpen ? '▲' : '▼'}</span>
+            </button>
+
+            {/* Profile Dropdown Menu */}
+            {dropdownOpen && (
+              <div style={{
+                position: 'absolute',
+                top: '115%',
+                right: 0,
+                width: '180px',
+                background: '#ffffff',
+                borderRadius: '12px',
+                boxShadow: '0 10px 25px rgba(0,0,0,0.12)',
+                border: '1px solid #e1e8ed',
+                padding: '8px 0',
+                zIndex: 1000,
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                <div style={{ padding: '8px 16px', borderBottom: '1px solid #f1f5f9', marginBottom: '4px' }}>
+                  <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 'bold', color: '#2c3e50' }}>{username || 'anagha'}</p>
+                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#95a5a6' }}>User Account</p>
+                </div>
+
+                <Link 
+                  to="/settings" 
+                  onClick={() => setDropdownOpen(false)}
+                  style={{
+                    padding: '10px 16px',
+                    textDecoration: 'none',
+                    color: '#34495e',
+                    fontSize: '0.9rem',
+                    fontWeight: '500',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.target.style.background = '#f8fafc'}
+                  onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                >
+                  ⚙️ Settings
+                </Link>
+
+                <button 
+                  onClick={handleLogout}
+                  style={{
+                    padding: '10px 16px',
+                    border: 'none',
+                    background: 'transparent',
+                    color: '#e74c3c',
+                    fontSize: '0.9rem',
+                    fontWeight: 'bold',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    width: '100%'
+                  }}
+                  onMouseEnter={(e) => e.target.style.background = '#fef2f2'}
+                  onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                >
+                  🚪 Logout
+                </button>
+              </div>
+            )}
           </div>
         </header>
 

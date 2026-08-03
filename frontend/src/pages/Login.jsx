@@ -25,6 +25,7 @@ function Login() {
       if (response.ok) {
         // Save access token & username for header greetings
         localStorage.setItem('token', data.access);
+        localStorage.setItem('refresh_token', data.refresh);
         localStorage.setItem('username', data.username || username);
         
         // Navigate directly to dashboard
@@ -39,8 +40,11 @@ function Login() {
 
   return (
     <div style={{
-      minHeight: '100vh',
+      position: 'fixed',
+      top: 0,
+      left: 0,
       width: '100vw',
+      height: '100vh',
       background: '#1a252f', // Matching sidebar navy tone
       color: '#ecf0f1',
       fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
@@ -48,7 +52,8 @@ function Login() {
       justifyContent: 'center',
       alignItems: 'center',
       padding: '20px',
-      boxSizing: 'border-box'
+      boxSizing: 'border-box',
+      zIndex: 9999
     }}>
       <div style={{
         maxWidth: '400px',
