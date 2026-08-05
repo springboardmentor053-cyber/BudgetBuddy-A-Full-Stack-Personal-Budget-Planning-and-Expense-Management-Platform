@@ -103,7 +103,7 @@ class SavingsGoal(models.Model):
     """
     SavingsGoal model to represent specific savings targets for a user.
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='savings_goals')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='expenses_savings_goals')
     name = models.CharField(max_length=200, help_text="Name of the savings goal (e.g., New Laptop, Vacation).")
     target_amount = models.DecimalField(max_digits=10, decimal_places=2, help_text="The target savings amount.")
     current_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text="The current accumulated savings.")
@@ -122,7 +122,7 @@ class Notification(models.Model):
     """
     Notification model to store alerts or system updates for a user.
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='expenses_notifications')
     message = models.TextField(help_text="The body content of the notification.")
     is_read = models.BooleanField(default=False, help_text="Indicates whether the notification has been read.")
     created_at = models.DateTimeField(auto_now_add=True)

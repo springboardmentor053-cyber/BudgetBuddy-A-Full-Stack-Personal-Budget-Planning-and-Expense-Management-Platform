@@ -7,6 +7,9 @@ import Dashboard from './pages/Dashboard';
 import Expenses from './pages/Expenses';
 import Income from './pages/Income';
 import Budgets from './pages/Budgets';
+import Savings from './pages/Savings';
+import Notifications from './pages/Notifications';
+import Analytics from './pages/Analytics';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -47,6 +50,18 @@ const router = createBrowserRouter([
       {
         path: '/budgets',
         element: <Budgets />,
+      },
+      {
+        path: '/savings',
+        element: <Savings />,
+      },
+      {
+        path: '/notifications',
+        element: <Notifications />,
+      },
+      {
+        path: '/analytics',
+        element: <Analytics />,
       },
       {
         path: '/reports',

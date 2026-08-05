@@ -1,77 +1,93 @@
-from rest_framework import status
+from decimal import Decimal
+from django.contrib.auth.models import User
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from django.db.models import Sum, Count
+from django.utils import timezone
+from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserRegistrationSerializer
+from rest_framework.views import APIView
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def register_user(request):
-    """
-    API view to handle user registration.
-    Validates user credentials via the serializer and generates simplejwt tokens upon success.
-    """
-    serializer = UserRegistrationSerializer(data=request.data)
-    if serializer.is_valid():
-        user = serializer.save()
-        refresh = RefreshToken.for_user(user)
-        return Response({
-            'user': {
-                'id': user.id,
-                'username': user.username,
-                'email': user.email
-            },
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+from .models import Expense, Income, Budget
+from .serializers import ExpenseSerializer, IncomeSerializer, BudgetSerializer
+from savings.models import SavingsGoal, Notification
+from savings.serializers import NotificationSerializer
+from savings.views import trigger_notifications_for_user
 
+
+# ==========================================
+# Auth & System Status Helpers
+# ==========================================
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_status(request):
-    """
-    Minimal GET endpoint to return backend status.
-    """
-    return Response({"status": "running", "message": "BudgetBuddy API is operational."}, status=status.HTTP_200_OK)
+    return Response({"status": "running"}, status=status.HTTP_200_OK)
 
 
-from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
-from django.db.models import Sum
-from .models import Expense, Income, Budget
-from .serializers import ExpenseSerializer, IncomeSerializer, BudgetSerializer
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register_user(request):
+    username = request.data.get('username')
+    email = request.data.get('email')
+    password = request.data.get('password')
 
+    if not username or not password or not email:
+        return Response({"error": "All fields are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        validate_email(email)
+    except ValidationError:
+        return Response({"email": ["Enter a valid email address."]}, status=status.HTTP_400_BAD_REQUEST)
+
+    if User.objects.filter(username=username).exists():
+        return Response({"username": ["A user with that username already exists."]}, status=status.HTTP_400_BAD_REQUEST)
+
+    if User.objects.filter(email=email).exists():
+        return Response({"email": ["A user with that email already exists."]}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = User.objects.create_user(username=username, email=email, password=password)
+    return Response({
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "message": "User registered successfully"
+    }, status=status.HTTP_201_CREATED)
+
+
+# ==========================================
 # Expense CRUD Views
+# ==========================================
+
+class TotalExpenseAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        total = Expense.objects.filter(user=request.user).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+        return Response({"total_expense": float(total)}, status=status.HTTP_200_OK)
+
+
 class ExpenseListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ExpenseSerializer
 
     def get_queryset(self):
-        queryset = Expense.objects.filter(user=self.request.user)
-        
-        # Category filtering
-        category = self.request.query_params.get('category')
-        if category:
-            queryset = queryset.filter(category=category.upper())
-
-        # Sorting
-        sort = self.request.query_params.get('sort')
-        if sort == 'latest':
-            queryset = queryset.order_by('-expense_date', '-created_at', '-id')
-        elif sort == 'oldest':
-            queryset = queryset.order_by('expense_date', 'created_at', 'id')
-        elif sort == 'highest':
-            queryset = queryset.order_by('-amount')
-        elif sort == 'lowest':
-            queryset = queryset.order_by('amount')
-
-        return queryset
+        return Expense.objects.filter(user=self.request.user).order_by('-expense_date', '-created_at')
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        expense = serializer.save(user=self.request.user)
+
+        Notification.objects.create(
+            user=self.request.user,
+            title="Expense Added",
+            message=f'Expense "{expense.title}" of ₹{expense.amount:.2f} ({expense.category}) added.',
+            notification_type="EXPENSE_ADDED",
+            priority="LOW"
+        )
+
+        trigger_notifications_for_user(self.request.user)
 
 
 class ExpenseRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -81,25 +97,52 @@ class ExpenseRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Expense.objects.filter(user=self.request.user)
 
+    def perform_update(self, serializer):
+        expense = serializer.save()
+        Notification.objects.create(
+            user=self.request.user,
+            title="Expense Updated",
+            message=f'Expense "{expense.title}" updated to ₹{expense.amount:.2f}.',
+            notification_type="EXPENSE_UPDATED",
+            priority="LOW"
+        )
+        trigger_notifications_for_user(self.request.user)
 
-class TotalExpenseAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    def perform_destroy(self, instance):
+        title = instance.title
+        amount = instance.amount
+        user = instance.user
+        instance.delete()
+        Notification.objects.create(
+            user=user,
+            title="Expense Deleted",
+            message=f'Expense "{title}" of ₹{amount:.2f} deleted.',
+            notification_type="EXPENSE_DELETED",
+            priority="LOW"
+        )
+        trigger_notifications_for_user(user)
 
-    def get(self, request, *args, **kwargs):
-        total = Expense.objects.filter(user=request.user).aggregate(total=Sum('amount'))['total'] or 0.00
-        return Response({"total_expense": float(total)}, status=status.HTTP_200_OK)
 
-
+# ==========================================
 # Income CRUD Views
+# ==========================================
+
 class IncomeListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = IncomeSerializer
 
     def get_queryset(self):
-        return Income.objects.filter(user=self.request.user)
+        return Income.objects.filter(user=self.request.user).order_by('-income_date', '-created_at')
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        income = serializer.save(user=self.request.user)
+        Notification.objects.create(
+            user=self.request.user,
+            title="Income Added",
+            message=f'Income from "{income.source}" of ₹{income.amount:.2f} added.',
+            notification_type="INCOME_ADDED",
+            priority="LOW"
+        )
 
 
 class IncomeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -109,17 +152,51 @@ class IncomeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Income.objects.filter(user=self.request.user)
 
+    def perform_update(self, serializer):
+        income = serializer.save()
+        Notification.objects.create(
+            user=self.request.user,
+            title="Income Updated",
+            message=f'Income "{income.source}" updated to ₹{income.amount:.2f}.',
+            notification_type="INCOME_UPDATED",
+            priority="LOW"
+        )
 
+    def perform_destroy(self, instance):
+        source = instance.source
+        amount = instance.amount
+        user = instance.user
+        instance.delete()
+        Notification.objects.create(
+            user=user,
+            title="Income Deleted",
+            message=f'Income "{source}" of ₹{amount:.2f} deleted.',
+            notification_type="INCOME_DELETED",
+            priority="LOW"
+        )
+
+
+# ==========================================
 # Budget CRUD Views
+# ==========================================
+
 class BudgetListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = BudgetSerializer
 
     def get_queryset(self):
-        return Budget.objects.filter(user=self.request.user)
+        return Budget.objects.filter(user=self.request.user).order_by('year', 'month')
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        budget = serializer.save(user=self.request.user)
+        Notification.objects.create(
+            user=self.request.user,
+            title="Budget Created",
+            message=f'Budget of ₹{budget.budget_amount:.2f} set for {budget.category} ({budget.month}/{budget.year}).',
+            notification_type="BUDGET_CREATED",
+            priority="MEDIUM"
+        )
+        trigger_notifications_for_user(self.request.user)
 
 
 class BudgetRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -129,30 +206,110 @@ class BudgetRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Budget.objects.filter(user=self.request.user)
 
+    def perform_update(self, serializer):
+        budget = serializer.save()
+        Notification.objects.create(
+            user=self.request.user,
+            title="Budget Updated",
+            message=f'Budget for {budget.category} updated to ₹{budget.budget_amount:.2f}.',
+            notification_type="BUDGET_UPDATED",
+            priority="MEDIUM"
+        )
+        trigger_notifications_for_user(self.request.user)
 
-# Dashboard View
+    def perform_destroy(self, instance):
+        user = instance.user
+        category = instance.category
+        instance.delete()
+        Notification.objects.create(
+            user=user,
+            title="Budget Deleted",
+            message=f'Budget for {category} deleted.',
+            notification_type="BUDGET_DELETED",
+            priority="MEDIUM"
+        )
+        trigger_notifications_for_user(user)
+
+
+# ==========================================
+# Expanded Dashboard View
+# ==========================================
+
 class DashboardAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         user = request.user
 
-        # Calculations using Sum aggregate
         total_income_agg = Income.objects.filter(user=user).aggregate(total=Sum('amount'))
         total_expense_agg = Expense.objects.filter(user=user).aggregate(total=Sum('amount'))
-        total_budget_agg = Budget.objects.filter(user=user).aggregate(total=Sum('budget_amount'))
+        total_savings_agg = SavingsGoal.objects.filter(user=user).aggregate(total=Sum('saved_amount'))
 
         total_income = float(total_income_agg['total'] or 0.0)
         total_expense = float(total_expense_agg['total'] or 0.0)
-        total_budget = float(total_budget_agg['total'] or 0.0)
+        total_savings = float(total_savings_agg['total'] or 0.0)
 
-        current_balance = total_income - total_expense
-        remaining_budget = total_budget - total_expense
+        current_balance = round(total_income - total_expense, 2)
+
+        # Calculate category-wise budget totals & remaining budget
+        budgets_qs = Budget.objects.filter(user=user)
+        total_budget_val = Decimal('0.00')
+        total_remaining_val = Decimal('0.00')
+
+        for b in budgets_qs:
+            b_amt = Decimal(str(b.budget_amount))
+            total_budget_val += b_amt
+
+            cat_exp = Expense.objects.filter(
+                user=user,
+                category=b.category,
+                expense_date__year=b.year,
+                expense_date__month=b.month
+            ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+
+            b_rem = b_amt - cat_exp
+            total_remaining_val += b_rem
+
+        total_budget = float(round(total_budget_val, 2))
+        remaining_budget = float(round(total_remaining_val, 2))
 
         income_count = Income.objects.filter(user=user).count()
         expense_count = Expense.objects.filter(user=user).count()
 
-        # Fetch and format recent items (fetch up to 5 of each, then merge and sort)
+        financial_summary = {
+            "total_income": total_income,
+            "total_expense": total_expense,
+            "current_balance": current_balance,
+            "total_savings": total_savings,
+            "total_budget": total_budget,
+            "remaining_budget": remaining_budget,
+        }
+
+        # Category Breakdown
+        cat_group = Expense.objects.filter(user=user).values('category').annotate(amount=Sum('amount')).order_by('-amount')
+        category_breakdown = []
+        for item in cat_group:
+            cat_amt = float(item['amount'])
+            pct = round((cat_amt / total_expense * 100), 2) if total_expense > 0 else 0.0
+            category_breakdown.append({
+                "category": item['category'],
+                "amount": cat_amt,
+                "percentage": pct
+            })
+
+        # Monthly Expenses
+        expenses_qs = Expense.objects.filter(user=user).order_by('expense_date')
+        monthly_map = {}
+        for exp in expenses_qs:
+            month_key = exp.expense_date.strftime('%Y-%m')
+            monthly_map[month_key] = monthly_map.get(month_key, 0.0) + float(exp.amount)
+
+        monthly_expenses = [
+            {"month": k, "amount": round(v, 2)}
+            for k, v in monthly_map.items()
+        ]
+
+        # Recent Transactions
         recent_incomes = Income.objects.filter(user=user).order_by('-income_date', '-created_at')[:5]
         recent_expenses = Expense.objects.filter(user=user).order_by('-expense_date', '-created_at')[:5]
 
@@ -164,7 +321,7 @@ class DashboardAPIView(APIView):
                 "amount": float(inc.amount),
                 "date": inc.income_date.isoformat(),
                 "description": inc.description,
-                "title": inc.source,  # Maintain title for UI display
+                "title": inc.source,
                 "created_at": inc.created_at.isoformat()
             }
             for inc in recent_incomes
@@ -178,27 +335,51 @@ class DashboardAPIView(APIView):
                 "amount": float(exp.amount),
                 "date": exp.expense_date.isoformat(),
                 "description": exp.description,
-                "title": exp.title,  # Maintain title for UI display
+                "title": exp.title,
                 "created_at": exp.created_at.isoformat()
             }
             for exp in recent_expenses
         ]
 
-        # Combine and sort by date descending, then created_at descending
         recent_transactions = serialized_incomes + serialized_expenses
-        recent_transactions.sort(key=lambda x: (x['date'], x['created_at']), reverse=True)
-        recent_transactions = recent_transactions[:5]
+        recent_transactions.sort(key=lambda x: x['created_at'], reverse=True)
+
+        # Trigger notification evaluation
+        trigger_notifications_for_user(user)
+
+        # Top 5 Notifications
+        latest_notifs_qs = Notification.objects.filter(user=user).order_by('-created_at')[:5]
+        latest_notifications = NotificationSerializer(latest_notifs_qs, many=True).data
+
+        # Active Savings Goals
+        active_goals_qs = SavingsGoal.objects.filter(user=user, status='ACTIVE').order_by('target_date')[:5]
+        active_goals = [
+            {
+                "id": g.id,
+                "goal_name": g.goal_name,
+                "target_amount": float(g.target_amount),
+                "saved_amount": float(g.saved_amount),
+                "progress_percentage": round((float(g.saved_amount) / float(g.target_amount) * 100), 2) if float(g.target_amount) > 0 else 0.0,
+                "target_date": g.target_date.isoformat()
+            }
+            for g in active_goals_qs
+        ]
 
         return Response({
+            "financial_summary": financial_summary,
+            "category_breakdown": category_breakdown,
+            "monthly_expenses": monthly_expenses,
+            "recent_transactions": recent_transactions[:5],
+            "latest_notifications": latest_notifications,
+            "active_savings_goals": active_goals,
+
+            # Legacy Root Keys
             "total_income": total_income,
             "total_expense": total_expense,
             "current_balance": current_balance,
-            "remaining_balance": current_balance,  # Backward compatibility for UI
+            "total_savings": total_savings,
             "total_budget": total_budget,
             "remaining_budget": remaining_budget,
             "income_count": income_count,
             "expense_count": expense_count,
-            "recent_transactions": recent_transactions
         }, status=status.HTTP_200_OK)
-
-
