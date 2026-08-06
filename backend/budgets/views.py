@@ -7,6 +7,50 @@ from .models import Budget, SavingsGoal
 from .serializers import BudgetSerializer, SavingsGoalSerializer
 from expenses.models import Expense
 
+def check_budget_alerts(budget, request_user):
+    total_expense = Expense.objects.filter(
+        user=request_user,
+        category=budget.category,
+        expense_date__month=budget.month,
+        expense_date__year=budget.year
+    ).aggregate(total=Sum('amount'))['total'] or 0
+
+    utilization = (total_expense / budget.budget_amount * 100) if budget.budget_amount > 0 else 0
+
+    if utilization >= 100 and not budget.alert_100_sent:
+        Notification.objects.create(
+            user=request_user,
+            title='Budget Exceeded',
+            message=f'Your {budget.category.title()} Budget has been exceeded.',
+            notification_type='budget_alert',
+            priority='high'
+        )
+        budget.alert_100_sent = True
+        budget.save()
+    elif utilization >= 90 and not budget.alert_90_sent:
+        Notification.objects.create(
+            user=request_user,
+            title='High Warning Alert',
+            message=f'You have used 90% of your monthly {budget.category.title()} Budget.',
+            notification_type='budget_alert',
+            priority='high'
+        )
+        budget.alert_90_sent = True
+        budget.save()
+    elif utilization >= 80 and not budget.alert_80_sent:
+        Notification.objects.create(
+            user=request_user,
+            title='Warning Alert',
+            message=f'You have used 80% of your monthly {budget.category.title()} Budget.',
+            notification_type='budget_alert',
+            priority='medium'
+        )
+        budget.alert_80_sent = True
+        budget.save()
+
+    return utilization
+
+
 class BudgetViewSet(viewsets.ModelViewSet):
     serializer_class = BudgetSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -78,3 +122,43 @@ class BudgetSummaryView(APIView):
                 "overspent_amount": overspent
             })
         return Response(summary)
+
+
+class BudgetAlertView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        budgets = Budget.objects.filter(user=request.user)
+        result = []
+        for budget in budgets:
+            total_expense = Expense.objects.filter(
+                user=request.user,
+                category=budget.category,
+                expense_date__month=budget.month,
+                expense_date__year=budget.year
+            ).aggregate(total=Sum('amount'))['total'] or 0
+
+            utilization = (total_expense / budget.budget_amount * 100) if budget.budget_amount > 0 else 0
+
+            if utilization >= 100:
+                alert_level = "Budget Exceeded"
+                alert_message = f"Your {budget.category.title()} Budget has been exceeded."
+            elif utilization >= 90:
+                alert_level = "High Warning"
+                alert_message = f"You have used 90% of your monthly {budget.category.title()} Budget."
+            elif utilization >= 80:
+                alert_level = "Warning"
+                alert_message = f"You have used 80% of your monthly {budget.category.title()} Budget."
+            else:
+                alert_level = "Normal"
+                alert_message = f"Your {budget.category.title()} Budget is within safe limits."
+
+            result.append({
+                "category": budget.category,
+                "budget_amount": budget.budget_amount,
+                "total_expense": total_expense,
+                "utilization_percentage": round(utilization, 2),
+                "alert_level": alert_level,
+                "alert_message": alert_message
+            })
+        return Response(result)

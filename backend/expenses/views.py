@@ -1,4 +1,7 @@
 from rest_framework import viewsets, permissions
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.db.models import Sum
 from .models import Expense, Income
 from .serializers import ExpenseSerializer, IncomeSerializer
 
@@ -26,7 +29,26 @@ class ExpenseViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        expense = serializer.save(user=self.request.user)
+        self._check_budget_alert(expense)
+
+    def perform_update(self, serializer):
+        expense = serializer.save()
+        self._check_budget_alert(expense)
+
+    def _check_budget_alert(self, expense):
+        from budgets.models import Budget
+        from budgets.views import check_budget_alerts
+        try:
+            budget = Budget.objects.get(
+                user=self.request.user,
+                category=expense.category,
+                month=expense.expense_date.month,
+                year=expense.expense_date.year
+            )
+            check_budget_alerts(budget, self.request.user)
+        except Budget.DoesNotExist:
+            pass
 
 
 class IncomeViewSet(viewsets.ModelViewSet):
@@ -38,9 +60,7 @@ class IncomeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from django.db.models import Sum
+
 
 class TotalExpensesView(APIView):
     permission_classes = [permissions.IsAuthenticated]

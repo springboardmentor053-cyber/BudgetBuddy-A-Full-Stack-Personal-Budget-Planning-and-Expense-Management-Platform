@@ -7,10 +7,12 @@ from rest_framework_simplejwt.views import (
 )
 from users.views import RegisterView, LogoutView, ProtectedView
 from expenses.views import ExpenseViewSet, IncomeViewSet as OldIncomeViewSet, TotalExpensesView
-from budgets.views import BudgetViewSet, SavingsGoalViewSet as OldSavingsGoalViewSet, BudgetSummaryView
+from budgets.views import BudgetViewSet, SavingsGoalViewSet as OldSavingsGoalViewSet, BudgetSummaryView, BudgetAlertView
 from income.views import IncomeViewSet, FinancialSummaryView
 from savings.views import SavingsGoalViewSet, SavingsGoalProgressView
 from notifications.views import NotificationViewSet, MarkNotificationReadView
+from analytics.views import FinancialSummaryAnalyticsView, CategoryAnalysisView, MonthlyTrendView, HighestLowestExpenseView, DashboardView
+from reports.views import MonthlyFinancialReportView, ExpenseReportView, SavingsReportView, FinancialSummaryReportView
 
 router = DefaultRouter()
 router.register(r'expenses', ExpenseViewSet, basename='expense')
@@ -29,7 +31,17 @@ urlpatterns = [
     path('api/expenses/total/', TotalExpensesView.as_view(), name='total-expenses'),
     path('api/summary/', FinancialSummaryView.as_view(), name='financial-summary'),
     path('api/budgets/summary/', BudgetSummaryView.as_view(), name='budget-summary'),
+    path('api/budgets/alerts/', BudgetAlertView.as_view(), name='budget-alerts'),
     path('api/savings-goals/progress/', SavingsGoalProgressView.as_view(), name='savings-progress'),
     path('api/notifications/<int:pk>/mark-read/', MarkNotificationReadView.as_view(), name='mark-notification-read'),
     path('api/', include(router.urls)),
+    path('api/analytics/summary/', FinancialSummaryAnalyticsView.as_view(), name='analytics-summary'),
+    path('api/analytics/category/', CategoryAnalysisView.as_view(), name='analytics-category'),
+    path('api/analytics/monthly-trend/', MonthlyTrendView.as_view(), name='analytics-monthly-trend'),
+    path('api/analytics/highest-lowest/', HighestLowestExpenseView.as_view(), name='analytics-highest-lowest'),
+    path('api/dashboard/', DashboardView.as_view(), name='dashboard'),
+    path('api/reports/monthly/', MonthlyFinancialReportView.as_view(), name='report-monthly'),
+    path('api/reports/expenses/', ExpenseReportView.as_view(), name='report-expenses'),
+    path('api/reports/savings/', SavingsReportView.as_view(), name='report-savings'),
+    path('api/reports/summary/', FinancialSummaryReportView.as_view(), name='report-summary'),
 ]

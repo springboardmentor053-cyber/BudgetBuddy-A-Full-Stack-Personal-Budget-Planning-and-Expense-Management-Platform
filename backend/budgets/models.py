@@ -17,6 +17,9 @@ class Budget(models.Model):
     budget_amount = models.DecimalField(max_digits=10, decimal_places=2)
     month = models.IntegerField()
     year = models.IntegerField()
+    alert_80_sent = models.BooleanField(default=False)
+    alert_90_sent = models.BooleanField(default=False)
+    alert_100_sent = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
