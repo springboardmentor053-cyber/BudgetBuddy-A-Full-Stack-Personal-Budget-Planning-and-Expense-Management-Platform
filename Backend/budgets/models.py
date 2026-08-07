@@ -15,30 +15,21 @@ class Budget(models.Model):
         ('Miscellaneous', 'Miscellaneous'),
     ]
 
+
+
     user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='budgets'
-    )
-
-    category = models.CharField(
-        max_length=20,
-        choices=CATEGORY_CHOICES
-    )
-
-    monthly_limit = models.DecimalField(
-        max_digits=10,
-        decimal_places=2
-    )
-
+        User, on_delete=models.CASCADE, related_name="budgets")
+    category = models.CharField(max_length=50)
+    monthly_limit = models.DecimalField(max_digits=12, decimal_places=2)
     month = models.IntegerField()
-
     year = models.IntegerField()
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    warning_80_sent = models.BooleanField(default=False)
+    warning_90_sent = models.BooleanField(default=False)
+    warning_100_sent = models.BooleanField(default=False)
 
-    # ADD THIS LINE
-    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        unique_together = ('user', 'category', 'month', 'year')
 
     def __str__(self):
-        return f"{self.user.username} - {self.category}"
+        return f"{self.user.username} - {self.category} ({self.month}/{self.year})"

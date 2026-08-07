@@ -36,6 +36,7 @@ export default function Savings() {
 
   const loadGoals = async () => {
     try {
+      setLoading(true);
       const response = await getSavings();
       setGoals(response.data || []);
     } catch (error) {
@@ -82,21 +83,27 @@ export default function Savings() {
     );
   }, [goals, search]);
 
-  const totalSaved = filteredGoals.reduce(
-    (sum, goal) => sum + Number(goal.saved_amount || 0),
-    0
-  );
+  const totalSaved = useMemo(() => {
+    return filteredGoals.reduce(
+      (sum, goal) => sum + Number(goal.saved_amount || 0),
+      0
+    );
+  }, [filteredGoals]);
 
-  const overallTarget = filteredGoals.reduce(
-    (sum, goal) => sum + Number(goal.target_amount || 0),
-    0
-  );
+  const overallTarget = useMemo(() => {
+    return filteredGoals.reduce(
+      (sum, goal) => sum + Number(goal.target_amount || 0),
+      0
+    );
+  }, [filteredGoals]);
 
-  const activeGoals = filteredGoals.filter(
-    (goal) => goal.status === "ACTIVE"
-  ).length;
+  const activeGoals = useMemo(() => {
+    return filteredGoals.filter(
+      (goal) => (goal.status || "ACTIVE").toUpperCase() === "ACTIVE"
+    ).length;
+  }, [filteredGoals]);
 
-  if (loading) {
+  if (loading && goals.length === 0) {
     return (
       <div className="space-y-8 animate-pulse">
         <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl w-1/4"></div>
@@ -118,7 +125,7 @@ export default function Savings() {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div>
-           <h1 className="text-4xl font-bold text-white">
+          <h1 className="text-4xl font-bold text-white">
             Savings Goals
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-2">
@@ -213,12 +220,16 @@ export default function Savings() {
             const target = Number(goal.target_amount || 0);
             const progress = target > 0 ? (saved / target) * 100 : 0;
             const remaining = Math.max(0, target - saved);
+            const goalStatus = goal.status || "ACTIVE";
 
             // Days left calculation
-            const targetDate = new Date(goal.target_date);
-            const today = new Date();
-            const diffTime = targetDate - today;
-            const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            let daysLeft = null;
+            if (goal.target_date) {
+              const targetDate = new Date(goal.target_date);
+              const today = new Date();
+              const diffTime = targetDate - today;
+              daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            }
 
             return (
               <div
@@ -243,15 +254,15 @@ export default function Savings() {
                       <div className="flex items-center gap-2 mt-1">
                         <span
                           className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                            goal.status === "ACTIVE"
+                            goalStatus.toUpperCase() === "ACTIVE"
                               ? "bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400"
                               : "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400"
                           }`}
                         >
-                          {goal.status}
+                          {goalStatus}
                         </span>
 
-                        {goal.target_date && (
+                        {daysLeft !== null && (
                           <span className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
                             <FaClock className="text-xs" />
                             {daysLeft > 0

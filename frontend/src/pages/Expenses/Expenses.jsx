@@ -15,10 +15,9 @@ import {
   updateExpense,
   deleteExpense,
 } from "../../api/expenseApi";
-import { useSettings } from "../../context/SettingsContext"; // Using context for dynamic currency formatting
+import { useSettings } from "../../context/SettingsContext";
 
 export default function Expenses() {
-  // 1. Get the global money formatting function
   const { formatMoney } = useSettings();
 
   const [expenses, setExpenses] = useState([]);
@@ -30,7 +29,12 @@ export default function Expenses() {
 
   const loadExpenses = async () => {
     try {
-      const response = await getExpenses();
+      setLoading(true);
+      const params = {};
+      if (search) params.search = search;
+      if (category !== "All Categories") params.category = category;
+
+      const response = await getExpenses(params);
       setExpenses(response.data || []);
     } catch (error) {
       console.error("Error loading expenses:", error);
@@ -41,7 +45,7 @@ export default function Expenses() {
 
   useEffect(() => {
     loadExpenses();
-  }, []);
+  }, [category]);
 
   const handleAddExpense = async (expenseData) => {
     try {
@@ -73,6 +77,7 @@ export default function Expenses() {
     setOpenModal(true);
   };
 
+  // Client-side fallback filtering
   const filteredExpenses = useMemo(() => {
     return expenses.filter((expense) => {
       const titleMatch = expense.title
@@ -86,25 +91,29 @@ export default function Expenses() {
     });
   }, [expenses, search, category]);
 
-  const totalExpenses = filteredExpenses.reduce(
-    (sum, expense) => sum + Number(expense.amount || 0),
-    0
-  );
+  const totalExpenses = useMemo(() => {
+    return filteredExpenses.reduce(
+      (sum, expense) => sum + Number(expense.amount || 0),
+      0
+    );
+  }, [filteredExpenses]);
 
-  const categoryTotals = filteredExpenses.reduce((acc, expense) => {
-    const cat = expense.category || "Uncategorized";
-    acc[cat] = (acc[cat] || 0) + Number(expense.amount || 0);
-    return acc;
-  }, {});
+  const highestCategory = useMemo(() => {
+    const categoryTotals = filteredExpenses.reduce((acc, expense) => {
+      const cat = expense.category || "Uncategorized";
+      acc[cat] = (acc[cat] || 0) + Number(expense.amount || 0);
+      return acc;
+    }, {});
 
-  const highestCategory =
-    Object.keys(categoryTotals).length > 0
-      ? Object.keys(categoryTotals).reduce((a, b) =>
-          categoryTotals[a] > categoryTotals[b] ? a : b
-        )
-      : "N/A";
+    const keys = Object.keys(categoryTotals);
+    if (keys.length === 0) return "N/A";
 
-  if (loading) {
+    return keys.reduce((a, b) =>
+      categoryTotals[a] > categoryTotals[b] ? a : b
+    );
+  }, [filteredExpenses]);
+
+  if (loading && expenses.length === 0) {
     return (
       <div className="min-h-screen flex justify-center items-center bg-slate-900 text-white">
         <h1 className="text-2xl font-bold animate-pulse">Loading Expenses...</h1>
@@ -117,7 +126,7 @@ export default function Expenses() {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div>
-           <h1 className="text-4xl font-bold text-white">
+          <h1 className="text-4xl font-bold text-white">
             Expenses Management
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-2">
@@ -142,7 +151,6 @@ export default function Expenses() {
         <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Total Expenses</p>
-            {/* 2. Dynamic Currency Formatting for Total */}
             <h2 className="text-3xl font-bold text-red-600 dark:text-red-400 mt-2">
               {formatMoney(totalExpenses)}
             </h2>
@@ -217,6 +225,7 @@ export default function Expenses() {
                 <th className="p-4 pl-6">Title</th>
                 <th className="p-4">Category</th>
                 <th className="p-4">Amount</th>
+                <th className="p-4 text-center">Payment Mode</th>
                 <th className="p-4">Date</th>
                 <th className="p-4 pr-6 text-center">Actions</th>
               </tr>
@@ -226,7 +235,7 @@ export default function Expenses() {
               {filteredExpenses.length === 0 ? (
                 <tr>
                   <td
-                    colSpan="5"
+                    colSpan="6"
                     className="py-12 text-center text-slate-500 dark:text-slate-400"
                   >
                     <p className="text-base font-semibold">No Expenses Found</p>
@@ -245,13 +254,18 @@ export default function Expenses() {
 
                     <td className="p-4">
                       <span className="bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-300 px-3 py-1 rounded-full text-xs font-semibold">
-                        {expense.category}
+                        {expense.category || "General"}
                       </span>
                     </td>
 
-                    {/* 3. Dynamic Currency Formatting for Row Item */}
                     <td className="p-4 font-bold text-red-600 dark:text-red-400">
                       {formatMoney(expense.amount)}
+                    </td>
+
+                    <td className="p-4 text-center">
+                      <span className="inline-block px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-semibold capitalize">
+                        {expense.payment_method || expense.payment_mode || "Cash"}
+                      </span>
                     </td>
 
                     <td className="p-4 text-slate-500 dark:text-slate-400">
@@ -285,7 +299,7 @@ export default function Expenses() {
         </div>
       </div>
 
-      {/* Modal Rendered Outside Main Layout Wrapper */}
+      {/* Modal */}
       <ExpenseModal
         isOpen={openModal}
         onClose={() => {

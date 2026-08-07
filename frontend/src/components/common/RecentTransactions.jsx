@@ -68,8 +68,8 @@ export default function RecentTransactions({
                 </p>
 
                 <p className="text-xs text-slate-400">
-                  Today
-                </p>
+  {item.income_date || item.expense_date}
+</p>
 
               </div>
             </div>

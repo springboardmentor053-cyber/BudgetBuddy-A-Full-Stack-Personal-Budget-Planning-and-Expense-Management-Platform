@@ -14,10 +14,10 @@ import Savings from "./pages/Savings/Savings";
 import Reports from "./pages/Reports/Reports";
 import Profile from "./pages/Profile/Profile";
 import Settings from "./pages/Settings/Settings";
+import NotificationsPage from "./pages/NotificationsPage/NotificationsPage";
 
 import DashboardLayout from "./layout/DashboardLayout";
 
-// Import SettingsProvider
 import { SettingsProvider } from "./context/SettingsContext";
 
 function App() {
@@ -25,12 +25,12 @@ function App() {
     <SettingsProvider>
       <BrowserRouter>
         <Routes>
-          {/* Public Pages */}
+          {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* Dashboard Pages With Sidebar */}
+          {/* Protected Routes */}
           <Route element={<DashboardLayout />}>
             <Route
               path="/dashboard"
@@ -100,6 +100,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Settings />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/notifications"
+              element={
+                <ProtectedRoute>
+                  <NotificationsPage />
                 </ProtectedRoute>
               }
             />

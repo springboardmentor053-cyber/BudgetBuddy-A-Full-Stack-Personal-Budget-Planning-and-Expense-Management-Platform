@@ -28,9 +28,20 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 
+
+EMAIL_HOST_USER = "user1.budgetbuddy@gmail.com"
+EMAIL_HOST_PASSWORD = "iapa tixy guge yzom"
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # Application definition
+TIME_ZONE = "Asia/Kolkata"
 
+USE_TZ = True
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,15 +52,17 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'users',
-    'expenses',
+    'expenses.apps.ExpensesConfig',
     'budgets',
     'reports',
     'income',
     'savings',
-    'notifications_app',
+    "notifications_app.apps.NotificationsAppConfig",
     'analytics_app',
     'corsheaders',
     'dashboard',
+    'drf_spectacular',
+    "django_extensions",
 
 ]
 
@@ -63,10 +76,17 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+CORS_EXPOSE_HEADERS = ['Content-Type', 'Content-Disposition']
 ROOT_URLCONF = 'config.urls'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+]
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "authorization",
+    "content-type",
+    "origin",
+    "x-csrftoken",
 ]
 TEMPLATES = [
     {
@@ -125,7 +145,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -143,6 +163,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
     ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 SIMPLE_JWT = {

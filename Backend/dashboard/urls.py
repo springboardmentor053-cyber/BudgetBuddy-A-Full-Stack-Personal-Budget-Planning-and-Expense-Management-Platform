@@ -1,6 +1,16 @@
 from django.urls import path
-from .views import DashboardAPIView
+from . import views
 
 urlpatterns = [
-    path('', DashboardAPIView.as_view(), name='dashboard'),
+    # Primary aggregated dashboard
+    path("", views.DashboardAPIView.as_view(), name="dashboard"),
+    
+    # Sub-component APIs
+    path("summary/", views.FinancialSummaryAPIView.as_view(), name="summary"),
+    path("category/", views.CategoryAnalysisAPIView.as_view(), name="category"),
+    path("monthly-trend/", views.MonthlyExpenseTrendAPIView.as_view(), name="monthly-trend"),
+    path("insights/", views.HighestLowestExpenseAPIView.as_view(), name="insights"),
+    
+    # Export endpoint
+    path("export/", views.ExportReportAPIView.as_view(), name="export"),
 ]

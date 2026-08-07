@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
 const getAuthHeader = () => {
   const token = localStorage.getItem("token");
@@ -20,20 +20,35 @@ export const getProfile = async () => {
     const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
 
     // Retrieve savings goals saved in localStorage/state
-    const savingsGoals = JSON.parse(localStorage.getItem("savings") || "[]");
-    const totalSavings = savingsGoals.reduce((sum, item) => sum + Number(item.saved || item.currentAmount || 0), 0);
+    const savingsGoals = JSON.parse(
+      localStorage.getItem("savings") ||
+        localStorage.getItem("savings_goals") ||
+        "[]"
+    );
+    const totalSavings = savingsGoals.reduce(
+      (sum, item) => sum + Number(item.saved || item.currentAmount || 0),
+      0
+    );
 
-    // Retrieve transactions and budgets count
-    const transactions = JSON.parse(localStorage.getItem("transactions") || "[]");
-    const budgets = JSON.parse(localStorage.getItem("budgets") || "[]");
+    // Retrieve transactions and budgets counts
+    const storedIncome = JSON.parse(localStorage.getItem("income") || "[]");
+    const storedExpenses = JSON.parse(localStorage.getItem("expenses") || "[]");
+    const storedTransactions = JSON.parse(localStorage.getItem("transactions") || "[]");
+    const totalTransactionsCount = storedTransactions.length || (storedIncome.length + storedExpenses.length) || 25;
 
-    const monthlyIncome = 50000;
-    const monthlyExpenses = 7050;
+    const budgets = JSON.parse(
+      localStorage.getItem("budget") ||
+        localStorage.getItem("budgets") ||
+        "[]"
+    );
+
+    const monthlyIncome = 98500;
+    const monthlyExpenses = 23000;
 
     return {
       data: {
-        name: storedUser.name || storedUser.username || "Karuna",
-        email: storedUser.email || "karuna@gmail.com",
+        name: storedUser.name || storedUser.username || "User1",
+        email: storedUser.email || "user1.budgetbuddy@gmail.com",
         phone: storedUser.phone || "+91 9876543210",
         location: storedUser.location || "Hyderabad, India",
         profession: storedUser.profession || "Python Developer",
@@ -41,13 +56,13 @@ export const getProfile = async () => {
         financials: {
           monthlyIncome: monthlyIncome,
           monthlyExpenses: monthlyExpenses,
-          totalSavings: totalSavings || 35000, // Correctly calculated from Savings page
-          currentBalance: monthlyIncome - monthlyExpenses, // ₹42,950
+          totalSavings: totalSavings || 65000,
+          currentBalance: monthlyIncome - monthlyExpenses, // ₹75,500
         },
         stats: {
-          totalTransactions: transactions.length || 2,
-          budgetsCreated: budgets.length || 1,
-          savingsGoals: savingsGoals.length || 2, // Correctly matches 2 active goals
+          totalTransactions: totalTransactionsCount,
+          budgetsCreated: budgets.length || 3,
+          savingsGoals: savingsGoals.length || 2,
         },
       },
     };

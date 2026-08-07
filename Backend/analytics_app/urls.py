@@ -1,25 +1,11 @@
 from django.urls import path
-from .views import (
-    FinancialAnalyticsAPIView,
-    BudgetAlertAPIView,
-    FinancialReportAPIView,
-)
+from . import views
 
 urlpatterns = [
-    path(
-        "",
-        FinancialAnalyticsAPIView.as_view(),
-        name="financial-analytics",
-    ),
-
-    path(
-        "budget-alerts/",
-        BudgetAlertAPIView.as_view(),
-        name="budget-alerts",
-    ),
-    path(
-        "report/",
-        FinancialReportAPIView.as_view(),
-        name="financial-report",
-    ),
+    path("dashboard/", views.DashboardAPIView.as_view(), name="dashboard"),
+    path("summary/", views.FinancialSummaryAPIView.as_view(), name="summary"),
+    path("category/", views.CategoryAnalysisAPIView.as_view(), name="category"),
+    path("monthly-trend/", views.MonthlyExpenseTrendAPIView.as_view(), name="monthly-trend"),
+    path("insights/", views.HighestLowestExpenseAPIView.as_view(), name="insights"),
+    path("export/", views.ExportReportAPIView.as_view(), name="export"),
 ]

@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    ExpenseCategoryView,
     ExpenseListCreateView,
     ExpenseRetrieveUpdateDestroyView,
     ExpenseCategorySummaryView,
@@ -31,4 +32,5 @@ urlpatterns = [
         TotalExpenseView.as_view(),
         name="total-expense",
     ),
+    path('categories/', ExpenseCategoryView.as_view(), name='category-list'),
 ]

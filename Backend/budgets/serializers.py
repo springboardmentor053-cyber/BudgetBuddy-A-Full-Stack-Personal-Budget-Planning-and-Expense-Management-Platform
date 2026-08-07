@@ -2,6 +2,15 @@ from rest_framework import serializers
 from .models import Budget
 
 
+class BudgetAlertSerializer(serializers.Serializer):
+    category = serializers.CharField()
+    budget_amount = serializers.DecimalField(max_digits=12, decimal_places=2)
+    total_expense = serializers.DecimalField(max_digits=12, decimal_places=2)
+    utilization = serializers.FloatField()
+    alert_level = serializers.CharField()
+    alert_message = serializers.CharField()
+
+
 class BudgetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Budget
