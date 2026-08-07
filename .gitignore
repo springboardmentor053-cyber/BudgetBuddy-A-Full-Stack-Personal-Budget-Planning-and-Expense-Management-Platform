@@ -1,13 +1,25 @@
+# Virtual environment
+venv/
+.venv/
+
 # Python cache
 __pycache__/
 *.py[cod]
-*$py.class
 
-# Django
-*.sqlite3
-*.log
+# Environment variables
 .env
 
-# Virtual Environment
-.venv/
-venv/
+# VS Code
+.vscode/
+
+# SQLite database (optional)
+# db.sqlite3
+
+# Node modules (React)
+frontend/node_modules/
+
+# React build files
+frontend/dist/
+
+# Logs
+*.log
