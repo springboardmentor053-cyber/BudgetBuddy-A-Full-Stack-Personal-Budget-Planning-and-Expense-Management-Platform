@@ -49,16 +49,16 @@ function Notifications() {
   const getPriorityBadgeStyle = (priority) => {
     switch (priority?.toUpperCase()) {
       case 'HIGH':
-        return { background: '#e74c3c', color: 'white' };
+        return { background: 'linear-gradient(135deg, #ff4d4d 0%, #f43f5e 100%)', color: 'white' };
       case 'MEDIUM':
-        return { background: '#f39c12', color: 'white' };
+        return { background: 'linear-gradient(135deg, #ff9f43 0%, #ff8906 100%)', color: 'white' };
       case 'LOW':
-        return { background: '#3498db', color: 'white' };
+        return { background: 'linear-gradient(135deg, #38b6ff 0%, #0284c7 100%)', color: 'white' };
       case 'CRITICAL':
       case 'URGENT':
-      return  { background: '#c0392b', color: 'white' };
+        return { background: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)', color: 'white' };
       default:
-        return { background: '#95a5a6', color: 'white' };
+        return { background: '#94a3b8', color: 'white' };
     }
   };
 
@@ -66,16 +66,16 @@ function Notifications() {
   const getBorderLeftColor = (priority) => {
     switch (priority?.toUpperCase()) {
       case 'HIGH':
-        return '#e74c3c';
+        return '#ff4d4d';
       case 'MEDIUM':
-        return '#f39c12';
+        return '#ff9f43';
       case 'LOW':
-        return '#3498db';
+        return '#38b6ff';
       case 'CRITICAL':
       case 'URGENT':
-      return  '#c0392b';
+        return '#7c3aed';
       default:
-        return '#95a5a6';
+        return '#94a3b8';
     }
   };
 
@@ -98,49 +98,70 @@ function Notifications() {
   const readCount = notifications.filter(n => n.is_read).length;
 
   return (
-    <MainLayout pageTitle="Notifications 🔔">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '25px', width: '100%' }}>
+    <MainLayout pageTitle="Notifications ">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '25px', width: '100%', fontFamily: 'sans-serif' }}>
         
-        {/* Stat Cards matching Dashboard Style */}
+        {/* Gradient Stat Cards matching Dashboard Style */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
           
-          {/* Card 1: Green */}
+          {/* Card 1: Green Gradient (Total Alerts) */}
           <div style={{
-            backgroundColor: '#2ecc71',
-            borderRadius: '12px',
-            padding: '20px 24px',
+            background: 'linear-gradient(135deg, #2ecc71 0%, #10b981 100%)',
+            borderRadius: '16px',
+            padding: '22px 24px',
             color: 'white',
             textAlign: 'center',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.06)'
+            boxShadow: '0 8px 20px rgba(16, 185, 129, 0.3)'
           }}>
-            <div style={{ fontSize: '1.1rem', fontWeight: '500', marginBottom: '6px' }}>Total Alerts</div>
-            <div style={{ fontSize: '2.2rem', fontWeight: '800' }}>{notifications.length}</div>
+            <div style={{ fontSize: '0.85rem', fontWeight: '800', marginBottom: '8px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+              TOTAL ALERTS
+            </div>
+            <div style={{ fontSize: '2.5rem', fontWeight: '900' }}>{notifications.length}</div>
           </div>
 
-          {/* Card 2: Red */}
+          {/* Card 2: Red/Coral Gradient (Unread Alerts) */}
           <div style={{
-            backgroundColor: '#e74c3c',
-            borderRadius: '12px',
-            padding: '20px 24px',
+            background: 'linear-gradient(135deg, #ff4d4d 0%, #f43f5e 100%)',
+            borderRadius: '16px',
+            padding: '22px 24px',
             color: 'white',
             textAlign: 'center',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.06)'
+            boxShadow: '0 8px 20px rgba(244, 63, 94, 0.3)'
           }}>
-            <div style={{ fontSize: '1.1rem', fontWeight: '500', marginBottom: '6px' }}>Unread Alerts</div>
-            <div style={{ fontSize: '2.2rem', fontWeight: '800' }}>{unreadCount}</div>
+            <div style={{ fontSize: '0.85rem', fontWeight: '800', marginBottom: '8px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+              UNREAD ALERTS
+            </div>
+            <div style={{ fontSize: '2.5rem', fontWeight: '900' }}>{unreadCount}</div>
           </div>
 
-          {/* Card 3: Blue */}
+          {/* Card 3: Cyan/Blue Gradient (Read & Cleared) */}
           <div style={{
-            backgroundColor: '#3498db',
-            borderRadius: '12px',
-            padding: '20px 24px',
+            background: 'linear-gradient(135deg, #38b6ff 0%, #0284c7 100%)',
+            borderRadius: '16px',
+            padding: '22px 24px',
             color: 'white',
             textAlign: 'center',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.06)'
+            boxShadow: '0 8px 20px rgba(2, 132, 199, 0.3)'
           }}>
-            <div style={{ fontSize: '1.1rem', fontWeight: '500', marginBottom: '6px' }}>Read & Cleared</div>
-            <div style={{ fontSize: '2.2rem', fontWeight: '800' }}>{readCount}</div>
+            <div style={{ fontSize: '0.85rem', fontWeight: '800', marginBottom: '8px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+              READ & CLEARED
+            </div>
+            <div style={{ fontSize: '2.5rem', fontWeight: '900' }}>{readCount}</div>
+          </div>
+
+          {/* Card 4: Purple Gradient (Action Required) */}
+          <div style={{
+            background: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
+            borderRadius: '16px',
+            padding: '22px 24px',
+            color: 'white',
+            textAlign: 'center',
+            boxShadow: '0 8px 20px rgba(109, 40, 217, 0.3)'
+          }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: '800', marginBottom: '8px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+              ACTION REQUIRED
+            </div>
+            <div style={{ fontSize: '2.5rem', fontWeight: '900' }}>{unreadCount}</div>
           </div>
 
         </div>
@@ -148,7 +169,7 @@ function Notifications() {
         {/* Action Header & Filter Bar */}
         <div style={{ 
           display: 'flex', 
-          justifyContent: 'space-between', 
+          justify: 'space-between', 
           alignItems: 'center', 
           background: '#ffffff', 
           padding: '20px 25px', 
@@ -158,7 +179,9 @@ function Notifications() {
           gap: '15px'
         }}>
           <div>
-            <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.25rem', fontWeight: '700' }}>System Activity Stream</h3>
+            <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.25rem', fontWeight: '700' }}>
+              ⚡ System Activity Stream
+            </h3>
           </div>
 
           {/* Filter Tabs & Sort Dropdown */}
@@ -172,7 +195,7 @@ function Notifications() {
                     padding: '8px 16px',
                     border: 'none',
                     borderRadius: '8px',
-                    background: filterStatus === status ? '#3498db' : 'transparent',
+                    background: filterStatus === status ? 'linear-gradient(135deg, #38b6ff 0%, #0284c7 100%)' : 'transparent',
                     color: filterStatus === status ? '#ffffff' : '#64748b',
                     fontWeight: '700',
                     cursor: 'pointer',
@@ -206,7 +229,7 @@ function Notifications() {
           </div>
         </div>
 
-        {/* Notifications Card Feed */}
+        {/* Notifications Feed */}
         <div style={{ background: '#ffffff', padding: '25px', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.04)' }}>
           {loading ? (
             <p style={{ textAlign: 'center', color: '#64748b', padding: '20px 0' }}>Loading alerts...</p>
@@ -234,7 +257,7 @@ function Notifications() {
                       borderWidth: '1px 1px 1px 6px',
                       borderColor: `${n.is_read ? '#f1f5f9' : '#e2e8f0'} ${n.is_read ? '#f1f5f9' : '#e2e8f0'} ${n.is_read ? '#f1f5f9' : '#e2e8f0'} ${borderLeftColor}`,
                       display: 'flex',
-                      justifyContent: 'space-between',
+                      justify: 'space-between',
                       alignItems: 'center',
                       gap: '15px'
                     }}
@@ -257,7 +280,7 @@ function Notifications() {
 
                         {!n.is_read && (
                           <span style={{ 
-                            background: '#2ecc71', 
+                            background: 'linear-gradient(135deg, #2ecc71 0%, #10b981 100%)', 
                             color: 'white', 
                             fontSize: '0.65rem', 
                             padding: '3px 8px', 
@@ -281,7 +304,7 @@ function Notifications() {
                           onClick={() => handleMarkAsRead(n.id)}
                           style={{ 
                             padding: '8px 14px', 
-                            background: '#2ecc71', 
+                            background: 'linear-gradient(135deg, #2ecc71 0%, #10b981 100%)', 
                             color: 'white', 
                             border: 'none', 
                             borderRadius: '8px', 
@@ -297,7 +320,7 @@ function Notifications() {
                         onClick={() => handleDelete(n.id)}
                         style={{ 
                           padding: '8px 12px', 
-                          background: '#e74c3c', 
+                          background: 'linear-gradient(135deg, #ff4d4d 0%, #f43f5e 100%)', 
                           color: 'white', 
                           border: 'none', 
                           borderRadius: '8px', 

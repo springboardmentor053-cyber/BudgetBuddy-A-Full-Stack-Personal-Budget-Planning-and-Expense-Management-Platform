@@ -4,8 +4,16 @@ import { Link } from 'react-router-dom';
 function Home() {
   return (
     <div style={{
-      minHeight: '100vh',
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
       width: '100vw',
+      height: '100vh',
+      margin: 0,
+      padding: '20px',
+      boxSizing: 'border-box',
       background: '#1a252f', // Matching sidebar navy tone
       color: '#ecf0f1',
       fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
@@ -13,12 +21,10 @@ function Home() {
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      padding: '20px',
-      boxSizing: 'border-box',
-      position: 'relative',
-      overflow: 'hidden'
+      zIndex: 9999,
+      overflowY: 'auto'
     }}>
-      {/* Background Accent Lines matching sidebar borders */}
+      {/* Background Accent Gradient */}
       <div style={{
         position: 'absolute',
         top: '-150px',
@@ -34,13 +40,14 @@ function Home() {
       <div style={{
         maxWidth: '800px',
         width: '100%',
-        background: '#243342', // Slightly lighter slate card body
+        background: '#243342', // Mid-tone slate card body
         border: '1px solid rgba(255, 255, 255, 0.08)',
         borderRadius: '16px',
         padding: '50px 40px',
         textAlign: 'center',
         boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
-        zIndex: 1
+        zIndex: 1,
+        boxSizing: 'border-box'
       }}>
         
         {/* Sub-tag Badge */}
@@ -80,7 +87,7 @@ function Home() {
           Your full-stack personal budget planning and expense management platform. Track budgets, monitor savings, and control spending effortlessly.
         </p>
 
-        {/* Action Buttons styled like dashboard components */}
+        {/* Action Buttons */}
         <div style={{
           display: 'flex',
           justifyContent: 'center',
@@ -92,7 +99,7 @@ function Home() {
             <button style={{
               padding: '12px 28px',
               borderRadius: '6px',
-              background: '#3498db', // Dashboard Primary Blue
+              background: '#3498db',
               color: 'white',
               border: 'none',
               fontWeight: '700',
@@ -117,7 +124,7 @@ function Home() {
             <button style={{
               padding: '12px 28px',
               borderRadius: '6px',
-              background: '#2ecc71', // Dashboard Success Green
+              background: '#2ecc71',
               color: 'white',
               border: 'none',
               fontWeight: '700',

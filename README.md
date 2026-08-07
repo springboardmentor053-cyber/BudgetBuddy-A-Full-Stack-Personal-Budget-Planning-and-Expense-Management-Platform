@@ -15,20 +15,23 @@ BudgetBuddy is a personal finance management platform designed to help users (es
     *   **Expense Module:**  **Completed** (Expense tracking, categorization, and transaction logs)[cite: 1].
     *   **Income Module:**  **Completed** (Pocket money, scholarships, and freelance earnings)[cite: 1].
     *   **Budget Planning:**  **Completed** (Category-wise monthly budget creation, allocation, and tracking)[cite: 1].
-*   **Milestone 3 (Savings Goals, Notifications & Reports):**  **In Progress**[cite: 1]  
+*   **Milestone 3 (Savings Goals, Notifications, Analytics & Reports):**  **Completed**[cite: 1]  
     *   **Savings Goals Module:**  **Completed** (Goal creation, target amount management, and progress visualization)[cite: 1].
-    *   **Notification & Reminder System:**  **Completed** (Budget limit alerts, savings reminders, and milestone notifications)[cite: 1].
-    *   **Report Generation:** ⏳ **Pending** (PDF/Excel exports and detailed monthly reports)[cite: 1].
-*   **Milestone 4 (Analytics, Testing & Deployment):** ⏳ **Pending**[cite: 1].
+    *   **Notification System:**  **Completed** (In-app & Automated Email notifications for budget limit alerts and savings reminders)[cite: 1].
+    *   **Analytics Dashboard:**  **Completed** (Interactive charts, monthly trends, and spending insights)[cite: 1].
+    *   **Report Generation:**  **Completed** (Financial summaries, expense history, and export capabilities)[cite: 1].
+*   **Milestone 4 (Testing & Final Deployment):** ⏳ **Pending**[cite: 1]  
+    *   End-to-end testing, validation, and production deployment[cite: 1].
 
 ---
 
 ## 🛠️ Tech Stack
 
-*   **Frontend:** React.js, Tailwind CSS, Axios, React Router[cite: 1]
+*   **Frontend:** React.js, Tailwind CSS, Axios, React Router, Chart.js / Recharts[cite: 1]
 *   **Backend:** Python, Django REST Framework / FastAPI[cite: 1]
 *   **Database:** SQLite (Local Dev) / PostgreSQL (Production)[cite: 1]
 *   **Authentication:** JWT (JSON Web Tokens)[cite: 1]
+*   **Notifications:** Email Services (SendGrid / SMTP integration)[cite: 1]
 
 ---
 
@@ -52,8 +55,11 @@ BudgetBuddy is a personal finance management platform designed to help users (es
 *   **Notification System:**[cite: 1]
     *   Automated alerts for budget limit breaches[cite: 1].
     *   Savings progress reminders and goal milestone notifications[cite: 1].
+    *   **Email Notification Support** for real-time transaction and budget limit alerts[cite: 1].
+*   **Analytics & Visualizations:**[cite: 1]
+    *   Interactive visual dashboards for spending trends and category analysis[cite: 1].
+*   **Reports & Export System:**[cite: 1]
+    *   Generate and export detailed monthly financial summaries and transaction reports[cite: 1].
 
 ### 2. Pending Features (To Be Implemented)
-*   **Report Generation & Export:** Export financial summaries and expense history to PDF/Excel[cite: 1].
-*   **Analytics Dashboard:** Interactive charts showing monthly trends and category-wise spending insights[cite: 1].
-*   **Final Deployment & Validation:** End-to-end testing and production deployment[cite: 1].
+*   **Final Deployment & Validation:** End-to-end system testing and production deployment[cite: 1].

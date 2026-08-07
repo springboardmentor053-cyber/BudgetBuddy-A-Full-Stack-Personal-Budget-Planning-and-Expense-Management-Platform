@@ -12,6 +12,9 @@ from budgets.services import check_and_trigger_budget_alert
 # Import the SendGrid email function you created in notifications/utils.py
 from notifications.utils import send_budget_alert_email
 
+# Reuse date parsing and transaction filtering helpers from reports
+from reports.services import parse_date_filters, filter_transactions
+
 
 # Helper function to recalculate budget utilization & trigger alerts
 def sync_budget_alert(user, category, expense_date):
@@ -31,8 +34,8 @@ def sync_budget_alert(user, category, expense_date):
         total_expense = Expense.objects.filter(
             user=user,
             category=category,
-            created_at__month=budget.month,
-            created_at__year=budget.year
+            expense_date__month=budget.month,
+            expense_date__year=budget.year
         ).aggregate(total=Sum('amount'))['total'] or 0.00
 
         # 1. Evaluate threshold logic and create Notification in DB
@@ -57,23 +60,32 @@ class ExpenseListCreateView(APIView):
         # Start with only the logged-in user's expenses
         queryset = Expense.objects.filter(user=request.user)
 
-        # Task 3: Filter Expenses by Category
+        # Basic search by title
+        search = request.query_params.get('search')
+        if search:
+            queryset = queryset.filter(title__icontains=search)
+
+        # Category filter
         category_filter = request.query_params.get('category', None)
         if category_filter:
             queryset = queryset.filter(category=category_filter.upper())
 
-        # Task 4: Sort Expenses
+        # Date filters and range support
+        filters = parse_date_filters(request)
+        queryset = filter_transactions(queryset, 'expense_date', **filters)
+
+        # Sorting
         sort_by = request.query_params.get('sort', None)
         if sort_by == 'latest':
-            queryset = queryset.order_by('-created_at')
+            queryset = queryset.order_by('-expense_date')
         elif sort_by == 'oldest':
-            queryset = queryset.order_by('created_at')
+            queryset = queryset.order_by('expense_date')
         elif sort_by == 'highest':
             queryset = queryset.order_by('-amount')
         elif sort_by == 'lowest':
             queryset = queryset.order_by('amount')
         else:
-            queryset = queryset.order_by('-created_at') # Default to latest first
+            queryset = queryset.order_by('-expense_date') # Default to latest first
 
         serializer = ExpenseSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -83,9 +95,9 @@ class ExpenseListCreateView(APIView):
         serializer = ExpenseSerializer(data=request.data)
         if serializer.is_valid():
             expense = serializer.save(user=request.user)
-            
+
             # Recalculate budget utilization and check threshold
-            expense_date = getattr(expense, 'created_at', None) or getattr(expense, 'date', None)
+            expense_date = getattr(expense, 'expense_date', None) or getattr(expense, 'created_at', None)
             sync_budget_alert(request.user, expense.category, expense_date)
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -99,14 +111,14 @@ class ExpenseDetailView(APIView):
     def put(self, request, pk):
         expense = get_object_or_404(Expense, pk=pk, user=request.user)
         old_category = expense.category
-        old_date = getattr(expense, 'created_at', None) or getattr(expense, 'date', None)
+        old_date = getattr(expense, 'expense_date', None) or getattr(expense, 'created_at', None)
 
         serializer = ExpenseSerializer(expense, data=request.data, partial=True)
         if serializer.is_valid():
             updated_expense = serializer.save()
 
             # Recalculate budget for the updated category/date
-            new_date = getattr(updated_expense, 'created_at', None) or getattr(updated_expense, 'date', None)
+            new_date = getattr(updated_expense, 'expense_date', None) or getattr(updated_expense, 'created_at', None)
             sync_budget_alert(request.user, updated_expense.category, new_date)
 
             # If category changed, recalculate the old category as well
@@ -119,13 +131,13 @@ class ExpenseDetailView(APIView):
     def patch(self, request, pk):
         expense = get_object_or_404(Expense, pk=pk, user=request.user)
         old_category = expense.category
-        old_date = getattr(expense, 'created_at', None) or getattr(expense, 'date', None)
+        old_date = getattr(expense, 'expense_date', None) or getattr(expense, 'created_at', None)
 
         serializer = ExpenseSerializer(expense, data=request.data, partial=True)
         if serializer.is_valid():
             updated_expense = serializer.save()
 
-            new_date = getattr(updated_expense, 'created_at', None) or getattr(updated_expense, 'date', None)
+            new_date = getattr(updated_expense, 'expense_date', None) or getattr(updated_expense, 'created_at', None)
             sync_budget_alert(request.user, updated_expense.category, new_date)
 
             if old_category != updated_expense.category:
@@ -137,7 +149,7 @@ class ExpenseDetailView(APIView):
     def delete(self, request, pk):
         expense = get_object_or_404(Expense, pk=pk, user=request.user)
         category = expense.category
-        expense_date = getattr(expense, 'created_at', None) or getattr(expense, 'date', None)
+        expense_date = getattr(expense, 'expense_date', None) or getattr(expense, 'created_at', None)
 
         expense.delete()
 

@@ -1,7 +1,5 @@
-# C:\Users\Anagha\OneDrive\Desktop\BudgetBuddy\backend\urls.py
-
 from django.contrib import admin
-from django.urls import path, include  # Added 'include' here
+from django.urls import path, include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from users.views import RegisterView, LogoutView, ProtectedTestView
 from expenses.views import ExpenseListCreateView, ExpenseDetailView, ExpenseTotalView 
@@ -55,7 +53,7 @@ urlpatterns = [
     # Income Core (List all, Create new log)
     path('api/income/', income_list, name='income_list_create'),
     
-    # Income Detail (Get specific log, Update/Edit it, Delete it)
+    # Income Detail (Get specific log, Edit/Update, Delete)
     path('api/income/<int:pk>/', income_detail, name='income_detail'),
     
     # ==================== BUDGET MODULE ENDPOINTS ====================
@@ -73,9 +71,14 @@ urlpatterns = [
     path('api/summary/', TransactionDashboardView.as_view(), name='transaction_dashboard'),
 
     # ==================== SAVINGS GOALS ENDPOINTS ====================
+    # NOTE: Changed 'analytics/' to 'reports/' below
+    path('api/reports/', include('reports.urls')),
+
     path('api/savings/', include('savings.urls')),
 
-# ==================== NOTIFICATIONS ENDPOINTS ====================
+    # ==================== NOTIFICATIONS ENDPOINTS ====================
     path('api/notifications/', include('notifications.urls')),
-    path('api/users/', include('users.urls'))
+    
+    # ==================== USER PROFILE ENDPOINTS ====================
+    path('api/users/', include('users.urls')),
 ]

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import MainLayout from '../layouts/MainLayout';
 import api from '../services/api';
 
@@ -9,10 +9,10 @@ function Budgets() {
   // Form State
   const [category, setCategory] = useState('FOOD');
   const [amount, setAmount] = useState('');
-  const [month, setMonth] = useState(new Date().getMonth() + 1); // Default to current month (1-12)
-  const [year, setYear] = useState(2026); // Default matching target project year
+  const [month, setMonth] = useState(new Date().getMonth() + 1); // Default (1-12)
+  const [year, setYear] = useState(2026);
 
-  // View Filter State (Defaults to current month/year)
+  // View Filter State
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(2026);
 
@@ -20,7 +20,6 @@ function Budgets() {
   const [editingId, setEditingId] = useState(null);
   const [editAmount, setEditAmount] = useState('');
 
-  // Dropdown options matching the expense categories exactly
   const categories = [
     { value: 'FOOD', label: 'Food 🍔' },
     { value: 'TRAVEL', label: 'Travel ✈️' },
@@ -47,16 +46,13 @@ function Budgets() {
     { value: 12, label: 'December' },
   ];
 
-  // Safely fetch budgets handling both standard arrays and DRF paginated arrays
   const fetchBudgets = async () => {
     try {
       setLoading(true);
       const res = await api.get('budgets/');
-      
       const budgetList = Array.isArray(res.data) 
         ? res.data 
         : (res.data?.results || []);
-        
       setBudgets(budgetList);
     } catch (err) {
       console.error('Error retrieving budget layouts:', err);
@@ -69,7 +65,6 @@ function Budgets() {
     fetchBudgets();
   }, []);
 
-  // CREATE Budget matching exact backend column field names
   const handleCreateBudget = async (e) => {
     e.preventDefault();
     if (!amount || parseFloat(amount) <= 0) {
@@ -85,10 +80,8 @@ function Budgets() {
         year: parseInt(year, 10),
       });
       
-      // Auto switch the list filter to match the newly added budget's month & year
       setSelectedMonth(parseInt(month, 10));
       setSelectedYear(parseInt(year, 10));
-      
       setAmount('');
       fetchBudgets();
     } catch (err) {
@@ -96,27 +89,19 @@ function Budgets() {
       console.error("Backend validation or database error details:", errorData);
       
       let errorMsg = 'Failed to save budget.';
-      
       if (errorData) {
         if (typeof errorData === 'object') {
           errorMsg = Object.entries(errorData)
-            .map(([field, msgs]) => {
-              const cleanedMsgs = Array.isArray(msgs) ? msgs.join(', ') : JSON.stringify(msgs);
-              return `${field}: ${cleanedMsgs}`;
-            })
+            .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : JSON.stringify(msgs)}`)
             .join('\n');
         } else {
           errorMsg = String(errorData);
         }
-      } else {
-        errorMsg = err.message || errorMsg;
       }
-
       alert(errorMsg);
     }
   };
 
-  // UPDATE Budget Limit
   const handleSaveUpdate = async (id) => {
     if (!editAmount || parseFloat(editAmount) <= 0) {
       alert('Please input a positive non-zero value!');
@@ -135,7 +120,6 @@ function Budgets() {
     }
   };
 
-  // DELETE Budget
   const handleDeleteBudget = async (id) => {
     if (window.confirm('Are you sure you want to completely erase this category budget?')) {
       try {
@@ -147,93 +131,211 @@ function Budgets() {
     }
   };
 
-  // Filter budgets dynamically based on month & year selectors
-  const filteredBudgets = budgets.filter((b) => {
-    return parseInt(b.month, 10) === parseInt(selectedMonth, 10) &&
-           parseInt(b.year, 10) === parseInt(selectedYear, 10);
-  });
+  // Filtered list based on month/year
+  const filteredBudgets = useMemo(() => {
+    return budgets.filter((b) => {
+      return parseInt(b.month, 10) === parseInt(selectedMonth, 10) &&
+             parseInt(b.year, 10) === parseInt(selectedYear, 10);
+    });
+  }, [budgets, selectedMonth, selectedYear]);
+
+  // Aggregate totals for top summary cards
+  const { totalAllocated, totalSpent, totalRemaining } = useMemo(() => {
+    const allocated = filteredBudgets.reduce((acc, b) => acc + (parseFloat(b.budget_amount) || 0), 0);
+    const spent = filteredBudgets.reduce((acc, b) => acc + (parseFloat(b.current_amount) || 0), 0);
+    const remaining = allocated - spent;
+    return {
+      totalAllocated: allocated,
+      totalSpent: spent,
+      totalRemaining: remaining
+    };
+  }, [filteredBudgets]);
+
+  // Reusable Input Style for set budget form
+  const inputStyle = {
+    width: '100%',
+    padding: '10px 12px',
+    borderRadius: '10px',
+    border: '1.5px solid #cbd5e1',
+    backgroundColor: '#ffffff',
+    color: '#0f172a',
+    fontSize: '0.9rem',
+    fontWeight: '600',
+    outline: 'none',
+    boxSizing: 'border-box'
+  };
 
   return (
-    <MainLayout pageTitle="Monthly Budget Planning">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '30px', width: '100%' }}>
+    <MainLayout pageTitle="Monthly Budget Planning ">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '25px', width: '100%', fontFamily: 'sans-serif' }}>
         
-        {/* Set Budget Form Card */}
-        <div style={{ background: 'white', padding: '25px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-          <h3 style={{ color: '#2c3e50', margin: '0 0 20px 0', fontSize: '1.3rem' }}>Set Category Budget</h3>
+        {/* TOP GRADIENT SUMMARY CARDS */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          
+          {/* Total Budget Allocated */}
+          <div style={{
+            background: 'linear-gradient(135deg, #38b6ff 0%, #0284c7 100%)',
+            borderRadius: '16px',
+            padding: '18px 16px',
+            color: 'white',
+            textAlign: 'center',
+            boxShadow: '0 8px 20px rgba(2, 132, 199, 0.25)',
+            overflow: 'hidden'
+          }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: '800', marginBottom: '6px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+              TOTAL BUDGET ALLOCATED
+            </div>
+            <div style={{ fontSize: 'clamp(1.4rem, 2vw, 1.8rem)', fontWeight: '900', wordBreak: 'break-word', lineHeight: '1.2' }}>
+              ₹{totalAllocated.toFixed(2)}
+            </div>
+          </div>
+
+          {/* Total Spent */}
+          <div style={{
+            background: 'linear-gradient(135deg, #ff4d4d 0%, #f43f5e 100%)',
+            borderRadius: '16px',
+            padding: '18px 16px',
+            color: 'white',
+            textAlign: 'center',
+            boxShadow: '0 8px 20px rgba(244, 63, 94, 0.25)',
+            overflow: 'hidden'
+          }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: '800', marginBottom: '6px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+              TOTAL SPENT
+            </div>
+            <div style={{ fontSize: 'clamp(1.4rem, 2vw, 1.8rem)', fontWeight: '900', wordBreak: 'break-word', lineHeight: '1.2' }}>
+              ₹{totalSpent.toFixed(2)}
+            </div>
+          </div>
+
+          {/* Remaining Budget */}
+          <div style={{
+            background: totalRemaining < 0 
+              ? 'linear-gradient(135deg, #ff4d4d 0%, #dc2626 100%)' 
+              : 'linear-gradient(135deg, #ff4081 0%, #ff527b 100%)',
+            borderRadius: '16px',
+            padding: '18px 16px',
+            color: 'white',
+            textAlign: 'center',
+            boxShadow: '0 8px 20px rgba(255, 64, 129, 0.25)',
+            overflow: 'hidden'
+          }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: '800', marginBottom: '6px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+              {totalRemaining < 0 ? 'OVER BUDGET BY' : 'REMAINING BUDGET'}
+            </div>
+            <div style={{ fontSize: 'clamp(1.4rem, 2vw, 1.8rem)', fontWeight: '900', wordBreak: 'break-word', lineHeight: '1.2' }}>
+              ₹{Math.abs(totalRemaining).toFixed(2)}
+            </div>
+          </div>
+
+          {/* Active Trackers */}
+          <div style={{
+            background: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
+            borderRadius: '16px',
+            padding: '18px 16px',
+            color: 'white',
+            textAlign: 'center',
+            boxShadow: '0 8px 20px rgba(109, 40, 217, 0.25)',
+            overflow: 'hidden'
+          }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: '800', marginBottom: '6px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+              ACTIVE CATEGORIES
+            </div>
+            <div style={{ fontSize: 'clamp(1.4rem, 2vw, 1.8rem)', fontWeight: '900', wordBreak: 'break-word', lineHeight: '1.2' }}>
+              {filteredBudgets.length}
+            </div>
+          </div>
+
+        </div>
+
+        {/* SET BUDGET FORM CARD (DARK SLATE NAVY) */}
+        <div style={{ 
+          background: '#2b3d4e', 
+          padding: '25px', 
+          borderRadius: '16px', 
+          boxShadow: '0 8px 25px rgba(43, 61, 78, 0.25)' 
+        }}>
+          <h3 style={{ color: '#ffffff', margin: '0 0 20px 0', fontSize: '1.25rem', fontWeight: '700' }}>
+            ➕ Set Category Budget
+          </h3>
           
           <form onSubmit={handleCreateBudget} style={{ display: 'flex', flexWrap: 'wrap', gap: '15px', alignItems: 'flex-end' }}>
-            {/* Category Dropdown */}
-            <div style={{ flex: 1, minWidth: '150px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: '#7f8c8d', fontWeight: 'bold' }}>Category</label>
+            <div style={{ flex: '1 1 180px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: '#ffffff', fontWeight: '700' }}>Category</label>
               <select 
                 value={category} 
                 onChange={(e) => setCategory(e.target.value)}
-                style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #dcdde1', outline: 'none' }}
+                style={inputStyle}
               >
-                {categories.map(cat => <option key={cat.value} value={cat.value}>{cat.label}</option>)}
+                {categories.map(cat => <option key={cat.value} value={cat.value} style={{ background: '#ffffff', color: '#0f172a' }}>{cat.label}</option>)}
               </select>
             </div>
 
-            {/* Budget Target Limit */}
-            <div style={{ flex: 1, minWidth: '150px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: '#7f8c8d', fontWeight: 'bold' }}>Budget Limit (₹)</label>
+            <div style={{ flex: '1 1 180px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: '#ffffff', fontWeight: '700' }}>Budget Limit (₹)</label>
               <input 
                 type="number" 
                 placeholder="e.g. 5000"
                 value={amount} 
                 onChange={(e) => setAmount(e.target.value)}
-                style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #dcdde1', boxSizing: 'border-box' }}
+                style={inputStyle}
               />
             </div>
 
-            {/* Target Month */}
-            <div style={{ width: '130px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: '#7f8c8d', fontWeight: 'bold' }}>Month</label>
+            <div style={{ flex: '1 1 130px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: '#ffffff', fontWeight: '700' }}>Month</label>
               <select 
                 value={month} 
                 onChange={(e) => setMonth(parseInt(e.target.value, 10))}
-                style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #dcdde1' }}
+                style={inputStyle}
               >
-                {months.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+                {months.map(m => <option key={m.value} value={m.value} style={{ background: '#ffffff', color: '#0f172a' }}>{m.label}</option>)}
               </select>
             </div>
 
-            {/* Target Year */}
-            <div style={{ width: '100px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: '#7f8c8d', fontWeight: 'bold' }}>Year</label>
+            <div style={{ flex: '1 1 110px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: '#ffffff', fontWeight: '700' }}>Year</label>
               <input 
                 type="number" 
                 value={year} 
                 onChange={(e) => setYear(parseInt(e.target.value, 10) || '')}
-                style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #dcdde1', boxSizing: 'border-box' }}
+                style={inputStyle}
               />
             </div>
 
-            {/* Submit Button */}
             <button 
               type="submit" 
-              style={{ padding: '10px 20px', background: '#3498db', color: 'white', border: 'none', borderRadius: '5px', fontWeight: 'bold', cursor: 'pointer', height: '42px' }}
+              style={{ 
+                padding: '10px 24px', 
+                background: 'linear-gradient(135deg, #2ecc71 0%, #10b981 100%)', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: '10px', 
+                fontWeight: '700', 
+                cursor: 'pointer', 
+                height: '42px',
+                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+                whiteSpace: 'nowrap'
+              }}
             >
               Add Budget
             </button>
           </form>
         </div>
 
-        {/* List of Budgets with Month Filter Controls */}
-        <div style={{ background: 'white', padding: '25px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+        {/* LIST OF BUDGETS WITH FILTER */}
+        <div style={{ background: '#f8fafc', border: '1.5px solid #e2e8f0', padding: '25px', borderRadius: '16px', boxShadow: '0 4px 15px rgba(0,0,0,0.03)' }}>
           
-          {/* Header Row with Filter Dropdowns */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px', marginBottom: '20px' }}>
-            <h3 style={{ color: '#2c3e50', margin: 0, fontSize: '1.3rem' }}>Active Trackers</h3>
+            <h3 style={{ color: '#1e293b', margin: 0, fontSize: '1.25rem', fontWeight: '700' }}>Active Trackers</h3>
             
-            {/* Filter Bar */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#f8f9fa', padding: '6px 12px', borderRadius: '6px', border: '1px solid #e1e8ed' }}>
-              <span style={{ fontSize: '0.85rem', color: '#7f8c8d', fontWeight: 'bold' }}>Filter View:</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#ffffff', padding: '6px 14px', borderRadius: '10px', border: '1px solid #cbd5e1' }}>
+              <span style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: '700' }}>Filter View:</span>
               
               <select 
                 value={selectedMonth} 
                 onChange={(e) => setSelectedMonth(parseInt(e.target.value, 10))}
-                style={{ padding: '6px 10px', borderRadius: '4px', border: '1px solid #dcdde1', fontSize: '0.85rem', fontWeight: '600', color: '#2c3e50', background: 'white' }}
+                style={{ padding: '6px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#334155', background: 'white' }}
               >
                 {months.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
               </select>
@@ -241,7 +343,7 @@ function Budgets() {
               <select 
                 value={selectedYear} 
                 onChange={(e) => setSelectedYear(parseInt(e.target.value, 10))}
-                style={{ padding: '6px 10px', borderRadius: '4px', border: '1px solid #dcdde1', fontSize: '0.85rem', fontWeight: '600', color: '#2c3e50', background: 'white' }}
+                style={{ padding: '6px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: '600', color: '#334155', background: 'white' }}
               >
                 {[2024, 2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
               </select>
@@ -249,10 +351,10 @@ function Budgets() {
           </div>
 
           {loading ? (
-            <p style={{ textAlign: 'center', color: '#7f8c8d' }}>Retrieving live budget progress summary...</p>
+            <p style={{ textAlign: 'center', color: '#64748b', padding: '20px 0' }}>Retrieving live budget progress summary...</p>
           ) : filteredBudgets.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '30px 0' }}>
-              <p style={{ color: '#95a5a6', fontStyle: 'italic', margin: '0 0 10px 0' }}>
+              <p style={{ color: '#94a3b8', fontStyle: 'italic', margin: '0 0 10px 0' }}>
                 No active budgets found for {months.find(m => m.value === selectedMonth)?.label} {selectedYear}.
               </p>
               <button 
@@ -260,7 +362,7 @@ function Budgets() {
                   setMonth(selectedMonth);
                   setYear(selectedYear);
                 }} 
-                style={{ background: 'none', border: 'none', color: '#3498db', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem', textDecoration: 'underline' }}
+                style={{ background: 'none', border: 'none', color: '#38b6ff', cursor: 'pointer', fontWeight: '700', fontSize: '0.9rem', textDecoration: 'underline' }}
               >
                 Set a budget for this month
               </button>
@@ -279,68 +381,69 @@ function Budgets() {
                   <div 
                     key={b.id} 
                     style={{ 
-                      borderRadius: '8px', 
+                      borderRadius: '14px', 
                       padding: '20px', 
                       display: 'flex', 
                       flexDirection: 'column', 
                       justifyContent: 'space-between',
                       boxSizing: 'border-box',
                       background: isOverspent ? '#fff5f5' : '#ffffff',
-                      border: isOverspent ? '1.5px solid #fecaca' : '1px solid #e1e8ed', 
-                      boxShadow: isOverspent ? '0 4px 12px rgba(239, 68, 68, 0.12)' : '0 2px 5px rgba(0,0,0,0.02)'
+                      border: isOverspent ? '1.5px solid #fecaca' : '1px solid #e2e8f0', 
+                      boxShadow: isOverspent ? '0 4px 12px rgba(239, 68, 68, 0.12)' : '0 2px 8px rgba(0,0,0,0.03)'
                     }}
                   >
                     <div>
-                      {/* Card Header Category + Date Block */}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                         <div>
-                          <h4 style={{ margin: '0 0 4px 0', color: isOverspent ? '#b91c1c' : '#2c3e50', fontSize: '1.15rem', fontWeight: '700' }}>
+                          <h4 style={{ margin: '0 0 4px 0', color: isOverspent ? '#b91c1c' : '#0f172a', fontSize: '1.1rem', fontWeight: '700' }}>
                             {categories.find(c => c.value === b.category)?.label || b.category}
                           </h4>
-                          <span style={{ fontSize: '0.8rem', color: isOverspent ? '#ef4444' : '#7f8c8d', fontWeight: '500' }}>
+                          <span style={{ fontSize: '0.8rem', color: isOverspent ? '#ef4444' : '#64748b', fontWeight: '500' }}>
                             {months.find(m => m.value === parseInt(b.month, 10))?.label} {b.year}
                           </span>
                         </div>
                         
-                        {/* Status Warning Badges */}
                         {isOverspent ? (
-                          <span style={{ background: '#dc2626', color: 'white', padding: '4px 10px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(220, 38, 38, 0.3)' }}>
+                          <span style={{ background: '#dc2626', color: 'white', padding: '4px 10px', borderRadius: '20px', fontSize: '0.72rem', fontWeight: '800' }}>
                             Overspent! ⚠️
                           </span>
                         ) : (
-                          <span style={{ background: '#3498db', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                          <span style={{ background: '#2ecc71', color: 'white', padding: '4px 10px', borderRadius: '20px', fontSize: '0.72rem', fontWeight: '800' }}>
                             On Track
                           </span>
                         )}
                       </div>
 
-                      {/* Visual Spending Progress bar */}
-                      <div style={{ width: '100%', height: '10px', background: isOverspent ? '#fee2e2' : '#ecf0f1', borderRadius: '5px', margin: '15px 0 10px 0', overflow: 'hidden' }}>
-                        <div style={{ width: `${percent}%`, height: '100%', background: isOverspent ? '#dc2626' : '#3498db', transition: 'width 0.4s ease' }} />
+                      {/* Visual Progress Bar */}
+                      <div style={{ width: '100%', height: '10px', background: isOverspent ? '#fee2e2' : '#f1f5f9', borderRadius: '5px', margin: '15px 0 10px 0', overflow: 'hidden' }}>
+                        <div style={{ 
+                          width: `${percent}%`, 
+                          height: '100%', 
+                          background: isOverspent ? 'linear-gradient(90deg, #ff4d4d 0%, #dc2626 100%)' : 'linear-gradient(90deg, #38b6ff 0%, #0284c7 100%)', 
+                          transition: 'width 0.4s ease' 
+                        }} />
                       </div>
 
-                      {/* Summary Metrics */}
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '0.85rem', color: '#34495e', margin: '10px 0' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '0.85rem', color: '#334155', margin: '12px 0' }}>
                         <div>
-                          <strong style={{ color: isOverspent ? '#991b1b' : '#34495e' }}>Spent:</strong> ₹{totalSpent.toFixed(2)}
+                          <strong>Spent:</strong> ₹{totalSpent.toFixed(2)}
                         </div>
                         <div>
-                          <strong style={{ color: isOverspent ? '#991b1b' : '#34495e' }}>Target Limit:</strong> ₹{budgetLimit.toFixed(2)}
+                          <strong>Limit:</strong> ₹{budgetLimit.toFixed(2)}
                         </div>
                         {isOverspent ? (
-                          <div style={{ gridColumn: 'span 2', color: '#b91c1c', fontSize: '0.9rem', marginTop: '4px' }}>
-                            <strong>Over Limit By:</strong> ₹{overspentAmount.toFixed(2)}
+                          <div style={{ gridColumn: 'span 2', color: '#b91c1c', fontSize: '0.88rem', fontWeight: '700', marginTop: '4px' }}>
+                            Over Limit By: ₹{overspentAmount.toFixed(2)}
                           </div>
                         ) : (
-                          <div style={{ gridColumn: 'span 2', color: '#3498db' }}>
-                            <strong>Available Remaining:</strong> ₹{remaining.toFixed(2)}
+                          <div style={{ gridColumn: 'span 2', color: '#0284c7', fontSize: '0.88rem', fontWeight: '700', marginTop: '4px' }}>
+                            Remaining: ₹{remaining.toFixed(2)}
                           </div>
                         )}
                       </div>
                     </div>
 
-                    {/* Inline edit and delete buttons footer */}
-                    <div style={{ display: 'flex', gap: '10px', marginTop: '15px', borderTop: isOverspent ? '1px solid #fca5a5' : '1px solid #f1f2f6', paddingTop: '15px', justifyContent: 'flex-end' }}>
+                    <div style={{ display: 'flex', gap: '10px', marginTop: '15px', borderTop: isOverspent ? '1px solid #fca5a5' : '1px solid #f1f5f9', paddingTop: '15px', justifyContent: 'flex-end' }}>
                       {editingId === b.id ? (
                         <>
                           <input 
@@ -348,12 +451,12 @@ function Budgets() {
                             value={editAmount} 
                             onChange={(e) => setEditAmount(e.target.value)}
                             placeholder="New limit"
-                            style={{ width: '100px', padding: '6px', borderRadius: '4px', border: '1px solid #ccd1d9', fontSize: '0.85rem' }}
+                            style={{ width: '100px', padding: '6px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', backgroundColor: '#ffffff', color: '#0f172a' }}
                           />
-                          <button onClick={() => handleSaveUpdate(b.id)} style={{ padding: '6px 12px', background: '#3498db', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}>
+                          <button onClick={() => handleSaveUpdate(b.id)} style={{ padding: '6px 12px', background: '#38b6ff', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700' }}>
                             Save
                           </button>
-                          <button onClick={() => setEditingId(null)} style={{ padding: '6px 12px', background: '#95a5a6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}>
+                          <button onClick={() => setEditingId(null)} style={{ padding: '6px 12px', background: '#94a3b8', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700' }}>
                             Cancel
                           </button>
                         </>
@@ -364,13 +467,13 @@ function Budgets() {
                               setEditingId(b.id);
                               setEditAmount(b.budget_amount);
                             }}
-                            style={{ padding: '6px 12px', background: '#f1c40f', color: '#2c3e50', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem' }}
+                            style={{ padding: '6px 14px', background: '#f59e0b', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '700', fontSize: '0.82rem' }}
                           >
                             Edit
                           </button>
                           <button 
                             onClick={() => handleDeleteBudget(b.id)}
-                            style={{ padding: '6px 12px', background: '#e74c3c', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem' }}
+                            style={{ padding: '6px 14px', background: '#ff4d4d', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '700', fontSize: '0.82rem' }}
                           >
                             Delete
                           </button>

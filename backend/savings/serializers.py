@@ -7,6 +7,7 @@ class SavingsGoalSerializer(serializers.ModelSerializer):
     # Dynamic computed fields for Goal Progress API (Task 5)
     remaining_amount = serializers.SerializerMethodField()
     progress_percentage = serializers.SerializerMethodField()
+    days_remaining = serializers.SerializerMethodField()
 
     class Meta:
         model = SavingsGoal
@@ -18,8 +19,9 @@ class SavingsGoalSerializer(serializers.ModelSerializer):
             'saved_amount',
             'target_date',
             'status',
-            'remaining_amount',
-            'progress_percentage',
+                'remaining_amount',
+                'progress_percentage',
+                'days_remaining',
             'created_at',
             'updated_at',
         ]
@@ -52,3 +54,10 @@ class SavingsGoalSerializer(serializers.ModelSerializer):
         if self.instance is None and value < timezone.now().date():
             raise serializers.ValidationError("Target Date should not be in the past while creating a new goal.")
         return value
+
+    def get_days_remaining(self, obj):
+        if not obj.target_date:
+            return None
+        today = timezone.now().date()
+        delta = (obj.target_date - today).days
+        return max(0, delta)

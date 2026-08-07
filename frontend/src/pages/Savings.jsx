@@ -17,11 +17,18 @@ function Savings() {
   const [activeDepositId, setActiveDepositId] = useState(null);
   const [depositAmount, setDepositAmount] = useState('');
 
+  // Edit Goal State
+  const [editingGoal, setEditingGoal] = useState(null);
+  const [editName, setEditName] = useState('');
+  const [editTarget, setEditTarget] = useState('');
+  const [editSaved, setEditSaved] = useState('');
+  const [editDate, setEditDate] = useState('');
+  const [editStatus, setEditStatus] = useState('IN_PROGRESS');
+
   // Fetch all Savings Goals from Backend API
   const fetchGoals = async () => {
     try {
       setLoading(true);
-      // FIXED: Changed 'savings/goals/' to 'savings/'
       const res = await api.get('savings/');
       const goalList = Array.isArray(res.data) ? res.data : (res.data?.results || []);
       setGoals(goalList);
@@ -36,7 +43,7 @@ function Savings() {
     fetchGoals();
   }, []);
 
-  // Create Goal with Validations
+  // Create Goal
   const handleCreateGoal = async (e) => {
     e.preventDefault();
 
@@ -57,7 +64,6 @@ function Savings() {
     }
 
     try {
-      // FIXED: Changed 'savings/goals/' to 'savings/'
       await api.post('savings/', {
         goal_name: goalName,
         target_amount: parseFloat(targetAmount),
@@ -66,7 +72,6 @@ function Savings() {
         status: status,
       });
 
-      // Reset Form & Refresh List
       setGoalName('');
       setTargetAmount('');
       setSavedAmount('');
@@ -79,7 +84,7 @@ function Savings() {
     }
   };
 
-  // Quick Add / Deposit Funds to Goal
+  // Quick Add / Deposit Funds
   const handleAddDeposit = async (goal) => {
     if (!depositAmount || parseFloat(depositAmount) <= 0) {
       alert('Please enter a valid deposit amount!');
@@ -90,7 +95,6 @@ function Savings() {
     const newStatus = newSavedTotal >= parseFloat(goal.target_amount) ? 'COMPLETED' : goal.status;
 
     try {
-      // FIXED: Changed 'savings/goals/${goal.id}/' to 'savings/${goal.id}/'
       await api.patch(`savings/${goal.id}/`, {
         saved_amount: newSavedTotal,
         status: newStatus,
@@ -103,11 +107,47 @@ function Savings() {
     }
   };
 
+  // Open Edit Modal / Setup State
+  const startEditing = (goal) => {
+    setEditingGoal(goal);
+    setEditName(goal.goal_name || '');
+    setEditTarget(goal.target_amount || '');
+    setEditSaved(goal.saved_amount || '');
+    setEditDate(goal.target_date || '');
+    setEditStatus(goal.status || 'IN_PROGRESS');
+  };
+
+  // Save Edit Changes
+  const handleUpdateGoal = async (e) => {
+    e.preventDefault();
+    if (!editingGoal) return;
+
+    if (!editTarget || parseFloat(editTarget) <= 0) {
+      alert('Target Amount should be greater than zero.');
+      return;
+    }
+
+    const autoStatus = parseFloat(editSaved) >= parseFloat(editTarget) ? 'COMPLETED' : editStatus;
+
+    try {
+      await api.put(`savings/${editingGoal.id}/`, {
+        goal_name: editName,
+        target_amount: parseFloat(editTarget),
+        saved_amount: editSaved ? parseFloat(editSaved) : 0.00,
+        target_date: editDate,
+        status: autoStatus,
+      });
+      setEditingGoal(null);
+      fetchGoals();
+    } catch (err) {
+      alert('Failed to update savings goal.');
+    }
+  };
+
   // Delete Savings Goal
   const handleDeleteGoal = async (id) => {
     if (window.confirm('Are you sure you want to delete this savings goal?')) {
       try {
-        // FIXED: Changed 'savings/goals/${id}/' to 'savings/${id}/'
         await api.delete(`savings/${id}/`);
         fetchGoals();
       } catch (err) {
@@ -116,101 +156,203 @@ function Savings() {
     }
   };
 
-  // Metric aggregates
+  // Aggregates
   const totalTarget = goals.reduce((acc, g) => acc + (parseFloat(g.target_amount) || 0), 0);
   const totalSaved = goals.reduce((acc, g) => acc + (parseFloat(g.saved_amount) || 0), 0);
   const overallProgress = totalTarget > 0 ? ((totalSaved / totalTarget) * 100).toFixed(1) : 0;
 
+  const inputStyle = {
+    width: '100%',
+    padding: '10px 12px',
+    borderRadius: '10px',
+    border: '1.5px solid #cbd5e1',
+    backgroundColor: '#ffffff',
+    color: '#0f172a',
+    fontSize: '0.9rem',
+    fontWeight: '600',
+    outline: 'none',
+    boxSizing: 'border-box',
+    colorScheme: 'light'
+  };
+
   return (
-    <MainLayout pageTitle="Savings Goals 🪙">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '30px', width: '100%' }}>
+    <MainLayout pageTitle="Savings Goals ">
+      <style>{`
+        input[type="date"]::-webkit-calendar-picker-indicator {
+          filter: invert(0.3) opacity(0.8);
+          cursor: pointer;
+        }
+      `}</style>
 
-        {/* Top Summary Header Banner */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
-          <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', borderLeft: '4px solid #2ecc71' }}>
-            <span style={{ fontSize: '0.85rem', color: '#7f8c8d', fontWeight: 'bold' }}>TOTAL SAVED</span>
-            <h2 style={{ margin: '5px 0 0 0', color: '#2c3e50', fontSize: '1.6rem' }}>₹{totalSaved.toFixed(2)}</h2>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '25px', width: '100%', fontFamily: 'sans-serif' }}>
+
+        {/* TOP GRADIENT SUMMARY CARDS */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          
+          <div style={{
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            borderRadius: '16px',
+            padding: '18px 16px',
+            color: 'white',
+            textAlign: 'center',
+            boxShadow: '0 8px 20px rgba(16, 185, 129, 0.25)',
+            overflow: 'hidden'
+          }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: '800', marginBottom: '6px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+              TOTAL SAVED
+            </div>
+            <div style={{ fontSize: 'clamp(1.4rem, 2vw, 1.8rem)', fontWeight: '900', wordBreak: 'break-word', lineHeight: '1.2' }}>
+              ₹{totalSaved.toFixed(2)}
+            </div>
           </div>
 
-          <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', borderLeft: '4px solid #3498db' }}>
-            <span style={{ fontSize: '0.85rem', color: '#7f8c8d', fontWeight: 'bold' }}>TOTAL TARGET</span>
-            <h2 style={{ margin: '5px 0 0 0', color: '#2c3e50', fontSize: '1.6rem' }}>₹{totalTarget.toFixed(2)}</h2>
+          <div style={{
+            background: 'linear-gradient(135deg, #38b6ff 0%, #0284c7 100%)',
+            borderRadius: '16px',
+            padding: '18px 16px',
+            color: 'white',
+            textAlign: 'center',
+            boxShadow: '0 8px 20px rgba(2, 132, 199, 0.25)',
+            overflow: 'hidden'
+          }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: '800', marginBottom: '6px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+              TOTAL TARGET
+            </div>
+            <div style={{ fontSize: 'clamp(1.4rem, 2vw, 1.8rem)', fontWeight: '900', wordBreak: 'break-word', lineHeight: '1.2' }}>
+              ₹{totalTarget.toFixed(2)}
+            </div>
           </div>
 
-          <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', borderLeft: '4px solid #f1c40f' }}>
-            <span style={{ fontSize: '0.85rem', color: '#7f8c8d', fontWeight: 'bold' }}>OVERALL PROGRESS</span>
-            <h2 style={{ margin: '5px 0 0 0', color: '#2c3e50', fontSize: '1.6rem' }}>{overallProgress}%</h2>
+          <div style={{
+            background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+            borderRadius: '16px',
+            padding: '18px 16px',
+            color: 'white',
+            textAlign: 'center',
+            boxShadow: '0 8px 20px rgba(245, 158, 11, 0.25)',
+            overflow: 'hidden'
+          }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: '800', marginBottom: '6px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+              OVERALL PROGRESS
+            </div>
+            <div style={{ fontSize: 'clamp(1.4rem, 2vw, 1.8rem)', fontWeight: '900', wordBreak: 'break-word', lineHeight: '1.2' }}>
+              {overallProgress}%
+            </div>
           </div>
+
+          <div style={{
+            background: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
+            borderRadius: '16px',
+            padding: '18px 16px',
+            color: 'white',
+            textAlign: 'center',
+            boxShadow: '0 8px 20px rgba(109, 40, 217, 0.25)',
+            overflow: 'hidden'
+          }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: '800', marginBottom: '6px', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+              TOTAL GOALS
+            </div>
+            <div style={{ fontSize: 'clamp(1.4rem, 2vw, 1.8rem)', fontWeight: '900', wordBreak: 'break-word', lineHeight: '1.2' }}>
+              {goals.length}
+            </div>
+          </div>
+
         </div>
 
-        {/* Create Savings Goal Form */}
-        <div style={{ background: 'white', padding: '25px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-          <h3 style={{ color: '#2c3e50', margin: '0 0 20px 0', fontSize: '1.3rem' }}>Create New Savings Goal</h3>
+        {/* CREATE SAVINGS GOAL FORM CARD */}
+        <div style={{ 
+          background: '#2b3d4e', // Dark Slate Navy
+          padding: '25px', 
+          borderRadius: '16px', 
+          boxShadow: '0 8px 25px rgba(43, 61, 78, 0.25)' 
+        }}>
+          <h3 style={{ color: '#ffffff', margin: '0 0 20px 0', fontSize: '1.25rem', fontWeight: '700' }}>
+            ➕ Create New Savings Goal
+          </h3>
           
           <form onSubmit={handleCreateGoal} style={{ display: 'flex', flexWrap: 'wrap', gap: '15px', alignItems: 'flex-end' }}>
-            <div style={{ flex: 1, minWidth: '180px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: '#7f8c8d', fontWeight: 'bold' }}>Goal Name</label>
+            <div style={{ flex: '1 1 180px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: '#ffffff', fontWeight: '700' }}>Goal Name</label>
               <input 
                 type="text" 
                 placeholder="e.g. New Laptop, Emergency Fund" 
                 value={goalName} 
                 onChange={(e) => setGoalName(e.target.value)}
                 required 
-                style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #dcdde1', boxSizing: 'border-box' }}
+                style={inputStyle}
               />
             </div>
 
-            <div style={{ flex: 1, minWidth: '140px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: '#7f8c8d', fontWeight: 'bold' }}>Target Amount (₹)</label>
+            <div style={{ flex: '1 1 140px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: '#ffffff', fontWeight: '700' }}>Target Amount (₹)</label>
               <input 
                 type="number" 
                 placeholder="e.g. 50000" 
                 value={targetAmount} 
                 onChange={(e) => setTargetAmount(e.target.value)}
                 required 
-                style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #dcdde1', boxSizing: 'border-box' }}
+                style={inputStyle}
               />
             </div>
 
-            <div style={{ flex: 1, minWidth: '140px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: '#7f8c8d', fontWeight: 'bold' }}>Initial Saved (₹)</label>
+            <div style={{ flex: '1 1 140px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: '#ffffff', fontWeight: '700' }}>Initial Saved (₹)</label>
               <input 
                 type="number" 
                 placeholder="e.g. 5000" 
                 value={savedAmount} 
                 onChange={(e) => setSavedAmount(e.target.value)}
-                style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #dcdde1', boxSizing: 'border-box' }}
+                style={inputStyle}
               />
             </div>
 
-            <div style={{ width: '150px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: '#7f8c8d', fontWeight: 'bold' }}>Target Date</label>
+            <div style={{ flex: '1 1 140px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: '#ffffff', fontWeight: '700' }}>Target Date</label>
               <input 
                 type="date" 
                 value={targetDate} 
                 onChange={(e) => setTargetDate(e.target.value)}
                 required 
-                style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #dcdde1', boxSizing: 'border-box' }}
+                style={inputStyle}
               />
             </div>
 
             <button 
               type="submit" 
-              style={{ padding: '10px 24px', background: '#2ecc71', color: 'white', border: 'none', borderRadius: '5px', fontWeight: 'bold', cursor: 'pointer', height: '42px' }}
+              style={{ 
+                padding: '10px 24px', 
+                background: 'linear-gradient(135deg, #2ecc71 0%, #10b981 100%)', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: '10px', 
+                fontWeight: '700', 
+                cursor: 'pointer', 
+                height: '42px',
+                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+                whiteSpace: 'nowrap'
+              }}
             >
               Add Goal
             </button>
           </form>
         </div>
 
-        {/* List of Active Savings Goal Cards */}
-        <div style={{ background: 'white', padding: '25px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-          <h3 style={{ color: '#2c3e50', margin: '0 0 20px 0', fontSize: '1.3rem' }}>Your Savings Goals</h3>
+        {/* LIST OF SAVINGS GOAL CARDS */}
+        <div style={{ 
+          background: '#f8fafc', 
+          border: '1.5px solid #e2e8f0', 
+          padding: '25px', 
+          borderRadius: '16px', 
+          boxShadow: '0 4px 15px rgba(0,0,0,0.03)' 
+        }}>
+          <h3 style={{ color: '#1e293b', margin: '0 0 20px 0', fontSize: '1.25rem', fontWeight: '700' }}>
+            Your Savings Goals
+          </h3>
 
           {loading ? (
-            <p style={{ textAlign: 'center', color: '#7f8c8d' }}>Loading goals...</p>
+            <p style={{ textAlign: 'center', color: '#64748b', padding: '20px 0' }}>Loading your active savings goals...</p>
           ) : goals.length === 0 ? (
-            <p style={{ textAlign: 'center', color: '#95a5a6', fontStyle: 'italic', margin: '30px 0' }}>
+            <p style={{ textAlign: 'center', color: '#94a3b8', fontStyle: 'italic', margin: '30px 0' }}>
               No savings goals found. Create your first goal using the form above!
             </p>
           ) : (
@@ -226,50 +368,60 @@ function Savings() {
                   <div 
                     key={g.id}
                     style={{
-                      borderRadius: '8px',
+                      borderRadius: '14px',
                       padding: '20px',
-                      border: isCompleted ? '1.5px solid #2ecc71' : '1px solid #e1e8ed',
-                      background: isCompleted ? '#f0fff4' : '#ffffff',
-                      boxShadow: '0 2px 5px rgba(0,0,0,0.02)',
                       display: 'flex',
                       flexDirection: 'column',
-                      justifyContent: 'space-between'
+                      justifyContent: 'space-between',
+                      boxSizing: 'border-box',
+                      background: isCompleted ? '#f0fdf4' : '#f1f5f9',
+                      border: isCompleted ? '1.5px solid #86efac' : '1.5px solid #cbd5e1',
+                      boxShadow: isCompleted ? '0 4px 12px rgba(34, 197, 94, 0.12)' : '0 2px 8px rgba(0,0,0,0.03)'
                     }}
                   >
                     <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                         <div>
-                          <h4 style={{ margin: '0 0 4px 0', color: '#2c3e50', fontSize: '1.15rem' }}>{g.goal_name}</h4>
-                          <span style={{ fontSize: '0.8rem', color: '#7f8c8d' }}>Target: {g.target_date}</span>
+                          <h4 style={{ margin: '0 0 4px 0', color: isCompleted ? '#166534' : '#0f172a', fontSize: '1.1rem', fontWeight: '700' }}>
+                            {g.goal_name}
+                          </h4>
+                          <span style={{ fontSize: '0.8rem', color: isCompleted ? '#15803d' : '#64748b', fontWeight: '500' }}>
+                            Target: {g.target_date}
+                          </span>
                         </div>
                         <span style={{
-                          background: isCompleted ? '#2ecc71' : '#3498db',
+                          background: isCompleted ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'linear-gradient(135deg, #38b6ff 0%, #0284c7 100%)',
                           color: 'white',
                           padding: '4px 10px',
-                          borderRadius: '4px',
-                          fontSize: '0.75rem',
-                          fontWeight: 'bold'
+                          borderRadius: '20px',
+                          fontSize: '0.72rem',
+                          fontWeight: '800'
                         }}>
                           {isCompleted ? 'Completed 🎉' : 'In Progress'}
                         </span>
                       </div>
 
-                      {/* Progress Bar */}
-                      <div style={{ width: '100%', height: '10px', background: '#ecf0f1', borderRadius: '5px', margin: '15px 0 10px 0', overflow: 'hidden' }}>
-                        <div style={{ width: `${progressPct}%`, height: '100%', background: isCompleted ? '#2ecc71' : '#3498db', transition: 'width 0.4s ease' }} />
+                      {/* CLEAN STATIC PROGRESS BAR */}
+                      <div style={{ width: '100%', height: '10px', background: isCompleted ? '#dcfce7' : '#e2e8f0', borderRadius: '5px', margin: '15px 0 10px 0', overflow: 'hidden' }}>
+                        <div style={{ 
+                          width: `${progressPct}%`, 
+                          height: '100%', 
+                          background: isCompleted ? '#10b981' : '#38b6ff'
+                        }} />
                       </div>
 
                       {/* Detail Metrics */}
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.85rem', color: '#34495e', margin: '10px 0' }}>
-                        <div><strong>Saved:</strong> ₹{saved.toFixed(2)}</div>
-                        <div><strong>Target:</strong> ₹{target.toFixed(2)}</div>
-                        <div><strong>Remaining:</strong> ₹{remaining.toFixed(2)}</div>
-                        <div><strong>Progress:</strong> {progressPct}%</div>
-                      </div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '0.85rem', color: '#334155', margin: '12px 0' }}>
+                              <div><strong>Saved:</strong> ₹{saved.toFixed(2)}</div>
+                              <div><strong>Target:</strong> ₹{target.toFixed(2)}</div>
+                              <div><strong>Remaining:</strong> ₹{remaining.toFixed(2)}</div>
+                              <div><strong>Progress:</strong> {progressPct}%</div>
+                              <div><strong>Days Remaining:</strong> {g.days_remaining ?? Math.max(0, Math.ceil((new Date(g.target_date) - new Date()) / (1000*60*60*24)))}</div>
+                            </div>
                     </div>
 
                     {/* Inline Actions */}
-                    <div style={{ display: 'flex', gap: '10px', marginTop: '15px', borderTop: '1px solid #f1f2f6', paddingTop: '12px', justifyContent: 'flex-end', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '15px', borderTop: isCompleted ? '1px solid #bbf7d0' : '1px solid #cbd5e1', paddingTop: '15px', justifyContent: 'flex-end', alignItems: 'center' }}>
                       {activeDepositId === g.id ? (
                         <>
                           <input 
@@ -277,13 +429,13 @@ function Savings() {
                             placeholder="+ Amount" 
                             value={depositAmount} 
                             onChange={(e) => setDepositAmount(e.target.value)}
-                            style={{ width: '90px', padding: '6px', borderRadius: '4px', border: '1px solid #ccd1d9', fontSize: '0.85rem' }}
+                            style={{ width: '100px', padding: '6px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', backgroundColor: '#ffffff', color: '#0f172a' }}
                           />
-                          <button onClick={() => handleAddDeposit(g)} style={{ padding: '6px 10px', background: '#2ecc71', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold' }}>
+                          <button onClick={() => handleAddDeposit(g)} style={{ padding: '6px 12px', background: '#10b981', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700' }}>
                             Add
                           </button>
-                          <button onClick={() => setActiveDepositId(null)} style={{ padding: '6px 10px', background: '#95a5a6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}>
-                            X
+                          <button onClick={() => setActiveDepositId(null)} style={{ padding: '6px 12px', background: '#94a3b8', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700' }}>
+                            ✕
                           </button>
                         </>
                       ) : (
@@ -291,14 +443,20 @@ function Savings() {
                           {!isCompleted && (
                             <button 
                               onClick={() => setActiveDepositId(g.id)}
-                              style={{ padding: '6px 12px', background: '#3498db', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem' }}
+                              style={{ padding: '6px 12px', background: '#38b6ff', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '700', fontSize: '0.82rem' }}
                             >
                               + Add Funds
                             </button>
                           )}
                           <button 
+                            onClick={() => startEditing(g)}
+                            style={{ padding: '6px 12px', background: '#f59e0b', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '700', fontSize: '0.82rem' }}
+                          >
+                            Edit
+                          </button>
+                          <button 
                             onClick={() => handleDeleteGoal(g.id)}
-                            style={{ padding: '6px 12px', background: '#e74c3c', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem' }}
+                            style={{ padding: '6px 12px', background: '#ff4d4d', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '700', fontSize: '0.82rem' }}
                           >
                             Delete
                           </button>
@@ -314,6 +472,96 @@ function Savings() {
         </div>
 
       </div>
+
+      {/* EDIT GOAL MODAL */}
+      {editingGoal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(15, 23, 42, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: '#ffffff',
+            borderRadius: '16px',
+            padding: '25px',
+            width: '90%',
+            maxWidth: '450px',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+          }}>
+            <h3 style={{ margin: '0 0 15px 0', color: '#0f172a', fontSize: '1.2rem', fontWeight: '700' }}>
+              ✏️ Edit Savings Goal
+            </h3>
+            
+            <form onSubmit={handleUpdateGoal} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: '#475569', fontWeight: '700' }}>Goal Name</label>
+                <input 
+                  type="text" 
+                  value={editName} 
+                  onChange={(e) => setEditName(e.target.value)} 
+                  required 
+                  style={inputStyle}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: '#475569', fontWeight: '700' }}>Target Amount (₹)</label>
+                <input 
+                  type="number" 
+                  value={editTarget} 
+                  onChange={(e) => setEditTarget(e.target.value)} 
+                  required 
+                  style={inputStyle}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: '#475569', fontWeight: '700' }}>Saved Amount (₹)</label>
+                <input 
+                  type="number" 
+                  value={editSaved} 
+                  onChange={(e) => setEditSaved(e.target.value)} 
+                  style={inputStyle}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: '#475569', fontWeight: '700' }}>Target Date</label>
+                <input 
+                  type="date" 
+                  value={editDate} 
+                  onChange={(e) => setEditDate(e.target.value)} 
+                  required 
+                  style={inputStyle}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
+                <button 
+                  type="button" 
+                  onClick={() => setEditingGoal(null)}
+                  style={{ padding: '8px 16px', background: '#94a3b8', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '700', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  style={{ padding: '8px 16px', background: '#38b6ff', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '700', cursor: 'pointer' }}
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </MainLayout>
   );
 }

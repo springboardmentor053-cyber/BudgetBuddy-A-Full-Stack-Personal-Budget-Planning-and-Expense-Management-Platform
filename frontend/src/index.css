@@ -109,3 +109,115 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+/* App-wide dark theme. Most pages use inline styles, so these selectors
+   deliberately replace their light surfaces and text with accessible values. */
+html[data-theme='dark'] {
+  --text: #cbd5e1;
+  --text-h: #f8fafc;
+  --bg: #111827;
+  --border: #334155;
+  color-scheme: dark;
+}
+
+html[data-theme='dark'] body,
+html[data-theme='dark'] #root {
+  background: #111827;
+}
+
+html[data-theme='dark'] main {
+  color: #e2e8f0;
+}
+
+html[data-theme='dark'] main :is(div, h1, h2, h3, h4, p, label, span, td, th, strong) {
+  color: #e2e8f0 !important;
+}
+
+html[data-theme='dark'] main input,
+html[data-theme='dark'] main select,
+html[data-theme='dark'] main textarea {
+  background: #0f172a !important;
+  border-color: #475569 !important;
+  color: #f8fafc !important;
+}
+
+html[data-theme='dark'] main input::placeholder,
+html[data-theme='dark'] main textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+html[data-theme='dark'] main [style*='background: rgb(255, 255, 255)'],
+html[data-theme='dark'] main [style*='background-color: rgb(255, 255, 255)'],
+html[data-theme='dark'] main [style*='background: rgb(248, 250, 252)'],
+html[data-theme='dark'] main [style*='background-color: rgb(248, 250, 252)'],
+html[data-theme='dark'] main [style*='background: rgb(245, 246, 250)'],
+html[data-theme='dark'] main [style*='background-color: rgb(245, 246, 250)'],
+html[data-theme='dark'] main [style*='background: rgb(241, 245, 249)'],
+html[data-theme='dark'] main [style*='background-color: rgb(241, 245, 249)'] {
+  background: #1f2937 !important;
+  border-color: #475569 !important;
+}
+
+html[data-theme='dark'] main [style*='background: rgb(240, 253, 244)'],
+html[data-theme='dark'] main [style*='background-color: rgb(240, 253, 244)'],
+html[data-theme='dark'] main [style*='background: rgb(220, 252, 231)'],
+html[data-theme='dark'] main [style*='background-color: rgb(220, 252, 231)'],
+html[data-theme='dark'] main [style*='background: rgb(254, 243, 199)'],
+html[data-theme='dark'] main [style*='background-color: rgb(254, 243, 199)'],
+html[data-theme='dark'] main [style*='background: rgb(254, 242, 242)'],
+html[data-theme='dark'] main [style*='background-color: rgb(254, 242, 242)'] {
+  background: #334155 !important;
+  border-color: #64748b !important;
+}
+
+html[data-theme='dark'] main [style*='background: #fee2e2'],
+html[data-theme='dark'] main [style*='background-color: #fee2e2'],
+html[data-theme='dark'] main [style*='background: rgb(254, 226, 226)'],
+html[data-theme='dark'] main [style*='background-color: rgb(254, 226, 226)'] {
+  background: #475569 !important;
+  color: #f8fafc !important;
+}
+
+html[data-theme='dark'] main [style*='background: #fff'],
+html[data-theme='dark'] main [style*='backgroundColor: #fff'],
+html[data-theme='dark'] main [style*='background: white'],
+html[data-theme='dark'] main [style*='background-color: white'],
+html[data-theme='dark'] main [style*='background: #ffffff'],
+html[data-theme='dark'] main [style*='background-color: #ffffff'] {
+  background: #1f2937 !important;
+  border-color: #475569 !important;
+}
+
+html[data-theme='dark'] main table,
+html[data-theme='dark'] main tr {
+  border-color: #475569 !important;
+}
+
+/* Subtle page-specific surfaces keep light-mode cards distinct from the canvas. */
+html[data-theme='light'] main[data-page='income'] [style*='background: white'],
+html[data-theme='light'] main[data-page='income'] [style*='background: #ffffff'] { background: #eaf1ee !important; border-color: #c4ddd3 !important; }
+html[data-theme='light'] main[data-page='expenses'] [style*='background: white'],
+html[data-theme='light'] main[data-page='expenses'] [style*='background: #ffffff'] { background: #f4ecea !important; border-color: #e8ccc5 !important; }
+html[data-theme='light'] main[data-page='budgets'] [style*='background: white'],
+html[data-theme='light'] main[data-page='budgets'] [style*='background: #ffffff'] { background: #eeecf4 !important; border-color: #d7d0e8 !important; }
+html[data-theme='light'] main[data-page='reports'] [style*='background: white'],
+html[data-theme='light'] main[data-page='reports'] [style*='background: #ffffff'] { background: #ebf0f6 !important; border-color: #cbd9ea !important; }
+html[data-theme='light'] main[data-page='savings'] [style*='background: white'],
+html[data-theme='light'] main[data-page='savings'] [style*='background: #ffffff'] { background: #e9f1ed !important; border-color: #c7ddd2 !important; }
+html[data-theme='light'] main[data-page='notifications'] [style*='background: white'],
+html[data-theme='light'] main[data-page='notifications'] [style*='background: #ffffff'] { background: #f3eee5 !important; border-color: #e2d5bb !important; }
+html[data-theme='light'] main[data-page='settings'] [style*='background: white'],
+html[data-theme='light'] main[data-page='settings'] [style*='background: #ffffff'] { background: #eceff3 !important; border-color: #d2d9e2 !important; }
+
+html[data-theme='light'] main [style*='background: white'],
+html[data-theme='light'] main [style*='background: #ffffff'] {
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05) !important;
+}
+
+html[data-theme='dark'] main [style*='background: white'],
+html[data-theme='dark'] main [style*='background: #ffffff'],
+html[data-theme='dark'] main [style*='background: #f8fafc'] {
+  background: #202d40 !important;
+  border-color: #42526b !important;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22) !important;
+}

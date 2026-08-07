@@ -182,3 +182,38 @@
     border-right-color: var(--border);
   }
 }
+
+/* index.css or App.css */
+:root {
+  /* LIGHT MODE palette */
+  --bg-app: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-input: #ffffff;
+  --bg-subtle: #f1f5f9;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --border-input: #cbd5e1;
+  --accent-blue: #38b6ff;
+  --accent-green: #10b981;
+}
+
+[data-theme='dark'] {
+  /* DARK MODE high-contrast palette */
+  --bg-app: #0f172a;
+  --bg-card: #1e293b;
+  --bg-input: #334155;
+  --bg-subtle: #0f172a;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-input: #475569;
+  --accent-blue: #38b6ff;
+  --accent-green: #10b981;
+}
+
+body {
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
