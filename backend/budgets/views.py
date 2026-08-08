@@ -6,6 +6,7 @@ from django.db.models import Sum
 from .models import Budget, SavingsGoal
 from .serializers import BudgetSerializer, SavingsGoalSerializer
 from expenses.models import Expense
+from django.core.mail import send_mail
 
 def check_budget_alerts(budget, request_user):
     total_expense = Expense.objects.filter(
@@ -16,6 +17,7 @@ def check_budget_alerts(budget, request_user):
     ).aggregate(total=Sum('amount'))['total'] or 0
 
     utilization = (total_expense / budget.budget_amount * 100) if budget.budget_amount > 0 else 0
+    recipient = request_user.email or 'user@example.com'
 
     if utilization >= 100 and not budget.alert_100_sent:
         Notification.objects.create(
@@ -27,6 +29,13 @@ def check_budget_alerts(budget, request_user):
         )
         budget.alert_100_sent = True
         budget.save()
+        send_mail(
+            'Budget Exceeded - BudgetBuddy',
+            f'Your {budget.category.title()} Budget has been exceeded. Total spent: Rs.{total_expense} of Rs.{budget.budget_amount}.',
+            'budgetbuddy@example.com',
+            [recipient],
+            fail_silently=True,
+        )
     elif utilization >= 90 and not budget.alert_90_sent:
         Notification.objects.create(
             user=request_user,
@@ -37,6 +46,13 @@ def check_budget_alerts(budget, request_user):
         )
         budget.alert_90_sent = True
         budget.save()
+        send_mail(
+            'High Budget Warning - BudgetBuddy',
+            f'You have used 90% of your monthly {budget.category.title()} Budget.',
+            'budgetbuddy@example.com',
+            [recipient],
+            fail_silently=True,
+        )
     elif utilization >= 80 and not budget.alert_80_sent:
         Notification.objects.create(
             user=request_user,
@@ -47,6 +63,13 @@ def check_budget_alerts(budget, request_user):
         )
         budget.alert_80_sent = True
         budget.save()
+        send_mail(
+            'Budget Warning - BudgetBuddy',
+            f'You have used 80% of your monthly {budget.category.title()} Budget.',
+            'budgetbuddy@example.com',
+            [recipient],
+            fail_silently=True,
+        )
 
     return utilization
 
