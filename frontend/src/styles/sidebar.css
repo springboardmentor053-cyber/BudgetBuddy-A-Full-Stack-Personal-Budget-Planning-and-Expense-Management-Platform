@@ -1,0 +1,556 @@
+/* =========================================================
+   BUDGETBUDDY - SIDEBAR
+   Collapsed → Hover → Expanded
+========================================================= */
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+
+  width: 72px;
+  height: 100vh;
+
+  padding: 18px 10px;
+
+  display: flex;
+  flex-direction: column;
+
+  background: var(--sidebar-bg);
+  color: var(--text);
+
+  border-right: 1px solid var(--border);
+
+  box-shadow: var(--shadow);
+
+  z-index: 1000;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  transition:
+    width 0.25s ease,
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* =========================================================
+   EXPAND ON HOVER
+========================================================= */
+
+.sidebar:hover {
+  width: 235px;
+}
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.sidebar-brand {
+  width: 100%;
+  height: 50px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  padding: 0 6px;
+  margin-bottom: 25px;
+
+  flex-shrink: 0;
+
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.sidebar-logo {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #14b8a6
+  );
+
+  color: #ffffff;
+
+  font-size: 20px;
+  font-weight: 800;
+
+  flex-shrink: 0;
+
+  box-shadow:
+    0 6px 15px rgba(37, 99, 235, 0.25);
+}
+
+/* =========================================================
+   BRAND TEXT
+========================================================= */
+
+.sidebar-brand-text {
+  width: 0;
+
+  opacity: 0;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  transform: translateX(-8px);
+
+  transition:
+    width 0.2s ease,
+    opacity 0.15s ease,
+    transform 0.2s ease;
+}
+
+.sidebar:hover .sidebar-brand-text {
+  width: 155px;
+
+  opacity: 1;
+
+  transform: translateX(0);
+}
+
+.sidebar-brand h2 {
+  margin: 0;
+
+  color: var(--text);
+
+  font-size: 17px;
+  line-height: 20px;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.sidebar-brand p {
+  margin: 3px 0 0;
+
+  color: var(--text-secondary);
+
+  font-size: 10px;
+  line-height: 12px;
+
+  white-space: nowrap;
+}
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.sidebar-nav {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+
+  flex: 1;
+}
+
+/* =========================================================
+   NAV ITEM
+========================================================= */
+
+.nav-item {
+  position: relative;
+
+  width: 100%;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 0 10px;
+
+  border-radius: 10px;
+
+  color: var(--text-secondary);
+
+  font-size: 14px;
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  text-decoration: none;
+
+  overflow: hidden;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+/* =========================================================
+   ICON
+========================================================= */
+
+.nav-item > span:first-child {
+  width: 30px;
+  min-width: 30px;
+
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 19px;
+
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   NAV TEXT
+========================================================= */
+
+.nav-text {
+  width: 0;
+
+  opacity: 0;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  transition:
+    width 0.2s ease,
+    opacity 0.15s ease;
+}
+
+.sidebar:hover .nav-text {
+  width: auto;
+
+  opacity: 1;
+}
+
+/* =========================================================
+   NORMAL HOVER
+========================================================= */
+
+.nav-item:hover {
+  background: var(--sidebar-hover);
+
+  color: var(--accent);
+}
+
+/* =========================================================
+   ACTIVE
+========================================================= */
+
+.nav-item.active {
+  background: var(--sidebar-active);
+
+  color: var(--accent);
+}
+
+.nav-item.active:hover {
+  background: var(--sidebar-active);
+
+  color: var(--accent);
+}
+
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
+
+.notification-nav-item {
+  position: relative;
+}
+
+.sidebar-notification-badge {
+  margin-left: auto;
+
+  min-width: 22px;
+  height: 22px;
+
+  padding: 0 6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+
+  background: #ef4444;
+
+  color: #ffffff;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  line-height: 1;
+
+  flex-shrink: 0;
+}
+
+.nav-item.active .sidebar-notification-badge {
+  background: var(--accent);
+
+  color: #ffffff;
+}
+
+/* =========================================================
+   BOTTOM SECTION
+========================================================= */
+
+.sidebar-bottom {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+
+  margin-top: 15px;
+
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   THEME + LOGOUT BUTTONS
+========================================================= */
+
+.sidebar-action-button,
+.logout-button {
+  position: relative;
+
+  width: 100%;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 0 10px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: transparent;
+
+  color: var(--text-secondary);
+
+  font-family: inherit;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  overflow: hidden;
+
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+/* =========================================================
+   BUTTON ICON
+========================================================= */
+
+.sidebar-action-button > span:first-child,
+.logout-button > span:first-child {
+  width: 30px;
+  min-width: 30px;
+
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 19px;
+
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   BUTTON TEXT
+========================================================= */
+
+.sidebar-action-button .nav-text,
+.logout-button .nav-text {
+  width: 0;
+
+  opacity: 0;
+}
+
+.sidebar:hover .sidebar-action-button .nav-text,
+.sidebar:hover .logout-button .nav-text {
+  width: auto;
+
+  opacity: 1;
+}
+
+/* =========================================================
+   THEME HOVER
+========================================================= */
+
+.sidebar-action-button:hover {
+  background: var(--sidebar-hover);
+
+  color: var(--accent);
+}
+
+/* =========================================================
+   LOGOUT HOVER
+========================================================= */
+
+.logout-button:hover {
+  background: var(--danger-light);
+
+  color: var(--danger);
+}
+
+/* =========================================================
+   TOOLTIP
+========================================================= */
+
+.sidebar:not(:hover) .nav-item::after,
+.sidebar:not(:hover) .sidebar-action-button::after,
+.sidebar:not(:hover) .logout-button::after {
+  position: absolute;
+
+  left: 62px;
+  top: 50%;
+
+  transform:
+    translateY(-50%)
+    translateX(-5px);
+
+  padding: 7px 10px;
+
+  background: var(--surface);
+
+  color: var(--text);
+
+  border: 1px solid var(--border);
+
+  border-radius: 7px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  opacity: 0;
+  visibility: hidden;
+
+  pointer-events: none;
+
+  box-shadow: var(--shadow);
+
+  z-index: 2000;
+
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    visibility 0.15s ease;
+}
+
+.sidebar:not(:hover) .nav-item::after {
+  content: attr(title);
+}
+
+.sidebar:not(:hover) .sidebar-action-button::after {
+  content: attr(title);
+}
+
+.sidebar:not(:hover) .logout-button::after {
+  content: attr(title);
+}
+
+/* =========================================================
+   SHOW TOOLTIP
+========================================================= */
+
+.sidebar:not(:hover) .nav-item:hover::after,
+.sidebar:not(:hover) .sidebar-action-button:hover::after,
+.sidebar:not(:hover) .logout-button:hover::after {
+  opacity: 1;
+
+  visibility: visible;
+
+  transform:
+    translateY(-50%)
+    translateX(0);
+}
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--border);
+
+  border-radius: 20px;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 64px;
+
+    padding: 15px 8px;
+  }
+
+  .sidebar:hover {
+    width: 220px;
+  }
+
+  .sidebar-brand {
+    padding: 0 5px;
+
+    margin-bottom: 20px;
+  }
+
+  .sidebar-logo {
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+
+    font-size: 18px;
+  }
+
+  .nav-item,
+  .sidebar-action-button,
+  .logout-button {
+    height: 42px;
+  }
+}

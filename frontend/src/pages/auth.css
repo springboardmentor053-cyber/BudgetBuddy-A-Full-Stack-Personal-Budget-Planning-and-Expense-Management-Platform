@@ -1,0 +1,165 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f7fb;
+}
+
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.register-card {
+  width: 900px;
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
+}
+
+.brand-section {
+  padding: 60px 40px;
+  background: linear-gradient(135deg, #2563eb, #14b8a6);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.brand-icon {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  margin-bottom: 20px;
+}
+
+.brand-section h1 {
+  margin: 0 0 14px;
+  font-size: 38px;
+}
+
+.brand-section p {
+  margin: 0;
+  line-height: 1.6;
+  font-size: 17px;
+}
+
+.form-section {
+  padding: 45px;
+}
+
+.form-section h2 {
+  margin: 0;
+  font-size: 34px;
+  color: #172033;
+}
+
+.subtitle {
+  margin: 8px 0 28px;
+  color: #64748b;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin-bottom: 7px;
+  color: #334155;
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  padding: 13px 14px;
+  margin-bottom: 18px;
+  border: 1px solid #d7deea;
+  border-radius: 10px;
+  font-size: 15px;
+  outline: none;
+}
+
+input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+button {
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #dc2626;
+  background: #fee2e2;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.success-message {
+  color: #15803d;
+  background: #dcfce7;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.login-text {
+  text-align: center;
+  margin-top: 22px;
+  color: #64748b;
+}
+
+.login-text a {
+  color: #2563eb;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.login-text a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 760px) {
+  .register-card {
+    grid-template-columns: 1fr;
+  }
+
+  .brand-section {
+    padding: 35px 30px;
+  }
+
+  .form-section {
+    padding: 32px 26px;
+  }
+}

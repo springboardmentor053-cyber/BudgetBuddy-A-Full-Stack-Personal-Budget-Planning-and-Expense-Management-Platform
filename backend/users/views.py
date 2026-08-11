@@ -1,25 +1,108 @@
 from django.contrib.auth.models import User
-from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
+
+from drf_spectacular.utils import (
+    extend_schema,
+    inline_serializer,
+)
+
+from rest_framework import serializers, status
+from rest_framework.decorators import (
+    api_view,
+    permission_classes,
+)
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticated,
+)
 from rest_framework.response import Response
 
 
-@api_view(['POST'])
+RegisterRequestSerializer = inline_serializer(
+    name="RegisterRequest",
+    fields={
+        "username": serializers.CharField(),
+        "email": serializers.EmailField(),
+        "password": serializers.CharField(
+            write_only=True
+        ),
+    },
+)
+
+MessageResponseSerializer = inline_serializer(
+    name="UserMessageResponse",
+    fields={
+        "message": serializers.CharField(),
+    },
+)
+
+ErrorResponseSerializer = inline_serializer(
+    name="UserErrorResponse",
+    fields={
+        "error": serializers.CharField(),
+    },
+)
+
+
+@extend_schema(
+    request=RegisterRequestSerializer,
+    responses={
+        201: MessageResponseSerializer,
+        400: ErrorResponseSerializer,
+    },
+    auth=[],
+    description="Register a new BudgetBuddy user.",
+)
+@api_view(["POST"])
 @permission_classes([AllowAny])
 def register_user(request):
-    username = request.data.get('username')
-    email = request.data.get('email')
-    password = request.data.get('password')
+    username = request.data.get("username")
+    email = request.data.get("email")
+    password = request.data.get("password")
 
-    if User.objects.filter(username=username).exists():
-        return Response({'error': 'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
+    if User.objects.filter(
+        username=username
+    ).exists():
+        return Response(
+            {
+                "error": (
+                    "Username already exists"
+                )
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
-    user = User.objects.create_user(username=username, email=email, password=password)
-    return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
+    User.objects.create_user(
+        username=username,
+        email=email,
+        password=password,
+    )
+
+    return Response(
+        {
+            "message": (
+                "User registered successfully"
+            )
+        },
+        status=status.HTTP_201_CREATED,
+    )
 
 
-@api_view(['GET'])
+@extend_schema(
+    responses={
+        200: MessageResponseSerializer
+    },
+    description=(
+        "Confirm that the supplied JWT access "
+        "token is valid."
+    ),
+)
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def protected_view(request):
-    return Response({'message': 'You are authenticated'})
+    return Response(
+        {
+            "message": (
+                "You are authenticated"
+            )
+        }
+    )

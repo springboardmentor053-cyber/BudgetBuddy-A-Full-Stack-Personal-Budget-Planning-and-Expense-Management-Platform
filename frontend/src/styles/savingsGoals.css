@@ -1,0 +1,363 @@
+/* =========================================================
+   BUDGETBUDDY - SAVINGS GOALS PAGE
+   Light + Dark Theme
+========================================================= */
+
+.savings-main {
+  width: calc(100% - 270px);
+  margin-left: 270px;
+  min-height: 100vh;
+  padding: 34px;
+
+  background: var(--bg);
+  color: var(--text);
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.savings-header {
+  margin-bottom: 28px;
+}
+
+.savings-header h1 {
+  margin: 0;
+  font-size: 34px;
+  color: var(--text);
+}
+
+.savings-header p:last-child {
+  margin-top: 9px;
+  color: var(--text-secondary);
+}
+
+/* =========================================================
+   GRID
+========================================================= */
+
+.savings-grid {
+  display: grid;
+  grid-template-columns: 390px 1fr;
+  gap: 22px;
+  align-items: start;
+}
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.savings-form-card,
+.savings-list-card {
+  padding: 24px;
+
+  background: var(--surface);
+  color: var(--text);
+
+  border: 1px solid var(--border);
+  border-radius: 18px;
+
+  box-shadow: var(--shadow);
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.savings-form-card h2,
+.savings-list-card h2 {
+  margin: 0 0 20px;
+  color: var(--text);
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.savings-form-card form {
+  display: flex;
+  flex-direction: column;
+}
+
+.savings-form-card label {
+  margin-bottom: 7px;
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.savings-form-card input,
+.savings-form-card textarea {
+  width: 100%;
+  padding: 12px 13px;
+  margin-bottom: 17px;
+
+  border: 1px solid var(--border);
+  border-radius: 10px;
+
+  outline: none;
+  font-size: 14px;
+
+  background: var(--surface);
+  color: var(--text);
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.savings-form-card input::placeholder,
+.savings-form-card textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.savings-form-card input:focus,
+.savings-form-card textarea:focus {
+  border-color: #14b8a6;
+
+  box-shadow:
+    0 0 0 3px rgba(20, 184, 166, 0.12);
+}
+
+/* =========================================================
+   FORM BUTTONS
+========================================================= */
+
+.savings-form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.savings-form-actions button {
+  flex: 1;
+}
+
+/* =========================================================
+   LIST HEADER
+========================================================= */
+
+.savings-list-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.savings-list-header h2 {
+  margin: 0;
+  color: var(--text);
+}
+
+.savings-list-header p {
+  margin: 6px 0 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.savings-list-header > span {
+  padding: 8px 11px;
+  border-radius: 10px;
+
+  background: rgba(20, 184, 166, 0.12);
+  color: #14b8a6;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* =========================================================
+   GOAL LIST
+========================================================= */
+
+.goal-card-list {
+  display: grid;
+  gap: 16px;
+}
+
+/* =========================================================
+   GOAL CARD
+========================================================= */
+
+.goal-card {
+  padding: 20px;
+
+  border: 1px solid var(--border);
+  border-radius: 16px;
+
+  background: var(--surface);
+  color: var(--text);
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.goal-card:hover {
+  box-shadow: var(--shadow);
+}
+
+.goal-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.goal-card-top h3 {
+  margin: 0;
+  font-size: 19px;
+  color: var(--text);
+}
+
+.goal-card-top p {
+  margin: 5px 0 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+/* =========================================================
+   PERCENTAGE
+========================================================= */
+
+.goal-percentage {
+  padding: 8px 10px;
+  border-radius: 999px;
+
+  background: rgba(20, 184, 166, 0.12);
+  color: #14b8a6;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* =========================================================
+   GOAL AMOUNTS
+========================================================= */
+
+.goal-amounts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.goal-amounts div {
+  padding: 12px;
+  border-radius: 12px;
+
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+}
+
+.goal-amounts span {
+  display: block;
+  margin-bottom: 6px;
+
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.goal-amounts strong {
+  color: var(--text);
+}
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+.goal-progress-track {
+  height: 11px;
+  overflow: hidden;
+  border-radius: 999px;
+
+  background: var(--border);
+}
+
+.goal-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+
+  background: linear-gradient(
+    90deg,
+    #2563eb,
+    #14b8a6
+  );
+
+  transition: width 0.3s ease;
+}
+
+/* =========================================================
+   DESCRIPTION
+========================================================= */
+
+.goal-description {
+  margin: 15px 0 0;
+
+  color: var(--text-secondary);
+
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.goal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.goal-actions button {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+/* =========================================================
+   STATE
+========================================================= */
+
+.savings-state {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1050px) {
+  .savings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 780px) {
+  .savings-main {
+    width: calc(100% - 82px);
+    margin-left: 82px;
+    padding: 22px;
+  }
+
+  .goal-amounts {
+    grid-template-columns: 1fr;
+  }
+}

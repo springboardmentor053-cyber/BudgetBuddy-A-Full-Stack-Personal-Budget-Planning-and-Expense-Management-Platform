@@ -1,47 +1,109 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
+import "./auth.css";
 
 function Login() {
+  const navigate = useNavigate();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    setError("");
+
+    if (!username || !password) {
+      setError("Please enter your username and password.");
+      return;
+    }
+
     try {
+      setLoading(true);
+
       const response = await api.post("token/", {
         username,
         password,
       });
 
-      alert("Login Successful!");
-      console.log(response.data);
-    } catch (error) {
-  console.log(error.response);
-  console.log(error.response?.data);
-  alert(JSON.stringify(error.response?.data || error.message));
-}
+      localStorage.setItem("access", response.data.access);
+      localStorage.setItem("refresh", response.data.refresh);
+
+      navigate("/dashboard");
+    } catch (err) {
+      console.log(err.response?.data);
+
+      setError(
+        err.response?.data?.detail ||
+          "Invalid username or password."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div>
-      <h1>BudgetBuddy Login</h1>
+    <div className="register-page">
+      <div className="register-card">
+        <div className="brand-section">
+          <div className="brand-icon">₹</div>
 
-      <input
-        type="text"
-        placeholder="Username"
-        onChange={(e) => setUsername(e.target.value)}
-      />
+          <h1>BudgetBuddy</h1>
 
-      <br /><br />
+          <p>
+            Track your income.
+            <br />
+            Control your expenses.
+            <br />
+            Achieve your financial goals.
+          </p>
+        </div>
 
-      <input
-        type="password"
-        placeholder="Password"
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <div className="form-section">
+          <h2>Welcome Back 👋</h2>
 
-      <br /><br />
+          <p className="subtitle">
+            Sign in to continue managing your finances.
+          </p>
 
-      <button onClick={handleLogin}>Login</button>
+          <form onSubmit={handleLogin}>
+            <label htmlFor="username">Username</label>
+
+            <input
+              id="username"
+              type="text"
+              placeholder="Enter your username"
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
+              autoComplete="username"
+            />
+
+            <label htmlFor="password">Password</label>
+
+            <input
+              id="password"
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              autoComplete="current-password"
+            />
+
+            {error && <p className="error-message">{error}</p>}
+
+            <button type="submit" disabled={loading}>
+              {loading ? "Signing in..." : "Login"}
+            </button>
+          </form>
+
+          <p className="login-text">
+            Don&apos;t have an account?{" "}
+            <Link to="/register">Create Account</Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

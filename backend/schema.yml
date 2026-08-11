@@ -1,0 +1,1912 @@
+openapi: 3.0.3
+info:
+  title: BudgetBuddy API
+  version: 1.0.0
+  description: REST API documentation for BudgetBuddy, a personal finance management
+    application.
+paths:
+  /api/budget-summary/:
+    get:
+      operationId: budget_summary_retrieve
+      description: Return budget usage information for all budgets belonging to the
+        authenticated user.
+      tags:
+      - budget-summary
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetSummaryResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetError'
+          description: ''
+  /api/budgets/:
+    get:
+      operationId: budgets_list
+      tags:
+      - budgets
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Budget'
+          description: ''
+    post:
+      operationId: budgets_create
+      tags:
+      - budgets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Budget'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Budget'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Budget'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+          description: ''
+  /api/budgets/{id}/:
+    get:
+      operationId: budgets_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this budget.
+        required: true
+      tags:
+      - budgets
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+          description: ''
+    put:
+      operationId: budgets_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this budget.
+        required: true
+      tags:
+      - budgets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Budget'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Budget'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Budget'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+          description: ''
+    patch:
+      operationId: budgets_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this budget.
+        required: true
+      tags:
+      - budgets
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBudget'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBudget'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBudget'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+          description: ''
+    delete:
+      operationId: budgets_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this budget.
+        required: true
+      tags:
+      - budgets
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/category-expenses/:
+    get:
+      operationId: category_expenses_retrieve
+      description: |-
+        Return category-wise expenses for
+        a selected month and year.
+
+        Example:
+        /api/category-expenses/?month=7&year=2026
+      parameters:
+      - in: query
+        name: month
+        schema:
+          type: integer
+        description: Month number between 1 and 12. Defaults to the current month.
+      - in: query
+        name: year
+        schema:
+          type: integer
+        description: Four-digit year. Defaults to the current year.
+      tags:
+      - category-expenses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryExpenseResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: ''
+  /api/dashboard/:
+    get:
+      operationId: dashboard_retrieve
+      description: Return dashboard totals, current budget details and recent transactions.
+      tags:
+      - dashboard
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardResponse'
+          description: ''
+  /api/expenses/:
+    get:
+      operationId: expenses_list
+      tags:
+      - expenses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Expense'
+          description: ''
+    post:
+      operationId: expenses_create
+      tags:
+      - expenses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Expense'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Expense'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Expense'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+          description: ''
+  /api/expenses/{id}/:
+    get:
+      operationId: expenses_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this expense.
+        required: true
+      tags:
+      - expenses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+          description: ''
+    put:
+      operationId: expenses_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this expense.
+        required: true
+      tags:
+      - expenses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Expense'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Expense'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Expense'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+          description: ''
+    patch:
+      operationId: expenses_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this expense.
+        required: true
+      tags:
+      - expenses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedExpense'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedExpense'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedExpense'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+          description: ''
+    delete:
+      operationId: expenses_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this expense.
+        required: true
+      tags:
+      - expenses
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/expenses/total/:
+    get:
+      operationId: expenses_total_retrieve
+      tags:
+      - expenses
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+          description: ''
+  /api/financial-summary/:
+    get:
+      operationId: financial_summary_retrieve
+      description: Return all-time income, expense and current balance.
+      tags:
+      - financial-summary
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinancialSummaryResponse'
+          description: ''
+  /api/income-vs-expense/:
+    get:
+      operationId: income_vs_expense_retrieve
+      description: |-
+        Compare income and expense for
+        a selected month and year.
+
+        Example:
+        /api/income-vs-expense/?month=7&year=2026
+      parameters:
+      - in: query
+        name: month
+        schema:
+          type: integer
+        description: Month number between 1 and 12. Defaults to the current month.
+      - in: query
+        name: year
+        schema:
+          type: integer
+        description: Four-digit year. Defaults to the current year.
+      tags:
+      - income-vs-expense
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncomeExpenseResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: ''
+  /api/incomes/:
+    get:
+      operationId: incomes_list
+      tags:
+      - incomes
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Income'
+          description: ''
+    post:
+      operationId: incomes_create
+      tags:
+      - incomes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Income'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Income'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Income'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Income'
+          description: ''
+  /api/incomes/{id}/:
+    get:
+      operationId: incomes_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this income.
+        required: true
+      tags:
+      - incomes
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Income'
+          description: ''
+    put:
+      operationId: incomes_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this income.
+        required: true
+      tags:
+      - incomes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Income'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Income'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Income'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Income'
+          description: ''
+    patch:
+      operationId: incomes_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this income.
+        required: true
+      tags:
+      - incomes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedIncome'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedIncome'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedIncome'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Income'
+          description: ''
+    delete:
+      operationId: incomes_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this income.
+        required: true
+      tags:
+      - incomes
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/monthly-expense-trend/:
+    get:
+      operationId: monthly_expense_trend_retrieve
+      description: |-
+        Return total expenses for every month
+        in a selected year.
+
+        Example:
+        /api/monthly-expense-trend/?year=2026
+      parameters:
+      - in: query
+        name: year
+        schema:
+          type: integer
+        description: Four-digit year. Defaults to the current year.
+      tags:
+      - monthly-expense-trend
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonthlyExpenseTrendResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: ''
+  /api/monthly-report/:
+    get:
+      operationId: monthly_report_retrieve
+      description: |-
+        Return income, expense, budget and
+        savings information in one report.
+
+        Example:
+        /api/monthly-report/?month=7&year=2026
+      parameters:
+      - in: query
+        name: month
+        schema:
+          type: integer
+        description: Month number between 1 and 12. Defaults to the current month.
+      - in: query
+        name: year
+        schema:
+          type: integer
+        description: Four-digit year. Defaults to the current year.
+      tags:
+      - monthly-report
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonthlyFinancialReportResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: ''
+  /api/notifications/:
+    get:
+      operationId: notifications_list
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+          description: ''
+    post:
+      operationId: notifications_create
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Notification'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Notification'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Notification'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+  /api/notifications/{id}/:
+    get:
+      operationId: notifications_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this notification.
+        required: true
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+    put:
+      operationId: notifications_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this notification.
+        required: true
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Notification'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Notification'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Notification'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+    patch:
+      operationId: notifications_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this notification.
+        required: true
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedNotification'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedNotification'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedNotification'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+    delete:
+      operationId: notifications_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this notification.
+        required: true
+      tags:
+      - notifications
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/protected/:
+    get:
+      operationId: protected_retrieve
+      description: Confirm that the supplied JWT access token is valid.
+      tags:
+      - protected
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMessageResponse'
+          description: ''
+  /api/register/:
+    post:
+      operationId: register_create
+      description: Register a new BudgetBuddy user.
+      tags:
+      - register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMessageResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserErrorResponse'
+          description: ''
+  /api/savings-goals/:
+    get:
+      operationId: savings_goals_list
+      tags:
+      - savings-goals
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SavingsGoal'
+          description: ''
+    post:
+      operationId: savings_goals_create
+      tags:
+      - savings-goals
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SavingsGoal'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SavingsGoal'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SavingsGoal'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavingsGoal'
+          description: ''
+  /api/savings-goals/{id}/:
+    get:
+      operationId: savings_goals_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this savings goal.
+        required: true
+      tags:
+      - savings-goals
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavingsGoal'
+          description: ''
+    put:
+      operationId: savings_goals_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this savings goal.
+        required: true
+      tags:
+      - savings-goals
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SavingsGoal'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SavingsGoal'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SavingsGoal'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavingsGoal'
+          description: ''
+    patch:
+      operationId: savings_goals_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this savings goal.
+        required: true
+      tags:
+      - savings-goals
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSavingsGoal'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSavingsGoal'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSavingsGoal'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavingsGoal'
+          description: ''
+    delete:
+      operationId: savings_goals_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this savings goal.
+        required: true
+      tags:
+      - savings-goals
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/savings-report/:
+    get:
+      operationId: savings_report_retrieve
+      description: Return overall savings-goal progress.
+      tags:
+      - savings-report
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavingsReportResponse'
+          description: ''
+  /api/token/:
+    post:
+      operationId: token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/token/refresh/:
+    post:
+      operationId: token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+components:
+  schemas:
+    Budget:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        month:
+          type: string
+          maxLength: 20
+        user:
+          type: integer
+          readOnly: true
+          nullable: true
+      required:
+      - amount
+      - category
+      - id
+      - month
+      - user
+    BudgetError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+      - error
+    BudgetSummaryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        category:
+          type: string
+        month:
+          type: string
+        year:
+          type: integer
+        budget_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        spent_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        remaining_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        percentage_used:
+          type: number
+          format: double
+        status:
+          type: string
+      required:
+      - budget_amount
+      - category
+      - id
+      - month
+      - percentage_used
+      - remaining_amount
+      - spent_amount
+      - status
+      - year
+    BudgetSummaryResponse:
+      type: object
+      properties:
+        total_budget:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        total_spent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        total_remaining:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        budgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetSummaryItem'
+      required:
+      - budgets
+      - total_budget
+      - total_remaining
+      - total_spent
+    CategoryBreakdown:
+      type: object
+      properties:
+        category:
+          type: string
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+      required:
+      - amount
+      - category
+    CategoryEnum:
+      enum:
+      - Food
+      - Travel
+      - Shopping
+      - Education
+      - Entertainment
+      - Healthcare
+      - Bills
+      - Miscellaneous
+      type: string
+      description: |-
+        * `Food` - Food
+        * `Travel` - Travel
+        * `Shopping` - Shopping
+        * `Education` - Education
+        * `Entertainment` - Entertainment
+        * `Healthcare` - Healthcare
+        * `Bills` - Bills
+        * `Miscellaneous` - Miscellaneous
+    CategoryExpenseItem:
+      type: object
+      properties:
+        category:
+          type: string
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        percentage:
+          type: number
+          format: double
+      required:
+      - amount
+      - category
+      - percentage
+    CategoryExpenseResponse:
+      type: object
+      properties:
+        month:
+          type: string
+        month_number:
+          type: integer
+        year:
+          type: integer
+        total_expense:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryExpenseItem'
+      required:
+      - categories
+      - month
+      - month_number
+      - total_expense
+      - year
+    DashboardResponse:
+      type: object
+      properties:
+        month:
+          type: string
+        year:
+          type: integer
+        total_income:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        total_expense:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        total_budget:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        current_month_expense:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        remaining_budget:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        recent_transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecentTransaction'
+      required:
+      - balance
+      - current_month_expense
+      - month
+      - recent_transactions
+      - remaining_budget
+      - total_budget
+      - total_expense
+      - total_income
+      - year
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+      - error
+    Expense:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        date:
+          type: string
+          format: date
+        description:
+          type: string
+        user:
+          type: integer
+          readOnly: true
+          nullable: true
+      required:
+      - amount
+      - date
+      - id
+      - title
+      - user
+    FinancialSummaryResponse:
+      type: object
+      properties:
+        total_income:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        total_expense:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        current_balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+      required:
+      - current_balance
+      - total_expense
+      - total_income
+    Income:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        source:
+          $ref: '#/components/schemas/SourceEnum'
+        description:
+          type: string
+          nullable: true
+        income_date:
+          type: string
+          format: date
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+      required:
+      - amount
+      - created_at
+      - id
+      - income_date
+      - title
+      - updated_at
+      - user
+    IncomeExpenseResponse:
+      type: object
+      properties:
+        month:
+          type: string
+        month_number:
+          type: integer
+        year:
+          type: integer
+        total_income:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        total_expense:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        status:
+          type: string
+      required:
+      - balance
+      - month
+      - month_number
+      - status
+      - total_expense
+      - total_income
+      - year
+    MonthlyBudget:
+      type: object
+      properties:
+        total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        spent:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        remaining:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        usage_percentage:
+          type: number
+          format: double
+        status:
+          type: string
+      required:
+      - remaining
+      - spent
+      - status
+      - total
+      - usage_percentage
+    MonthlyExpense:
+      type: object
+      properties:
+        total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        category_breakdown:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryBreakdown'
+      required:
+      - category_breakdown
+      - total
+    MonthlyExpenseItem:
+      type: object
+      properties:
+        month_number:
+          type: integer
+        month:
+          type: string
+        total_expense:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+      required:
+      - month
+      - month_number
+      - total_expense
+    MonthlyExpenseTrendResponse:
+      type: object
+      properties:
+        year:
+          type: integer
+        monthly_expenses:
+          type: array
+          items:
+            $ref: '#/components/schemas/MonthlyExpenseItem'
+      required:
+      - monthly_expenses
+      - year
+    MonthlyFinancialReportResponse:
+      type: object
+      properties:
+        month:
+          type: string
+        month_number:
+          type: integer
+        year:
+          type: integer
+        income:
+          $ref: '#/components/schemas/MonthlyIncome'
+        expense:
+          $ref: '#/components/schemas/MonthlyExpense'
+        budget:
+          $ref: '#/components/schemas/MonthlyBudget'
+        savings:
+          $ref: '#/components/schemas/MonthlySavings'
+        balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+      required:
+      - balance
+      - budget
+      - expense
+      - income
+      - month
+      - month_number
+      - savings
+      - year
+    MonthlyIncome:
+      type: object
+      properties:
+        total:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+      required:
+      - total
+    MonthlySavings:
+      type: object
+      properties:
+        total_target:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        total_saved:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        remaining:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+      required:
+      - remaining
+      - total_saved
+      - total_target
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 150
+        message:
+          type: string
+        notification_type:
+          $ref: '#/components/schemas/NotificationTypeEnum'
+        is_read:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - message
+      - notification_type
+      - title
+      - user
+    NotificationTypeEnum:
+      enum:
+      - BUDGET_WARNING
+      - BUDGET_LIMIT
+      - OVERSPENDING
+      - SAVINGS_REMINDER
+      - GOAL_MILESTONE
+      - GOAL_COMPLETED
+      - MONTHLY_REPORT
+      type: string
+      description: |-
+        * `BUDGET_WARNING` - Budget Warning
+        * `BUDGET_LIMIT` - Budget Limit Reached
+        * `OVERSPENDING` - Overspending Alert
+        * `SAVINGS_REMINDER` - Savings Reminder
+        * `GOAL_MILESTONE` - Goal Milestone
+        * `GOAL_COMPLETED` - Goal Completed
+        * `MONTHLY_REPORT` - Monthly Report
+    PatchedBudget:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        month:
+          type: string
+          maxLength: 20
+        user:
+          type: integer
+          readOnly: true
+          nullable: true
+    PatchedExpense:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        date:
+          type: string
+          format: date
+        description:
+          type: string
+        user:
+          type: integer
+          readOnly: true
+          nullable: true
+    PatchedIncome:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        source:
+          $ref: '#/components/schemas/SourceEnum'
+        description:
+          type: string
+          nullable: true
+        income_date:
+          type: string
+          format: date
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+    PatchedNotification:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 150
+        message:
+          type: string
+        notification_type:
+          $ref: '#/components/schemas/NotificationTypeEnum'
+        is_read:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+    PatchedSavingsGoal:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+        target_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        saved_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        target_date:
+          type: string
+          format: date
+          nullable: true
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        progress_percentage:
+          type: number
+          format: double
+          readOnly: true
+        remaining_amount:
+          type: number
+          format: double
+          readOnly: true
+    RecentTransaction:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        title:
+          type: string
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        date:
+          type: string
+          format: date
+        source:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+      required:
+      - amount
+      - date
+      - id
+      - title
+      - type
+    RegisterRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password
+      - username
+    SavingsGoal:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 100
+        target_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        saved_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        target_date:
+          type: string
+          format: date
+          nullable: true
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        progress_percentage:
+          type: number
+          format: double
+          readOnly: true
+        remaining_amount:
+          type: number
+          format: double
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - progress_percentage
+      - remaining_amount
+      - target_amount
+      - title
+      - updated_at
+      - user
+    SavingsGoalReportItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        target_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        saved_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        remaining_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        progress_percentage:
+          type: number
+          format: double
+        target_date:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - id
+      - progress_percentage
+      - remaining_amount
+      - saved_amount
+      - target_amount
+      - target_date
+      - title
+    SavingsReportResponse:
+      type: object
+      properties:
+        total_goals:
+          type: integer
+        total_target:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        total_saved:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        remaining_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        overall_progress:
+          type: number
+          format: double
+        goals:
+          type: array
+          items:
+            $ref: '#/components/schemas/SavingsGoalReportItem'
+      required:
+      - goals
+      - overall_progress
+      - remaining_amount
+      - total_goals
+      - total_saved
+      - total_target
+    SourceEnum:
+      enum:
+      - SALARY
+      - POCKET_MONEY
+      - SCHOLARSHIP
+      - FREELANCING
+      - BUSINESS
+      - OTHER
+      type: string
+      description: |-
+        * `SALARY` - Salary
+        * `POCKET_MONEY` - Pocket Money
+        * `SCHOLARSHIP` - Scholarship
+        * `FREELANCING` - Freelancing
+        * `BUSINESS` - Business
+        * `OTHER` - Other
+    TokenObtainPair:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - password
+      - refresh
+      - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+    UserErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+      - error
+    UserMessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+      - message
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

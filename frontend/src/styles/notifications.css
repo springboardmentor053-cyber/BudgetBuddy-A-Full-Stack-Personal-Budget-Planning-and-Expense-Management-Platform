@@ -1,0 +1,340 @@
+/* =========================================================
+   BUDGETBUDDY - NOTIFICATIONS PAGE
+   Light + Dark Theme
+========================================================= */
+
+.notifications-page {
+  min-height: 100vh;
+  display: flex;
+  background: var(--bg);
+  color: var(--text);
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.notifications-main {
+  flex: 1;
+  padding: 35px;
+  margin-left: 250px;
+  background: var(--bg);
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.notifications-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.notifications-header h1 {
+  margin: 0;
+  font-size: 32px;
+  color: var(--text);
+}
+
+.notifications-header p {
+  margin-top: 8px;
+  color: var(--text-secondary);
+}
+
+/* =========================================================
+   NOTIFICATION COUNT
+========================================================= */
+
+.notification-count {
+  padding: 10px 18px;
+  border-radius: 20px;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.notifications-error {
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+
+  background: rgba(220, 38, 38, 0.10);
+  color: var(--danger);
+
+  border: 1px solid rgba(220, 38, 38, 0.15);
+}
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.notifications-loading {
+  padding: 60px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.notifications-empty {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 70px 20px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  color: var(--text);
+}
+
+.empty-notification-icon {
+  font-size: 50px;
+  margin-bottom: 15px;
+}
+
+.notifications-empty h2 {
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.notifications-empty p {
+  color: var(--text-secondary);
+}
+
+/* =========================================================
+   LIST
+========================================================= */
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* =========================================================
+   NOTIFICATION CARD
+========================================================= */
+
+.notification-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px;
+
+  background: var(--surface);
+  color: var(--text);
+
+  border: 1px solid var(--border);
+  border-left: 5px solid transparent;
+  border-radius: 15px;
+
+  box-shadow: var(--shadow);
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.2s ease;
+}
+
+.notification-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.10);
+}
+
+/* =========================================================
+   READ / UNREAD
+========================================================= */
+
+.notification-unread {
+  border-left-color: var(--primary);
+  background: var(--surface);
+}
+
+.notification-read {
+  opacity: 0.75;
+}
+
+.notification-archived {
+  opacity: 0.5;
+}
+
+/* =========================================================
+   ICON
+========================================================= */
+
+.notification-icon {
+  min-width: 52px;
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: var(--surface-hover);
+
+  font-size: 25px;
+}
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.notification-title-row h3 {
+  margin: 0;
+  font-size: 17px;
+  color: var(--text);
+}
+
+.notification-message {
+  margin: 8px 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.notification-meta {
+  display: flex;
+  gap: 15px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* =========================================================
+   PRIORITY
+========================================================= */
+
+.notification-priority {
+  padding: 4px 9px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.priority-high {
+  background: rgba(220, 38, 38, 0.12);
+  color: var(--danger);
+}
+
+.priority-medium {
+  background: rgba(245, 158, 11, 0.14);
+  color: var(--warning);
+}
+
+.priority-low {
+  background: rgba(22, 163, 74, 0.12);
+  color: var(--success);
+}
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.notification-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notification-button {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 8px 12px;
+
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+/* =========================================================
+   READ BUTTON
+========================================================= */
+
+.read-button {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.read-button:hover {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+/* =========================================================
+   ARCHIVE BUTTON
+========================================================= */
+
+.archive-button {
+  background: var(--surface-hover);
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+
+.archive-button:hover {
+  background: var(--border);
+  color: var(--text);
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+  .notifications-main {
+    margin-left: 0;
+    padding: 20px;
+  }
+
+  .notification-card {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .notification-actions {
+    width: 100%;
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 600px) {
+  .notifications-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .notification-count {
+    align-self: flex-start;
+  }
+
+  .notifications-main {
+    padding: 16px;
+  }
+}

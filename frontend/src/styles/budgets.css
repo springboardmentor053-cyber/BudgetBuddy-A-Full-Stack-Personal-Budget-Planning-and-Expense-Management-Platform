@@ -1,0 +1,446 @@
+/* =========================================================
+   BUDGETBUDDY - BUDGETS
+   Light + Dark Theme
+========================================================= */
+
+.budgets-main {
+  width: calc(100% - 72px);
+  margin-left: 72px;
+  min-height: 100vh;
+  padding: 34px;
+
+  background: var(--bg);
+  color: var(--text);
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.budgets-header {
+  margin-bottom: 28px;
+}
+
+.budgets-header h1 {
+  margin: 0;
+
+  font-size: 34px;
+
+  color: var(--text);
+}
+
+.budgets-header p:last-child {
+  margin-top: 9px;
+
+  color: var(--text-secondary);
+}
+
+/* =========================================================
+   GRID
+========================================================= */
+
+.budgets-grid {
+  display: grid;
+
+  grid-template-columns: 370px 1fr;
+
+  gap: 22px;
+
+  align-items: start;
+}
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.budget-form-card,
+.budget-overview-card {
+  padding: 24px;
+
+  background: var(--surface);
+
+  border: 1px solid var(--border);
+
+  border-radius: 18px;
+
+  box-shadow: var(--shadow);
+
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.budget-form-card h2,
+.budget-overview-card h2 {
+  margin: 0 0 20px;
+
+  color: var(--text);
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.budget-form-card form {
+  display: flex;
+
+  flex-direction: column;
+}
+
+.budget-form-card label {
+  margin-bottom: 7px;
+
+  color: var(--text);
+
+  font-weight: 700;
+}
+
+.budget-form-card input,
+.budget-form-card select {
+  width: 100%;
+
+  padding: 12px 13px;
+
+  margin-bottom: 18px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 10px;
+
+  background: var(--surface);
+
+  color: var(--text);
+
+  outline: none;
+
+  font-size: 14px;
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.budget-form-card input::placeholder {
+  color: var(--text-muted);
+}
+
+.budget-form-card input:focus,
+.budget-form-card select:focus {
+  border-color: var(--primary);
+
+  box-shadow:
+    0 0 0 3px var(--primary-light);
+}
+
+.budget-form-actions {
+  display: flex;
+
+  gap: 10px;
+}
+
+.budget-form-actions button {
+  flex: 1;
+}
+
+/* =========================================================
+   OVERVIEW HEADER
+========================================================= */
+
+.budget-overview-header {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  margin-bottom: 20px;
+}
+
+.budget-overview-header h2 {
+  margin: 0;
+}
+
+.budget-overview-header p {
+  margin: 6px 0 0;
+
+  color: var(--text-secondary);
+
+  font-size: 13px;
+}
+
+.budget-overview-header > span {
+  padding: 8px 11px;
+
+  border-radius: 10px;
+
+  background: var(--primary-light);
+
+  color: var(--primary);
+
+  font-size: 13px;
+
+  font-weight: 800;
+}
+
+/* =========================================================
+   BUDGET LIST
+========================================================= */
+
+.budget-card-list {
+  display: grid;
+
+  gap: 16px;
+}
+
+.budget-item-card {
+  padding: 20px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 16px;
+
+  background: var(--surface);
+
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.budget-item-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow: var(--shadow);
+}
+
+.budget-item-top {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 15px;
+}
+
+.budget-item-top h3 {
+  margin: 0;
+
+  color: var(--text);
+
+  font-size: 19px;
+}
+
+.budget-item-top p {
+  margin: 5px 0 0;
+
+  color: var(--text-secondary);
+
+  font-size: 13px;
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.budget-status {
+  padding: 7px 10px;
+
+  border-radius: 999px;
+
+  font-size: 12px;
+
+  font-weight: 800;
+}
+
+.budget-status.on-track {
+  background: var(--success-light);
+
+  color: var(--success);
+}
+
+.budget-status.warning {
+  background: var(--warning-light);
+
+  color: var(--warning);
+}
+
+.budget-status.exceeded {
+  background: var(--danger-light);
+
+  color: var(--danger);
+}
+
+/* =========================================================
+   NUMBERS
+========================================================= */
+
+.budget-numbers {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 12px;
+
+  margin: 20px 0;
+}
+
+.budget-numbers div {
+  padding: 12px;
+
+  border-radius: 12px;
+
+  background: var(--surface-hover);
+
+  border: 1px solid var(--border);
+}
+
+.budget-numbers span {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: var(--text-secondary);
+
+  font-size: 12px;
+}
+
+.budget-numbers strong {
+  color: var(--text);
+}
+
+.negative-remaining {
+  color: var(--danger) !important;
+}
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+.progress-row {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+.progress-track {
+  flex: 1;
+
+  height: 10px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: var(--border);
+}
+
+.progress-fill {
+  height: 100%;
+
+  border-radius: inherit;
+
+  transition: width 0.3s ease;
+}
+
+.progress-fill.on-track {
+  background: var(--success);
+}
+
+.progress-fill.warning {
+  background: var(--warning);
+}
+
+.progress-fill.exceeded {
+  background: var(--danger);
+}
+
+.progress-row > span {
+  min-width: 42px;
+
+  color: var(--text-secondary);
+
+  font-size: 13px;
+
+  font-weight: 800;
+
+  text-align: right;
+}
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.budget-item-actions {
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 8px;
+
+  margin-top: 18px;
+}
+
+.budget-item-actions button {
+  padding: 8px 12px;
+
+  border-radius: 8px;
+
+  font-size: 12px;
+}
+
+/* =========================================================
+   EMPTY / LOADING STATE
+========================================================= */
+
+.budget-state {
+  padding: 60px 20px;
+
+  color: var(--text-secondary);
+
+  text-align: center;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1050px) {
+  .budgets-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 780px) {
+  .budgets-main {
+    width: calc(100% - 64px);
+
+    margin-left: 64px;
+
+    padding: 22px;
+  }
+
+  .budget-numbers {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .budgets-main {
+    padding: 16px;
+  }
+
+  .budget-item-top {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,321 @@
+/* =========================================================
+   BUDGETBUDDY - INCOME PAGE
+   Light + Dark Theme
+========================================================= */
+
+.income-main {
+  width: calc(100% - 270px);
+  margin-left: 270px;
+  min-height: 100vh;
+  padding: 34px;
+  background: var(--bg);
+  color: var(--text);
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.income-header {
+  margin-bottom: 28px;
+}
+
+.income-header h1 {
+  margin: 0;
+  font-size: 34px;
+  color: var(--text);
+}
+
+.income-header p:last-child {
+  color: var(--text-secondary);
+  margin-top: 9px;
+}
+
+/* =========================================================
+   GRID
+========================================================= */
+
+.income-grid {
+  display: grid;
+  grid-template-columns: 390px 1fr;
+  gap: 22px;
+  align-items: start;
+}
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.income-form-card,
+.income-list-card {
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  color: var(--text);
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.income-form-card h2,
+.income-list-card h2 {
+  margin: 0 0 20px;
+  color: var(--text);
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.income-form-card form {
+  display: flex;
+  flex-direction: column;
+}
+
+.income-form-card label {
+  margin-bottom: 7px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.income-form-card input,
+.income-form-card select,
+.income-form-card textarea {
+  width: 100%;
+  padding: 12px 13px;
+  margin-bottom: 17px;
+
+  border: 1px solid var(--border);
+  border-radius: 10px;
+
+  font-size: 14px;
+  outline: none;
+
+  background: var(--surface);
+  color: var(--text);
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.income-form-card input::placeholder,
+.income-form-card textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.income-form-card input:focus,
+.income-form-card select:focus,
+.income-form-card textarea:focus {
+  border-color: var(--primary);
+
+  box-shadow:
+    0 0 0 3px var(--primary-light);
+}
+
+/* =========================================================
+   FORM BUTTONS
+========================================================= */
+
+.income-form-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.income-form-actions button {
+  flex: 1;
+}
+
+/* =========================================================
+   CANCEL BUTTON
+========================================================= */
+
+.cancel-button {
+  background: var(--surface-hover);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.cancel-button:hover {
+  background: var(--border);
+}
+
+/* =========================================================
+   INCOME LIST HEADER
+========================================================= */
+
+.income-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.income-list-header h2 {
+  margin: 0;
+}
+
+.income-list-header p {
+  margin: 6px 0 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.income-list-header span {
+  padding: 8px 11px;
+  border-radius: 10px;
+
+  background: var(--primary-light);
+  color: var(--primary);
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.income-table-wrapper {
+  overflow-x: auto;
+}
+
+.income-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.income-table th,
+.income-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.income-table th {
+  color: var(--text-secondary);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.income-table td {
+  color: var(--text);
+  font-size: 14px;
+}
+
+/* =========================================================
+   INCOME AMOUNT
+========================================================= */
+
+.income-amount {
+  color: var(--success) !important;
+  font-weight: 800;
+}
+
+/* =========================================================
+   TABLE ACTIONS
+========================================================= */
+
+.table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.table-actions button {
+  padding: 8px 11px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+/* =========================================================
+   EDIT BUTTON
+========================================================= */
+
+.edit-button {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid transparent;
+}
+
+.edit-button:hover {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+/* =========================================================
+   DELETE BUTTON
+========================================================= */
+
+.delete-button {
+  background: rgba(220, 38, 38, 0.10);
+  color: var(--danger);
+  border: 1px solid transparent;
+}
+
+.delete-button:hover {
+  background: var(--danger);
+  color: #ffffff;
+}
+
+/* =========================================================
+   EMPTY / LOADING / ERROR STATE
+========================================================= */
+
+.income-state {
+  padding: 50px 20px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1050px) {
+  .income-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 780px) {
+  .income-main {
+    width: calc(100% - 82px);
+    margin-left: 82px;
+    padding: 22px;
+  }
+}
+
+/* =========================================================
+   DARK MODE EXTRA POLISH
+========================================================= */
+
+[data-theme="dark"] .income-table tr:hover {
+  background: var(--surface-hover);
+}
+
+[data-theme="dark"] .income-form-card input,
+[data-theme="dark"] .income-form-card select,
+[data-theme="dark"] .income-form-card textarea {
+  background: var(--surface);
+  color: var(--text);
+}
+
+[data-theme="dark"] .cancel-button:hover {
+  background: var(--border);
+}
