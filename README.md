@@ -198,12 +198,7 @@ The project uses:
 **Domain:** Personal Budget Planning and Expense Management  
 **Technology:** React.js + Django REST Framework + Python
 
-## 👩‍💻 Developer
 
-**Sai Harshitha**
-
-B.Tech – Computer Science Engineering (AI & ML)  
-Mohan Babu University, Tirupati
 
 ---
 
