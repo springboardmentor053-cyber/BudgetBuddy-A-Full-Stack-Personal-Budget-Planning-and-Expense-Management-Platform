@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './Login';
 import Dashboard from './pages/Dashboard/Dashboard';
 import AddExpense from './pages/Expenses/AddExpense';
@@ -9,10 +9,13 @@ import Register from './pages/Auth/Register';
 import Notifications from './pages/Notifications/Notifications';
 import Reports from './pages/Reports/Reports';
 import Analytics from './pages/Analytics/Analytics';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
     <BrowserRouter>
+      <ToastContainer position="top-right" theme="dark" autoClose={4000} />
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />

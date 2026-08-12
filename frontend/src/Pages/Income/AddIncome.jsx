@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import MainLayout from '../../layouts/MainLayout';
+import { checkNewNotifications } from '../../services/notificationCheck';
 
 function AddIncome() {
   const [incomes, setIncomes] = useState([]);
@@ -28,6 +29,7 @@ function AddIncome() {
       setForm({ title: '', amount: '', source: 'OTHER', description: '', income_date: '' });
       setEditingId(null);
       fetchIncomes();
+      setTimeout(() => checkNewNotifications(), 500);
     } catch (err) {
       setMessage('Failed to save income.');
     }

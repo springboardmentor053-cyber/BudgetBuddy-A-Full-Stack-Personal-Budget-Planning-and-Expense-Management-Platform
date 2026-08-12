@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import MainLayout from '../../layouts/MainLayout';
+import { checkNewNotifications } from '../../services/notificationCheck';
 
 function AddExpense() {
   const [expenses, setExpenses] = useState([]);
@@ -28,6 +29,7 @@ function AddExpense() {
       setForm({ title: '', amount: '', category: 'food', description: '', expense_date: '' });
       setEditingId(null);
       fetchExpenses();
+      setTimeout(() => checkNewNotifications(), 500);
     } catch (err) {
       setMessage('Failed to save expense.');
     }

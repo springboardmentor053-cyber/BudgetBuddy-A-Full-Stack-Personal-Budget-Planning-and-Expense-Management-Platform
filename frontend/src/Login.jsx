@@ -29,7 +29,7 @@ function Login() {
         background: '#171d2d', border: '1px solid #232b3d', borderRadius: '16px',
         padding: '40px', width: '360px', textAlign: 'center'
       }}>
-        <h1 style={{ color: '#8e6ff7', marginBottom: '5px' }}>💰 BudgetBuddy</h1>
+        <h1 style={{ color: '#8e6ff7', marginBottom: '5px' }}>BudgetBuddy</h1>
         <p style={{ color: '#8892a6', marginBottom: '25px', fontSize: '14px' }}>Sign in to your account</p>
 
         <form onSubmit={handleLogin}>

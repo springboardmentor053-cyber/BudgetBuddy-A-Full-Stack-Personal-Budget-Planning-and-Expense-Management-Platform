@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import MainLayout from '../../layouts/MainLayout';
+import { checkNewNotifications } from '../../services/notificationCheck';
 
 function AddBudget() {
   const [budgets, setBudgets] = useState([]);
@@ -28,6 +29,7 @@ function AddBudget() {
       setForm({ category: 'food', budget_amount: '', month: '', year: '' });
       setEditingId(null);
       fetchBudgets();
+      setTimeout(() => checkNewNotifications(), 500);
     } catch (err) {
       setMessage(err.response?.data?.non_field_errors?.[0] || 'Failed to save budget.');
     }

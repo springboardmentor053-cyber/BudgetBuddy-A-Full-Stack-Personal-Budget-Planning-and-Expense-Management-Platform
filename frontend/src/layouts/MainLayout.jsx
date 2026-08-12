@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { LayoutDashboard, Wallet, Receipt, PiggyBank, Target, Bell, FileText, LogOut, BarChart3 } from 'lucide-react';
-import api from '../services/api';
+import { checkNewNotifications } from '../services/notificationCheck';
 
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -20,9 +20,7 @@ function MainLayout({ children }) {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    api.get('/notifications/')
-      .then((res) => setUnreadCount(res.data.filter((n) => !n.is_read).length))
-      .catch(() => {});
+    checkNewNotifications().then((count) => setUnreadCount(count));
   }, [location.pathname]);
 
   const handleLogout = () => {
@@ -38,7 +36,7 @@ function MainLayout({ children }) {
         padding: '20px 0', flexShrink: 0, position: 'sticky', top: 0, height: '100vh'
       }}>
         <h2 style={{ textAlign: 'center', marginBottom: '30px', fontSize: '20px', color: '#8e6ff7' }}>
-          💰 BudgetBuddy
+          BudgetBuddy
         </h2>
         {navItems.map((item) => {
           const Icon = item.icon;
