@@ -20,9 +20,10 @@ function Income() {
 
   const incomeCategories = [
     { value: 'SALARY', label: 'Salary' },
-    { value: 'FREELANCING', label: 'Freelancing' },
     { value: 'POCKET_MONEY', label: 'Pocket Money' },
-    { value: 'INVESTMENTS', label: 'Investments' },
+    { value: 'SCHOLARSHIP', label: 'Scholarship' },
+    { value: 'FREELANCING', label: 'Freelancing' },
+    { value: 'BUSINESS', label: 'Business' },
     { value: 'OTHER', label: 'Other Sources' },
   ];
 
@@ -72,10 +73,18 @@ function Income() {
     fetchIncomes();
   }, []);
 
-  const handleCreateIncome = async (e) => {
+ const handleCreateIncome = async (e) => {
     e.preventDefault();
-    if (!amount || !incomeDate || parseFloat(amount) <= 0) {
-      alert('Please fill out all fields with valid data values.');
+
+    // 1. Check for missing required fields
+    if (!amount || !incomeDate) {
+      alert('Please fill out all required fields.');
+      return;
+    }
+
+    // 2. Specific validation for negative or zero values
+    if (parseFloat(amount) <= 0) {
+      alert("Amount can't be negative or zero.");
       return;
     }
 
@@ -92,13 +101,22 @@ function Income() {
       setIncomeDate('');
       fetchIncomes();
     } catch (err) {
-      alert('Failed to log new income source.');
+      console.error('Income creation error details:', err.response?.data);
+      const errorMsg = err.response?.data ? JSON.stringify(err.response.data) : 'Failed to log new income source.';
+      alert(errorMsg);
     }
   };
 
   const handleSaveUpdate = async (id) => {
-    if (!editAmount || !editDate || parseFloat(editAmount) <= 0) {
-      alert('Please provide valid updated values.');
+    // 1. Check for missing fields during edit
+    if (!editAmount || !editDate) {
+      alert('Please provide all required fields.');
+      return;
+    }
+
+    // 2. Check for negative or zero amounts during edit
+    if (parseFloat(editAmount) <= 0) {
+      alert("Amount can't be negative or zero.");
       return;
     }
 

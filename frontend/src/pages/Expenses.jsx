@@ -75,8 +75,16 @@ function Expenses() {
 
   const handleCreateExpense = async (e) => {
     e.preventDefault();
-    if (!title || !amount || parseFloat(amount) <= 0) {
-      alert('Please fill out all fields with valid data.');
+
+    // Check for missing required fields
+    if (!title || !amount) {
+      alert('Please fill out all required fields.');
+      return;
+    }
+
+    // Specific check for zero or negative amounts
+    if (parseFloat(amount) <= 0) {
+      alert("Amount can't be negative or zero.");
       return;
     }
 
@@ -97,8 +105,15 @@ function Expenses() {
   };
 
   const handleSaveUpdate = async (id) => {
-    if (!editTitle || !editAmount || parseFloat(editAmount) <= 0) {
-      alert('Please provide valid updated values.');
+    // Check for missing values during edit
+    if (!editTitle || !editAmount) {
+      alert('Please provide all required fields.');
+      return;
+    }
+
+    // Check for zero or negative amounts during edit
+    if (parseFloat(editAmount) <= 0) {
+      alert("Amount can't be negative or zero.");
       return;
     }
 
@@ -115,7 +130,6 @@ function Expenses() {
       alert('Failed to update expense item.');
     }
   };
-
   const handleDeleteExpense = async (id) => {
     if (window.confirm('Delete this expense item permanently?')) {
       try {

@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import api from '../services/api';
 
 function Notifications() {
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,7 +29,8 @@ function Notifications() {
     fetchNotifications();
   }, []);
 
-  const handleMarkAsRead = async (id) => {
+  const handleMarkAsRead = async (id, e) => {
+    if (e) e.stopPropagation(); // Prevents triggering notification click navigation
     try {
       await api.patch(`notifications/${id}/read/`);
       fetchNotifications();
@@ -36,12 +39,48 @@ function Notifications() {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id, e) => {
+    if (e) e.stopPropagation(); // Prevents triggering notification click navigation
     try {
       await api.delete(`notifications/${id}/`);
       fetchNotifications();
     } catch (err) {
       console.error('Failed to delete notification:', err);
+    }
+  };
+
+  // Helper to determine route based on notification data
+  const getNotificationRoute = (notification) => {
+    // 1. Check explicit backend 'type', 'category', or 'target_url' fields if provided
+    const type = (notification.type || notification.category || '').toLowerCase();
+    if (type.includes('budget')) return '/budgets';
+    if (type.includes('expense')) return '/expenses';
+    if (type.includes('income')) return '/income';
+    if (type.includes('goal') || type.includes('saving')) return '/savings';
+    if (type.includes('profile') || type.includes('user')) return '/profile';
+
+    // 2. Fallback check: inspect title or message content for keywords
+    const content = `${notification.title || ''} ${notification.message || ''}`.toLowerCase();
+    if (content.includes('budget')) return '/budgets';
+    if (content.includes('expense')) return '/expenses';
+    if (content.includes('income')) return '/income';
+    if (content.includes('goal') || content.includes('saving')) return '/savings';
+    if (content.includes('profile') || content.includes('account')) return '/profile';
+
+    return null; // Fallback if no matching route found
+  };
+
+  // Handle clicking on the notification item
+  const handleNotificationClick = async (notification) => {
+    // Automatically mark as read on click if it's unread
+    if (!notification.is_read) {
+      handleMarkAsRead(notification.id);
+    }
+
+    // Determine target page and navigate
+    const targetRoute = getNotificationRoute(notification);
+    if (targetRoute) {
+      navigate(targetRoute);
     }
   };
 
@@ -169,7 +208,7 @@ function Notifications() {
         {/* Action Header & Filter Bar */}
         <div style={{ 
           display: 'flex', 
-          justify: 'space-between', 
+          justifyContent: 'space-between', 
           alignItems: 'center', 
           background: '#ffffff', 
           padding: '20px 25px', 
@@ -248,6 +287,7 @@ function Notifications() {
                 return (
                   <div 
                     key={n.id}
+                    onClick={() => handleNotificationClick(n)}
                     style={{
                       padding: '20px',
                       borderRadius: '12px',
@@ -257,9 +297,11 @@ function Notifications() {
                       borderWidth: '1px 1px 1px 6px',
                       borderColor: `${n.is_read ? '#f1f5f9' : '#e2e8f0'} ${n.is_read ? '#f1f5f9' : '#e2e8f0'} ${n.is_read ? '#f1f5f9' : '#e2e8f0'} ${borderLeftColor}`,
                       display: 'flex',
-                      justify: 'space-between',
+                      justifyContent: 'space-between',
                       alignItems: 'center',
-                      gap: '15px'
+                      gap: '15px',
+                      cursor: 'pointer',
+                      transition: 'transform 0.15s ease, box-shadow 0.15s ease',
                     }}
                   >
                     <div style={{ flex: 1 }}>
@@ -301,7 +343,7 @@ function Notifications() {
                     <div style={{ display: 'flex', gap: '10px', flexShrink: 0 }}>
                       {!n.is_read && (
                         <button 
-                          onClick={() => handleMarkAsRead(n.id)}
+                          onClick={(e) => handleMarkAsRead(n.id, e)}
                           style={{ 
                             padding: '8px 14px', 
                             background: 'linear-gradient(135deg, #2ecc71 0%, #10b981 100%)', 
@@ -317,7 +359,7 @@ function Notifications() {
                         </button>
                       )}
                       <button 
-                        onClick={() => handleDelete(n.id)}
+                        onClick={(e) => handleDelete(n.id, e)}
                         style={{ 
                           padding: '8px 12px', 
                           background: 'linear-gradient(135deg, #ff4d4d 0%, #f43f5e 100%)', 

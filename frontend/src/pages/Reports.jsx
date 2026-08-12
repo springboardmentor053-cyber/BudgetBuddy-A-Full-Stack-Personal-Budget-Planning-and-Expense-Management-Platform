@@ -466,7 +466,7 @@ function Reports() {
 
   if (loading) {
     return (
-      <MainLayout pageTitle="Reports & Analytics 📊">
+      <MainLayout pageTitle="Reports & Analytics ">
         <div style={{ textAlign: 'center', padding: '60px', color: '#3498db', fontWeight: 'bold', fontSize: '1.2rem' }}>
           ✨ Fetching Analytics & Recent Activity...
         </div>
@@ -476,7 +476,7 @@ function Reports() {
 
   if (error) {
     return (
-      <MainLayout pageTitle="Reports & Analytics 📊">
+      <MainLayout pageTitle="Reports & Analytics ">
         <div style={{ padding: '20px', textAlign: 'center' }}>
           <div style={{ padding: '15px', color: '#e74c3c', backgroundColor: '#fde8e8', borderRadius: '10px', border: '1px solid #f8b4b4', fontWeight: 'bold' }}>
             {error}
@@ -505,15 +505,37 @@ function Reports() {
   // Financial Health Score Calculation (0 - 100)
   const calculateFinancialScore = () => {
     let score = 50; // base score
+
+    // 1. Savings Rate Check
     if (income > 0) {
       const savingsRate = ((income - expense) / income) * 100;
       if (savingsRate >= 30) score += 30;
       else if (savingsRate >= 20) score += 20;
       else if (savingsRate >= 10) score += 10;
-      else if (savingsRate < 0) score -= 20;
+      else if (savingsRate < 0) score -= 25;
     }
-    if (remainingBudget >= 0) score += 20;
+
+    // 2. Overall Remaining Budget Check
+    if (remainingBudget >= 0) score += 10;
     else score -= 15;
+
+    // 3. Category Overspending Deductions
+    const budgetSummary = combinedReport?.budget_summary || [];
+    let categoryOverspendPenalty = 0;
+
+    budgetSummary.forEach((b) => {
+      const spent = Number(b.spent_amount || b.total_spent || 0);
+      const allocated = Number(b.budget_amount || 0);
+
+      if (allocated > 0 && spent > allocated) {
+        const overspendAmount = spent - allocated;
+        const overspendRatio = overspendAmount / allocated;
+
+        categoryOverspendPenalty += Math.min(25, 10 + Math.round(overspendRatio * 15));
+      }
+    });
+
+    score -= categoryOverspendPenalty;
 
     return Math.max(0, Math.min(100, Math.round(score)));
   };
@@ -643,11 +665,12 @@ function Reports() {
     fontWeight: '600',
     outline: 'none',
     backgroundColor: '#ffffff',
-    color: '#0f172a'
+    color: '#0f172a',
+    colorScheme: 'light'
   };
 
   return (
-    <MainLayout pageTitle="Reports & Analytics 📊">
+    <MainLayout pageTitle="Reports & Analytics ">
       {/* Custom Scrollbar & Vertical Auto-Scroll Animations */}
       <style>
         {`
@@ -709,7 +732,7 @@ function Reports() {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '1.2rem' }}>🎛️</span>
+                <span style={{ fontSize: '1.2rem' }}></span>
                 <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#ffffff', fontWeight: '700' }}>Filter Controls</h3>
               </div>
 
@@ -795,7 +818,7 @@ function Reports() {
                     transition: 'all 0.2s'
                   }}
                 >
-                  📅 Monthly
+                   Monthly
                 </button>
                 <button
                   onClick={() => setFilterMode('custom')}
@@ -812,7 +835,7 @@ function Reports() {
                     transition: 'all 0.2s'
                   }}
                 >
-                  📆 Custom
+                   Custom
                 </button>
               </div>
 
@@ -896,7 +919,7 @@ function Reports() {
             gridRow: '1 / 2'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '1.2rem' }}>💳</span>
+              <span style={{ fontSize: '1.2rem' }}></span>
               <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '700' }}>Income & Expense Summary</h3>
             </div>
             
@@ -930,7 +953,7 @@ function Reports() {
             gridRow: '2 / 3'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '1.2rem' }}>💰</span>
+              <span style={{ fontSize: '1.2rem' }}></span>
               <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '700' }}>Balance & Savings Goals</h3>
             </div>
             
@@ -948,7 +971,7 @@ function Reports() {
             </div>
           </div>
 
-          {/* 4. NEW CARD: FINANCIAL HEALTH SCORE CARD (BOTTOM-MIDDLE) */}
+          {/* 4. FINANCIAL HEALTH SCORE CARD (BOTTOM-MIDDLE) */}
           <div style={{ 
             background: '#2b3d4e', 
             borderRadius: '16px', 
@@ -963,7 +986,7 @@ function Reports() {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '1.2rem' }}>🎯</span>
+                <span style={{ fontSize: '1.2rem' }}></span>
                 <h3 style={{ margin: 0, color: '#ffffff', fontSize: '1.05rem', fontWeight: '700' }}>Financial Health Score</h3>
               </div>
               <span style={{ 
@@ -1141,7 +1164,7 @@ function Reports() {
         {/* ================= INCOME REPORT ================= */}
         <div style={{ background: '#ffffff', padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0', width: '100%', boxSizing: 'border-box', marginTop: '24px' }}>
           <h3 style={{ color: '#2c3e50', margin: '0 0 16px 0', fontSize: '1.2rem', fontWeight: 'bold' }}>
-            💰 Income Report ({(combinedReport?.income_summary || []).length} Records)
+            📈 Income Report ({(combinedReport?.income_summary || []).length} Records)
           </h3>
           {!(combinedReport?.income_summary || []).length ? (
             <p style={{ color: '#94a3b8' }}>No income records found for this selection.</p>
@@ -1174,7 +1197,7 @@ function Reports() {
         {/* ================= SAVINGS REPORT ================= */}
         <div style={{ background: '#ffffff', padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0', width: '100%', boxSizing: 'border-box', marginTop: '24px' }}>
           <h3 style={{ color: '#2c3e50', margin: '0 0 20px 0', fontSize: '1.2rem', fontWeight: 'bold' }}>
-            🎯 Savings Goal Progress Report
+             Savings Goal Progress Report
           </h3>
           {savingsReport.length === 0 ? (
             <p style={{ color: '#95a5a6' }}>No active savings goals found.</p>
@@ -1206,7 +1229,7 @@ function Reports() {
         {/* ================= CHARTS & EXPENSE EXTREMES ================= */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', width: '100%' }}>
           <div style={{ background: '#ffffff', padding: '20px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-            <h3 style={{ margin: '0 0 16px 0', fontSize: '1rem', color: '#2c3e50', fontWeight: 'bold' }}>🍩 Category Breakdown</h3>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: '1rem', color: '#2c3e50', fontWeight: 'bold' }}>🔵 Category Breakdown</h3>
             <div style={{ height: '220px' }}>
               <Doughnut ref={categoryChartRef} data={categoryDoughnutData} options={{ responsive: true, maintainAspectRatio: false }} />
             </div>
@@ -1214,7 +1237,7 @@ function Reports() {
 
           <div style={{ background: '#ffffff', padding: '20px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
-              <h3 style={{ margin: 0, fontSize: '1rem', color: '#2c3e50', fontWeight: 'bold' }}>📈 Expense Trend & Extremes</h3>
+              <h3 style={{ margin: 0, fontSize: '1rem', color: '#2c3e50', fontWeight: 'bold' }}>💹 Expense Trend & Extremes</h3>
               <div style={{ display: 'flex', gap: '10px' }}>
                 {['trend', 'extremes'].map((tab) => (
                   <button

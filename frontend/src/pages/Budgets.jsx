@@ -256,7 +256,7 @@ function Budgets() {
           boxShadow: '0 8px 25px rgba(43, 61, 78, 0.25)' 
         }}>
           <h3 style={{ color: '#ffffff', margin: '0 0 20px 0', fontSize: '1.25rem', fontWeight: '700' }}>
-            ➕ Set Category Budget
+             Set Category Budget
           </h3>
           
           <form onSubmit={handleCreateBudget} style={{ display: 'flex', flexWrap: 'wrap', gap: '15px', alignItems: 'flex-end' }}>
