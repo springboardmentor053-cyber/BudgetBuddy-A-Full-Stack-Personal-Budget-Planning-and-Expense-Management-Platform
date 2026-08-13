@@ -1,5 +1,4 @@
 from itertools import chain
-from operator import itemgetter
 from datetime import timedelta
 
 from django.db.models import Q, Sum
@@ -87,8 +86,8 @@ class TransactionDashboardView(APIView):
         remaining_budget = max(0.0, float(total_budget) - float(budgeted_expenses))
         overspent_amount = max(0.0, float(budgeted_expenses) - float(total_budget))
 
-        recent_incomes = incomes.order_by('-income_date')[:5]
-        recent_expenses = expenses.order_by('-expense_date')[:5]
+        recent_incomes = incomes.order_by('-income_date', '-created_at', '-id')[:5]
+        recent_expenses = expenses.order_by('-expense_date', '-created_at', '-id')[:5]
 
         income_list = [{
             'id': income.id,
@@ -97,6 +96,7 @@ class TransactionDashboardView(APIView):
             'amount': float(income.amount),
             'category': income.category,
             'date': income.income_date.strftime('%Y-%m-%d'),
+            'created_at': income.created_at.isoformat(),
         } for income in recent_incomes]
         expense_list = [{
             'id': expense.id,
@@ -105,11 +105,16 @@ class TransactionDashboardView(APIView):
             'amount': float(expense.amount),
             'category': expense.category,
             'date': expense.expense_date.strftime('%Y-%m-%d'),
+            'created_at': expense.created_at.isoformat(),
         } for expense in recent_expenses]
 
         recent_transactions = sorted(
             chain(income_list, expense_list),
-            key=itemgetter('date'),
+            key=lambda transaction: (
+                transaction['date'],
+                transaction['created_at'],
+                transaction['id'],
+            ),
             reverse=True,
         )[:5]
 

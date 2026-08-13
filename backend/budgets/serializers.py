@@ -14,11 +14,13 @@ class BudgetSerializer(serializers.ModelSerializer):
         category = data.get('category')
         month = data.get('month')
         year = data.get('year')
+        if category:
+            data['category'] = category.strip()
 
         # Exclude the current instance when validating an update.
         queryset = Budget.objects.filter(
             user=user,
-            category=category,
+            category__iexact=data.get('category'),
             month=month,
             year=year,
         )

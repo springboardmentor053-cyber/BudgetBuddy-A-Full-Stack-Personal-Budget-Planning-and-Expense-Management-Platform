@@ -12,4 +12,9 @@ export const expenseService = {
     const response = await api.post(EXPENSES_ENDPOINT, payload);
     return response.data;
   },
+
+  async updateExpense(id, payload) {
+    const response = await api.put(`${EXPENSES_ENDPOINT}${id}/`, payload);
+    return response.data;
+  },
 };

@@ -2,13 +2,15 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Sidebar from './components/Sidebar';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import IncomeDashboard from './pages/IncomeDashboard';
-import ExpenseDashboard from './pages/ExpenseDashboard';
-import BudgetTracker from './pages/BudgetTracker';
-import NotificationsPage from './pages/NotificationsPage';
+import Login from './Pages/Login';
+import Register from './Pages/Register';
+import Dashboard from './Pages/Dashboard';
+import IncomeDashboard from './Pages/IncomeDashboard';
+import ExpenseDashboard from './Pages/ExpenseDashboard';
+import BudgetTracker from './Pages/BudgetTracker';
+import NotificationsPage from './Pages/NotificationsPage';
+import Reports from './Pages/Reports';
+import SavingsGoals from './Pages/SavingsGoals';
 
 // Public Route helper: redirects to dashboard if already authenticated
 function PublicRoute({ children }) {
@@ -19,9 +21,10 @@ function PublicRoute({ children }) {
 // Layout shell containing the fixed Sidebar navigation and main content area
 function AppLayout({ children }) {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex relative">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex relative overflow-x-hidden">
       <Sidebar />
-      <main className="flex-1 min-h-screen w-full overflow-y-auto">
+      {/* pl-64 offsets main content past the fixed w-64 sidebar */}
+      <main className="flex-1 min-h-screen w-full overflow-y-auto pl-64">
         {children}
       </main>
     </div>
@@ -33,7 +36,7 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Default Root Route: renders Login for unauthenticated users, redirects to Dashboard otherwise */}
+          {/* Default Root Route */}
           <Route
             path="/"
             element={
@@ -43,10 +46,10 @@ export default function App() {
             }
           />
 
-          {/* Fallback redirect for legacy login paths */}
+          {/* Fallback redirect */}
           <Route path="/login" element={<Navigate to="/" replace />} />
 
-          {/* Public Registration route */}
+          {/* Public Registration */}
           <Route
             path="/register"
             element={
@@ -98,6 +101,26 @@ export default function App() {
             }
           />
           <Route
+            path="/savings-goals"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <SavingsGoals />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Reports />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/notifications"
             element={
               <ProtectedRoute>
@@ -106,7 +129,7 @@ export default function App() {
             }
           />
 
-          {/* Catch-all redirects to root path / */}
+          {/* Catch-all route */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

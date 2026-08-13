@@ -5,7 +5,7 @@ from .models import SavingsGoal
 @admin.register(SavingsGoal)
 class SavingsGoalAdmin(admin.ModelAdmin):
     list_display = (
-        'goal_name', 
+        'title',
         'user', 
         'target_amount', 
         'saved_amount', 
@@ -14,4 +14,4 @@ class SavingsGoalAdmin(admin.ModelAdmin):
         'target_date'
     )
     list_filter = ('status', 'target_date')
-    search_fields = ('goal_name', 'user__username')
+    search_fields = ('title', 'user__username')

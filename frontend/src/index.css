@@ -18,3 +18,19 @@ body {
 * {
   box-sizing: border-box;
 }
+
+.field {
+  width: 100%;
+  border: 1px solid rgb(30 41 59);
+  border-radius: 0.75rem;
+  background: rgb(15 23 42);
+  color: rgb(226 232 240);
+  padding: 0.7rem 0.8rem;
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.field:focus {
+  border-color: rgb(16 185 129);
+  box-shadow: 0 0 0 2px rgb(16 185 129 / 0.15);
+}

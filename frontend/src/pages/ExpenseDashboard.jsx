@@ -26,6 +26,7 @@ export default function ExpenseDashboard() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [budgetWarning, setBudgetWarning] = useState(null);
 
   // Timeframe and category filter state
   const [timeframe, setTimeframe] = useState('All Time');
@@ -48,6 +49,12 @@ export default function ExpenseDashboard() {
     void loadExpenses();
   }, []);
 
+  useEffect(() => {
+    if (!budgetWarning) return undefined;
+    const timeout = window.setTimeout(() => setBudgetWarning(null), 8000);
+    return () => window.clearTimeout(timeout);
+  }, [budgetWarning]);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setSubmitting(true);
@@ -62,7 +69,12 @@ export default function ExpenseDashboard() {
         expense_date: form.expense_date,
       };
 
-      const createdExpense = await expenseService.createExpense(payload);
+      const response = await expenseService.createExpense(payload);
+      if (response.budget_alert?.triggered) setBudgetWarning(response.budget_alert);
+      const createdExpense = response.expense;
+      if (createdExpense.is_over_budget) {
+        setBudgetWarning(`⚠️ ${createdExpense.over_budget_message}`);
+      }
       setExpenses((current) => [createdExpense, ...current]);
       setForm(initialFormState);
     } catch (err) {
@@ -99,11 +111,36 @@ export default function ExpenseDashboard() {
       }
 
       return matchesTimeframe && matchesCategory;
+    }).sort((a, b) => {
+      const dateDifference = new Date(b.expense_date || b.date) - new Date(a.expense_date || a.date);
+
+      if (dateDifference !== 0) return dateDifference;
+
+      const createdAtDifference = new Date(b.created_at || 0) - new Date(a.created_at || 0);
+      if (createdAtDifference !== 0) return createdAtDifference;
+
+      return Number(b.id || 0) - Number(a.id || 0);
     });
   }, [expenses, timeframe, selectedFilterCategory]);
 
   return (
-    <div className="px-4 py-8 text-slate-100 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8 ml-64">
+    <div className="p-8 space-y-8 w-full max-w-7xl mx-auto text-slate-100">
+      {budgetWarning && (
+        <div
+          className="fixed right-4 top-4 z-50 flex max-w-md items-start gap-3 rounded-xl border border-amber-500/40 bg-slate-900 p-4 text-amber-200 shadow-2xl shadow-slate-950/60"
+          role="alert"
+        >
+          <span className="text-xl leading-5" aria-hidden="true">⚠️</span>
+          <p className="flex-1 text-sm leading-6">{budgetWarning.message}</p>
+          <button
+            type="button"
+            onClick={() => setBudgetWarning('')}
+            className="rounded-lg bg-amber-500/20 px-3 py-1 text-sm text-amber-300 transition hover:bg-amber-500/30"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
       <header className="rounded-3xl border border-slate-800/80 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/40 backdrop-blur">
         <p className="text-sm font-semibold uppercase tracking-[0.35em] text-rose-400">Expense Tracker</p>
         <h1 className="mt-3 text-3xl font-semibold text-white sm:text-4xl">Organize and Track Spending</h1>
@@ -113,7 +150,7 @@ export default function ExpenseDashboard() {
       </header>
 
       {/* Timeframe and Category Filters Row */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-900/40 border border-slate-850 p-4 rounded-2xl">
+      <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-900/40 border border-slate-800 p-4 rounded-2xl">
         <div className="flex flex-wrap items-center gap-3">
           {['All Time', 'This Month', 'Past 30 Days'].map((t) => (
             <button

@@ -97,11 +97,20 @@ export default function IncomeDashboard() {
       }
 
       return matchesTimeframe && matchesCategory;
+    }).sort((a, b) => {
+      const dateDifference = new Date(b.income_date || b.date || b.created_at) - new Date(a.income_date || a.date || a.created_at);
+
+      if (dateDifference !== 0) return dateDifference;
+
+      const createdAtDifference = new Date(b.created_at || 0) - new Date(a.created_at || 0);
+      if (createdAtDifference !== 0) return createdAtDifference;
+
+      return Number(b.id || 0) - Number(a.id || 0);
     });
   }, [incomes, timeframe, selectedFilterCategory]);
 
   return (
-    <div className="px-4 py-8 text-slate-100 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8 ml-64">
+    <div className="p-8 space-y-8 w-full max-w-7xl mx-auto text-slate-100">
       <header className="rounded-3xl border border-slate-800/80 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/40 backdrop-blur">
         <p className="text-sm font-semibold uppercase tracking-[0.35em] text-emerald-400">Income Tracker</p>
         <h1 className="mt-3 text-3xl font-semibold text-white sm:text-4xl">Manage Your Earnings</h1>
@@ -111,7 +120,7 @@ export default function IncomeDashboard() {
       </header>
 
       {/* Timeframe and Category Filters Row */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-900/40 border border-slate-850 p-4 rounded-2xl">
+      <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-900/40 border border-slate-800 p-4 rounded-2xl">
         <div className="flex flex-wrap items-center gap-3">
           {['All Time', 'This Month', 'Past 30 Days'].map((t) => (
             <button

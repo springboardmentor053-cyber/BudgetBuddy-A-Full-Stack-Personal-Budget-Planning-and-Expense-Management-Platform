@@ -5,6 +5,7 @@ export default function Dashboard() {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [goalsSummary, setGoalsSummary] = useState({ active: 0, saved: 0 });
   
   const [timeframe, setTimeframe] = useState('all');
   // Category filter state
@@ -13,13 +14,19 @@ export default function Dashboard() {
   const loadData = async (activeTimeframe, activeCategory) => {
     try {
       setLoading(true);
-      const dashboardResponse = await api.get('/api/auth/dashboard/', {
+      const [dashboardResponse, goalsResponse] = await Promise.all([
+        api.get('/api/auth/dashboard/', {
         params: {
           timeframe: activeTimeframe,
           category: activeCategory,
         },
-      });
+        }),
+        api.get('/api/savings/goals/').catch(() => ({ data: [] })),
+      ]);
       setDashboardData(dashboardResponse.data);
+      const goals = Array.isArray(goalsResponse.data) ? goalsResponse.data : goalsResponse.data?.results || [];
+      const activeGoals = goals.filter((goal) => goal.status !== 'COMPLETED' && Number(goal.progress_percentage || 0) < 100);
+      setGoalsSummary({ active: activeGoals.length, saved: activeGoals.reduce((total, goal) => total + Number(goal.saved_amount || 0), 0) });
       setError('');
     } catch (err) {
       setError('Unable to load your financial dashboard overview.');
@@ -37,9 +44,16 @@ export default function Dashboard() {
     total_expense: Number(dashboardData?.total_expense || 0),
     balance: Number(dashboardData?.current_balance || 0),
   };
+  const recentTransactions = (dashboardData?.recent_transactions || [])
+    .slice()
+    .sort((a, b) =>
+      new Date(b.date || b.created_at) - new Date(a.date || a.created_at) ||
+      new Date(b.created_at || 0) - new Date(a.created_at || 0) ||
+      Number(b.id || 0) - Number(a.id || 0)
+    );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-8 ml-64">
+    <div className="min-h-screen bg-slate-950 text-slate-100 p-8 w-full max-w-7xl mx-auto">
       {/* Page Header Layout Section */}
       <div className="mb-8">
         <p className="text-xs font-bold uppercase tracking-widest text-emerald-400 mb-1">Executive Overview</p>
@@ -104,7 +118,7 @@ export default function Dashboard() {
       </div>
 
       {/* 3-Column Premium Layout Metrics Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
         {/* Total Income Card */}
         <div className="bg-slate-900 border border-slate-800/80 rounded-xl p-6 shadow-md hover:border-slate-700/50 transition-all flex flex-col justify-between">
           <div className="mb-4">
@@ -136,6 +150,11 @@ export default function Dashboard() {
             <div className="text-3xl font-black text-blue-400 tracking-tight">₹{summaryData?.balance?.toLocaleString('en-IN') || '0.00'}</div>
             <p className="text-xs text-slate-500 mt-2">Remaining budget after expenses</p>
           </div>
+        </div>
+
+        <div className="bg-slate-900 border border-slate-800/80 rounded-xl p-6 shadow-md hover:border-emerald-500/30 transition-all flex flex-col justify-between">
+          <div className="mb-4"><span className="text-xs font-bold uppercase tracking-wider text-slate-400">Active Goals</span></div>
+          <div><div className="text-3xl font-black text-emerald-400 tracking-tight">{goalsSummary.active}</div><p className="text-xs text-slate-500 mt-2">{`₹${goalsSummary.saved.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} saved across goals</p></div>
         </div>
       </div>
 
@@ -177,7 +196,7 @@ export default function Dashboard() {
         <div className="lg:col-span-2 bg-slate-900 border border-slate-800/80 rounded-xl p-6">
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Recent Transactions</h3>
           <div className="space-y-3">
-            {dashboardData?.recent_transactions?.length ? dashboardData.recent_transactions.map((transaction) => (
+            {recentTransactions.length ? recentTransactions.map((transaction) => (
               <div key={`${transaction.type}-${transaction.id}`} className="p-3 bg-slate-950 border border-slate-800 rounded-lg flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-slate-100 truncate">{transaction.title}</p>

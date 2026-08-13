@@ -18,7 +18,7 @@ class IncomeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Income.objects.filter(user=self.request.user).order_by('-income_date', '-created_at')
+        return Income.objects.filter(user=self.request.user).order_by('-income_date', '-created_at', '-id')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

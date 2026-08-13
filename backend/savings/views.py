@@ -43,7 +43,7 @@ class SavingsGoalViewSet(viewsets.ModelViewSet):
 
             progress_data.append({
                 "id": goal.id,
-                "goal_name": goal.goal_name,
+                "title": goal.title,
                 "target_amount": str(goal.target_amount),
                 "saved_amount": str(goal.saved_amount),
                 "remaining_amount": remaining,
@@ -68,7 +68,7 @@ class SavingsGoalViewSet(viewsets.ModelViewSet):
 
         return Response({
             "id": goal.id,
-            "goal_name": goal.goal_name,
+            "title": goal.title,
             "target_amount": str(goal.target_amount),
             "saved_amount": str(goal.saved_amount),
             "remaining_amount": remaining,

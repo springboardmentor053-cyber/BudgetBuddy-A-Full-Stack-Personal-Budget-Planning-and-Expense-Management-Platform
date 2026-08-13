@@ -7,6 +7,8 @@ const navItems = [
   { label: 'Income Tracker', path: '/income', color: 'bg-emerald-400' },
   { label: 'Expense Tracker', path: '/expenses', color: 'bg-rose-400' },
   { label: 'Budget Tracker', path: '/budgets', color: 'bg-emerald-400' },
+  { label: 'Savings Goals', path: '/savings-goals', color: 'bg-amber-400' },
+  { label: 'Financial Reports', path: '/reports', color: 'bg-purple-400' },
   { label: 'Notifications', path: '/notifications', color: 'bg-cyan-400' },
 ];
 

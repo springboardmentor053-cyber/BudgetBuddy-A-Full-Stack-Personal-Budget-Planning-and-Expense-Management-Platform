@@ -24,10 +24,11 @@ class BudgetViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def summary(self, request, pk=None):
         budget = self.get_object()
+        category_name = budget.category.strip()
 
         total_expense = Expense.objects.filter(
             user=request.user,
-            category__iexact=budget.category,
+            category__iexact=category_name,
             expense_date__month=budget.month,
             expense_date__year=budget.year,
         ).aggregate(total=Sum('amount'))['total'] or 0.0

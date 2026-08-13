@@ -51,6 +51,13 @@ function monthName(month) {
   return new Intl.DateTimeFormat('en', { month: 'long' }).format(new Date(2026, Number(month) - 1, 1));
 }
 
+function formatCurrency(value) {
+  return Number(value || 0).toLocaleString('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
 export default function BudgetTracker() {
   const [budgets, setBudgets] = useState([]);
   const [form, setForm] = useState(initialForm);
@@ -58,6 +65,7 @@ export default function BudgetTracker() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [budgetToast, setBudgetToast] = useState(null);
 
   const request = useCallback(async (url = BUDGETS_URL, options = {}) => {
     const token = localStorage.getItem('access_token') || localStorage.getItem('budgetbuddy_token');
@@ -108,6 +116,13 @@ export default function BudgetTracker() {
     setError('');
   }, [form.category, form.budget_amount, form.month, form.year]);
 
+  useEffect(() => {
+    if (!budgetToast) return undefined;
+
+    const timeoutId = window.setTimeout(() => setBudgetToast(null), 4000);
+    return () => window.clearTimeout(timeoutId);
+  }, [budgetToast]);
+
   const resetForm = () => {
     setForm({ ...initialForm, month: String(new Date().getMonth() + 1), year: String(new Date().getFullYear()) });
     setEditingId(null);
@@ -130,6 +145,9 @@ export default function BudgetTracker() {
         method: editingId ? 'PATCH' : 'POST',
         body: JSON.stringify(payload),
       });
+      if (!editingId) {
+        setBudgetToast({ amount: payload.budget_amount, category: payload.category });
+      }
       resetForm();
       await loadBudgets();
     } catch (err) {
@@ -165,7 +183,26 @@ export default function BudgetTracker() {
   };
 
   return (
-    <div className="mx-auto ml-64 max-w-7xl space-y-8 px-4 py-8 text-slate-100 sm:px-6 lg:px-8">
+    <div className="w-full max-w-7xl mx-auto space-y-8 p-8 text-slate-100">
+      {budgetToast && (
+        <div
+          className="fixed right-4 top-4 z-50 flex max-w-md items-start gap-3 rounded-xl border border-emerald-500/40 bg-slate-900 p-4 text-emerald-200 shadow-2xl shadow-slate-950/60"
+          role="status"
+        >
+          <span className="text-xl leading-5" aria-hidden="true">✓</span>
+          <p className="flex-1 text-sm leading-6">
+            Budget Created! A budget of ₹{formatCurrency(budgetToast.amount)} for {budgetToast.category} has been set successfully.
+          </p>
+          <button
+            type="button"
+            onClick={() => setBudgetToast(null)}
+            className="rounded-lg bg-emerald-500/20 px-3 py-1 text-sm text-emerald-300 transition hover:bg-emerald-500/30"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       <header className="rounded-3xl border border-slate-800/80 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/40 backdrop-blur">
         <p className="text-sm font-semibold uppercase tracking-[0.35em] text-emerald-400">Budget Tracker</p>
         <h1 className="mt-3 text-3xl font-semibold text-white sm:text-4xl">Plan every month with confidence</h1>
@@ -201,10 +238,72 @@ export default function BudgetTracker() {
         </form>
 
         <section className="lg:col-span-2 rounded-3xl border border-slate-800/80 bg-slate-900/85 p-6 shadow-2xl shadow-slate-950/30">
-          <div className="mb-5 flex items-center justify-between"><div><p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Active plans</p><h2 className="mt-1 text-xl font-bold text-white">Your budgets</h2></div>{loading && <span className="text-sm text-slate-400">Loading...</span>}</div>
+          <div className="mb-5 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Active plans</p>
+              <h2 className="mt-1 text-xl font-bold text-white">Your budgets</h2>
+            </div>
+            {loading && <span className="text-sm text-slate-400">Loading...</span>}
+          </div>
+
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {!loading && budgets.length === 0 && <p className="sm:col-span-2 xl:col-span-3 rounded-2xl border border-dashed border-slate-700 px-5 py-10 text-center text-sm text-slate-400">No budgets yet. Create your first category limit.</p>}
-            {budgets.map((budget) => <article key={budget.id} className={`rounded-2xl border bg-slate-950/50 p-5 transition ${Number(budget.overspent_amount) > 0 ? 'border-rose-500/50' : 'border-slate-800 hover:border-emerald-500/40'}`}><div className="flex items-start justify-between gap-3"><span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold tracking-wide text-emerald-300">{budget.category}</span><span className="text-xs text-slate-500">{monthName(budget.month)} {budget.year}</span></div><p className="mt-6 text-2xl font-bold text-white">₹{Number(budget.budget_amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</p><p className="mt-1 text-xs text-slate-500">Monthly budget limit</p>{Number(budget.overspent_amount) > 0 && <div className="mt-4 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2"><span className="rounded-full bg-rose-500/20 px-2 py-1 text-xs font-bold uppercase tracking-wide text-rose-300">Overbudget</span><p className="mt-2 text-sm font-semibold text-rose-200">Over by ₹{Number(budget.overspent_amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</p></div>}<div className="mt-5 flex gap-2"><button type="button" onClick={() => startEdit(budget)} className="flex-1 rounded-xl border border-emerald-500/30 px-3 py-2 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/10">Edit</button><button type="button" onClick={() => deleteBudget(budget.id)} className="flex-1 rounded-xl border border-rose-500/30 px-3 py-2 text-xs font-semibold text-rose-300 hover:bg-rose-500/10">Delete</button></div></article>)}
+            {budgets.map((budget) => {
+              const limit = Number(budget.budget_amount || budget.budget_limit || 0);
+              const spent = Number(budget.total_expense || budget.spent || 0);
+              const percentageUsed = limit > 0 ? (spent / limit) * 100 : 0;
+              const isOverbudget = spent > limit;
+              const overspentAmount = Math.max(0, spent - limit);
+              const progressWidth = Math.min(100, Math.max(0, percentageUsed));
+
+              return (
+                <article
+                  key={budget.id}
+                  className={`rounded-2xl border p-5 transition ${
+                    isOverbudget
+                      ? 'border-rose-500/50 bg-rose-950/20'
+                      : 'border-slate-800 bg-slate-950/50 hover:border-emerald-500/40'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold tracking-wide text-emerald-300">{budget.category}</span>
+                    <span className="text-xs text-slate-500">{monthName(budget.month)} {budget.year}</span>
+                  </div>
+
+                  <div className="mt-6 flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-2xl font-bold text-white">₹{formatCurrency(limit)}</p>
+                      <p className="mt-1 text-xs text-slate-500">Monthly budget limit</p>
+                    </div>
+                    {isOverbudget && (
+                      <span className="bg-rose-500/20 text-rose-400 text-xs px-2 py-1 rounded-full font-bold">
+                        OVERBUDGET
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="mt-4 space-y-2">
+                    <div className="flex items-center justify-between gap-3 text-xs">
+                      <span className="text-slate-400">Spent ₹{formatCurrency(spent)}</span>
+                      {!isOverbudget && <span className="font-semibold text-emerald-300">{percentageUsed.toFixed(1)}% used</span>}
+                    </div>
+                    {!isOverbudget && (
+                      <div className="h-2 overflow-hidden rounded-full bg-slate-800">
+                        <div className="h-full rounded-full bg-emerald-400" style={{ width: `${progressWidth}%` }} />
+                      </div>
+                    )}
+                    {isOverbudget && (
+                      <p className="text-rose-400 font-semibold text-sm">Over by ₹{overspentAmount.toFixed(2)}</p>
+                    )}
+                  </div>
+
+                  <div className="mt-5 flex gap-2">
+                    <button type="button" onClick={() => startEdit(budget)} className="flex-1 rounded-xl border border-emerald-500/30 px-3 py-2 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/10">Edit</button>
+                    <button type="button" onClick={() => deleteBudget(budget.id)} className="flex-1 rounded-xl border border-rose-500/30 px-3 py-2 text-xs font-semibold text-rose-300 hover:bg-rose-500/10">Delete</button>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </section>
       </div>

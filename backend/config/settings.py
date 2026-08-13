@@ -155,3 +155,18 @@ SIMPLE_JWT = {
     'SIGNING_KEY': SECRET_KEY,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+# Email Settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_HOST_USER = 'xyz699911@gmail.com'
+EMAIL_HOST_PASSWORD =  'tojm mmew dyda rojr' # REPLACE WITH YOUR 16-CHAR GOOGLE APP PASSWORD (NO SPACES)
+DEFAULT_FROM_EMAIL = 'BudgetBuddy <xyz699911@gmail.com>'
+SERVER_EMAIL = 'xyz699911@gmail.com'
+
+
+
+

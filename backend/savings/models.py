@@ -16,10 +16,11 @@ class SavingsGoal(models.Model):
         on_delete=models.CASCADE, 
         related_name='app_savings_goals'  # <--- Updated to prevent clash with users.SavingsGoal
     )
-    goal_name = models.CharField(max_length=255)
+    title = models.CharField(max_length=255)
     target_amount = models.DecimalField(max_digits=12, decimal_places=2)
     saved_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     target_date = models.DateField()
+    description = models.TextField(blank=True)
     status = models.CharField(
         max_length=20, 
         choices=STATUS_CHOICES, 
@@ -32,7 +33,7 @@ class SavingsGoal(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"{self.goal_name} - {self.user.username}"
+        return f"{self.title} - {self.user.username}"
 
     @property
     def remaining_amount(self):
