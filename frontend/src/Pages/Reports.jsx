@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { Bar, Doughnut, Line } from 'react-chartjs-2';
+import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, LineElement, PointElement, Title, Tooltip } from 'chart.js';
 import api from '../api/axios';
+
+ChartJS.register(ArcElement, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend);
 
 const emptySummary = {
   total_income: 0,
@@ -96,6 +100,7 @@ export default function Reports() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [summary, setSummary] = useState(emptySummary);
   const [expenses, setExpenses] = useState([]);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -105,6 +110,7 @@ export default function Reports() {
 
   const fetchReports = useCallback(async () => {
     setLoading(true);
+    setError('');
     const activeRequestId = ++requestId.current;
     const activePeriod = getActivePeriod(filter, startDate, endDate);
 
@@ -119,13 +125,14 @@ export default function Reports() {
 
     const timeframeByFilter = {
       current_month: 'this_month',
-      previous_month: 'past_30_days',
       custom: 'all',
     };
 
     try {
       const dashboardRequest = api.get('/api/auth/dashboard/', {
-        params: { timeframe: timeframeByFilter[filter] || 'this_month' },
+        params: filter === 'previous_month'
+          ? { month: activePeriod.targetMonth, year: activePeriod.targetYear }
+          : { timeframe: timeframeByFilter[filter] || 'this_month' },
       }).catch(() => ({ data: emptySummary }));
 
       const expensesRequest = api.get('/api/expenses/').catch(() => api.get('/api/expenses/tracking/'));
@@ -154,18 +161,6 @@ export default function Reports() {
         ? 0
         : totalBudget - totalExpense;
 
-      // ==================== REPORT DEBUG LOGS ====================
-      console.log("========== REPORT DEBUG ==========");
-      console.log("Active Period:", activePeriod);
-      console.log("Raw Budgets from API:", budgets);
-      console.log("Active Period Budgets:", activePeriodBudgets);
-      console.log("Computed totalBudget:", totalBudget);
-      console.log("Filtered Expenses:", records);
-      console.log("Computed totalExpense:", totalExpense);
-      console.log("Calculated Remaining Budget:", totalBudget - totalExpense);
-      console.log("==================================");
-      // ==========================================================
-
       if (activeRequestId !== requestId.current) return;
       setExpenses(records);
       setSummary({
@@ -180,8 +175,8 @@ export default function Reports() {
       });
       setSavingsGoals(goalsResponse?.data?.goals || getExpensesFromResponse(goalsResponse?.data));
     } catch (error) {
-      console.error('Error fetching financial report:', error);
       if (activeRequestId === requestId.current) {
+        setError('Failed to load financial reports. Please try refreshing or check your connection.');
         setSummary(emptySummary);
         setExpenses([]);
         setSavingsGoals([]);
@@ -265,6 +260,7 @@ export default function Reports() {
     return totals;
   }, {})).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
   const topCategory = categoryData[0];
+  const monthlyTrendData = buildMonthlyTrendData(expenses);
 
   return (
     <div className="p-8 space-y-6 w-full max-w-7xl mx-auto text-slate-100">
@@ -302,6 +298,8 @@ export default function Reports() {
         </form>
       )}
 
+      {error && <div role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">{error}</div>}
+
       {loading ? <div className="flex items-center justify-center h-64 text-slate-500 text-sm font-medium">Loading financial metrics...</div> : <>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <MetricCard label="Total Income" value={summary?.total_income} color="text-emerald-400" />
@@ -319,7 +317,7 @@ export default function Reports() {
         </div>
 
         <div className="relative overflow-hidden min-h-[380px]">
-          {activeSlide === 0 ? <ExpenseTable expenses={expenses} /> : <><VisualAnalytics income={summary?.total_income} expense={summary?.total_expense} categories={categoryData} /><SavingsAnalytics goals={savingsGoals} totalIncome={summary?.total_income} totalExpense={summary?.total_expense} currentBalance={summary?.current_balance} /></>}
+          {activeSlide === 0 ? <ExpenseTable expenses={expenses} /> : <><VisualAnalytics income={summary?.total_income} expense={summary?.total_expense} categories={categoryData} monthlyTrendData={monthlyTrendData} /><SavingsAnalytics goals={savingsGoals} totalIncome={summary?.total_income} totalExpense={summary?.total_expense} currentBalance={summary?.current_balance} /></>}
         </div>
       </>}
     </div>
@@ -334,28 +332,40 @@ function TopCategoryCard({ category }) {
   return <div className="p-5 bg-slate-900/50 border border-slate-800/80 rounded-2xl"><p className="text-[11px] font-bold tracking-wider uppercase text-slate-500">Top Category</p><h3 className="text-xl font-extrabold mt-2 text-amber-400 truncate">{category?.name || 'No expenses'}</h3><p className="mt-1 text-xs text-slate-500">{category ? `₹${formatCurrency(category.value)} spent` : 'No spend in this period'}</p></div>;
 }
 
-function VisualAnalytics({ income, expense, categories }) {
-  const [hovered, setHovered] = useState(null);
-  const total = categories.reduce((sum, item) => sum + item.value, 0);
+function VisualAnalytics({ income, expense, categories, monthlyTrendData }) {
   const colors = ['#34d399', '#fb7185', '#a78bfa', '#38bdf8', '#fbbf24', '#f97316'];
-  let cursor = 0;
-  const segments = categories.map((item, index) => {
-    const share = total ? item.value / total * 100 : 0;
-    const segment = `${colors[index % colors.length]} ${cursor}% ${cursor + share}%`;
-    cursor += share;
-    return segment;
-  });
-  const selected = categories[hovered ?? 0];
-  const maximum = Math.max(Number(income || 0), Number(expense || 0), 1);
-  return <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
-    <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6"><h2 className="text-base font-bold text-white">Income vs Expenses</h2><p className="mt-1 text-xs text-slate-500">Comparison for the selected timeframe</p><div className="mt-6 flex h-52 items-end justify-center gap-12 border-b border-l border-slate-800 px-8"><ChartBar label="Income" value={income} max={maximum} color="bg-emerald-400" /><ChartBar label="Expenses" value={expense} max={maximum} color="bg-rose-400" /></div></section>
-    <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6"><h2 className="text-base font-bold text-white">Expenses by Category</h2><p className="mt-1 text-xs text-slate-500">Hover a category to see amount and share</p>{!categories.length ? <p className="py-16 text-center text-sm text-slate-500">No expense categories in this period.</p> : <div className="mt-5 flex flex-col sm:flex-row items-center gap-6"><div className="h-40 w-40 shrink-0 rounded-full p-7" style={{ background: `conic-gradient(${segments.join(', ')})` }}><div className="flex h-[104px] w-[104px] -ml-3.5 -mt-3.5 items-center justify-center rounded-full bg-slate-900 text-center text-xs font-bold text-slate-300">{selected?.name}<br /><span className="text-emerald-400">{total ? (selected.value / total * 100).toFixed(0) : 0}%</span></div></div><div className="w-full space-y-2">{categories.map((item, index) => <button type="button" onMouseEnter={() => setHovered(index)} onMouseLeave={() => setHovered(null)} key={item.name} className="flex w-full items-center justify-between rounded-lg px-2 py-1 text-left text-xs hover:bg-slate-800"><span className="flex items-center gap-2 text-slate-300"><i className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: colors[index % colors.length] }} />{item.name}</span><span className="font-bold text-slate-200">₹{formatCurrency(item.value)} · {total ? (item.value / total * 100).toFixed(0) : 0}%</span></button>)}</div></div>}</section>
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#cbd5e1' } } },
+    scales: {
+      x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+      y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+    },
+  };
+  const incomeExpenseData = { labels: ['Income', 'Expenses'], datasets: [{ label: 'Amount (INR)', data: [toNumber(income), toNumber(expense)], backgroundColor: ['#34d399', '#fb7185'], borderRadius: 8 }] };
+  const doughnutData = { labels: categories.map((item) => item.name), datasets: [{ data: categories.map((item) => item.value), backgroundColor: categories.map((_, index) => colors[index % colors.length]), borderColor: '#0f172a', borderWidth: 2 }] };
+
+  return <div className="grid grid-cols-1 gap-6 xl:grid-cols-2 mb-6">
+    <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6"><h2 className="text-base font-bold text-white">Income vs Expenses</h2><p className="mt-1 text-xs text-slate-500">Comparison for the selected timeframe</p><div className="mt-6 h-64"><Bar data={incomeExpenseData} options={chartOptions} /></div></section>
+    <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6"><h2 className="text-base font-bold text-white">Expenses by Category</h2><p className="mt-1 text-xs text-slate-500">Interactive category breakdown</p>{!categories.length ? <p className="py-16 text-center text-sm text-slate-500">No expense categories in this period.</p> : <div className="mt-5 h-64"><Doughnut data={doughnutData} options={chartOptions} /></div>}</section>
+    <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 xl:col-span-2"><h2 className="text-base font-bold text-white">Monthly Expense Trend</h2><p className="mt-1 text-xs text-slate-500">Expenses grouped by month in the selected timeframe</p>{!monthlyTrendData.labels.length ? <p className="py-16 text-center text-sm text-slate-500">No expense trend data in this period.</p> : <div className="mt-6 h-64"><Line data={monthlyTrendData} options={chartOptions} /></div>}</section>
   </div>;
 }
 
-function ChartBar({ label, value, max, color }) {
-  const height = Math.max(value ? 8 : 0, Number(value || 0) / max * 100);
-  return <div className="flex h-full w-24 flex-col justify-end text-center"><span className="mb-2 text-xs font-bold text-slate-300">₹{formatCurrency(value)}</span><div className={`${color} rounded-t-xl transition-all duration-500`} style={{ height: `${height}%` }} /><span className="py-3 text-xs font-semibold text-slate-400">{label}</span></div>;
+function buildMonthlyTrendData(expenses) {
+  const totals = expenses.reduce((result, expense) => {
+    const date = parseLocalDate(expense?.expense_date || expense?.date);
+    if (!date) return result;
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    result[key] = (result[key] || 0) + toNumber(expense?.amount);
+    return result;
+  }, {});
+  const keys = Object.keys(totals).sort();
+  return {
+    labels: keys.map((key) => new Date(`${key}-01T00:00:00`).toLocaleString('en-IN', { month: 'short', year: 'numeric' })),
+    datasets: [{ label: 'Expenses (INR)', data: keys.map((key) => totals[key]), borderColor: '#fb7185', backgroundColor: 'rgba(251, 113, 133, 0.2)', tension: 0.35, fill: true }],
+  };
 }
 
 function ExpenseTable({ expenses }) {
