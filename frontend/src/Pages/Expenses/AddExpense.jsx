@@ -18,20 +18,39 @@ function AddExpense() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage('');
+    if (!form.title.trim()) {
+      setMessage('Title is required.');
+      return;
+    }
+    if (!form.amount || Number(form.amount) <= 0) {
+      setMessage('Amount must be greater than zero.');
+      return;
+    }
+    if (!form.expense_date) {
+      setMessage('Please select a date.');
+      return;
+    }
     try {
       if (editingId) {
         await api.put(`/expenses/${editingId}/`, form);
-        setMessage('Expense updated!');
+        setMessage('Expense updated successfully!');
       } else {
         await api.post('/expenses/', form);
-        setMessage('Expense added!');
+        setMessage('Expense added successfully!');
       }
       setForm({ title: '', amount: '', category: 'food', description: '', expense_date: '' });
       setEditingId(null);
       fetchExpenses();
       setTimeout(() => checkNewNotifications(), 500);
     } catch (err) {
-      setMessage('Failed to save expense.');
+      if (!err.response) {
+        setMessage('Cannot connect to server. Please check your connection.');
+      } else {
+        const errors = err.response.data;
+        const firstError = Object.values(errors)[0];
+        setMessage(Array.isArray(firstError) ? firstError[0] : 'Failed to save expense. Please check your input.');
+      }
     }
   };
 

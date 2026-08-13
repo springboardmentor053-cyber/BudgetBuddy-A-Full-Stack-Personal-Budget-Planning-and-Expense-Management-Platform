@@ -11,12 +11,27 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage('');
+    if (!form.username || !form.password) {
+      setMessage('Username and password are required.');
+      return;
+    }
+    if (form.password.length < 6) {
+      setMessage('Password must be at least 6 characters.');
+      return;
+    }
     try {
       await axios.post('http://127.0.0.1:8000/api/register/', form);
       setMessage('Account created! Redirecting to login...');
       setTimeout(() => navigate('/'), 1500);
     } catch (err) {
-      setMessage('Registration failed. Try a different username.');
+      if (!err.response) {
+        setMessage('Cannot connect to server. Please try again.');
+      } else if (err.response.data?.username) {
+        setMessage('This username is already taken. Please choose another.');
+      } else {
+        setMessage('Registration failed. Please check your details and try again.');
+      }
     }
   };
 

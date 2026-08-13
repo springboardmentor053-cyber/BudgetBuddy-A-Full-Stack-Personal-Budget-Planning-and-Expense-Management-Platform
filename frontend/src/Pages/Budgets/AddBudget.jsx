@@ -18,20 +18,37 @@ function AddBudget() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage('');
+    if (!form.budget_amount || Number(form.budget_amount) <= 0) {
+      setMessage('Budget amount must be greater than zero.');
+      return;
+    }
+    if (!form.month || form.month < 1 || form.month > 12) {
+      setMessage('Month must be between 1 and 12.');
+      return;
+    }
+    if (!form.year) {
+      setMessage('Year is required.');
+      return;
+    }
     try {
       if (editingId) {
         await api.put(`/budgets/${editingId}/`, form);
-        setMessage('Budget updated!');
+        setMessage('Budget updated successfully!');
       } else {
         await api.post('/budgets/', form);
-        setMessage('Budget added!');
+        setMessage('Budget added successfully!');
       }
       setForm({ category: 'food', budget_amount: '', month: '', year: '' });
       setEditingId(null);
       fetchBudgets();
       setTimeout(() => checkNewNotifications(), 500);
     } catch (err) {
-      setMessage(err.response?.data?.non_field_errors?.[0] || 'Failed to save budget.');
+      if (!err.response) {
+        setMessage('Cannot connect to server. Please check your connection.');
+      } else {
+        setMessage(err.response.data?.non_field_errors?.[0] || 'Failed to save budget. Please check your input.');
+      }
     }
   };
 

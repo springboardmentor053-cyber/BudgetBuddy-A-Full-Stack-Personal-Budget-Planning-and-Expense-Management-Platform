@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, BarChart, Bar, Legend } from 'recharts';
 import api from '../../services/api';
 import MainLayout from '../../layouts/MainLayout';
 
@@ -10,16 +10,21 @@ function Analytics() {
   const [category, setCategory] = useState({});
   const [trend, setTrend] = useState([]);
   const [highLow, setHighLow] = useState(null);
+  const [budgetAlerts, setBudgetAlerts] = useState([]);
 
   useEffect(() => {
     api.get('/analytics/summary/').then((res) => setSummary(res.data));
     api.get('/analytics/category/').then((res) => setCategory(res.data));
     api.get('/analytics/monthly-trend/').then((res) => setTrend(res.data));
     api.get('/analytics/highest-lowest/').then((res) => setHighLow(res.data));
+    api.get('/budgets/alerts/').then((res) => setBudgetAlerts(res.data));
   }, []);
 
   const pieData = Object.entries(category).map(([name, value]) => ({ name, value }));
   const trendData = trend.map((t) => ({ name: `${t.month.slice(0, 3)} ${t.year}`, total: t.total }));
+  const incomeExpenseData = summary ? [
+    { name: 'This Period', Income: summary.total_income, Expense: summary.total_expense }
+  ] : [];
 
   return (
     <MainLayout>
@@ -65,6 +70,42 @@ function Analytics() {
               <Line type="monotone" dataKey="total" stroke="#6c5ce7" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
+        </div>
+
+        <div className="card" style={{ flex: '1 1 350px' }}>
+          <h3 style={{ color: '#fff', marginBottom: '15px' }}>Income vs Expenses</h3>
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={incomeExpenseData}>
+              <CartesianGrid stroke="#232b3d" />
+              <XAxis dataKey="name" stroke="#8892a6" fontSize={12} />
+              <YAxis stroke="#8892a6" fontSize={12} />
+              <Tooltip contentStyle={{ background: '#171d2d', border: '1px solid #232b3d', color: '#fff' }} />
+              <Legend />
+              <Bar dataKey="Income" fill="#28a745" />
+              <Bar dataKey="Expense" fill="#dc3545" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="card" style={{ flex: '1 1 350px' }}>
+          <h3 style={{ color: '#fff', marginBottom: '15px' }}>Budget Utilization</h3>
+          {budgetAlerts.map((b, i) => {
+            const barColor = b.utilization_percentage >= 100 ? '#dc3545' : b.utilization_percentage >= 80 ? '#f0a500' : '#28a745';
+            return (
+              <div key={i} style={{ marginBottom: '14px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#e4e7ec' }}>
+                  <span style={{ textTransform: 'capitalize' }}>{b.category}</span>
+                  <span>{b.utilization_percentage}%</span>
+                </div>
+                <div style={{ background: '#0f1420', borderRadius: '6px', height: '10px' }}>
+                  <div style={{
+                    width: `${Math.min(b.utilization_percentage, 100)}%`,
+                    background: barColor, height: '100%', borderRadius: '6px'
+                  }} />
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 

@@ -18,20 +18,37 @@ function AddIncome() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage('');
+    if (!form.title.trim()) {
+      setMessage('Title is required.');
+      return;
+    }
+    if (!form.amount || Number(form.amount) <= 0) {
+      setMessage('Amount must be greater than zero.');
+      return;
+    }
+    if (!form.income_date) {
+      setMessage('Please select a date.');
+      return;
+    }
     try {
       if (editingId) {
         await api.put(`/income/${editingId}/`, form);
-        setMessage('Income updated!');
+        setMessage('Income updated successfully!');
       } else {
         await api.post('/income/', form);
-        setMessage('Income added!');
+        setMessage('Income added successfully!');
       }
       setForm({ title: '', amount: '', source: 'OTHER', description: '', income_date: '' });
       setEditingId(null);
       fetchIncomes();
       setTimeout(() => checkNewNotifications(), 500);
     } catch (err) {
-      setMessage('Failed to save income.');
+      if (!err.response) {
+        setMessage('Cannot connect to server. Please check your connection.');
+      } else {
+        setMessage('Failed to save income. Please check your input.');
+      }
     }
   };
 

@@ -10,13 +10,24 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setMessage('');
+    if (!username || !password) {
+      setMessage('Please enter both username and password.');
+      return;
+    }
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/token/', { username, password });
       localStorage.setItem('access_token', response.data.access);
       localStorage.setItem('refresh_token', response.data.refresh);
       navigate('/dashboard');
     } catch (error) {
-      setMessage('Login failed. Check your username/password.');
+      if (!error.response) {
+        setMessage('Cannot connect to server. Please check your internet connection.');
+      } else if (error.response.status === 401) {
+        setMessage('Incorrect username or password. Please try again.');
+      } else {
+        setMessage('Login failed. Please try again later.');
+      }
     }
   };
 
