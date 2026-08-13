@@ -255,7 +255,7 @@ export default function Reports() {
   };
 
   const categoryData = Object.entries(expenses.reduce((totals, expense) => {
-    const category = expense?.category || 'Uncategorised';
+    const category = expense?.category || expense?.name || expense?.source || 'Uncategorized';
     totals[category] = (totals[category] || 0) + toNumber(expense?.amount);
     return totals;
   }, {})).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
@@ -334,22 +334,72 @@ function TopCategoryCard({ category }) {
 
 function VisualAnalytics({ income, expense, categories, monthlyTrendData }) {
   const colors = ['#34d399', '#fb7185', '#a78bfa', '#38bdf8', '#fbbf24', '#f97316'];
-  const chartOptions = {
+  const formatChartCurrency = (value) => `₹${toNumber(value).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+  const tooltipOptions = {
+    callbacks: {
+      label: (context) => `${context.dataset.label || context.label}: ${formatChartCurrency(context.parsed.y ?? context.parsed)}`,
+    },
+  };
+  const barOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { legend: { labels: { color: '#cbd5e1' } } },
+    plugins: { legend: { labels: { color: '#cbd5e1' } }, tooltip: tooltipOptions },
     scales: {
       x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
       y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
     },
   };
+  const doughnutOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        labels: {
+          color: '#FFFFFF',
+          generateLabels: (chart) => {
+            const data = chart.data;
+            if (data.labels?.length && data.datasets.length) {
+              return data.labels.map((label, index) => ({
+                text: `${label || 'Uncategorized'} • ${formatChartCurrency(data.datasets[0].data[index])}`,
+                fillStyle: data.datasets[0].backgroundColor[index],
+                fontColor: '#FFFFFF',
+                hidden: false,
+                index,
+              }));
+            }
+            return [];
+          },
+        },
+      },
+      tooltip: {
+        displayColors: true,
+        callbacks: {
+          title: () => '',
+          label: (context) => {
+            const label = context.label || 'Category';
+            const value = context.raw || 0;
+            return `${label}: ${formatChartCurrency(value)}`;
+          },
+        },
+      },
+    },
+    scales: { x: { display: false }, y: { display: false } },
+  };
+  const lineOptions = {
+    ...barOptions,
+    layout: { padding: { left: 24, right: 24 } },
+    scales: {
+      x: { offset: monthlyTrendData.labels.length === 1, ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+      y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+    },
+  };
   const incomeExpenseData = { labels: ['Income', 'Expenses'], datasets: [{ label: 'Amount (INR)', data: [toNumber(income), toNumber(expense)], backgroundColor: ['#34d399', '#fb7185'], borderRadius: 8 }] };
-  const doughnutData = { labels: categories.map((item) => item.name), datasets: [{ data: categories.map((item) => item.value), backgroundColor: categories.map((_, index) => colors[index % colors.length]), borderColor: '#0f172a', borderWidth: 2 }] };
+  const doughnutData = { labels: categories.map((item) => item.category || item.name || item.source || 'Uncategorized'), datasets: [{ data: categories.map((item) => item.value), backgroundColor: categories.map((_, index) => colors[index % colors.length]), borderColor: '#0f172a', borderWidth: 2 }] };
 
   return <div className="grid grid-cols-1 gap-6 xl:grid-cols-2 mb-6">
-    <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6"><h2 className="text-base font-bold text-white">Income vs Expenses</h2><p className="mt-1 text-xs text-slate-500">Comparison for the selected timeframe</p><div className="mt-6 h-64"><Bar data={incomeExpenseData} options={chartOptions} /></div></section>
-    <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6"><h2 className="text-base font-bold text-white">Expenses by Category</h2><p className="mt-1 text-xs text-slate-500">Interactive category breakdown</p>{!categories.length ? <p className="py-16 text-center text-sm text-slate-500">No expense categories in this period.</p> : <div className="mt-5 h-64"><Doughnut data={doughnutData} options={chartOptions} /></div>}</section>
-    <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 xl:col-span-2"><h2 className="text-base font-bold text-white">Monthly Expense Trend</h2><p className="mt-1 text-xs text-slate-500">Expenses grouped by month in the selected timeframe</p>{!monthlyTrendData.labels.length ? <p className="py-16 text-center text-sm text-slate-500">No expense trend data in this period.</p> : <div className="mt-6 h-64"><Line data={monthlyTrendData} options={chartOptions} /></div>}</section>
+    <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6"><h2 className="text-base font-bold text-white">Income vs Expenses</h2><p className="mt-1 text-xs text-slate-500">Comparison for the selected timeframe</p><div className="mt-6 h-64"><Bar data={incomeExpenseData} options={barOptions} /></div></section>
+    <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6"><h2 className="text-base font-bold text-white">Expenses by Category</h2><p className="mt-1 text-xs text-slate-500">Interactive category breakdown</p>{!categories.length ? <p className="py-16 text-center text-sm text-slate-500">No expense categories in this period.</p> : <div className="mt-5 h-64"><Doughnut data={doughnutData} options={doughnutOptions} /></div>}</section>
+    <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 xl:col-span-2"><h2 className="text-base font-bold text-white">Monthly Expense Trend</h2><p className="mt-1 text-xs text-slate-500">Expenses grouped by month in the selected timeframe</p>{!monthlyTrendData.labels.length ? <p className="py-16 text-center text-sm text-slate-500">No expense trend data in this period.</p> : <div className="mt-6 h-64"><Line data={monthlyTrendData} options={lineOptions} /></div>}</section>
   </div>;
 }
 
