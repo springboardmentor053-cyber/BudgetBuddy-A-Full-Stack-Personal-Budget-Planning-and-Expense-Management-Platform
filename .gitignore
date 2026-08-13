@@ -1,0 +1,21 @@
+# Environment Variables
+.env
+*.env
+
+# Python & Django
+*.pyc
+__pycache__/
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+
+# Node & Frontend
+node_modules/
+dist/
+.vite/
+
+# IDE / System
+.vscode/
+.idea/
+.DS_Store

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../services/api';
 
 const categoryColors = {
@@ -16,6 +17,11 @@ const priorityColors = {
   HIGH: { bg: '#fee2e2', text: '#dc2626', border: '#ef4444' },
   MEDIUM: { bg: '#fef3c7', text: '#d97706', border: '#f59e0b' },
   LOW: { bg: '#dbeafe', text: '#2563eb', border: '#3b82f6' }
+};
+
+const formatCurrency = (val) => {
+  const num = Number(val) || 0;
+  return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
 
 const Dashboard = () => {
@@ -83,9 +89,14 @@ const Dashboard = () => {
             Welcome back! Here is a live breakdown of your personal finances.
           </p>
         </div>
-        <button onClick={fetchDashboardData} className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '13px', borderRadius: '8px' }}>
-          Refresh
-        </button>
+        <div className="d-flex gap-2">
+          <Link to="/reports" className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '13px', borderRadius: '8px' }}>
+            View Reports
+          </Link>
+          <button onClick={fetchDashboardData} className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '13px', borderRadius: '8px' }}>
+            Refresh
+          </button>
+        </div>
       </header>
 
       {/* 1. FINANCIAL SUMMARY KPI CARDS */}
@@ -96,47 +107,48 @@ const Dashboard = () => {
           <div className="card col-span-4 p-5" style={{ borderRadius: '12px', background: 'linear-gradient(135deg, rgba(22, 163, 74, 0.05) 0%, rgba(22, 163, 74, 0.1) 100%)', border: '1px solid rgba(22, 163, 74, 0.2)' }}>
             <h3 style={{ margin: 0, fontSize: '12px', color: '#15803d', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Income</h3>
             <p className="font-bold m-0 mt-2" style={{ fontSize: '24px', color: '#16a34a' }}>
-              +${fin.total_income.toFixed(2)}
+              +${formatCurrency(fin.total_income)}
             </p>
           </div>
 
           <div className="card col-span-4 p-5" style={{ borderRadius: '12px', background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.05) 0%, rgba(220, 38, 38, 0.1) 100%)', border: '1px solid rgba(220, 38, 38, 0.2)' }}>
             <h3 style={{ margin: 0, fontSize: '12px', color: '#b91c1c', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Expense</h3>
             <p className="font-bold m-0 mt-2" style={{ fontSize: '24px', color: '#dc2626' }}>
-              -${fin.total_expense.toFixed(2)}
+              -${formatCurrency(fin.total_expense)}
             </p>
           </div>
 
           <div className="card col-span-4 p-5" style={{ borderRadius: '12px', background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(37, 99, 235, 0.1) 100%)', border: '1px solid rgba(37, 99, 235, 0.2)' }}>
             <h3 style={{ margin: 0, fontSize: '12px', color: '#1d4ed8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Current Balance</h3>
             <p className="font-bold m-0 mt-2" style={{ fontSize: '24px', color: fin.current_balance >= 0 ? '#16a34a' : '#dc2626' }}>
-              ${fin.current_balance.toFixed(2)}
+              ${formatCurrency(fin.current_balance)}
             </p>
           </div>
 
           <div className="card col-span-4 p-5" style={{ borderRadius: '12px' }}>
             <h3 style={{ margin: 0, fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Budget</h3>
             <p className="font-bold m-0 mt-2" style={{ fontSize: '24px', color: '#9333ea' }}>
-              ${fin.total_budget.toFixed(2)}
+              ${formatCurrency(fin.total_budget)}
             </p>
           </div>
 
           <div className="card col-span-4 p-5" style={{ borderRadius: '12px' }}>
             <h3 style={{ margin: 0, fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Remaining Budget</h3>
             <p className="font-bold m-0 mt-2" style={{ fontSize: '24px', color: fin.remaining_budget >= 0 ? '#16a34a' : '#dc2626' }}>
-              ${fin.remaining_budget.toFixed(2)}
+              ${formatCurrency(fin.remaining_budget)}
             </p>
           </div>
 
           <div className="card col-span-4 p-5" style={{ borderRadius: '12px' }}>
             <h3 style={{ margin: 0, fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Savings</h3>
             <p className="font-bold m-0 mt-2" style={{ fontSize: '24px', color: '#0284c7' }}>
-              ${fin.total_savings.toFixed(2)}
+              ${formatCurrency(fin.total_savings)}
             </p>
           </div>
 
         </div>
       </section>
+
 
       {/* TWO COLUMN GRID FOR CATEGORY ANALYSIS & MONTHLY TREND */}
       <div className="grid-12 gap-6 mb-8">

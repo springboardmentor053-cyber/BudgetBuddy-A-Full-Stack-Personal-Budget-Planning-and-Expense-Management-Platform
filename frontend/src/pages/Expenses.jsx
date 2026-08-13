@@ -78,6 +78,7 @@ const Expenses = () => {
     try {
       await api.delete(`/api/expenses/${id}/`);
       setSuccess('Expense deleted successfully!');
+      window.dispatchEvent(new CustomEvent('notification-updated'));
       fetchExpenses();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
@@ -113,9 +114,11 @@ const Expenses = () => {
         setSuccess('Expense added successfully!');
       }
       clearForm();
+      window.dispatchEvent(new CustomEvent('notification-updated'));
       fetchExpenses();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
+
       if (err.response && err.response.data) {
         const backendErrors = Object.entries(err.response.data)
           .map(([key, val]) => `${key}: ${Array.isArray(val) ? val.join(', ') : val}`)

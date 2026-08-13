@@ -109,6 +109,7 @@ const Savings = () => {
         setSuccess('Savings goal created successfully.');
       }
       handleCloseModal();
+      window.dispatchEvent(new CustomEvent('notification-updated'));
       fetchGoals();
     } catch (err) {
       if (err.response && err.response.data) {
@@ -130,10 +131,11 @@ const Savings = () => {
     if (window.confirm('Are you sure you want to delete this savings goal?')) {
       try {
         await api.delete(`/api/savings/${id}/`);
-        setSuccess('Goal deleted successfully.');
+        setSuccess('Savings goal deleted successfully.');
+        window.dispatchEvent(new CustomEvent('notification-updated'));
         fetchGoals();
       } catch (err) {
-        setError('Failed to delete goal.');
+        setError('Failed to delete savings goal.');
       }
     }
   };

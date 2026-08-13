@@ -4,6 +4,7 @@ from .views import (
     SavingsGoalRetrieveUpdateDestroyView,
     SavingsGoalProgressAPIView,
     NotificationListCreateAPIView,
+    NotificationUnreadCountAPIView,
     NotificationMarkReadAPIView,
     NotificationMarkAllReadAPIView,
     NotificationDestroyAPIView,
@@ -19,9 +20,11 @@ urlpatterns = [
 
     # Notification Endpoints
     path('notifications/', NotificationListCreateAPIView.as_view(), name='notification-list-create'),
+    path('notifications/unread-count/', NotificationUnreadCountAPIView.as_view(), name='notification-unread-count'),
     path('notifications/mark-all-read/', NotificationMarkAllReadAPIView.as_view(), name='notification-mark-all-read'),
     path('notifications/<int:pk>/read/', NotificationMarkReadAPIView.as_view(), name='notification-mark-read'),
     path('notifications/<int:pk>/', NotificationDestroyAPIView.as_view(), name='notification-delete'),
+
 
     # Analytics Endpoint
     path('analytics/', AnalyticsAPIView.as_view(), name='analytics'),

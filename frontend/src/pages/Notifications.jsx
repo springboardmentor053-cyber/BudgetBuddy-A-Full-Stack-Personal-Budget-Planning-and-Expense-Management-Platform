@@ -5,9 +5,20 @@ const typeColors = {
   GOAL_CREATED: { bg: '#e0f2fe', text: '#0284c7', label: 'Goal Created' },
   GOAL_ACHIEVED: { bg: '#dcfce7', text: '#15803d', label: 'Goal Achieved' },
   GOAL_80_PERCENT: { bg: '#fef3c7', text: '#d97706', label: 'Goal 80%' },
+  BUDGET_80_PERCENT: { bg: '#fef3c7', text: '#d97706', label: 'Budget 80%' },
   BUDGET_90_PERCENT: { bg: '#ffedd5', text: '#c2410c', label: 'Budget 90%' },
   BUDGET_EXCEEDED: { bg: '#fee2e2', text: '#dc2626', label: 'Budget Exceeded' },
+  BUDGET_CREATED: { bg: '#e0e7ff', text: '#4338ca', label: 'Budget Created' },
+  BUDGET_UPDATED: { bg: '#f3e8ff', text: '#7e22ce', label: 'Budget Updated' },
+  BUDGET_DELETED: { bg: '#f1f5f9', text: '#475569', label: 'Budget Deleted' },
+  EXPENSE_ADDED: { bg: '#fee2e2', text: '#b91c1c', label: 'Expense Added' },
+  EXPENSE_UPDATED: { bg: '#fef3c7', text: '#b45309', label: 'Expense Updated' },
+  EXPENSE_DELETED: { bg: '#f1f5f9', text: '#475569', label: 'Expense Deleted' },
+  INCOME_ADDED: { bg: '#dcfce7', text: '#15803d', label: 'Income Added' },
+  INCOME_UPDATED: { bg: '#e0f2fe', text: '#0369a1', label: 'Income Updated' },
+  INCOME_DELETED: { bg: '#f1f5f9', text: '#475569', label: 'Income Deleted' },
 };
+
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -36,6 +47,7 @@ const Notifications = () => {
     try {
       await api.patch(`/api/notifications/${id}/read/`);
       setSuccess('Marked as read.');
+      window.dispatchEvent(new CustomEvent('notification-updated'));
       fetchNotifications();
     } catch (err) {
       setError('Failed to mark notification as read.');
@@ -46,6 +58,7 @@ const Notifications = () => {
     try {
       await api.patch('/api/notifications/mark-all-read/');
       setSuccess('All notifications marked as read.');
+      window.dispatchEvent(new CustomEvent('notification-updated'));
       fetchNotifications();
     } catch (err) {
       setError('Failed to mark all as read.');
@@ -56,11 +69,13 @@ const Notifications = () => {
     try {
       await api.delete(`/api/notifications/${id}/`);
       setSuccess('Notification deleted.');
+      window.dispatchEvent(new CustomEvent('notification-updated'));
       fetchNotifications();
     } catch (err) {
       setError('Failed to delete notification.');
     }
   };
+
 
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 

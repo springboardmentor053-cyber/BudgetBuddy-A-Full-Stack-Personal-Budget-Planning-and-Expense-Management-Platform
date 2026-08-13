@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 
 from .models import SavingsGoal, Notification
 from .serializers import SavingsGoalSerializer, NotificationSerializer
+from .utils import send_budget_alert_email
 from expenses.models import Expense, Income, Budget
 
 
@@ -15,6 +16,7 @@ def trigger_notifications_for_user(user):
     """
     Helper function to check budget limits and generate notifications if needed.
     Prevents duplicate notifications per user, budget category, month/year, and threshold.
+    Also sends budget alert emails via SMTP for new threshold notifications.
     """
     budgets = Budget.objects.filter(user=user)
     for b in budgets:
@@ -47,6 +49,7 @@ def trigger_notifications_for_user(user):
                     notification_type="BUDGET_80_PERCENT",
                     priority="LOW"
                 )
+                send_budget_alert_email(user, b.category, b_amount, exp_sum, '80')
 
         # Threshold 2: >= 90% (BUDGET_90_PERCENT, Priority MEDIUM)
         if ratio >= Decimal('0.90'):
@@ -63,6 +66,7 @@ def trigger_notifications_for_user(user):
                     notification_type="BUDGET_90_PERCENT",
                     priority="MEDIUM"
                 )
+                send_budget_alert_email(user, b.category, b_amount, exp_sum, '90')
 
         # Threshold 3: >= 100% (BUDGET_EXCEEDED, Priority HIGH)
         if ratio >= Decimal('1.00'):
@@ -79,6 +83,8 @@ def trigger_notifications_for_user(user):
                     notification_type="BUDGET_EXCEEDED",
                     priority="HIGH"
                 )
+                send_budget_alert_email(user, b.category, b_amount, exp_sum, '100')
+
 
 
 # ==========================================
@@ -205,10 +211,19 @@ class NotificationListCreateAPIView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         trigger_notifications_for_user(self.request.user)
-        return Notification.objects.filter(user=self.request.user)
+        return Notification.objects.filter(user=self.request.user).order_by('-created_at')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class NotificationUnreadCountAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        trigger_notifications_for_user(request.user)
+        unread_count = Notification.objects.filter(user=request.user, is_read=False).count()
+        return Response({"unread_count": unread_count}, status=status.HTTP_200_OK)
 
 
 class NotificationMarkReadAPIView(APIView):
@@ -223,6 +238,7 @@ class NotificationMarkReadAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Notification.DoesNotExist:
             return Response({"error": "Notification not found."}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 class NotificationMarkAllReadAPIView(APIView):
@@ -308,6 +324,57 @@ class AnalyticsAPIView(APIView):
             for k, v in monthly_map.items()
         ]
 
+        # Income vs Expense
+        income_vs_expense = {
+            "total_income": total_income,
+            "total_expense": total_expense,
+            "net_balance": current_balance,
+            "savings_rate": savings_rate
+        }
+
+        # Budget Utilization
+        budget_utilization = []
+        for b in budgets_qs:
+            b_amt = float(b.budget_amount)
+            cat_exp = float(Expense.objects.filter(
+                user=user, category=b.category, expense_date__year=b.year, expense_date__month=b.month
+            ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00'))
+            pct = round((cat_exp / b_amt * 100), 2) if b_amt > 0 else 0.0
+            status_str = "NORMAL"
+            if pct >= 100:
+                status_str = "EXCEEDED"
+            elif pct >= 90:
+                status_str = "CRITICAL"
+            elif pct >= 80:
+                status_str = "WARNING"
+            budget_utilization.append({
+                "id": b.id,
+                "category": b.category,
+                "budget_amount": b_amt,
+                "spent_amount": round(cat_exp, 2),
+                "remaining_amount": round(b_amt - cat_exp, 2),
+                "utilization_percentage": pct,
+                "month": b.month,
+                "year": b.year,
+                "status": status_str
+            })
+
+        # Savings Goal Progress
+        savings_goals = SavingsGoal.objects.filter(user=user)
+        savings_goal_progress = [
+            {
+                "id": g.id,
+                "goal_name": g.goal_name,
+                "target_amount": float(g.target_amount),
+                "saved_amount": float(g.saved_amount),
+                "remaining_amount": float(max(Decimal('0.00'), Decimal(str(g.target_amount)) - Decimal(str(g.saved_amount)))),
+                "progress_percentage": round((float(g.saved_amount) / float(g.target_amount) * 100), 2) if float(g.target_amount) > 0 else 0.0,
+                "status": g.status,
+                "target_date": g.target_date.isoformat()
+            }
+            for g in savings_goals
+        ]
+
         return Response({
             "total_income": total_income,
             "total_expense": total_expense,
@@ -319,7 +386,11 @@ class AnalyticsAPIView(APIView):
             "category_breakdown": category_breakdown,
             "top_spending_category": top_spending_category,
             "savings_rate": savings_rate,
+            "income_vs_expense": income_vs_expense,
+            "budget_utilization": budget_utilization,
+            "savings_goal_progress": savings_goal_progress,
         }, status=status.HTTP_200_OK)
+
 
 
 class ReportAPIView(APIView):

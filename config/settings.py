@@ -1,15 +1,29 @@
 import sys
 from datetime import timedelta
 from pathlib import Path
+import os
+
+try:
+    import dotenv
+    env_file = Path(__file__).resolve().parent.parent / '.env'
+    if env_file.exists():
+        dotenv.load_dotenv(env_file)
+except ImportError:
+    pass
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR / 'backend'))
 
-SECRET_KEY = 'django-insecure-qmatfpz3ufwn2(+c0f6cyhw_vzazhqbn_v)gyk^1dl3cfs!47d'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-qmatfpz3ufwn2(+c0f6cyhw_vzazhqbn_v)gyk^1dl3cfs!47d')
 
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 't')
 
-ALLOWED_HOSTS = ['*']
+allowed_hosts_env = os.getenv('ALLOWED_HOSTS')
+if allowed_hosts_env:
+    ALLOWED_HOSTS = [h.strip() for h in allowed_hosts_env.split(',') if h.strip()]
+else:
+    ALLOWED_HOSTS = ['*']
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -115,3 +129,16 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+
+# SMTP Email Configuration
+EMAIL_HOST = os.getenv('EMAIL_HOST', '')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() in ('true', '1', 't')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'noreply@budgetbuddy.com')
+
+# Default to SMTP if EMAIL_HOST is provided; otherwise console backend for local dev
+default_email_backend = 'django.core.mail.backends.smtp.EmailBackend' if EMAIL_HOST else 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', default_email_backend)
+

@@ -87,8 +87,10 @@ const Income = () => {
         setSuccess('Income entry added successfully!');
       }
       clearForm();
+      window.dispatchEvent(new CustomEvent('notification-updated'));
       fetchIncomes();
       setTimeout(() => setSuccess(''), 3000);
+
     } catch (err) {
       if (err.response && err.response.data) {
         const backendErrors = Object.entries(err.response.data)

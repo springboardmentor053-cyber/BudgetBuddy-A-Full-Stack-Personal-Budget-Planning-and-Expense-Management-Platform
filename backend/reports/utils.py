@@ -44,13 +44,17 @@ def parse_date_range(request):
         except ValueError:
             e_date = date(2099, 12, 31)
 
+        is_invalid = s_date > e_date
+
         return {
             'start_date': s_date,
             'end_date': e_date,
+            'is_invalid': is_invalid,
             'month': s_date.month,
             'year': s_date.year,
             'period_label': f"Custom ({s_date.isoformat()} to {e_date.isoformat()})"
         }
+
 
     if period == 'previous_month':
         if today.month == 1:

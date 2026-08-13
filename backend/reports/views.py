@@ -61,11 +61,14 @@ class MonthlyFinancialReportView(APIView):
     def get(self, request, *args, **kwargs):
         user = request.user
         date_info = parse_date_range(request)
+        if date_info.get('is_invalid'):
+            return Response({"error": "Start date cannot be after end date."}, status=status.HTTP_400_BAD_REQUEST)
 
         start_date = date_info['start_date']
         end_date = date_info['end_date']
         month = date_info['month']
         year = date_info['year']
+
 
         inc_aggregate = Income.objects.filter(
             user=user,
@@ -115,6 +118,8 @@ class ExpenseReportView(APIView):
     def get(self, request, *args, **kwargs):
         user = request.user
         date_info = parse_date_range(request)
+        if date_info.get('is_invalid'):
+            return Response({"error": "Start date cannot be after end date."}, status=status.HTTP_400_BAD_REQUEST)
 
         expenses_qs = Expense.objects.filter(
             user=user,
@@ -151,6 +156,8 @@ class CombinedFinancialSummaryReportView(APIView):
     def get(self, request, *args, **kwargs):
         user = request.user
         date_info = parse_date_range(request)
+        if date_info.get('is_invalid'):
+            return Response({"error": "Start date cannot be after end date."}, status=status.HTTP_400_BAD_REQUEST)
 
         start_date = date_info['start_date']
         end_date = date_info['end_date']
@@ -299,6 +306,8 @@ class ExportPDFReportView(APIView):
     def get(self, request, *args, **kwargs):
         summary_view = CombinedFinancialSummaryReportView()
         response = summary_view.get(request, *args, **kwargs)
+        if response.status_code != 200:
+            return response
         report_data = response.data
 
         pdf_bytes = ReportExportHandler.export_pdf(request.user, report_data)
@@ -319,6 +328,8 @@ class ExportExcelReportView(APIView):
     def get(self, request, *args, **kwargs):
         summary_view = CombinedFinancialSummaryReportView()
         response = summary_view.get(request, *args, **kwargs)
+        if response.status_code != 200:
+            return response
         report_data = response.data
 
         excel_bytes = ReportExportHandler.export_excel(request.user, report_data)

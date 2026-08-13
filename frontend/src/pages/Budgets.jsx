@@ -97,6 +97,7 @@ const Budgets = () => {
     try {
       await api.delete(`/api/budgets/${id}/`);
       setSuccess('Budget deleted successfully!');
+      window.dispatchEvent(new CustomEvent('notification-updated'));
       fetchData();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
@@ -131,9 +132,11 @@ const Budgets = () => {
         setSuccess('Budget created successfully!');
       }
       clearForm();
+      window.dispatchEvent(new CustomEvent('notification-updated'));
       fetchData();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
+
       if (err.response && err.response.data) {
         const backendErrors = Object.entries(err.response.data)
           .map(([key, val]) => `${key}: ${Array.isArray(val) ? val.join(', ') : val}`)
