@@ -1,3 +1,4 @@
+```markdown
 <h1 align="center"> 💰 BudgetBuddy</h1>
 
 <h3 align="center">
@@ -35,8 +36,11 @@ The application enables users to:
 - 💰 Track Income
 - 💸 Track Expenses
 - 📊 Manage Monthly Budgets
+- 🎯 Track Savings Goals
+- 📈 Monitor Financial Reports & Analytics
+- 🔔 Receive Notifications & Budget Alerts
+- 📄 Export Reports (PDF, Excel, CSV)
 - 🔐 Securely Authenticate using JWT
-- 📈 Monitor Financial Records
 - 🌐 Access data through REST APIs
 
 The project is built using **React (Vite)** for the frontend, **Django REST Framework** for the backend, and **PostgreSQL** as the relational database.
@@ -47,11 +51,14 @@ The project is built using **React (Vite)** for the frontend, **Django REST Fram
 
 The primary objectives of BudgetBuddy are:
 
-- Develop a secure authentication system.
+- Develop a secure authentication system using JWT.
 - Simplify personal financial management.
-- Enable efficient income tracking.
-- Enable expense management.
+- Enable efficient income and expense tracking.
 - Support monthly budget planning.
+- Track savings goals and financial progress.
+- Provide interactive dashboard analytics and charts.
+- Generate and export monthly financial reports (PDF, Excel, CSV).
+- Send budget alerts and email notifications.
 - Provide a responsive and modern user interface.
 - Store financial records securely using PostgreSQL.
 - Build scalable REST APIs for future enhancements.
@@ -60,9 +67,9 @@ The primary objectives of BudgetBuddy are:
 
 # ✨ Features
 
-## ✅ Completed Features (Milestone 2)
+## ✅ Completed Features (Milestone 3)
 
-### 🔐 Authentication
+### 🔐 Authentication & Security
 
 - User Registration
 - User Login
@@ -72,74 +79,59 @@ The primary objectives of BudgetBuddy are:
 
 ---
 
-### 💸 Expense Management
+### 💸 Core Financial Modules
 
-- Add Expense
-- View Expenses
-- Edit Expense
-- Delete Expense
-
----
-
-### 💰 Income Management
-
-- Add Income
-- View Income
-- Edit Income
-- Delete Income
+- **Income Management:** Add, View, Edit, and Delete Income
+- **Expense Management:** Add, View, Edit, and Delete Expenses
+- **Budget Management:** Create, View, Update, and Delete Budgets
+- **Savings Goal Management:** Create, Track, Update, and Delete Savings Goals
 
 ---
 
-### 📊 Budget Management
+### 📊 Analytics & Reports
 
-- Create Budget
-- View Budget
-- Update Budget
-- Delete Budget
+- Dashboard Analytics & Financial Summaries
+- Monthly Expense Trends & Category-wise Analysis
+- Reports Module for Monthly Financial Insights
+- PDF, Excel, and CSV Report Export
 
 ---
 
-### 🖥️ Dashboard
+### 🔔 Notifications & Email Integration
 
-- Dashboard Interface
-- Responsive Sidebar Navigation
-- Secure User Access
+- In-app Notification Center
+- Budget Alert Notifications
+- Email Notifications for Generated Reports
+
+---
+
+### 🖥️ Dashboard & Frontend
+
+- Dashboard Interface with Quick Navigation & Responsive Sidebar
+- React + Vite with React Router and Axios API Integration
+- Modern Responsive Layout
 
 ---
 
 ### ⚙️ Backend
 
 - Django REST Framework APIs
-- CRUD Operations
+- Comprehensive CRUD Operations
 - PostgreSQL Integration
 - Django Admin Panel
 - RESTful API Design
 
 ---
 
-### 🌐 Frontend
-
-- React + Vite
-- Responsive UI
-- React Router
-- Axios API Integration
-- Form Validation
-- Modern Dashboard Layout
-
----
-
 # 🚧 Upcoming Features
 
-- 🎯 Savings Goal Management
-- 📈 Financial Reports
-- 📊 Interactive Charts & Analytics
-- 🔔 Notifications
-- 👤 User Profile Management
-- 📄 PDF Report Export
-- 📑 Excel Report Export
-- ☁️ Cloud Deployment
-- 📱 Mobile Responsive Improvements
 - 🤖 AI-Based Spending Analysis
+- 📈 Expense Prediction using Machine Learning
+- 💡 Smart Budget Recommendations
+- ☁️ Cloud Deployment
+- 📱 Mobile Application
+- 🌐 Multi-language Support
+- 🔄 Recurring Transactions Management
 
 ---
 
@@ -227,23 +219,26 @@ The primary objectives of BudgetBuddy are:
                     +---------------------------+
                     |     PostgreSQL Database   |
                     +---------------------------+
+
 ```
 
 ---
 
 # 📌 Project Highlights
 
-- ✅ Full-Stack Web Application
-- ✅ REST API Architecture
-- ✅ JWT Authentication
-- ✅ PostgreSQL Database
-- ✅ CRUD Operations
-- ✅ Responsive User Interface
-- ✅ Secure User Management
-- ✅ Scalable Modular Design
-- ✅ Industry-Standard Project Structure
+* ✅ Full-Stack Web Application
+* ✅ REST API Architecture
+* ✅ JWT Authentication
+* ✅ PostgreSQL Database
+* ✅ Complete CRUD Operations
+* ✅ Savings Goal Tracking
+* ✅ Financial Reports & Analytics (PDF, Excel, CSV)
+* ✅ Budget Alerts & Email Notifications
+* ✅ Responsive User Interface
+* ✅ Scalable Modular Design
 
 ---
+
 # 📂 Project Structure
 
 ```text
@@ -253,6 +248,9 @@ BudgetBuddy/
 │   ├── budgets/
 │   ├── expenses/
 │   ├── income/
+│   ├── savings/
+│   ├── reports/
+│   ├── notifications/
 │   ├── users/
 │   ├── backend/
 │   ├── manage.py
@@ -280,11 +278,13 @@ BudgetBuddy/
 │   ├── PROJECT_SCOPE.md
 │   ├── MILESTONE_1_REPORT.md
 │   ├── MILESTONE_2_REPORT.md
+│   ├── MILESTONE_3_REPORT.md
 │   └── README.md
 │
 ├── LICENSE
 ├── .gitignore
 └── README.md
+
 ```
 
 ---
@@ -294,9 +294,10 @@ BudgetBuddy/
 ## 📥 Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/BudgetBuddy.git
+git clone [https://github.com/YOUR_USERNAME/BudgetBuddy.git](https://github.com/YOUR_USERNAME/BudgetBuddy.git)
 
 cd BudgetBuddy
+
 ```
 
 ---
@@ -307,12 +308,14 @@ Navigate to the backend folder.
 
 ```bash
 cd backend
+
 ```
 
 Create a virtual environment.
 
 ```bash
 python -m venv .venv
+
 ```
 
 Activate the virtual environment.
@@ -321,18 +324,21 @@ Activate the virtual environment.
 
 ```bash
 .venv\Scripts\activate
+
 ```
 
 ### Linux / macOS
 
 ```bash
 source .venv/bin/activate
+
 ```
 
 Install the required dependencies.
 
 ```bash
 pip install -r requirements.txt
+
 ```
 
 Apply database migrations.
@@ -341,24 +347,28 @@ Apply database migrations.
 python manage.py makemigrations
 
 python manage.py migrate
+
 ```
 
 Create a superuser.
 
 ```bash
 python manage.py createsuperuser
+
 ```
 
 Run the backend server.
 
 ```bash
 python manage.py runserver
+
 ```
 
 Server:
 
 ```
-http://127.0.0.1:8000/
+[http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+
 ```
 
 ---
@@ -369,24 +379,28 @@ Open another terminal.
 
 ```bash
 cd frontend
+
 ```
 
 Install dependencies.
 
 ```bash
 npm install
+
 ```
 
 Start the React development server.
 
 ```bash
 npm run dev
+
 ```
 
 Frontend:
 
 ```
 http://localhost:5173/
+
 ```
 
 ---
@@ -409,6 +423,7 @@ Store Token
       │
       ▼
 Protected APIs
+
 ```
 
 ---
@@ -418,7 +433,7 @@ Protected APIs
 ## 👤 Authentication APIs
 
 | Method | Endpoint | Description |
-|---------|----------|-------------|
+| --- | --- | --- |
 | POST | `/api/users/register/` | Register a new user |
 | POST | `/api/token/` | User Login |
 | POST | `/api/token/refresh/` | Refresh JWT Token |
@@ -428,7 +443,7 @@ Protected APIs
 ## 💸 Expense APIs
 
 | Method | Endpoint | Description |
-|---------|----------|-------------|
+| --- | --- | --- |
 | GET | `/api/expenses/` | Get All Expenses |
 | POST | `/api/expenses/` | Add Expense |
 | PUT | `/api/expenses/{id}/` | Update Expense |
@@ -439,7 +454,7 @@ Protected APIs
 ## 💰 Income APIs
 
 | Method | Endpoint | Description |
-|---------|----------|-------------|
+| --- | --- | --- |
 | GET | `/api/income/` | Get All Income |
 | POST | `/api/income/` | Add Income |
 | PUT | `/api/income/{id}/` | Update Income |
@@ -450,11 +465,43 @@ Protected APIs
 ## 📊 Budget APIs
 
 | Method | Endpoint | Description |
-|---------|----------|-------------|
+| --- | --- | --- |
 | GET | `/api/budgets/` | Get All Budgets |
 | POST | `/api/budgets/` | Create Budget |
 | PUT | `/api/budgets/{id}/` | Update Budget |
 | DELETE | `/api/budgets/{id}/` | Delete Budget |
+
+---
+
+## 🎯 Savings Goal APIs
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/api/savings/` | Get All Savings Goals |
+| POST | `/api/savings/` | Create Savings Goal |
+| PUT | `/api/savings/{id}/` | Update Savings Goal |
+| DELETE | `/api/savings/{id}/` | Delete Savings Goal |
+
+---
+
+## 📈 Reports & Analytics APIs
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/api/reports/summary/` | Get Financial Summary |
+| GET | `/api/reports/analytics/` | Get Dashboard Analytics |
+| GET | `/api/reports/trends/` | Get Monthly Expense Trends |
+| GET | `/api/reports/export/` | Export Reports (PDF, Excel, CSV) |
+
+---
+
+## 🔔 Notification APIs
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/api/notifications/` | Get User Notifications |
+| PUT | `/api/notifications/{id}/read/` | Mark Notification as Read |
+| DELETE | `/api/notifications/{id}/` | Delete Notification |
 
 ---
 
@@ -464,78 +511,82 @@ BudgetBuddy uses **PostgreSQL** as its primary relational database.
 
 ### Database Features
 
-- Secure relational database
-- Django ORM Integration
-- Foreign Key Relationships
-- Normalized Database Design
-- Fast CRUD Operations
-- High Scalability
-- Data Integrity
+* Secure relational database
+* Django ORM Integration
+* Foreign Key Relationships
+* Normalized Database Design
+* Fast CRUD Operations
+* High Scalability
+* Data Integrity
 
 ---
 
 # 🔒 Security Features
 
-- JWT Authentication
-- Password Hashing
-- Protected REST APIs
-- User-based Data Access
-- Secure Database Storage
-- Django Authentication System
-- CSRF & CORS Configuration
+* JWT Authentication
+* Password Hashing
+* Protected REST APIs
+* User-based Data Access
+* Secure Database Storage
+* Django Authentication System
+* CSRF & CORS Configuration
 
 ---
 
 # 📋 Implemented Modules
 
 | Module | Status |
-|----------|--------|
+| --- | --- |
 | User Authentication | ✅ Completed |
 | Dashboard | ✅ Completed |
 | Expense Management | ✅ Completed |
 | Income Management | ✅ Completed |
 | Budget Management | ✅ Completed |
+| Savings Goal Management | ✅ Completed |
+| Reports & Analytics | ✅ Completed |
+| Notifications & Alerts | ✅ Completed |
+| Email Notifications | ✅ Completed |
+| PDF, Excel & CSV Export | ✅ Completed |
 | PostgreSQL Integration | ✅ Completed |
 | REST APIs | ✅ Completed |
 | Django Admin | ✅ Completed |
 | API Testing | ✅ Completed |
 
 ---
+
 # 📊 Project Progress
 
 ## Milestone Status
 
 | Milestone | Duration | Status |
-|------------|----------|--------|
+| --- | --- | --- |
 | Milestone 1 | Week 1 – Week 2 | ✅ Completed |
 | Milestone 2 | Week 3 – Week 4 | ✅ Completed |
-| Milestone 3 | Week 5 – Week 6 | 🚧 Planned |
+| Milestone 3 | Week 5 – Week 6 | ✅ Completed |
 
 ---
 
 ## Overall Project Progress
 
 | Module | Status |
-|---------|--------|
+| --- | --- |
 | Requirement Analysis | ✅ Completed |
 | Project Planning | ✅ Completed |
 | Backend Development | ✅ Completed |
 | Frontend Development | ✅ Completed |
 | PostgreSQL Integration | ✅ Completed |
 | JWT Authentication | ✅ Completed |
-| User Registration | ✅ Completed |
-| User Login | ✅ Completed |
+| User Registration & Login | ✅ Completed |
 | Dashboard | ✅ Completed |
-| Expense Management | ✅ Completed |
-| Income Management | ✅ Completed |
-| Budget Management | ✅ Completed |
-| REST APIs | ✅ Completed |
-| API Testing | ✅ Completed |
-| Savings Goal Management | 🚧 Planned |
-| Reports & Analytics | 🚧 Planned |
-| Notifications | 🚧 Planned |
-| Profile Management | 🚧 Planned |
-| Deployment | 🚧 Planned |
+| Income, Expense & Budget Management | ✅ Completed |
+| Savings Goal Management | ✅ Completed |
+| Reports & Analytics Module | ✅ Completed |
+| Notification Center & Alerts | ✅ Completed |
+| Email Notifications | ✅ Completed |
+| PDF, Excel & CSV Report Generation | ✅ Completed |
+| REST APIs & API Testing | ✅ Completed |
+| AI-Based Spending Analysis | 🚧 Planned |
+| Cloud Deployment | 🚧 Planned |
 
 ---
 
@@ -543,47 +594,45 @@ BudgetBuddy uses **PostgreSQL** as its primary relational database.
 
 ### ✅ Phase 1 — Foundation
 
-- Project Planning
-- Requirement Analysis
-- Django Project Setup
-- React Project Setup
-- PostgreSQL Configuration
-- JWT Authentication
-- User Registration
-- User Login
+* Project Planning
+* Requirement Analysis
+* Django Project Setup
+* React Project Setup
+* PostgreSQL Configuration
+* JWT Authentication
+* User Registration & Login
 
 ---
 
 ### ✅ Phase 2 — Core Financial Modules
 
-- Expense CRUD
-- Income CRUD
-- Budget CRUD
-- React Integration
-- REST API Development
-- Dashboard Navigation
-- PostgreSQL Integration
+* Expense CRUD
+* Income CRUD
+* Budget CRUD
+* React Integration
+* REST API Development
+* Dashboard Navigation
 
 ---
 
-### 🚧 Phase 3 — Advanced Features
+### ✅ Phase 3 — Advanced Features & Milestone 3
 
-- Savings Goal Management
-- Reports & Analytics
-- Dashboard Charts
-- Notifications
-- User Profile
-- Financial Insights
+* Savings Goal Management
+* Reports & Analytics Dashboard
+* Monthly Expense Trends & Charts
+* Notification Center & Budget Alerts
+* Email Notifications
+* PDF, Excel & CSV Report Exports
 
 ---
 
-### 🚀 Phase 4 — Deployment
+### 🚀 Phase 4 — Future Enhancements & Deployment
 
-- Cloud Deployment
-- Performance Optimization
-- Security Enhancements
-- Mobile Optimization
-- Documentation
+* AI-Based Spending Analysis
+* Expense Prediction using Machine Learning
+* Smart Budget Recommendations
+* Cloud Deployment
+* Mobile Application Optimization
 
 ---
 
@@ -591,33 +640,13 @@ BudgetBuddy uses **PostgreSQL** as its primary relational database.
 
 The following features are planned for future releases:
 
-- 🎯 Savings Goal Tracking
-- 📊 Interactive Charts
-- 📈 Financial Analytics Dashboard
-- 📄 PDF Report Generation
-- 📑 Excel Report Export
-- 🔔 Budget Notifications
-- 📧 Email Notifications
-- 👤 User Profile Management
-- 🤖 AI-Based Spending Analysis
-- ☁️ Cloud Deployment
-- 📱 Progressive Web App (PWA)
-- 📲 Mobile Application
-
----
-
-# 📈 Project Highlights
-
-- ✅ Full-Stack Web Application
-- ✅ React + Django Architecture
-- ✅ JWT Authentication
-- ✅ PostgreSQL Database
-- ✅ CRUD Operations
-- ✅ RESTful APIs
-- ✅ Responsive User Interface
-- ✅ Modular Code Structure
-- ✅ Secure Authentication
-- ✅ Industry Standard Development Practices
+* 🤖 AI-Based Spending Analysis
+* 📈 Expense Prediction using Machine Learning
+* 💡 Smart Budget Recommendations
+* ☁️ Cloud Deployment
+* 📱 Progressive Web App (PWA) / Mobile Application
+* 🌐 Multi-language Support
+* 🔄 Recurring Transactions Management
 
 ---
 
@@ -625,18 +654,17 @@ The following features are planned for future releases:
 
 This project helped in gaining practical experience with:
 
-- Django REST Framework
-- React with Vite
-- PostgreSQL Database
-- JWT Authentication
-- REST API Development
-- CRUD Operations
-- Frontend–Backend Integration
-- Axios API Communication
-- Database Migrations
-- API Testing using Postman
-- Git & GitHub Version Control
-- Responsive Web Design
+* Django REST Framework
+* React with Vite
+* PostgreSQL Database
+* JWT Authentication
+* REST API Development & CRUD Operations
+* Financial Reports & Data Export (PDF/Excel/CSV)
+* Email & Notification Integrations
+* Frontend–Backend Integration via Axios
+* API Testing using Postman
+* Git & GitHub Version Control
+* Responsive Web Design
 
 ---
 
@@ -644,12 +672,13 @@ This project helped in gaining practical experience with:
 
 The project includes the following documentation:
 
-- 📄 README.md
-- 📄 PROJECT_SCOPE.md
-- 📄 DATABASE_SCHEMA.md
-- 📄 SYSTEM_ANALYSIS.md
-- 📄 MILESTONE_1_REPORT.md
-- 📄 MILESTONE_2_REPORT.md
+* 📄 README.md
+* 📄 PROJECT_SCOPE.md
+* 📄 DATABASE_SCHEMA.md
+* 📄 SYSTEM_ANALYSIS.md
+* 📄 MILESTONE_1_REPORT.md
+* 📄 MILESTONE_2_REPORT.md
+* 📄 MILESTONE_3_REPORT.md
 
 ---
 
@@ -677,8 +706,8 @@ If you'd like to contribute:
 
 ### Connect with Me
 
-- GitHub: https://github.com/Karuna-1512/
-- LinkedIn: https://www.linkedin.com/in/koppadi-karuna-560230333/
+* GitHub: https://github.com/Karuna-1512/
+* LinkedIn: https://www.linkedin.com/in/koppadi-karuna-560230333/
 
 > Replace the links above with your actual GitHub and LinkedIn profiles.
 
@@ -696,19 +725,9 @@ You are free to use this project for educational purposes with proper attributio
 
 If you found this project helpful:
 
-- ⭐ Star this repository
-- 🍴 Fork this repository
-- 🛠️ Share your suggestions
-- 🐞 Report issues if you find any
+* ⭐ Star this repository
+* 🍴 Fork this repository
+* 🛠️ Share your suggestions
+* 🐞 Report issues if you find any
 
 ---
-
-<h2 align="center">🎉 Thank You for Visiting!</h2>
-
-<p align="center">
-Made with ❤️ using <b>React</b>, <b>Django REST Framework</b>, and <b>PostgreSQL</b>.
-</p>
-
-<p align="center">
-⭐ If you like this project, don't forget to give it a Star on GitHub!
-</p>

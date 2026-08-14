@@ -26,6 +26,7 @@ export default function Budget() {
   const [expenses, setExpenses] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false); // Added submission state
 
   const [formData, setFormData] = useState({
     category: "",
@@ -51,14 +52,26 @@ export default function Budget() {
   };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    if (name === "monthly_limit") {
+      setFormData({
+        ...formData,
+        [name]: value === "" ? "" : Math.max(0, Number(value)),
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   const handleSave = async () => {
+    if (isSubmitting) return; // Prevent duplicate triggers if already submitting
+
     try {
+      setIsSubmitting(true);
       if (editingId) {
         await updateBudget(editingId, formData);
       } else {
@@ -79,6 +92,8 @@ export default function Budget() {
     } catch (error) {
       console.error(error);
       alert("Something went wrong.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -319,7 +334,8 @@ export default function Budget() {
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  disabled={isSubmitting}
+                  className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                 >
                   <option value="">Select Category</option>
                   <option value="Food">Food</option>
@@ -343,7 +359,8 @@ export default function Budget() {
                   placeholder="e.g. 5000"
                   value={formData.monthly_limit}
                   onChange={handleChange}
-                  className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  disabled={isSubmitting}
+                  className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                 />
               </div>
 
@@ -360,7 +377,8 @@ export default function Budget() {
                     placeholder="Month"
                     value={formData.month}
                     onChange={handleChange}
-                    className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    disabled={isSubmitting}
+                    className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                   />
                 </div>
 
@@ -374,7 +392,8 @@ export default function Budget() {
                     placeholder="Year"
                     value={formData.year}
                     onChange={handleChange}
-                    className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    disabled={isSubmitting}
+                    className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                   />
                 </div>
               </div>
@@ -392,16 +411,18 @@ export default function Budget() {
                     year: new Date().getFullYear(),
                   });
                 }}
-                className="px-5 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold transition text-sm"
+                disabled={isSubmitting}
+                className="px-5 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold transition text-sm disabled:opacity-50"
               >
                 Cancel
               </button>
 
               <button
                 onClick={handleSave}
-                className="px-5 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition text-sm shadow-md"
+                disabled={isSubmitting}
+                className="px-5 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition text-sm shadow-md disabled:opacity-50"
               >
-                {editingId ? "Update Budget" : "Save Budget"}
+                {isSubmitting ? "Saving..." : editingId ? "Update Budget" : "Save Budget"}
               </button>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function SavingsModal({
   isOpen,
@@ -14,6 +14,7 @@ export default function SavingsModal({
     target_date: "",
     status: "ACTIVE",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (goal) {
@@ -42,15 +43,44 @@ export default function SavingsModal({
   if (!isOpen) return null;
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    if (name === "target_amount" || name === "saved_amount") {
+      setFormData({
+        ...formData,
+        [name]: value === "" ? "" : Math.max(0, Number(value)),
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(formData);
+    if (isSubmitting) return; // Prevent duplicate triggers if already submitting
+
+    try {
+      setIsSubmitting(true);
+      await onSave(formData);
+
+      setFormData({
+        goal_name: "",
+        goal_type: "",
+        target_amount: "",
+        saved_amount: "",
+        target_date: "",
+        status: "ACTIVE",
+      });
+
+      onClose();
+    } catch (error) {
+      console.error("Error saving savings goal:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -80,7 +110,8 @@ export default function SavingsModal({
               placeholder="e.g. New Laptop or Japan Trip"
               value={formData.goal_name}
               onChange={handleChange}
-              className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition"
+              disabled={isSubmitting}
+              className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition disabled:opacity-50"
               required
             />
           </div>
@@ -94,7 +125,8 @@ export default function SavingsModal({
               name="goal_type"
               value={formData.goal_type}
               onChange={handleChange}
-              className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition"
+              disabled={isSubmitting}
+              className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition disabled:opacity-50"
               required
             >
               <option value="">Select Goal Type</option>
@@ -121,7 +153,8 @@ export default function SavingsModal({
                 placeholder="e.g. 50000"
                 value={formData.target_amount}
                 onChange={handleChange}
-                className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition"
+                disabled={isSubmitting}
+                className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition disabled:opacity-50"
                 required
               />
             </div>
@@ -136,7 +169,8 @@ export default function SavingsModal({
                 placeholder="e.g. 10000"
                 value={formData.saved_amount}
                 onChange={handleChange}
-                className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition"
+                disabled={isSubmitting}
+                className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition disabled:opacity-50"
               />
             </div>
           </div>
@@ -151,7 +185,8 @@ export default function SavingsModal({
               name="target_date"
               value={formData.target_date}
               onChange={handleChange}
-              className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition"
+              disabled={isSubmitting}
+              className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition disabled:opacity-50"
               required
             />
           </div>
@@ -165,7 +200,8 @@ export default function SavingsModal({
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition"
+              disabled={isSubmitting}
+              className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition disabled:opacity-50"
             >
               <option value="ACTIVE">Active</option>
               <option value="COMPLETED">Completed</option>
@@ -177,16 +213,18 @@ export default function SavingsModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold transition text-sm"
+              disabled={isSubmitting}
+              className="px-5 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold transition text-sm disabled:opacity-50"
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition text-sm shadow-md"
+              disabled={isSubmitting}
+              className="px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition text-sm shadow-md disabled:opacity-50"
             >
-              {goal ? "Update Goal" : "Save Goal"}
+              {isSubmitting ? "Saving..." : goal ? "Update Goal" : "Save Goal"}
             </button>
           </div>
         </form>

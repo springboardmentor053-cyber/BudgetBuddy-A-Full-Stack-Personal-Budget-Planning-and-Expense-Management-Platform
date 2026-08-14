@@ -25,6 +25,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         Profile.objects.create(
             user=user,
             phone="",
+            location="",
+            profession="",
             monthly_income=0,
             currency="INR",
             financial_goal=""
@@ -34,6 +36,21 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+    # Expose user fields read-only so the frontend receives them together
+    username = serializers.CharField(source="user.username", read_only=True)
+    email = serializers.EmailField(source="user.email", read_only=True)
+
     class Meta:
         model = Profile
-        fields = "__all__"
+        fields = [
+            "id",
+            "username",
+            "email",
+            "phone",
+            "location",
+            "profession",
+            "monthly_income",
+            "currency",
+            "financial_goal",
+            "created_at",
+        ]

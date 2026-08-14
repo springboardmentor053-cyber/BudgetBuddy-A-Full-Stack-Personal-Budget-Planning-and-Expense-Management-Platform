@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from .models import Income
 from .serializers import IncomeSerializer
-from notifications_app.utils import send_notification
+# from notifications_app.utils import send_notification
 
 
 class IncomeListCreateView(generics.ListCreateAPIView):
@@ -17,13 +17,13 @@ class IncomeListCreateView(generics.ListCreateAPIView):
         income = serializer.save(user=self.request.user)
 
         # 🚀 Trigger notification & email for Income
-        send_notification(
-            user=self.request.user,
-            title="Income Added",
-            message=f"You successfully logged an income: {income.title} for ₹{income.amount}.",
-            notification_type="INCOME",
-            priority="MEDIUM",
-        )
+        # send_notification(
+        #     user=self.request.user,
+        #     title="Income Added",
+        #     message=f"You successfully logged an income: {income.title} for ₹{income.amount}.",
+        #     notification_type="INCOME",
+        #     priority="MEDIUM",
+        # )
 
 
 class IncomeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):

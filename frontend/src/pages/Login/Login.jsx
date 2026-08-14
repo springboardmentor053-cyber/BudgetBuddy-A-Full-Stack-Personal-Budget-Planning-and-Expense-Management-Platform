@@ -18,25 +18,68 @@ export default function Login() {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    try {
-      const res = await axios.post("http://127.0.0.1:8000/api/token/", {
-        username: formData.username,
-        password: formData.password,
-      });
+  try {
+    // Clear old user's data/tokens
+    localStorage.removeItem("access");
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("token");
+    localStorage.removeItem("refresh");
+    localStorage.removeItem("user");
 
-      localStorage.setItem("access", res.data.access);
-      localStorage.setItem("refresh", res.data.refresh);
+    // Login
+    const res = await axios.post("http://127.0.0.1:8000/api/token/", {
+      username: formData.username,
+      password: formData.password,
+    });
 
-      alert("Login successful");
-      navigate("/dashboard");
-    } catch (err) {
-      console.error(err.response?.data);
-      alert("Invalid credentials");
+    // Save new user's tokens
+    localStorage.setItem("access", res.data.access);
+    localStorage.setItem("refresh", res.data.refresh);
+
+    // Get the currently logged-in user's profile
+    const profileRes = await axios.get(
+      "http://127.0.0.1:8000/api/users/profiles/",
+      {
+        headers: {
+          Authorization: `Bearer ${res.data.access}`,
+        },
+      }
+    );
+
+    const profiles = Array.isArray(profileRes.data)
+      ? profileRes.data
+      : [profileRes.data];
+
+    const currentUser = profiles[0];
+
+    // Save current user
+    if (currentUser) {
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          id: currentUser.id,
+          username: currentUser.username,
+          email: currentUser.email,
+          phone: currentUser.phone,
+          location: currentUser.location,
+          profession: currentUser.profession,
+        })
+      );
     }
-  };
+
+    // Tell sidebar/profile that user changed
+    window.dispatchEvent(new Event("userUpdated"));
+
+    alert("Login successful");
+    navigate("/dashboard");
+  } catch (err) {
+    console.error(err.response?.data || err);
+    alert("Invalid credentials");
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-black flex items-center justify-center px-6">

@@ -26,7 +26,8 @@ import {
   Cell,
   Legend,
 } from "recharts";
-
+import { getBudgets } from "../../services/budgetService";
+import { getExpenses } from "../../services/expenseService";
 import { getDashboard, getMonthlyExpenseTrend, exportReportFile } from "../../api/analyticsApi";
 import { useSettings } from "../../context/SettingsContext";
 
@@ -40,12 +41,15 @@ const COLORS = [
   "#06B6D4",
   "#64748B",
 ];
-
 export default function Reports() {
   const { formatMoney } = useSettings();
   const [loading, setLoading] = useState(true);
   const [exportingFormat, setExportingFormat] = useState(null);
   const [analyticsData, setAnalyticsData] = useState(null);
+  
+  // Add state for budgets and expenses to calculate usage dynamically
+  const [budgets, setBudgets] = useState([]);
+  const [expenses, setExpenses] = useState([]);
 
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -66,16 +70,22 @@ export default function Reports() {
         params.year = Number(selectedYear);
       }
 
-      // Updated to call getDashboard instead of undefined getAnalyticsDashboard
-      const response = await getDashboard(params);
-      setAnalyticsData(response.data);
+      // Fetch dashboard analytics, budgets, and expenses concurrently
+      const [dashboardRes, budgetData, expenseData] = await Promise.all([
+        getDashboard(params),
+        getBudgets().catch(() => []),
+        getExpenses().catch(() => []),
+      ]);
+
+      setAnalyticsData(dashboardRes.data);
+      setBudgets(budgetData || []);
+      setExpenses(expenseData || []);
     } catch (error) {
       console.error("Error fetching analytics dashboard:", error);
     } finally {
       setLoading(false);
     }
   };
-
   const handleExport = async (format) => {
     try {
       setExportingFormat(format);
@@ -140,15 +150,15 @@ export default function Reports() {
     { value: 11, label: "November" },
     { value: 12, label: "December" },
   ];
-
-  const financialSummary = analyticsData?.financial_summary || {};
+const financialSummary = analyticsData?.financial_summary || analyticsData || {};
   const expenseSummary = analyticsData?.expense_summary || {};
-  const budgetSummary = analyticsData?.budget_summary || {};
+  const budgetSummary = analyticsData?.budget_summary || analyticsData?.budget || {};
 
   const rawCategoryData =
     expenseSummary.by_category ||
     analyticsData?.category_analysis ||
     analyticsData?.category_breakdown ||
+    analyticsData?.expenses_by_category ||
     [];
 
   const categoryAnalysis = rawCategoryData
@@ -158,23 +168,83 @@ export default function Reports() {
     }))
     .filter((item) => item.value > 0);
 
-  const rawMonthlyTrend = analyticsData?.monthly_trend || analyticsData?.monthly_trends || [];
+  const rawMonthlyTrend = 
+    analyticsData?.monthly_trend || 
+    analyticsData?.monthly_trends || 
+    analyticsData?.trend || 
+    [];
+
   const monthlyTrend = rawMonthlyTrend.map((item) => ({
-    month: item.month || "N/A",
-    income: Number(item.income ?? 0),
-    expense: Number(item.expense ?? 0),
+    month: item.month || item.period || "N/A",
+    income: Number(item.income ?? item.total_income ?? 0),
+    expense: Number(item.expense ?? item.total_expense ?? 0),
   }));
 
-  const recentTransactions = analyticsData?.recent_transactions || [];
+  // Fix: Check multiple possible array keys for recent/all transactions returned by backend
+  const recentTransactions = 
+    analyticsData?.recent_transactions || 
+    analyticsData?.transactions || 
+    analyticsData?.recent_expenses || 
+    [];
 
-  const totalIncome = Number(financialSummary.total_income || 0);
-  const totalExpenses = Number(financialSummary.total_expense || 0);
-  const netSavings = Number(financialSummary.net_savings ?? (totalIncome - totalExpenses));
+  const totalIncome = Number(
+    financialSummary.total_income || 
+    financialSummary.income || 
+    0
+  );
 
-  const budgetAllocated = Number(budgetSummary.allocated || 0);
-  const budgetUsed = Number(budgetSummary.used || totalExpenses);
-  const budgetUsedPercentage =
-    budgetAllocated > 0 ? ((budgetUsed / budgetAllocated) * 100).toFixed(1) : 0;
+  const totalExpenses = Number(
+    financialSummary.total_expense || 
+    financialSummary.expenses || 
+    0
+  );
+
+  const netSavings = Number(
+    financialSummary.net_savings ?? 
+    financialSummary.savings ?? 
+    (totalIncome - totalExpenses)
+  );
+  // Dynamic budget calculation based on month/year filter
+const filteredBudgets = budgets.filter((b) => {
+  const matchesMonth =
+    selectedMonth === "ALL" ||
+    Number(b.month) === Number(selectedMonth);
+
+  const matchesYear =
+    Number(b.year) === Number(selectedYear);
+
+  return matchesMonth && matchesYear;
+});
+
+const budgetAllocated = filteredBudgets.reduce(
+  (sum, b) => sum + Number(b.monthly_limit || 0),
+  0
+);
+
+const budgetUsed = filteredBudgets.reduce((sum, budget) => {
+  const spent = expenses
+    .filter(
+      (expense) =>
+        expense.category === budget.category &&
+        new Date(expense.expense_date).getMonth() + 1 ===
+          Number(budget.month) &&
+        new Date(expense.expense_date).getFullYear() ===
+          Number(budget.year)
+    )
+    .reduce(
+      (total, expense) =>
+        total + Number(expense.amount || 0),
+      0
+    );
+
+  return sum + spent;
+}, 0);
+
+const budgetUsedPercentage =
+  budgetAllocated > 0
+    ? ((budgetUsed / budgetAllocated) * 100).toFixed(1)
+    : 0;
+
 
   const totalTransactions = recentTransactions.length;
 
@@ -182,13 +252,12 @@ export default function Reports() {
     recentTransactions.length > 0
       ? recentTransactions.reduce((acc, curr) => acc + Number(curr.amount || 0), 0) /
         recentTransactions.length
-      : 0;
+      : Number(financialSummary.avg_expense || 0);
 
   const avgIncome =
     monthlyTrend.length > 0
       ? monthlyTrend.reduce((acc, curr) => acc + Number(curr.income || 0), 0) / monthlyTrend.length
-      : 0;
-
+      : Number(financialSummary.avg_income || 0);
   return (
     <div className="space-y-8 min-h-screen text-slate-900 dark:text-white">
       {/* Header */}

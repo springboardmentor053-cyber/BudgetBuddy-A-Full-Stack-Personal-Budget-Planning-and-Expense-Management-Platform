@@ -1,85 +1,89 @@
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api";
 
 const getAuthHeader = () => {
-  const token = localStorage.getItem("token");
+  const token =
+    localStorage.getItem("access") ||
+    localStorage.getItem("access_token") ||
+    localStorage.getItem("token");
+
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
 export const getProfile = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/profile`, {
+    const response = await axios.get(`${API_BASE_URL}/users/profiles/`, {
       headers: getAuthHeader(),
     });
-    return response;
-  } catch (error) {
-    console.warn("Profile API unavailable, building profile from local state.");
 
-    // Retrieve active logged-in user from localStorage
-    const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-
-    // Retrieve savings goals saved in localStorage/state
-    const savingsGoals = JSON.parse(
-      localStorage.getItem("savings") ||
-        localStorage.getItem("savings_goals") ||
-        "[]"
-    );
-    const totalSavings = savingsGoals.reduce(
-      (sum, item) => sum + Number(item.saved || item.currentAmount || 0),
-      0
-    );
-
-    // Retrieve transactions and budgets counts
-    const storedIncome = JSON.parse(localStorage.getItem("income") || "[]");
-    const storedExpenses = JSON.parse(localStorage.getItem("expenses") || "[]");
-    const storedTransactions = JSON.parse(localStorage.getItem("transactions") || "[]");
-    const totalTransactionsCount = storedTransactions.length || (storedIncome.length + storedExpenses.length) || 25;
-
-    const budgets = JSON.parse(
-      localStorage.getItem("budget") ||
-        localStorage.getItem("budgets") ||
-        "[]"
-    );
-
-    const monthlyIncome = 98500;
-    const monthlyExpenses = 23000;
+    const profiles = Array.isArray(response.data) ? response.data : [response.data];
+    const currentProfile = profiles[0] || {};
 
     return {
-      data: {
-        name: storedUser.name || storedUser.username || "User1",
-        email: storedUser.email || "user1.budgetbuddy@gmail.com",
-        phone: storedUser.phone || "+91 9876543210",
-        location: storedUser.location || "Hyderabad, India",
-        profession: storedUser.profession || "Python Developer",
-        account_type: "Premium BudgetBuddy User",
-        financials: {
-          monthlyIncome: monthlyIncome,
-          monthlyExpenses: monthlyExpenses,
-          totalSavings: totalSavings || 65000,
-          currentBalance: monthlyIncome - monthlyExpenses, // ₹75,500
-        },
-        stats: {
-          totalTransactions: totalTransactionsCount,
-          budgetsCreated: budgets.length || 3,
-          savingsGoals: savingsGoals.length || 2,
-        },
-      },
-    };
+  data: {
+    id: currentProfile.id,
+    name: currentProfile.username || "User",
+    email: currentProfile.email || "",
+    phone: currentProfile.phone || "",
+    location: currentProfile.location || "",
+    profession: currentProfile.profession || "",
+    account_type: "BudgetBuddy User",
+
+    total_transactions: Number(
+      currentProfile.total_transactions || 0
+    ),
+
+    budgets_count: Number(
+      currentProfile.budgets_count || 0
+    ),
+
+    savings_goals_count: Number(
+      currentProfile.savings_goals_count || 0
+    ),
+
+    financials: {
+      monthlyIncome: Number(
+        currentProfile.monthly_income || 0
+      ),
+    },
+  },
+};
+  } catch (error) {
+    console.error("Failed to fetch profile from backend:", error.response?.data || error.message);
+    throw error;
   }
 };
 
 export const updateProfile = async (profileData) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/profile`, profileData, {
+    const listRes = await axios.get(`${API_BASE_URL}/users/profiles/`, {
       headers: getAuthHeader(),
     });
+    
+    const profiles = Array.isArray(listRes.data) ? listRes.data : [listRes.data];
+    const profileId = profiles[0]?.id;
+
+    if (!profileId) {
+      throw new Error("Profile ID not found for current user.");
+    }
+
+    // Map frontend camelCase/flat fields to backend snake_case expectations if needed
+    const payload = {
+      phone: profileData.phone,
+      location: profileData.location,
+      profession: profileData.profession,
+      monthly_income: profileData.financials?.monthlyIncome ?? profileData.monthly_income,
+      financial_goal: profileData.financial_goal,
+    };
+
+    const response = await axios.patch(`${API_BASE_URL}/users/profiles/${profileId}/`, payload, {
+      headers: getAuthHeader(),
+    });
+    
     return response;
   } catch (error) {
-    const existingUser = JSON.parse(localStorage.getItem("user") || "{}");
-    const updatedUser = { ...existingUser, ...profileData };
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-    window.dispatchEvent(new Event("userUpdated"));
-    return { data: updatedUser };
+    console.error("Failed to update profile on backend:", error.response?.data || error.message);
+    throw error;
   }
 };

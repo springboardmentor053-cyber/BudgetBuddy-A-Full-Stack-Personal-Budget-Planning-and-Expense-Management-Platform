@@ -36,12 +36,21 @@ export default function Register() {
     }
 
     try {
-      await axios.post("http://127.0.0.1:8000/api/users/register/", {
+      const response = await axios.post("http://127.0.0.1:8000/api/users/register/", {
         full_name: formData.full_name,
         username: formData.username,
         email: formData.email,
         password: formData.password,
       });
+
+      // Automatically store user details on successful registration so profile picks it up
+      const userData = response.data?.user || {
+        name: formData.full_name,
+        username: formData.username,
+        email: formData.email,
+      };
+
+      localStorage.setItem("user", JSON.stringify(userData));
 
       alert("Registration Successful!");
       navigate("/login");

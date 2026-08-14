@@ -5,7 +5,8 @@ import { getExpenseCategories } from "../../api/categoryApi";
 import { getDashboard } from "../../api/dashboardApi";
 import StatCard from "../../components/cards/StatCard";
 import RecentTransactions from "../../components/common/RecentTransactions";
-
+import { getBudgets } from "../../services/budgetService";
+import { getExpenses } from "../../services/expenseService";
 import {
   FaWallet,
   FaArrowUp,
@@ -45,6 +46,11 @@ export default function Dashboard() {
 
   const [loading, setLoading] = useState(true);
   const [categoryData, setCategoryData] = useState([]);
+  
+  // Added budgets and expenses state declarations
+  const [budgets, setBudgets] = useState([]);
+  const [expenses, setExpenses] = useState([]);
+
   const [dashboard, setDashboard] = useState({
     total_income: 0,
     total_expense: 0,
@@ -65,15 +71,17 @@ export default function Dashboard() {
     try {
       setLoading(true);
 
-      const [dashRes, catRes] = await Promise.all([
+      const [dashRes, catRes, budgetData, expenseData] = await Promise.all([
         getDashboard({ month, year }),
         getExpenseCategories({ month, year }).catch(() => ({ data: [] })),
+        getBudgets().catch(() => []),
+        getExpenses().catch(() => []),
       ]);
 
+      setBudgets(budgetData || []);
+      setExpenses(expenseData || []);
+
       const data = dashRes.data || {};
-      console.log("Dashboard API:", data);
-      console.log("Recent Income:", data.recent_income);
-      console.log("Recent Expenses:", data.recent_expenses);
       const summary = data.financial_summary || {};
 
       const totalIncome = summary.total_income || 0;
@@ -81,16 +89,16 @@ export default function Dashboard() {
       const remainingBudget = summary.remaining_budget || 0;
       const totalBudget = remainingBudget + totalExpense;
 
-     setDashboard({
-    total_income: totalIncome,
-    total_expense: totalExpense,
-    current_balance: totalIncome - totalExpense,
-    total_savings: summary.total_savings || 0,
-    total_budget: totalBudget,
-    remaining_budget: remainingBudget,
-    recent_income: data.recent_income || [],
-    recent_expenses: data.recent_expenses || [],
-});
+      setDashboard({
+        total_income: totalIncome,
+        total_expense: totalExpense,
+        current_balance: totalIncome - totalExpense,
+        total_savings: summary.total_savings || 0,
+        total_budget: totalBudget,
+        remaining_budget: remainingBudget,
+        recent_income: data.recent_income || [],
+        recent_expenses: data.recent_expenses || [],
+      });
 
       setCategoryData(
         catRes.data && catRes.data.length ? catRes.data : data.category_analysis || []
@@ -101,20 +109,57 @@ export default function Dashboard() {
       setLoading(false);
     }
   };
+const selectedMonthName = MONTHS.find((m) => m.value === Number(selectedMonth))?.label;
 
-  const selectedMonthName = MONTHS.find((m) => m.value === Number(selectedMonth))?.label;
-
-  // Budget calculations
-  const totalBudget = Number(dashboard.total_budget || 0);
-  const totalExpense = Number(dashboard.total_expense || 0);
-  const remainingBudget = Number(dashboard.remaining_budget || 0);
   const totalSavings = dashboard.total_savings ?? dashboard.current_balance;
 
-  const budgetUsagePercent =
-    totalBudget > 0 ? Math.round((totalExpense / totalBudget) * 100) : 0;
+  // Get budgets for the selected month and year
+const filteredBudgets = budgets.filter(
+  (budget) =>
+    Number(budget.month) === Number(selectedMonth) &&
+    Number(budget.year) === Number(selectedYear)
+);
 
-  const isOverBudget = totalExpense > totalBudget && totalBudget > 0;
-  const isNearBudget = budgetUsagePercent >= 80 && !isOverBudget;
+// Select the budget to display on Dashboard
+const activeBudget = filteredBudgets[0] || null;
+
+// Budget limit
+const totalBudget = activeBudget
+  ? Number(activeBudget.monthly_limit || 0)
+  : 0;
+
+// Calculate spending ONLY for the selected budget category
+const budgetSpent = activeBudget
+  ? expenses
+      .filter((expense) => {
+        const expDate = new Date(expense.expense_date);
+
+        return (
+          expense.category === activeBudget.category &&
+          expDate.getMonth() + 1 === Number(selectedMonth) &&
+          expDate.getFullYear() === Number(selectedYear)
+        );
+      })
+      .reduce(
+        (sum, expense) => sum + Number(expense.amount || 0),
+        0
+      )
+  : 0;
+
+// Remaining amount for this budget
+const remainingBudget = totalBudget - budgetSpent;
+
+// Usage percentage
+const budgetUsagePercent =
+  totalBudget > 0
+    ? Math.round((budgetSpent / totalBudget) * 100)
+    : 0;
+
+const isOverBudget =
+  budgetSpent > totalBudget && totalBudget > 0;
+
+const isNearBudget =
+  budgetUsagePercent >= 80 && !isOverBudget;
 
   return (
     <div className="space-y-8 text-slate-900 dark:text-white">
@@ -234,9 +279,17 @@ export default function Dashboard() {
 
             <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between">
               <div>
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">
-                  Budget Status
-                </h2>
+                <div className="flex items-center justify-between mb-6">
+  <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+    Budget Status
+  </h2>
+
+  {activeBudget && (
+    <span className="text-sm font-semibold text-blue-500">
+      {activeBudget.category}
+    </span>
+  )}
+</div>
 
                 <div className="space-y-4">
                   <div className="flex justify-between text-sm">
@@ -249,7 +302,7 @@ export default function Dashboard() {
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-500 dark:text-slate-400">Spent</span>
                     <span className="font-bold text-red-500">
-                      ₹{totalExpense.toLocaleString("en-IN")}
+                      ₹{budgetSpent.toLocaleString("en-IN")}
                     </span>
                   </div>
 

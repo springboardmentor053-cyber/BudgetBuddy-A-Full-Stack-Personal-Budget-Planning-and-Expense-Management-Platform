@@ -14,6 +14,8 @@ import {
 import ProfileModal from "../../components/forms/ProfileModal";
 import { getProfile, updateProfile } from "../../api/profileApi";
 import { getDashboard } from "../../api/dashboardApi";
+import { getBudgets } from "../../api/budgetApi";
+import { getSavings } from "../../api/savingsApi";
 import { useSettings } from "../../context/SettingsContext";
 
 export default function Profile() {
@@ -27,7 +29,7 @@ export default function Profile() {
     phone: "",
     location: "",
     profession: "",
-    accountType: "Premium BudgetBuddy User",
+    accountType: "BudgetBuddy User",
     financials: {
       monthlyIncome: 0,
       monthlyExpenses: 0,
@@ -49,101 +51,151 @@ export default function Profile() {
     try {
       setLoading(true);
 
-      // 1. Fetch backend profile & dashboard
-      const userRes = await getProfile().catch(() => ({ data: {} }));
+      // Fetch profile, dashboard, budgets and savings concurrently
+      const [userRes, dashboardRes, budgetRes, savingsRes] =
+        await Promise.all([
+          getProfile().catch(() => ({ data: {} })),
+          getDashboard().catch(() => ({ data: {} })),
+          getBudgets().catch(() => ({ data: [] })),
+          getSavings().catch(() => ({ data: [] })),
+        ]);
+
       const userData = userRes.data || {};
-
-      const dashboardRes = await getDashboard().catch(() => ({ data: {} }));
       const dash = dashboardRes.data || dashboardRes || {};
-      const summary = dash.financial_summary || dash;
+      const summary = dash.financial_summary || {};
 
-      // 2. Read local state fallbacks with all potential keys
-      const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+      // --------------------------------
+      // Budget list
+      // --------------------------------
+      const budgetData = budgetRes.data || [];
+      const budgetList = Array.isArray(budgetData)
+        ? budgetData
+        : budgetData.results || [];
 
-      const storedSavings = JSON.parse(
-        localStorage.getItem("savings") ||
-          localStorage.getItem("savings_goals") ||
-          "[]"
-      );
-      const storedBudgets = JSON.parse(
-        localStorage.getItem("budget") ||
-          localStorage.getItem("budgets") ||
-          "[]"
-      );
-      const storedIncome = JSON.parse(localStorage.getItem("income") || "[]");
-      const storedExpenses = JSON.parse(
-        localStorage.getItem("expenses") || "[]"
+      // --------------------------------
+      // Savings list
+      // --------------------------------
+      const savingsData = savingsRes.data || [];
+      const savingsList = Array.isArray(savingsData)
+        ? savingsData
+        : savingsData.results || [];
+
+      // --------------------------------
+      // Local storage fallback
+      // --------------------------------
+      const storedUser = JSON.parse(
+        localStorage.getItem("user") || "{}"
       );
 
-      // Calculate Total Savings from active goals
-      const calculatedSavings = storedSavings.reduce(
-        (sum, goal) => sum + Number(goal.saved || goal.currentAmount || 0),
-        0
-      );
+      // --------------------------------
+      // Transactions
+      // --------------------------------
+      const incomeList =
+        dash.recent_income ||
+        dash.income ||
+        [];
 
-      // Financial Metrics (Updated fallbacks to match your actual dashboard data)
+      const expenseList =
+        dash.recent_expenses ||
+        dash.expenses ||
+        [];
+
+      // --------------------------------
+      // Financial metrics
+      // --------------------------------
       const monthlyIncome = Number(
-        summary.total_income ?? dash.income ?? 70000
+        summary.total_income ??
+          dash.income ??
+          0
       );
+
       const monthlyExpenses = Number(
-        summary.total_expense ?? dash.expenses ?? 8000
+        summary.total_expense ??
+          dash.expenses ??
+          0
       );
+
       const currentBalance = Number(
         summary.current_balance ??
           dash.balance ??
-          monthlyIncome - monthlyExpenses
+          (monthlyIncome - monthlyExpenses)
       );
+
       const totalSavings = Number(
-        summary.total_savings ?? dash.savings ?? (calculatedSavings || 62000)
+        summary.total_savings ??
+          dash.savings ??
+          0
       );
 
-      // Real Summary Counts (Updated transaction count fallback to 8)
-      const totalTransactions =
+      // --------------------------------
+      // Transaction count
+      // --------------------------------
+      const totalTransactions = Number(
         dash.total_transactions ??
-        dash.transactions_count ??
-        (Array.isArray(dash.recent_transactions)
-          ? dash.recent_transactions.length
-          : null) ??
-        (storedIncome.length + storedExpenses.length || 8);
+          dash.transactions_count ??
+          (incomeList.length + expenseList.length)
+      );
 
-      const budgetsCreated =
-        dash.budgets_count ??
-        (Array.isArray(dash.budgets) ? dash.budgets.length : null) ??
-        (storedBudgets.length > 0 ? storedBudgets.length : 3);
+      // --------------------------------
+      // ACTUAL budget & savings counts
+      // --------------------------------
+      const budgetsCreated = budgetList.length;
+      const savingsGoals = savingsList.length;
 
-      const savingsGoals =
-        dash.goals_count ??
-        dash.savings_goals_count ??
-        (Array.isArray(dash.savings_goals) ? dash.savings_goals.length : null) ??
-        (storedSavings.length > 0 ? storedSavings.length : 2);
-
+      // --------------------------------
+      // Set profile data
+      // --------------------------------
       setProfileData({
         name:
           userData.name ||
+          userData.username ||
           storedUser.name ||
           storedUser.username ||
-          "User1",
-        email: userData.email || storedUser.email || "user1@gmail.com",
-        phone: userData.phone || storedUser.phone || "+91 9876543210",
+          "User",
+
+        email:
+          userData.email ||
+          storedUser.email ||
+          "",
+
+        phone:
+          userData.phone ||
+          storedUser.phone ||
+          "",
+
         location:
-          userData.location || storedUser.location || "Hyderabad, India",
+          userData.location ||
+          storedUser.location ||
+          "",
+
         profession:
-          userData.profession || storedUser.profession || "Python Developer",
-        accountType: userData.account_type || "Premium BudgetBuddy User",
+          userData.profession ||
+          storedUser.profession ||
+          "",
+
+        accountType:
+          userData.account_type ||
+          "BudgetBuddy User",
+
         financials: {
           monthlyIncome,
           monthlyExpenses,
           totalSavings,
           currentBalance,
         },
+
         stats: {
-          totalTransactions: Number(totalTransactions),
-          budgetsCreated: Number(budgetsCreated),
-          savingsGoals: Number(savingsGoals),
+          totalTransactions,
+          budgetsCreated,
+          savingsGoals,
         },
       });
+
     } catch (error) {
-      console.error("Failed to load profile data:", error);
+      console.error(
+        "Failed to load profile data:",
+        error
+      );
     } finally {
       setLoading(false);
     }
@@ -156,6 +208,12 @@ export default function Profile() {
       setProfileData((prev) => ({
         ...prev,
         ...formData,
+        financials: {
+          ...prev.financials,
+          monthlyIncome:
+            formData.financials?.monthlyIncome ??
+            prev.financials.monthlyIncome,
+        },
       }));
 
       // Keep localStorage in sync so sidebar updates dynamically
@@ -187,9 +245,7 @@ export default function Profile() {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-bold text-white">
-            My Profile
-          </h1>
+          <h1 className="text-4xl font-bold text-white">My Profile</h1>
           <p className="text-slate-500 dark:text-slate-400 mt-2">
             Manage your personal details and view account summary.
           </p>
@@ -235,28 +291,28 @@ export default function Profile() {
               <div className="p-3 rounded-xl bg-blue-500/10 text-blue-500">
                 <FaEnvelope />
               </div>
-              <span className="font-medium">{profileData.email}</span>
+              <span className="font-medium">{profileData.email || "Not Provided"}</span>
             </div>
 
             <div className="flex items-center gap-4 text-slate-700 dark:text-slate-300">
               <div className="p-3 rounded-xl bg-blue-500/10 text-blue-500">
                 <FaPhone />
               </div>
-              <span className="font-medium">{profileData.phone}</span>
+              <span className="font-medium">{profileData.phone || "Not Provided"}</span>
             </div>
 
             <div className="flex items-center gap-4 text-slate-700 dark:text-slate-300">
               <div className="p-3 rounded-xl bg-blue-500/10 text-blue-500">
                 <FaMapMarkerAlt />
               </div>
-              <span className="font-medium">{profileData.location}</span>
+              <span className="font-medium">{profileData.location || "Not Provided"}</span>
             </div>
 
             <div className="flex items-center gap-4 text-slate-700 dark:text-slate-300">
               <div className="p-3 rounded-xl bg-blue-500/10 text-blue-500">
                 <FaBriefcase />
               </div>
-              <span className="font-medium">{profileData.profession}</span>
+              <span className="font-medium">{profileData.profession || "Not Provided"}</span>
             </div>
           </div>
         </div>
