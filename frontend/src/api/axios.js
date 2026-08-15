@@ -1,7 +1,7 @@
 // src/api/axios.js
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://budgetbuddy-backend-xtl4.onrender.com/api/";
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
