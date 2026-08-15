@@ -1,33 +1,54 @@
 from rest_framework import serializers
-from .models import Budget, SavingsGoal
 
-
+from .models import Budget
 
 
 class BudgetSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Budget
         fields = "__all__"
 
+        read_only_fields = [
+            "user",
+            "created_at",
+            "updated_at",
+        ]
 
-class SavingsGoalSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SavingsGoal
-        fields = "__all__"
+    def validate(self, data):
 
-def validate(self, data):
+        user = self.context["request"].user
 
-    user = self.context["request"].user
+        category = data.get("category")
+        month = data.get("month")
+        year = data.get("year")
 
-    if Budget.objects.filter(
-            user=user,
-            category=data["category"],
-            month=data["month"],
-            year=data["year"]
-    ).exists():
+        if self.instance is None:
 
-        raise serializers.ValidationError(
-            "Budget already exists for this category and month."
-        )
+            if Budget.objects.filter(
+                user=user,
+                category=category,
+                month=month,
+                year=year
+            ).exists():
 
-    return data
+                raise serializers.ValidationError(
+                    "Budget already exists for this category and month."
+                )
+
+        else:
+
+            if Budget.objects.filter(
+                user=user,
+                category=category,
+                month=month,
+                year=year
+            ).exclude(
+                pk=self.instance.pk
+            ).exists():
+
+                raise serializers.ValidationError(
+                    "Budget already exists for this category and month."
+                )
+
+        return data

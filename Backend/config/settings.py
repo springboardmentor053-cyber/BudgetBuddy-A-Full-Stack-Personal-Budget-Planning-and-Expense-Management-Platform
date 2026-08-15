@@ -23,6 +23,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     # Django Apps
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -35,18 +36,20 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
 
     # Local Apps
-    'users',
-    'expenses',
-    'budgets',
-    'reports',
-    'income',
-    'notifications',
-    'savings',
+'users',
+'expenses',
+'budgets',
+'reports',
+'income',
+'notifications',
+'savings',
+'analytics',
 ]
 
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -128,6 +131,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 # Django REST Framework

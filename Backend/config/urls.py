@@ -13,6 +13,24 @@ urlpatterns = [
     # Admin Panel
     path('admin/', admin.site.urls),
 
+    # Reports App
+    path(
+    "api/reports/",
+    include("reports.urls")
+),
+
+     # Analytics App
+path(
+    "api/analytics/",
+    include("analytics.urls")
+),
+
+    # Savings App
+    path(
+    "api/savings/",
+    include("savings.urls")
+),
+
     # Users App
     path('api/users/', include('users.urls')),
 
@@ -21,6 +39,12 @@ urlpatterns = [
 
     #Users Income
     path('api/income/', include('income.urls')),
+
+    # Notifications App
+    path(
+    "api/notifications/",
+    include("notifications.urls")
+),
 
     #users dashboard
     path('api/dashboard/', include('reports.urls')),

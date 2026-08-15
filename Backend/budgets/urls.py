@@ -1,43 +1,37 @@
 from django.urls import path
-from .views import BudgetSummaryView
-from .views import *
+
+from .views import (
+    BudgetListCreateView,
+    BudgetDetailView,
+    BudgetSummaryView,
+    TransactionDashboardView,
+)
+
 
 urlpatterns = [
 
     path(
-        '',
+        "",
         BudgetListCreateView.as_view(),
-        name='budget-list-create'
+        name="budget-list-create"
     ),
 
     path(
-        '<int:pk>/',
+        "<int:pk>/",
         BudgetDetailView.as_view(),
-        name='budget-detail'
+        name="budget-detail"
     ),
 
     path(
-        'savings/',
-        SavingsGoalListCreateView.as_view(),
-        name='savings-list-create'
+        "summary/<int:pk>/",
+        BudgetSummaryView.as_view(),
+        name="budget-summary"
     ),
 
     path(
-        'savings/<int:pk>/',
-        SavingsGoalDetailView.as_view(),
-        name='savings-detail'
-    ),
-
-    path(
-    "summary/<int:pk>/",
-    BudgetSummaryView.as_view(),
-    name="budget-summary"
-    ),
-
-    path(
-    "dashboard/",
-    TransactionDashboardView.as_view(),
-    name="dashboard"
+        "dashboard/",
+        TransactionDashboardView.as_view(),
+        name="dashboard"
     ),
 
 ]
