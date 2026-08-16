@@ -71,7 +71,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database Configuration
-# Uses PostgreSQL (Render DATABASE_URL) if present, falls back to SQLite locally
 DATABASE_URL = os.getenv('DATABASE_URL')
 
 if DATABASE_URL:
@@ -158,13 +157,13 @@ SIMPLE_JWT = {
 }
 
 
-# Email Settings
+# Email Settings (Zero hardcoded credentials)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'xyz699911@gmail.com')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'tojmmmewdydarojr')  # App Password without spaces
-DEFAULT_FROM_EMAIL = f"BudgetBuddy <{EMAIL_HOST_USER}>"
-SERVER_EMAIL = EMAIL_HOST_USER
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = f"BudgetBuddy <{EMAIL_HOST_USER}>" if EMAIL_HOST_USER else 'webmaster@localhost'
+SERVER_EMAIL = EMAIL_HOST_USER or 'webmaster@localhost'
