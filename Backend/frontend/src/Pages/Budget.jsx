@@ -18,10 +18,6 @@ import api from "../services/api";
 
 function Budget() {
 
-  // =========================================================
-  // STATE
-  // =========================================================
-
   const [budgets, setBudgets] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -30,16 +26,14 @@ function Budget() {
 
   const [showForm, setShowForm] = useState(false);
 
-  const [editingBudget, setEditingBudget] = useState(null);
+  const [editingBudget, setEditingBudget] =
+    useState(null);
 
-  const [deleteBudget, setDeleteBudget] = useState(null);
+  const [deleteBudget, setDeleteBudget] =
+    useState(null);
 
   const [saving, setSaving] = useState(false);
 
-
-  // =========================================================
-  // FORM STATE
-  // =========================================================
 
   const [formData, setFormData] = useState({
     category: "Food",
@@ -49,9 +43,9 @@ function Budget() {
   });
 
 
-  // =========================================================
-  // FETCH BUDGETS
-  // =========================================================
+  /* =====================================================
+     FETCH BUDGETS
+  ===================================================== */
 
   const fetchBudgets = async () => {
 
@@ -61,22 +55,31 @@ function Budget() {
 
       setError("");
 
-      const token = localStorage.getItem("access");
+      const token =
+        localStorage.getItem("access");
 
       const response = await api.get(
         "budgets/",
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization:
+              `Bearer ${token}`,
           },
         }
       );
 
-      setBudgets(response.data);
+      setBudgets(
+        Array.isArray(response.data)
+          ? response.data
+          : response.data?.results || []
+      );
 
     } catch (err) {
 
-      console.error("Budget fetch error:", err);
+      console.error(
+        "Budget fetch error:",
+        err
+      );
 
       setError(
         err.response?.data?.detail ||
@@ -88,12 +91,13 @@ function Budget() {
       setLoading(false);
 
     }
+
   };
 
 
-  // =========================================================
-  // LOAD BUDGETS
-  // =========================================================
+  /* =====================================================
+     LOAD DATA
+  ===================================================== */
 
   useEffect(() => {
 
@@ -102,13 +106,16 @@ function Budget() {
   }, []);
 
 
-  // =========================================================
-  // FORM CHANGE
-  // =========================================================
+  /* =====================================================
+     FORM CHANGE
+  ===================================================== */
 
   const handleChange = (event) => {
 
-    const { name, value } = event.target;
+    const {
+      name,
+      value,
+    } = event.target;
 
     setFormData((previous) => ({
       ...previous,
@@ -118,18 +125,25 @@ function Budget() {
   };
 
 
-  // =========================================================
-  // OPEN ADD FORM
-  // =========================================================
+  /* =====================================================
+     OPEN ADD FORM
+  ===================================================== */
 
   const openAddForm = () => {
 
     setEditingBudget(null);
 
+    setError("");
+
     setFormData({
       category: "Food",
       budget_amount: "",
-      month: "August",
+      month: new Date().toLocaleString(
+        "en-US",
+        {
+          month: "long",
+        }
+      ),
       year: new Date().getFullYear(),
     });
 
@@ -138,19 +152,32 @@ function Budget() {
   };
 
 
-  // =========================================================
-  // OPEN EDIT FORM
-  // =========================================================
+  /* =====================================================
+     OPEN EDIT FORM
+  ===================================================== */
 
   const openEditForm = (budget) => {
 
     setEditingBudget(budget);
 
+    setError("");
+
     setFormData({
-      category: budget.category || "Food",
-      budget_amount: budget.budget_amount || "",
-      month: budget.month || "January",
-      year: budget.year || new Date().getFullYear(),
+      category:
+        budget.category ||
+        "Food",
+
+      budget_amount:
+        budget.budget_amount ||
+        "",
+
+      month:
+        budget.month ||
+        "January",
+
+      year:
+        budget.year ||
+        new Date().getFullYear(),
     });
 
     setShowForm(true);
@@ -158,9 +185,9 @@ function Budget() {
   };
 
 
-  // =========================================================
-  // CLOSE FORM
-  // =========================================================
+  /* =====================================================
+     CLOSE FORM
+  ===================================================== */
 
   const closeForm = () => {
 
@@ -175,9 +202,9 @@ function Budget() {
   };
 
 
-  // =========================================================
-  // ADD / UPDATE BUDGET
-  // =========================================================
+  /* =====================================================
+     SAVE BUDGET
+  ===================================================== */
 
   const handleSubmit = async (event) => {
 
@@ -189,24 +216,31 @@ function Budget() {
 
     try {
 
-      const token = localStorage.getItem("access");
+      const token =
+        localStorage.getItem("access");
 
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization:
+            `Bearer ${token}`,
         },
       };
 
 
       const data = {
-        category: formData.category,
-        budget_amount: formData.budget_amount,
-        month: formData.month,
-        year: Number(formData.year),
+        category:
+          formData.category,
+
+        budget_amount:
+          formData.budget_amount,
+
+        month:
+          formData.month,
+
+        year:
+          Number(formData.year),
       };
 
-
-      // UPDATE
 
       if (editingBudget) {
 
@@ -216,11 +250,7 @@ function Budget() {
           config
         );
 
-      }
-
-      // CREATE
-
-      else {
+      } else {
 
         await api.post(
           "budgets/",
@@ -239,37 +269,60 @@ function Budget() {
 
     } catch (err) {
 
-      console.error("Budget save error:", err);
+      console.error(
+        "Budget save error:",
+        err
+      );
 
-      const responseData = err.response?.data;
+      const responseData =
+        err.response?.data;
+
 
       if (responseData) {
 
-        if (typeof responseData === "object") {
+        if (
+          typeof responseData ===
+          "object"
+        ) {
 
-          const messages = Object.entries(responseData)
-            .map(([field, message]) => {
+          const messages =
+            Object.entries(
+              responseData
+            )
+              .map(
+                ([field, message]) => {
 
-              if (Array.isArray(message)) {
-                return `${field}: ${message.join(", ")}`;
-              }
+                  if (
+                    Array.isArray(message)
+                  ) {
 
-              return `${field}: ${message}`;
+                    return `${field}: ${message.join(
+                      ", "
+                    )}`;
 
-            })
-            .join(" | ");
+                  }
+
+                  return `${field}: ${message}`;
+
+                }
+              )
+              .join(" | ");
 
           setError(messages);
 
         } else {
 
-          setError(String(responseData));
+          setError(
+            String(responseData)
+          );
 
         }
 
       } else {
 
-        setError("Unable to save budget.");
+        setError(
+          "Unable to save budget."
+        );
 
       }
 
@@ -278,12 +331,13 @@ function Budget() {
       setSaving(false);
 
     }
+
   };
 
 
-  // =========================================================
-  // DELETE BUDGET
-  // =========================================================
+  /* =====================================================
+     DELETE BUDGET
+  ===================================================== */
 
   const confirmDelete = async () => {
 
@@ -295,13 +349,15 @@ function Budget() {
 
       setSaving(true);
 
-      const token = localStorage.getItem("access");
+      const token =
+        localStorage.getItem("access");
 
       await api.delete(
         `budgets/${deleteBudget.id}/`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization:
+              `Bearer ${token}`,
           },
         }
       );
@@ -312,7 +368,10 @@ function Budget() {
 
     } catch (err) {
 
-      console.error("Budget delete error:", err);
+      console.error(
+        "Budget delete error:",
+        err
+      );
 
       setError(
         err.response?.data?.detail ||
@@ -324,16 +383,19 @@ function Budget() {
       setSaving(false);
 
     }
+
   };
 
 
-  // =========================================================
-  // MONEY FORMAT
-  // =========================================================
+  /* =====================================================
+     FORMAT MONEY
+  ===================================================== */
 
   const formatMoney = (amount) => {
 
-    return Number(amount || 0).toLocaleString(
+    return Number(
+      amount || 0
+    ).toLocaleString(
       "en-IN",
       {
         minimumFractionDigits: 0,
@@ -344,108 +406,131 @@ function Budget() {
   };
 
 
-  // =========================================================
-  // TOTAL BUDGET
-  // =========================================================
+  /* =====================================================
+     TOTAL BUDGET
+  ===================================================== */
 
-  const totalBudget = budgets.reduce(
-    (total, budget) =>
-      total + Number(budget.budget_amount || 0),
-    0
-  );
-
-
-  // =========================================================
-  // CURRENT MONTH
-  // =========================================================
-
-  const currentMonthName = new Date().toLocaleString(
-    "en-US",
-    {
-      month: "long",
-    }
-  );
+  const totalBudget =
+    budgets.reduce(
+      (total, budget) =>
+        total +
+        Number(
+          budget.budget_amount || 0
+        ),
+      0
+    );
 
 
-  const currentYear = new Date().getFullYear();
+  /* =====================================================
+     CURRENT MONTH
+  ===================================================== */
+
+  const currentMonthName =
+    new Date().toLocaleString(
+      "en-US",
+      {
+        month: "long",
+      }
+    );
 
 
-  const currentMonthBudgets = budgets.filter(
-    (budget) =>
-      budget.month === currentMonthName &&
-      Number(budget.year) === currentYear
-  );
+  const currentYear =
+    new Date().getFullYear();
 
 
-  const currentMonthTotal = currentMonthBudgets.reduce(
-    (total, budget) =>
-      total + Number(budget.budget_amount || 0),
-    0
-  );
+  const currentMonthBudgets =
+    budgets.filter(
+      (budget) =>
+        budget.month ===
+          currentMonthName &&
+        Number(budget.year) ===
+          currentYear
+    );
 
 
-  // =========================================================
-  // CATEGORY STYLE
-  // =========================================================
+  const currentMonthTotal =
+    currentMonthBudgets.reduce(
+      (total, budget) =>
+        total +
+        Number(
+          budget.budget_amount || 0
+        ),
+      0
+    );
 
-  const getCategoryStyle = (category) => {
 
-    const styles = {
+  /* =====================================================
+     CATEGORY STYLE
+  ===================================================== */
 
-      Food:
-        "bg-orange-50 text-orange-700",
+  const getCategoryStyle =
+    (category) => {
 
-      Transport:
-        "bg-blue-50 text-blue-700",
+      const styles = {
 
-      Shopping:
-        "bg-pink-50 text-pink-700",
+        Food:
+          "bg-[#92643E]/10 text-[#92643E] border border-[#92643E]/20",
 
-      Bills:
-        "bg-yellow-50 text-yellow-700",
+        Transport:
+          "bg-[#F3EBDD] text-[#6F665B] border border-[#E5DDD2]",
 
-      Health:
-        "bg-red-50 text-red-700",
+        Shopping:
+          "bg-[#56061D]/10 text-[#7A263D] border border-[#56061D]/20",
 
-      Education:
-        "bg-indigo-50 text-indigo-700",
+        Bills:
+          "bg-[#92643E]/10 text-[#92643E] border border-[#92643E]/20",
 
-      Entertainment:
-        "bg-purple-50 text-purple-700",
+        Health:
+          "bg-[#56061D]/10 text-[#7A263D] border border-[#56061D]/20",
 
-      Travel:
-        "bg-cyan-50 text-cyan-700",
+        Education:
+          "bg-[#F3EBDD] text-[#6F665B] border border-[#E5DDD2]",
 
-      Investment:
-        "bg-emerald-50 text-emerald-700",
+        Entertainment:
+          "bg-[#56061D]/10 text-[#7A263D] border border-[#56061D]/20",
 
-      Other:
-        "bg-slate-100 text-slate-700",
+        Travel:
+          "bg-[#F3EBDD] text-[#6F665B] border border-[#E5DDD2]",
+
+        Investment:
+          "bg-[#92643E]/10 text-[#5F765F] border border-[#8FB39B]/30",
+
+        Other:
+          "bg-[#F3EBDD] text-[#6F665B] border border-[#E5DDD2]",
+
+      };
+
+
+      return (
+        styles[category] ||
+        "bg-[#F3EBDD] text-[#6F665B] border border-[#E5DDD2]"
+      );
 
     };
 
-    return (
-      styles[category] ||
-      "bg-slate-100 text-slate-700"
-    );
-
-  };
-
-
-  // =========================================================
-  // UI
-  // =========================================================
 
   return (
 
-    <div className="min-h-screen bg-slate-50 flex">
-
+    <div
+      className="
+        min-h-screen
+        bg-[#F5F2EC]
+        flex
+        overflow-x-hidden
+      "
+    >
 
       {/* =====================================================
           SIDEBAR
       ====================================================== */}
 
-      <div className="w-[280px] bg-slate-950 text-white flex-shrink-0">
+      <div
+        className="
+          w-0
+          lg:w-[280px]
+          flex-shrink-0
+        "
+      >
 
         <Sidebar />
 
@@ -456,32 +541,65 @@ function Budget() {
           MAIN CONTENT
       ====================================================== */}
 
-      <div className="flex-1 min-w-0">
+      <div
+        className="
+          flex-1
+          min-w-0
+          w-full
+        "
+      >
 
         <Topbar />
 
 
-        <main className="p-6 md:p-8">
+        <main
+          className="
+            p-4
+            sm:p-6
+            md:p-8
+            w-full
+            max-w-full
+          "
+        >
 
 
           {/* =================================================
-              HEADER
-          ================================================== */}
+              PAGE HEADER
+          ================================================= */}
 
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-8">
+          <div
+            className="
+              flex
+              flex-col
+              md:flex-row
+              md:items-center
+              md:justify-between
+              gap-5
+              mb-8
+            "
+          >
 
             <div>
 
-              <h1 className="text-3xl md:text-4xl font-bold text-slate-800">
-
+              <h1
+                className="
+                  text-3xl
+                  md:text-4xl
+                  font-bold
+                  text-[#101C2E]
+                "
+              >
                 Budgets
-
               </h1>
 
-              <p className="text-slate-500 mt-2">
 
+              <p
+                className="
+                  text-[#6F665B]
+                  mt-2
+                "
+              >
                 Plan and manage your spending limits.
-
               </p>
 
             </div>
@@ -498,14 +616,16 @@ function Budget() {
                 px-5
                 py-3
                 rounded-xl
-                bg-indigo-600
-                hover:bg-indigo-700
+                bg-[#56061D]
+                hover:bg-[#6F0A27]
                 text-white
                 font-semibold
                 shadow-md
                 hover:shadow-lg
                 transition-all
                 duration-300
+                w-full
+                md:w-auto
               "
             >
 
@@ -520,24 +640,49 @@ function Budget() {
 
           {/* =================================================
               ERROR
-          ================================================== */}
+          ================================================= */}
 
           {error && (
 
-            <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700">
+            <div
+              className="
+                mb-6
+                p-4
+                rounded-xl
+                bg-[#56061D]/10
+                border
+                border-[#56061D]/30
+                text-[#56061D]
+              "
+            >
 
-              <div className="flex items-start justify-between gap-4">
+              <div
+                className="
+                  flex
+                  items-start
+                  justify-between
+                  gap-4
+                "
+              >
 
-                <p className="text-sm font-medium">
+                <p
+                  className="
+                    text-sm
+                    font-medium
+                  "
+                >
                   {error}
                 </p>
 
+
                 <button
-                  onClick={() => setError("")}
+                  onClick={() =>
+                    setError("")
+                  }
                   className="
                     cursor-pointer
-                    text-rose-500
-                    hover:text-rose-700
+                    text-[#7A263D]
+                    hover:text-[#56061D]
                   "
                 >
 
@@ -554,35 +699,85 @@ function Budget() {
 
           {/* =================================================
               SUMMARY CARDS
-          ================================================== */}
+          ================================================= */}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div
+            className="
+              grid
+              grid-cols-1
+              md:grid-cols-3
+              gap-6
+              mb-8
+            "
+          >
 
 
             {/* TOTAL BUDGET */}
 
-            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+            <div
+              className="
+                bg-white
+                rounded-2xl
+                p-6
+                border
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
+              "
+            >
 
-              <div className="flex items-center justify-between">
+              <div
+                className="
+                  flex
+                  items-center
+                  justify-between
+                "
+              >
 
                 <div>
 
-                  <p className="text-sm text-slate-500">
+                  <p
+                    className="
+                      text-sm
+                      text-[#6F665B]
+                    "
+                  >
                     Total Budget
                   </p>
 
-                  <h2 className="text-3xl font-bold text-slate-800 mt-2">
 
+                  <h2
+                    className="
+                      text-3xl
+                      font-bold
+                      text-[#101C2E]
+                      mt-2
+                    "
+                  >
                     ₹{formatMoney(totalBudget)}
-
                   </h2>
 
                 </div>
 
 
-                <div className="w-14 h-14 rounded-2xl bg-indigo-100 flex items-center justify-center">
+                <div
+                  className="
+                    w-14
+                    h-14
+                    rounded-2xl
+                    bg-[#92643E]
+                    flex
+                    items-center
+                    justify-center
+                    shadow-sm
+                  "
+                >
 
-                  <FaWallet className="text-indigo-600 text-xl" />
+                  <FaWallet
+                    className="
+                      text-white
+                      text-xl
+                    "
+                  />
 
                 </div>
 
@@ -593,28 +788,72 @@ function Budget() {
 
             {/* THIS MONTH */}
 
-            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+            <div
+              className="
+                bg-white
+                rounded-2xl
+                p-6
+                border
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
+              "
+            >
 
-              <div className="flex items-center justify-between">
+              <div
+                className="
+                  flex
+                  items-center
+                  justify-between
+                "
+              >
 
                 <div>
 
-                  <p className="text-sm text-slate-500">
+                  <p
+                    className="
+                      text-sm
+                      text-[#6F665B]
+                    "
+                  >
                     This Month
                   </p>
 
-                  <h2 className="text-3xl font-bold text-slate-800 mt-2">
 
-                    ₹{formatMoney(currentMonthTotal)}
-
+                  <h2
+                    className="
+                      text-3xl
+                      font-bold
+                      text-[#101C2E]
+                      mt-2
+                    "
+                  >
+                    ₹{formatMoney(
+                      currentMonthTotal
+                    )}
                   </h2>
 
                 </div>
 
 
-                <div className="w-14 h-14 rounded-2xl bg-violet-100 flex items-center justify-center">
+                <div
+                  className="
+                    w-14
+                    h-14
+                    rounded-2xl
+                    bg-[#56061D]
+                    flex
+                    items-center
+                    justify-center
+                    shadow-sm
+                  "
+                >
 
-                  <FaCalendarAlt className="text-violet-600 text-xl" />
+                  <FaCalendarAlt
+                    className="
+                      text-white
+                      text-xl
+                    "
+                  />
 
                 </div>
 
@@ -623,30 +862,72 @@ function Budget() {
             </div>
 
 
-            {/* NUMBER OF BUDGETS */}
+            {/* ACTIVE BUDGETS */}
 
-            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+            <div
+              className="
+                bg-white
+                rounded-2xl
+                p-6
+                border
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
+              "
+            >
 
-              <div className="flex items-center justify-between">
+              <div
+                className="
+                  flex
+                  items-center
+                  justify-between
+                "
+              >
 
                 <div>
 
-                  <p className="text-sm text-slate-500">
+                  <p
+                    className="
+                      text-sm
+                      text-[#6F665B]
+                    "
+                  >
                     Active Budgets
                   </p>
 
-                  <h2 className="text-3xl font-bold text-slate-800 mt-2">
 
+                  <h2
+                    className="
+                      text-3xl
+                      font-bold
+                      text-[#101C2E]
+                      mt-2
+                    "
+                  >
                     {budgets.length}
-
                   </h2>
 
                 </div>
 
 
-                <div className="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center">
+                <div
+                  className="
+                    w-14
+                    h-14
+                    rounded-2xl
+                    bg-[#92643E]
+                    flex
+                    items-center
+                    justify-center
+                    shadow-sm
+                  "
+                >
 
-                  <FaChartPie className="text-emerald-600 text-xl" />
+                  <FaChartPie
+                    className="
+                      text-white
+                      text-xl
+                    "
+                  />
 
                 </div>
 
@@ -658,24 +939,50 @@ function Budget() {
 
 
           {/* =================================================
-              BUDGET LIST
-          ================================================== */}
+              YOUR BUDGETS
+          ================================================= */}
 
-          <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+          <div
+            className="
+              bg-white
+              rounded-3xl
+              border
+              border-[#E5DDD2]
+              shadow-[0_8px_24px_rgba(16,28,46,0.08)]
+              overflow-hidden
+              w-full
+            "
+          >
 
+            {/* SECTION HEADER */}
 
-            <div className="p-6 border-b border-slate-100">
+            <div
+              className="
+                p-6
+                border-b
+                border-[#E5DDD2]
+              "
+            >
 
-              <h2 className="text-2xl font-bold text-slate-800">
-
+              <h2
+                className="
+                  text-2xl
+                  font-bold
+                  text-[#101C2E]
+                "
+              >
                 Your Budgets
-
               </h2>
 
-              <p className="text-sm text-slate-500 mt-1">
 
+              <p
+                className="
+                  text-sm
+                  text-[#6F665B]
+                  mt-1
+                "
+              >
                 Manage your category-wise spending limits.
-
               </p>
 
             </div>
@@ -685,41 +992,102 @@ function Budget() {
 
             {loading ? (
 
-              <div className="min-h-[300px] flex flex-col items-center justify-center">
+              <div
+                className="
+                  min-h-[300px]
+                  flex
+                  flex-col
+                  items-center
+                  justify-center
+                  bg-white
+                "
+              >
 
-                <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                <div
+                  className="
+                    w-10
+                    h-10
+                    border-4
+                    border-[#92643E]/30
+                    border-t-[#92643E]
+                    rounded-full
+                    animate-spin
+                  "
+                />
 
-                <p className="text-slate-500 mt-4">
 
+                <p
+                  className="
+                    text-[#6F665B]
+                    mt-4
+                  "
+                >
                   Loading budgets...
-
                 </p>
 
               </div>
 
             ) : budgets.length === 0 ? (
 
-              /* EMPTY */
+              <div
+                className="
+                  min-h-[350px]
+                  flex
+                  flex-col
+                  items-center
+                  justify-center
+                  text-center
+                  p-8
+                  bg-white
+                "
+              >
 
-              <div className="min-h-[350px] flex flex-col items-center justify-center text-center p-8">
+                <div
+                  className="
+                    w-20
+                    h-20
+                    rounded-3xl
+                    bg-[#92643E]/10
+                    flex
+                    items-center
+                    justify-center
+                    mb-5
+                    border
+                    border-[#92643E]/20
+                  "
+                >
 
-                <div className="w-20 h-20 rounded-3xl bg-indigo-50 flex items-center justify-center mb-5">
-
-                  <FaWallet className="text-3xl text-indigo-500" />
+                  <FaWallet
+                    className="
+                      text-3xl
+                      text-[#92643E]
+                    "
+                  />
 
                 </div>
 
-                <h3 className="text-xl font-bold text-slate-800">
 
+                <h3
+                  className="
+                    text-xl
+                    font-bold
+                    text-[#101C2E]
+                  "
+                >
                   No Budgets Yet
-
                 </h3>
 
-                <p className="text-slate-500 mt-2 max-w-md">
 
+                <p
+                  className="
+                    text-[#6F665B]
+                    mt-2
+                    max-w-md
+                  "
+                >
                   Create your first budget to start managing your spending.
-
                 </p>
+
 
                 <button
                   onClick={openAddForm}
@@ -732,8 +1100,8 @@ function Budget() {
                     px-5
                     py-3
                     rounded-xl
-                    bg-indigo-600
-                    hover:bg-indigo-700
+                    bg-[#56061D]
+                    hover:bg-[#6F0A27]
                     text-white
                     font-semibold
                     transition
@@ -750,20 +1118,31 @@ function Budget() {
 
             ) : (
 
-              <div className="divide-y divide-slate-100">
+              <div
+                className="
+                  divide-y
+                  divide-[#E5DDD2]
+                "
+              >
 
-                {budgets.map((budget) => (
+                {budgets.map(
+                  (budget) => (
 
-                  <BudgetCard
-                    key={budget.id}
-                    budget={budget}
-                    onEdit={openEditForm}
-                    onDelete={setDeleteBudget}
-                    getCategoryStyle={getCategoryStyle}
-                    formatMoney={formatMoney}
-                  />
+                    <BudgetCard
+                      key={budget.id}
+                      budget={budget}
+                      onEdit={openEditForm}
+                      onDelete={setDeleteBudget}
+                      getCategoryStyle={
+                        getCategoryStyle
+                      }
+                      formatMoney={
+                        formatMoney
+                      }
+                    />
 
-                ))}
+                  )
+                )}
 
               </div>
 
@@ -782,8 +1161,17 @@ function Budget() {
 
       {showForm && (
 
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-
+        <div
+          className="
+            fixed
+            inset-0
+            z-50
+            flex
+            items-center
+            justify-center
+            p-4
+          "
+        >
 
           {/* BACKDROP */}
 
@@ -791,38 +1179,73 @@ function Budget() {
             className="
               absolute
               inset-0
-              bg-slate-950/60
+              bg-[#101C2E]/50
               backdrop-blur-sm
             "
             onClick={closeForm}
-          ></div>
+          />
 
 
           {/* MODAL */}
 
-          <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden">
+          <div
+            className="
+              relative
+              w-full
+              max-w-2xl
+              max-h-[90vh]
+              bg-white
+              rounded-3xl
+              shadow-2xl
+              overflow-y-auto
+              border
+              border-[#E5DDD2]
+            "
+          >
 
+            {/* MODAL HEADER */}
 
-            {/* HEADER */}
-
-            <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+            <div
+              className="
+                flex
+                items-center
+                justify-between
+                px-6
+                py-5
+                border-b
+                border-[#E5DDD2]
+                sticky
+                top-0
+                bg-white
+                z-10
+              "
+            >
 
               <div>
 
-                <h2 className="text-2xl font-bold text-slate-800">
-
+                <h2
+                  className="
+                    text-2xl
+                    font-bold
+                    text-[#101C2E]
+                  "
+                >
                   {editingBudget
                     ? "Edit Budget"
                     : "Add Budget"}
-
                 </h2>
 
-                <p className="text-sm text-slate-500 mt-1">
 
+                <p
+                  className="
+                    text-sm
+                    text-[#6F665B]
+                    mt-1
+                  "
+                >
                   {editingBudget
                     ? "Update your budget details."
                     : "Set a spending limit for a category."}
-
                 </p>
 
               </div>
@@ -830,18 +1253,20 @@ function Budget() {
 
               <button
                 onClick={closeForm}
+                disabled={saving}
                 className="
                   cursor-pointer
                   w-10
                   h-10
                   rounded-xl
-                  bg-slate-100
-                  hover:bg-slate-200
-                  text-slate-500
+                  bg-[#F3EBDD]
+                  hover:bg-[#E5DDD2]
+                  text-[#6F665B]
                   flex
                   items-center
                   justify-center
                   transition
+                  disabled:opacity-50
                 "
               >
 
@@ -859,18 +1284,31 @@ function Budget() {
               className="p-6"
             >
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
+              <div
+                className="
+                  grid
+                  grid-cols-1
+                  md:grid-cols-2
+                  gap-5
+                "
+              >
 
                 {/* CATEGORY */}
 
                 <div>
 
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-
+                  <label
+                    className="
+                      block
+                      text-sm
+                      font-semibold
+                      text-[#101C2E]
+                      mb-2
+                    "
+                  >
                     Category
-
                   </label>
+
 
                   <select
                     name="category"
@@ -883,11 +1321,12 @@ function Budget() {
                       py-3
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[#D8C8B4]
                       bg-white
+                      text-[#101C2E]
                       focus:outline-none
                       focus:ring-2
-                      focus:ring-indigo-500
+                      focus:ring-[#56061D]
                       focus:border-transparent
                     "
                   >
@@ -941,19 +1380,34 @@ function Budget() {
 
                 <div>
 
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-
+                  <label
+                    className="
+                      block
+                      text-sm
+                      font-semibold
+                      text-[#101C2E]
+                      mb-2
+                    "
+                  >
                     Budget Amount
-
                   </label>
+
 
                   <div className="relative">
 
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">
-
+                    <span
+                      className="
+                        absolute
+                        left-4
+                        top-1/2
+                        -translate-y-1/2
+                        text-[#6F665B]
+                        font-semibold
+                      "
+                    >
                       ₹
-
                     </span>
+
 
                     <input
                       type="number"
@@ -971,10 +1425,12 @@ function Budget() {
                         py-3
                         rounded-xl
                         border
-                        border-slate-200
+                        border-[#D8C8B4]
+                        bg-white
+                        text-[#101C2E]
                         focus:outline-none
                         focus:ring-2
-                        focus:ring-indigo-500
+                        focus:ring-[#56061D]
                         focus:border-transparent
                       "
                     />
@@ -988,11 +1444,18 @@ function Budget() {
 
                 <div>
 
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-
+                  <label
+                    className="
+                      block
+                      text-sm
+                      font-semibold
+                      text-[#101C2E]
+                      mb-2
+                    "
+                  >
                     Month
-
                   </label>
+
 
                   <select
                     name="month"
@@ -1005,26 +1468,62 @@ function Budget() {
                       py-3
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[#D8C8B4]
                       bg-white
+                      text-[#101C2E]
                       focus:outline-none
                       focus:ring-2
-                      focus:ring-indigo-500
+                      focus:ring-[#56061D]
                     "
                   >
 
-                    <option value="January">January</option>
-                    <option value="February">February</option>
-                    <option value="March">March</option>
-                    <option value="April">April</option>
-                    <option value="May">May</option>
-                    <option value="June">June</option>
-                    <option value="July">July</option>
-                    <option value="August">August</option>
-                    <option value="September">September</option>
-                    <option value="October">October</option>
-                    <option value="November">November</option>
-                    <option value="December">December</option>
+                    <option value="January">
+                      January
+                    </option>
+
+                    <option value="February">
+                      February
+                    </option>
+
+                    <option value="March">
+                      March
+                    </option>
+
+                    <option value="April">
+                      April
+                    </option>
+
+                    <option value="May">
+                      May
+                    </option>
+
+                    <option value="June">
+                      June
+                    </option>
+
+                    <option value="July">
+                      July
+                    </option>
+
+                    <option value="August">
+                      August
+                    </option>
+
+                    <option value="September">
+                      September
+                    </option>
+
+                    <option value="October">
+                      October
+                    </option>
+
+                    <option value="November">
+                      November
+                    </option>
+
+                    <option value="December">
+                      December
+                    </option>
 
                   </select>
 
@@ -1035,11 +1534,18 @@ function Budget() {
 
                 <div>
 
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-
+                  <label
+                    className="
+                      block
+                      text-sm
+                      font-semibold
+                      text-[#101C2E]
+                      mb-2
+                    "
+                  >
                     Year
-
                   </label>
+
 
                   <input
                     type="number"
@@ -1055,10 +1561,12 @@ function Budget() {
                       py-3
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[#D8C8B4]
+                      bg-white
+                      text-[#101C2E]
                       focus:outline-none
                       focus:ring-2
-                      focus:ring-indigo-500
+                      focus:ring-[#56061D]
                     "
                   />
 
@@ -1069,7 +1577,19 @@ function Budget() {
 
               {/* BUTTONS */}
 
-              <div className="flex justify-end gap-3 mt-7 pt-5 border-t border-slate-100">
+              <div
+                className="
+                  flex
+                  flex-col-reverse
+                  sm:flex-row
+                  sm:justify-end
+                  gap-3
+                  mt-7
+                  pt-5
+                  border-t
+                  border-[#E5DDD2]
+                "
+              >
 
                 <button
                   type="button"
@@ -1081,16 +1601,17 @@ function Budget() {
                     py-3
                     rounded-xl
                     border
-                    border-slate-200
-                    text-slate-600
-                    hover:bg-slate-50
+                    border-[#D8C8B4]
+                    text-[#6F665B]
+                    hover:bg-[#F3EBDD]
                     font-semibold
                     transition
+                    disabled:opacity-50
+                    w-full
+                    sm:w-auto
                   "
                 >
-
                   Cancel
-
                 </button>
 
 
@@ -1102,12 +1623,14 @@ function Budget() {
                     px-6
                     py-3
                     rounded-xl
-                    bg-indigo-600
-                    hover:bg-indigo-700
+                    bg-[#56061D]
+                    hover:bg-[#6F0A27]
                     text-white
                     font-semibold
                     transition
                     disabled:opacity-50
+                    w-full
+                    sm:w-auto
                   "
                 >
 
@@ -1136,8 +1659,17 @@ function Budget() {
 
       {deleteBudget && (
 
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-
+        <div
+          className="
+            fixed
+            inset-0
+            z-[60]
+            flex
+            items-center
+            justify-center
+            p-4
+          "
+        >
 
           {/* BACKDROP */}
 
@@ -1145,7 +1677,7 @@ function Budget() {
             className="
               absolute
               inset-0
-              bg-slate-950/60
+              bg-[#101C2E]/50
               backdrop-blur-sm
             "
             onClick={() => {
@@ -1155,35 +1687,76 @@ function Budget() {
               }
 
             }}
-          ></div>
+          />
 
 
           {/* DIALOG */}
 
-          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-7">
+          <div
+            className="
+              relative
+              w-full
+              max-w-md
+              bg-white
+              rounded-3xl
+              shadow-2xl
+              p-6
+              sm:p-7
+              border
+              border-[#E5DDD2]
+            "
+          >
 
-            <div className="w-14 h-14 rounded-2xl bg-rose-100 flex items-center justify-center mb-5">
+            <div
+              className="
+                w-14
+                h-14
+                rounded-2xl
+                bg-[#56061D]/10
+                flex
+                items-center
+                justify-center
+                mb-5
+              "
+            >
 
-              <FaTrash className="text-rose-600 text-xl" />
+              <FaTrash
+                className="
+                  text-[#7A263D]
+                  text-xl
+                "
+              />
 
             </div>
 
 
-            <h2 className="text-2xl font-bold text-slate-800">
-
+            <h2
+              className="
+                text-2xl
+                font-bold
+                text-[#101C2E]
+              "
+            >
               Delete Budget?
-
             </h2>
 
 
-            <p className="text-slate-500 mt-2 leading-relaxed">
-
+            <p
+              className="
+                text-[#6F665B]
+                mt-2
+                leading-relaxed
+              "
+            >
               Are you sure you want to delete the{" "}
 
-              <span className="font-semibold text-slate-700">
-
+              <span
+                className="
+                  font-semibold
+                  text-[#101C2E]
+                "
+              >
                 {deleteBudget.category}
-
               </span>{" "}
 
               budget?
@@ -1191,14 +1764,24 @@ function Budget() {
               <br />
 
               This action cannot be undone.
-
             </p>
 
 
-            <div className="flex justify-end gap-3 mt-7">
+            <div
+              className="
+                flex
+                flex-col-reverse
+                sm:flex-row
+                sm:justify-end
+                gap-3
+                mt-7
+              "
+            >
 
               <button
-                onClick={() => setDeleteBudget(null)}
+                onClick={() =>
+                  setDeleteBudget(null)
+                }
                 disabled={saving}
                 className="
                   cursor-pointer
@@ -1206,15 +1789,15 @@ function Budget() {
                   py-3
                   rounded-xl
                   border
-                  border-slate-200
-                  text-slate-600
-                  hover:bg-slate-50
+                  border-[#D8C8B4]
+                  text-[#6F665B]
+                  hover:bg-[#F3EBDD]
                   font-semibold
+                  w-full
+                  sm:w-auto
                 "
               >
-
                 Cancel
-
               </button>
 
 
@@ -1226,11 +1809,13 @@ function Budget() {
                   px-5
                   py-3
                   rounded-xl
-                  bg-rose-600
-                  hover:bg-rose-700
+                  bg-[#56061D]
+                  hover:bg-[#6F0A27]
                   text-white
                   font-semibold
                   disabled:opacity-50
+                  w-full
+                  sm:w-auto
                 "
               >
 
@@ -1251,12 +1836,13 @@ function Budget() {
     </div>
 
   );
+
 }
 
 
-// =========================================================
-// BUDGET CARD
-// =========================================================
+/* =========================================================
+   BUDGET CARD
+========================================================= */
 
 function BudgetCard({
   budget,
@@ -1266,50 +1852,77 @@ function BudgetCard({
   formatMoney,
 }) {
 
-  const [summary, setSummary] = useState({
-    budget_amount: Number(budget.budget_amount || 0),
-    total_expense: 0,
-    remaining_budget: Number(budget.budget_amount || 0),
-    overspent_amount: 0,
-  });
+  const [summary, setSummary] =
+    useState({
+      budget_amount:
+        Number(
+          budget.budget_amount || 0
+        ),
+
+      total_expense: 0,
+
+      remaining_budget:
+        Number(
+          budget.budget_amount || 0
+        ),
+
+      overspent_amount: 0,
+    });
 
 
-  const [loadingSummary, setLoadingSummary] = useState(true);
+  const [
+    loadingSummary,
+    setLoadingSummary,
+  ] = useState(true);
 
+
+  /* =====================================================
+     FETCH SUMMARY
+  ===================================================== */
 
   useEffect(() => {
 
-    const fetchSummary = async () => {
+    const fetchSummary =
+      async () => {
 
-      try {
+        try {
 
-        const token = localStorage.getItem("access");
+          const token =
+            localStorage.getItem(
+              "access"
+            );
 
-        const response = await api.get(
-          `budgets/summary/${budget.id}/`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
 
-        setSummary(response.data);
+          const response =
+            await api.get(
+              `budgets/summary/${budget.id}/`,
+              {
+                headers: {
+                  Authorization:
+                    `Bearer ${token}`,
+                },
+              }
+            );
 
-      } catch (error) {
 
-        console.error(
-          "Budget summary error:",
-          error
-        );
+          setSummary(
+            response.data
+          );
 
-      } finally {
+        } catch (error) {
 
-        setLoadingSummary(false);
+          console.error(
+            "Budget summary error:",
+            error
+          );
 
-      }
+        } finally {
 
-    };
+          setLoadingSummary(false);
+
+        }
+
+      };
 
 
     fetchSummary();
@@ -1318,22 +1931,31 @@ function BudgetCard({
 
 
   const budgetAmount =
-    Number(summary.budget_amount || 0);
+    Number(
+      summary.budget_amount || 0
+    );
 
 
   const spent =
-    Number(summary.total_expense || 0);
+    Number(
+      summary.total_expense || 0
+    );
 
 
   const remaining =
-    Number(summary.remaining_budget || 0);
+    Number(
+      summary.remaining_budget || 0
+    );
 
 
   const overspent =
-    Number(summary.overspent_amount || 0);
+    Number(
+      summary.overspent_amount || 0
+    );
 
 
   let percentage = 0;
+
 
   if (budgetAmount > 0) {
 
@@ -1344,50 +1966,94 @@ function BudgetCard({
 
 
   const progressWidth =
-    Math.min(percentage, 100);
+    Math.min(
+      percentage,
+      100
+    );
 
 
   let progressColor =
-    "bg-indigo-600";
+    "bg-[#92643E]";
 
 
   if (percentage >= 100) {
 
-    progressColor = "bg-rose-600";
+    progressColor =
+      "bg-[#56061D]";
 
   } else if (percentage >= 80) {
 
-    progressColor = "bg-orange-500";
+    progressColor =
+      "bg-[#B4774D]";
 
   } else {
 
-    progressColor = "bg-emerald-500";
+    progressColor =
+      "bg-[#8FB39B]";
 
   }
 
 
   return (
 
-    <div className="p-6 hover:bg-slate-50 transition">
+    <div
+      className="
+        p-6
+        bg-white
+        hover:bg-[#FAF8F4]
+        transition
+      "
+    >
 
+      <div
+        className="
+          flex
+          flex-col
+          lg:flex-row
+          lg:items-center
+          gap-6
+        "
+      >
 
-      {/* TOP */}
+        {/* =================================================
+            CATEGORY
+        ================================================= */}
 
-      <div className="flex flex-col lg:flex-row lg:items-center gap-6">
+        <div
+          className="
+            flex
+            items-center
+            gap-4
+            lg:w-[260px]
+            shrink-0
+          "
+        >
 
+          <div
+            className="
+              w-12
+              h-12
+              rounded-xl
+              bg-[#92643E]/10
+              border
+              border-[#E5DDD2]
+              flex
+              items-center
+              justify-center
+              shrink-0
+            "
+          >
 
-        {/* CATEGORY */}
-
-        <div className="flex items-center gap-4 lg:w-[260px]">
-
-          <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center">
-
-            <FaWallet className="text-indigo-600" />
+            <FaWallet
+              className="
+                text-[#92643E]
+              "
+            />
 
           </div>
 
 
-          <div>
+          <div className="min-w-0">
 
             <span
               className={`
@@ -1397,18 +2063,24 @@ function BudgetCard({
                 rounded-full
                 text-xs
                 font-semibold
-                ${getCategoryStyle(budget.category)}
+                ${getCategoryStyle(
+                  budget.category
+                )}
               `}
             >
-
               {budget.category}
-
             </span>
 
-            <p className="text-sm text-slate-500 mt-1">
 
-              {budget.month} {budget.year}
-
+            <p
+              className="
+                text-sm
+                text-[#6F665B]
+                mt-1
+              "
+            >
+              {budget.month}{" "}
+              {budget.year}
             </p>
 
           </div>
@@ -1416,39 +2088,70 @@ function BudgetCard({
         </div>
 
 
-        {/* PROGRESS */}
+        {/* =================================================
+            PROGRESS
+        ================================================= */}
 
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
 
-          <div className="flex justify-between items-center mb-2">
+          <div
+            className="
+              flex
+              justify-between
+              items-center
+              mb-2
+            "
+          >
 
             <div>
 
-              <span className="text-sm text-slate-500">
-
+              <span
+                className="
+                  text-sm
+                  text-[#6F665B]
+                "
+              >
                 Spent
-
               </span>
 
-              <span className="ml-2 font-semibold text-slate-800">
 
+              <span
+                className="
+                  ml-2
+                  font-semibold
+                  text-[#101C2E]
+                "
+              >
                 ₹{formatMoney(spent)}
-
               </span>
 
             </div>
 
 
-            <span className="text-sm font-semibold text-slate-600">
-
+            <span
+              className="
+                text-sm
+                font-semibold
+                text-[#101C2E]
+              "
+            >
               {Math.round(percentage)}%
-
             </span>
 
           </div>
 
 
-          <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+          {/* PROGRESS BAR */}
+
+          <div
+            className="
+              w-full
+              h-3
+              bg-[#F3EBDD]
+              rounded-full
+              overflow-hidden
+            "
+          >
 
             <div
               className={`
@@ -1459,33 +2162,66 @@ function BudgetCard({
                 ${progressColor}
               `}
               style={{
-                width: `${progressWidth}%`,
+                width:
+                  `${progressWidth}%`,
               }}
-            ></div>
+            />
 
           </div>
 
 
-          <div className="flex justify-between mt-2 text-xs text-slate-500">
+          {/* BUDGET / REMAINING */}
+
+          <div
+            className="
+              flex
+              flex-col
+              sm:flex-row
+              sm:justify-between
+              gap-1
+              mt-2
+              text-xs
+              text-[#6F665B]
+            "
+          >
 
             <span>
-              Budget: ₹{formatMoney(budgetAmount)}
+              Budget:
+              {" "}
+              ₹{formatMoney(
+                budgetAmount
+              )}
             </span>
+
 
             {overspent > 0 ? (
 
-              <span className="text-rose-600 font-semibold">
-
-                Overspent: ₹{formatMoney(overspent)}
-
+              <span
+                className="
+                  text-[#7A263D]
+                  font-semibold
+                "
+              >
+                Overspent:
+                {" "}
+                ₹{formatMoney(
+                  overspent
+                )}
               </span>
 
             ) : (
 
-              <span className="text-emerald-600 font-semibold">
-
-                Remaining: ₹{formatMoney(remaining)}
-
+              <span
+                className="
+                  text-[#5F8069]
+                  font-semibold
+                "
+              >
+                Remaining:
+                {" "}
+                ₹{formatMoney(
+                  remaining
+                )}
               </span>
 
             )}
@@ -1495,22 +2231,36 @@ function BudgetCard({
         </div>
 
 
-        {/* ACTIONS */}
+        {/* =================================================
+            ACTIONS
+        ================================================= */}
 
-        <div className="flex items-center justify-end gap-2 lg:w-[100px]">
-
+        <div
+          className="
+            flex
+            items-center
+            justify-end
+            gap-2
+            lg:w-[100px]
+            shrink-0
+          "
+        >
 
           <button
-            onClick={() => onEdit(budget)}
+            onClick={() =>
+              onEdit(budget)
+            }
             title="Edit budget"
             className="
               cursor-pointer
               w-9
               h-9
               rounded-lg
-              bg-indigo-50
-              text-indigo-600
-              hover:bg-indigo-600
+              bg-[#92643E]/10
+              border
+              border-[#92643E]/20
+              text-[#92643E]
+              hover:bg-[#92643E]
               hover:text-white
               flex
               items-center
@@ -1525,16 +2275,20 @@ function BudgetCard({
 
 
           <button
-            onClick={() => onDelete(budget)}
+            onClick={() =>
+              onDelete(budget)
+            }
             title="Delete budget"
             className="
               cursor-pointer
               w-9
               h-9
               rounded-lg
-              bg-rose-50
-              text-rose-600
-              hover:bg-rose-600
+              bg-[#56061D]/10
+              border
+              border-[#56061D]/20
+              text-[#7A263D]
+              hover:bg-[#56061D]
               hover:text-white
               flex
               items-center
@@ -1554,6 +2308,7 @@ function BudgetCard({
     </div>
 
   );
+
 }
 
 

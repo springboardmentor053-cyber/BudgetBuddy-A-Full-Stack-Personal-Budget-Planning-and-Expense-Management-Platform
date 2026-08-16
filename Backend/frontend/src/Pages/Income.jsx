@@ -15,27 +15,19 @@ import Sidebar from "../Components/Sidebar";
 import Topbar from "../Components/Topbar";
 import api from "../services/api";
 
-
 function Income() {
-
   // =========================================================
   // STATE
   // =========================================================
 
   const [incomes, setIncomes] = useState([]);
-
   const [loading, setLoading] = useState(true);
-
   const [error, setError] = useState("");
 
   const [showForm, setShowForm] = useState(false);
-
   const [editingIncome, setEditingIncome] = useState(null);
-
   const [deleteIncome, setDeleteIncome] = useState(null);
-
   const [saving, setSaving] = useState(false);
-
 
   // =========================================================
   // FORM STATE
@@ -49,89 +41,62 @@ function Income() {
     income_date: "",
   });
 
-
   // =========================================================
   // FETCH INCOME
   // =========================================================
 
   const fetchIncomes = async () => {
-
     try {
-
       setLoading(true);
       setError("");
 
-      const token =
-        localStorage.getItem("access");
+      const token = localStorage.getItem("access");
 
-      const response = await api.get(
-        "income/",
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await api.get("income/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       setIncomes(response.data);
-
     } catch (err) {
-
-      console.error(
-        "Income fetch error:",
-        err
-      );
+      console.error("Income fetch error:", err);
 
       setError(
         err.response?.data?.detail ||
-        "Unable to load income records."
+          "Unable to load income records."
       );
-
     } finally {
-
       setLoading(false);
-
     }
   };
-
 
   // =========================================================
   // LOAD DATA
   // =========================================================
 
   useEffect(() => {
-
     fetchIncomes();
-
   }, []);
-
 
   // =========================================================
   // FORM INPUT
   // =========================================================
 
   const handleChange = (event) => {
-
-    const {
-      name,
-      value,
-    } = event.target;
+    const { name, value } = event.target;
 
     setFormData((previous) => ({
       ...previous,
       [name]: value,
     }));
-
   };
-
 
   // =========================================================
   // OPEN ADD FORM
   // =========================================================
 
   const openAddForm = () => {
-
     setEditingIncome(null);
 
     setFormData({
@@ -139,670 +104,218 @@ function Income() {
       amount: "",
       source: "SALARY",
       description: "",
-      income_date:
-        new Date()
-          .toISOString()
-          .split("T")[0],
+      income_date: new Date().toISOString().split("T")[0],
     });
 
     setShowForm(true);
-
   };
-
 
   // =========================================================
   // OPEN EDIT FORM
   // =========================================================
 
   const openEditForm = (income) => {
-
     setEditingIncome(income);
 
     setFormData({
-      title:
-        income.title || "",
-
-      amount:
-        income.amount || "",
-
-      source:
-        income.source || "OTHER",
-
-      description:
-        income.description || "",
-
-      income_date:
-        income.income_date || "",
+      title: income.title || "",
+      amount: income.amount || "",
+      source: income.source || "OTHER",
+      description: income.description || "",
+      income_date: income.income_date || "",
     });
 
     setShowForm(true);
-
   };
-
 
   // =========================================================
   // CLOSE FORM
   // =========================================================
 
   const closeForm = () => {
-
     if (saving) {
       return;
     }
 
     setShowForm(false);
-
     setEditingIncome(null);
-
   };
-
 
   // =========================================================
   // ADD / UPDATE INCOME
-  // OPTIMISTIC UI
   // =========================================================
 
   const handleSubmit = async (event) => {
-
     event.preventDefault();
-
-    if (saving) {
-      return;
-    }
 
     setSaving(true);
     setError("");
 
-    const token =
-      localStorage.getItem("access");
+    try {
+      const token = localStorage.getItem("access");
 
-    const config = {
-      headers: {
-        Authorization:
-          `Bearer ${token}`,
-      },
-    };
-
-    const data = {
-
-      title:
-        formData.title.trim(),
-
-      amount:
-        formData.amount,
-
-      source:
-        formData.source,
-
-      description:
-        formData.description.trim(),
-
-      income_date:
-        formData.income_date,
-
-    };
-
-
-    // =======================================================
-    // UPDATE INCOME
-    // =======================================================
-
-    if (editingIncome) {
-
-      const oldIncome =
-        editingIncome;
-
-
-      const updatedIncome = {
-
-        ...oldIncome,
-
-        ...data,
-
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       };
 
+      const data = {
+        title: formData.title.trim(),
+        amount: formData.amount,
+        source: formData.source,
+        description: formData.description.trim(),
+        income_date: formData.income_date,
+      };
 
-      // -------------------------------------------------------
-      // UPDATE UI IMMEDIATELY
-      // -------------------------------------------------------
-
-      setIncomes((previous) =>
-        previous.map(
-          (income) =>
-            income.id ===
-            oldIncome.id
-              ? updatedIncome
-              : income
-        )
-      );
-
-
-      // -------------------------------------------------------
-      // CLOSE MODAL IMMEDIATELY
-      // -------------------------------------------------------
-
-      setShowForm(false);
-
-      setEditingIncome(null);
-
-      setSaving(false);
-
-
-      // -------------------------------------------------------
-      // SAVE TO BACKEND IN BACKGROUND
-      // -------------------------------------------------------
-
-      try {
-
-        const response =
-          await api.put(
-            `income/${oldIncome.id}/`,
-            data,
-            config
-          );
-
-
-        // Replace optimistic data
-        // with actual backend data.
-
-        if (response.data) {
-
-          setIncomes((previous) =>
-            previous.map(
-              (income) =>
-                income.id ===
-                oldIncome.id
-                  ? response.data
-                  : income
-            )
-          );
-
-        }
-
-      } catch (err) {
-
-        console.error(
-          "Income update error:",
-          err
+      // EDIT
+      if (editingIncome) {
+        await api.put(
+          `income/${editingIncome.id}/`,
+          data,
+          config
         );
-
-
-        // -----------------------------------------------------
-        // RESTORE OLD DATA IF UPDATE FAILED
-        // -----------------------------------------------------
-
-        setIncomes((previous) =>
-          previous.map(
-            (income) =>
-              income.id ===
-              oldIncome.id
-                ? oldIncome
-                : income
-          )
-        );
-
-
-        const responseData =
-          err.response?.data;
-
-
-        if (
-          responseData &&
-          typeof responseData ===
-            "object"
-        ) {
-
-          const messages =
-            Object.entries(
-              responseData
-            )
-              .map(
-                ([
-                  field,
-                  message,
-                ]) => {
-
-                  if (
-                    Array.isArray(
-                      message
-                    )
-                  ) {
-
-                    return (
-                      `${field}: ` +
-                      `${message.join(", ")}`
-                    );
-
-                  }
-
-                  return (
-                    `${field}: ${message}`
-                  );
-
-                }
-              )
-              .join(" | ");
-
-
-          setError(messages);
-
-        } else {
-
-          setError(
-            "Unable to update income."
-          );
-
-        }
-
       }
 
-      return;
-
-    }
-
-
-    // =======================================================
-    // ADD INCOME
-    // =======================================================
-
-    const temporaryId =
-      `temp-${Date.now()}`;
-
-
-    const temporaryIncome = {
-
-      id:
-        temporaryId,
-
-      title:
-        data.title,
-
-      amount:
-        data.amount,
-
-      source:
-        data.source,
-
-      description:
-        data.description,
-
-      income_date:
-        data.income_date,
-
-    };
-
-
-    // -------------------------------------------------------
-    // SHOW NEW INCOME IMMEDIATELY
-    // -------------------------------------------------------
-
-    setIncomes((previous) => [
-
-      temporaryIncome,
-
-      ...previous,
-
-    ]);
-
-
-    // -------------------------------------------------------
-    // CLOSE MODAL IMMEDIATELY
-    // -------------------------------------------------------
-
-    setShowForm(false);
-
-    setEditingIncome(null);
-
-    setSaving(false);
-
-
-    // -------------------------------------------------------
-    // SAVE TO BACKEND IN BACKGROUND
-    // -------------------------------------------------------
-
-    try {
-
-      const response =
+      // ADD
+      else {
         await api.post(
           "income/",
           data,
           config
         );
-
-
-      // Replace temporary item
-      // with actual database item.
-
-      if (response.data) {
-
-        setIncomes((previous) =>
-          previous.map(
-            (income) =>
-              income.id ===
-              temporaryId
-                ? response.data
-                : income
-          )
-        );
-
       }
 
+      await fetchIncomes();
+
+      setShowForm(false);
+      setEditingIncome(null);
     } catch (err) {
+      console.error("Income save error:", err);
 
-      console.error(
-        "Income save error:",
-        err
-      );
+      const responseData = err.response?.data;
 
-
-      // -----------------------------------------------------
-      // REMOVE TEMPORARY ITEM IF SAVE FAILED
-      // -----------------------------------------------------
-
-      setIncomes((previous) =>
-        previous.filter(
-          (income) =>
-            income.id !==
-            temporaryId
-        )
-      );
-
-
-      const responseData =
-        err.response?.data;
-
-
-      if (
-        responseData &&
-        typeof responseData ===
-          "object"
-      ) {
-
-        const messages =
-          Object.entries(
-            responseData
-          )
-            .map(
-              ([
-                field,
-                message,
-              ]) => {
-
-                if (
-                  Array.isArray(
-                    message
-                  )
-                ) {
-
-                  return (
-                    `${field}: ` +
-                    `${message.join(", ")}`
-                  );
-
-                }
-
-                return (
-                  `${field}: ${message}`
-                );
-
+      if (responseData) {
+        if (typeof responseData === "object") {
+          const messages = Object.entries(responseData)
+            .map(([field, message]) => {
+              if (Array.isArray(message)) {
+                return `${field}: ${message.join(", ")}`;
               }
-            )
+
+              return `${field}: ${message}`;
+            })
             .join(" | ");
 
-
-        setError(messages);
-
+          setError(messages);
+        } else {
+          setError(String(responseData));
+        }
       } else {
-
-        setError(
-          "Unable to save income."
-        );
-
+        setError("Unable to save income.");
       }
-
+    } finally {
+      setSaving(false);
     }
-
   };
-
 
   // =========================================================
   // DELETE INCOME
-  // OPTIMISTIC UI
   // =========================================================
 
   const confirmDelete = async () => {
-
-    if (
-      !deleteIncome ||
-      saving
-    ) {
+    if (!deleteIncome) {
       return;
     }
 
-
-    const incomeToDelete =
-      deleteIncome;
-
-
-    const token =
-      localStorage.getItem("access");
-
-
-    const config = {
-
-      headers: {
-
-        Authorization:
-          `Bearer ${token}`,
-
-      },
-
-    };
-
-
-    // -------------------------------------------------------
-    // REMOVE FROM SCREEN IMMEDIATELY
-    // -------------------------------------------------------
-
-    setIncomes((previous) =>
-      previous.filter(
-        (income) =>
-          income.id !==
-          incomeToDelete.id
-      )
-    );
-
-
-    // -------------------------------------------------------
-    // CLOSE DELETE DIALOG IMMEDIATELY
-    // -------------------------------------------------------
-
-    setDeleteIncome(null);
-
-    setSaving(false);
-
-
-    // -------------------------------------------------------
-    // DELETE FROM BACKEND IN BACKGROUND
-    // -------------------------------------------------------
-
     try {
+      setSaving(true);
+
+      const token = localStorage.getItem("access");
 
       await api.delete(
-        `income/${incomeToDelete.id}/`,
-        config
-      );
-
-    } catch (err) {
-
-      console.error(
-        "Income delete error:",
-        err
-      );
-
-
-      // -----------------------------------------------------
-      // RESTORE IF DELETE FAILED
-      // -----------------------------------------------------
-
-      setIncomes((previous) => {
-
-        const alreadyExists =
-          previous.some(
-            (income) =>
-              income.id ===
-              incomeToDelete.id
-          );
-
-
-        if (alreadyExists) {
-
-          return previous;
-
+        `income/${deleteIncome.id}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
+      );
 
+      setDeleteIncome(null);
 
-        return [
-
-          incomeToDelete,
-
-          ...previous,
-
-        ];
-
-      });
-
+      await fetchIncomes();
+    } catch (err) {
+      console.error("Income delete error:", err);
 
       setError(
         err.response?.data?.detail ||
-        "Unable to delete income."
+          "Unable to delete income."
       );
-
+    } finally {
+      setSaving(false);
     }
-
   };
-
 
   // =========================================================
   // CALCULATIONS
   // =========================================================
 
-  const totalIncome =
-    incomes.reduce(
+  const totalIncome = incomes.reduce(
+    (total, income) =>
+      total + Number(income.amount || 0),
+    0
+  );
+
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+
+  const thisMonthIncome = incomes
+    .filter((income) => {
+      if (!income.income_date) {
+        return false;
+      }
+
+      const date = new Date(income.income_date);
+
+      return (
+        date.getMonth() === currentMonth &&
+        date.getFullYear() === currentYear
+      );
+    })
+    .reduce(
       (total, income) =>
-        total +
-        Number(
-          income.amount || 0
-        ),
+        total + Number(income.amount || 0),
       0
     );
-
-
-  const currentMonth =
-    new Date().getMonth();
-
-
-  const currentYear =
-    new Date().getFullYear();
-
-
-  const thisMonthIncome =
-    incomes
-      .filter((income) => {
-
-        if (!income.income_date) {
-
-          return false;
-
-        }
-
-
-        const date =
-          new Date(
-            income.income_date
-          );
-
-
-        return (
-
-          date.getMonth() ===
-            currentMonth &&
-
-          date.getFullYear() ===
-            currentYear
-
-        );
-
-      })
-      .reduce(
-        (total, income) =>
-          total +
-          Number(
-            income.amount || 0
-          ),
-        0
-      );
-
 
   // =========================================================
   // SOURCE DISPLAY
   // =========================================================
 
-  const getSourceName = (
-    source
-  ) => {
-
+  const getSourceName = (source) => {
     const names = {
-
-      SALARY:
-        "Salary",
-
-      POCKET_MONEY:
-        "Pocket Money",
-
-      SCHOLARSHIP:
-        "Scholarship",
-
-      FREELANCING:
-        "Freelancing",
-
-      BUSINESS:
-        "Business",
-
-      OTHER:
-        "Other",
-
+      SALARY: "Salary",
+      POCKET_MONEY: "Pocket Money",
+      SCHOLARSHIP: "Scholarship",
+      FREELANCING: "Freelancing",
+      BUSINESS: "Business",
+      OTHER: "Other",
     };
 
-
-    return (
-      names[source] ||
-      source
-    );
-
+    return names[source] || source;
   };
-
 
   // =========================================================
   // FORMAT DATE
   // =========================================================
 
-  const formatDate = (
-    dateString
-  ) => {
-
+  const formatDate = (dateString) => {
     if (!dateString) {
-
       return "-";
-
     }
 
-
-    const date =
-      new Date(
-        dateString
-      );
-
+    const date = new Date(dateString);
 
     return date.toLocaleDateString(
       "en-IN",
@@ -812,60 +325,35 @@ function Income() {
         year: "numeric",
       }
     );
-
   };
-
 
   // =========================================================
   // FORMAT MONEY
   // =========================================================
 
-  const formatMoney = (
-    amount
-  ) => {
-
-    return Number(
-      amount || 0
-    ).toLocaleString(
+  const formatMoney = (amount) => {
+    return Number(amount || 0).toLocaleString(
       "en-IN",
       {
         minimumFractionDigits: 0,
         maximumFractionDigits: 2,
       }
     );
-
   };
-
 
   // =========================================================
   // UI
   // =========================================================
 
   return (
-
-    <div
-      className="
-        min-h-screen
-        bg-slate-50
-        flex
-      "
-    >
+    <div className="min-h-screen bg-[#F8F5EF] flex overflow-x-hidden">
 
       {/* =====================================================
           SIDEBAR
       ====================================================== */}
 
-      <div
-        className="
-          w-[280px]
-          bg-slate-950
-          text-white
-          flex-shrink-0
-        "
-      >
-
+      <div className="w-0 lg:w-[280px] flex-shrink-0">
         <Sidebar />
-
       </div>
 
 
@@ -873,70 +361,45 @@ function Income() {
           MAIN
       ====================================================== */}
 
-      <div
-        className="
-          flex-1
-          min-w-0
-        "
-      >
+      <div className="flex-1 min-w-0 w-full">
 
         <Topbar />
 
-
-        <main
-          className="
-            p-6
-            md:p-8
-          "
-        >
-
+        <main className="p-4 sm:p-6 md:p-8 w-full max-w-full">
 
           {/* =================================================
               PAGE HEADER
-          ================================================== */}
+          ================================================= */}
 
-          <div
-            className="
-              flex
-              flex-col
-              md:flex-row
-              md:items-center
-              md:justify-between
-              gap-5
-              mb-8
-            "
-          >
+          <div className="
+            flex
+            flex-col
+            sm:flex-row
+            sm:items-center
+            sm:justify-between
+            gap-5
+            mb-8
+          ">
 
-            <div>
+            <div className="min-w-0">
 
-              <h1
-                className="
-                  text-3xl
-                  md:text-4xl
-                  font-bold
-                  text-slate-800
-                "
-              >
-
+              <h1 className="
+                text-3xl
+                md:text-4xl
+                font-bold
+                text-[#101C2E]
+              ">
                 Income
-
               </h1>
 
-
-              <p
-                className="
-                  text-slate-500
-                  mt-2
-                "
-              >
-
-                Track and manage all your
-                income in one place.
-
+              <p className="text-[#786E62] mt-2">
+                Track and manage all your income in one place.
               </p>
 
             </div>
 
+
+            {/* ADD INCOME */}
 
             <button
               onClick={openAddForm}
@@ -949,21 +412,22 @@ function Income() {
                 px-5
                 py-3
                 rounded-xl
-                bg-indigo-600
-                hover:bg-indigo-700
-                text-white
+                bg-[#56061D]
+                hover:bg-[#6E0A28]
+                text-[#F3EBDD]
                 font-semibold
                 shadow-md
                 hover:shadow-lg
                 transition-all
                 duration-300
+                w-full
+                sm:w-auto
+                shrink-0
               "
             >
-
               <FaPlus />
 
               Add Income
-
             </button>
 
           </div>
@@ -971,152 +435,113 @@ function Income() {
 
           {/* =================================================
               ERROR
-          ================================================== */}
+          ================================================= */}
 
           {error && (
+            <div className="
+              mb-6
+              p-4
+              rounded-xl
+              bg-[#56061D]/10
+              border
+              border-[#56061D]/20
+              text-[#56061D]
+            ">
 
-            <div
-              className="
-                mb-6
-                p-4
-                rounded-xl
-                bg-rose-50
-                border
-                border-rose-200
-                text-rose-700
-              "
-            >
+              <div className="
+                flex
+                items-start
+                justify-between
+                gap-4
+              ">
 
-              <div
-                className="
-                  flex
-                  items-start
-                  justify-between
-                  gap-4
-                "
-              >
-
-                <p
-                  className="
-                    text-sm
-                    font-medium
-                  "
-                >
-
+                <p className="text-sm font-medium">
                   {error}
-
                 </p>
 
-
                 <button
-                  onClick={() =>
-                    setError("")
-                  }
+                  onClick={() => setError("")}
                   className="
                     cursor-pointer
-                    text-rose-500
-                    hover:text-rose-700
+                    text-[#56061D]
+                    hover:text-[#7A0B2A]
+                    shrink-0
                   "
                 >
-
                   <FaTimes />
-
                 </button>
 
               </div>
 
             </div>
-
           )}
 
 
           {/* =================================================
               SUMMARY CARDS
-          ================================================== */}
+          ================================================= */}
 
-          <div
-            className="
-              grid
-              grid-cols-1
-              md:grid-cols-3
-              gap-6
-              mb-8
-            "
-          >
-
+          <div className="
+            grid
+            grid-cols-1
+            sm:grid-cols-2
+            lg:grid-cols-3
+            gap-6
+            mb-8
+          ">
 
             {/* TOTAL INCOME */}
 
-            <div
-              className="
-                bg-white
-                rounded-2xl
-                p-6
-                border
-                border-slate-100
-                shadow-sm
-              "
-            >
+            <div className="
+              bg-white
+              rounded-2xl
+              p-6
+              border
+              border-[#E5DDD2]
+              shadow-[0_8px_25px_rgba(16,28,46,0.12)]
+            ">
 
-              <div
-                className="
-                  flex
-                  items-center
-                  justify-between
-                "
-              >
+              <div className="
+                flex
+                items-center
+                justify-between
+                gap-4
+              ">
 
-                <div>
+                <div className="min-w-0">
 
-                  <p
-                    className="
-                      text-sm
-                      text-slate-500
-                    "
-                  >
-
+                  <p className="text-sm text-[#6F665B]">
                     Total Income
-
                   </p>
 
-
-                  <h2
-                    className="
-                      text-3xl
-                      font-bold
-                      text-slate-800
-                      mt-2
-                    "
-                  >
-
-                    ₹
-                    {formatMoney(
-                      totalIncome
-                    )}
-
+                  <h2 className="
+                    text-3xl
+                    font-bold
+                    text-[#101C2E]
+                    mt-2
+                    truncate
+                  ">
+                    ₹{formatMoney(totalIncome)}
                   </h2>
+
+                  <p className="text-xs text-[#92643E] mt-2">
+                    All recorded income
+                  </p>
 
                 </div>
 
+                <div className="
+                  w-14
+                  h-14
+                  shrink-0
+                  rounded-2xl
+                  bg-[#92643E]
+                  flex
+                  items-center
+                  justify-center
+                ">
 
-                <div
-                  className="
-                    w-14
-                    h-14
-                    rounded-2xl
-                    bg-emerald-100
-                    flex
-                    items-center
-                    justify-center
-                  "
-                >
-
-                  <FaWallet
-                    className="
-                      text-emerald-600
-                      text-xl
-                    "
-                  />
+                  <FaWallet className="text-[#F3EBDD] text-xl" />
 
                 </div>
 
@@ -1127,76 +552,56 @@ function Income() {
 
             {/* THIS MONTH */}
 
-            <div
-              className="
-                bg-white
-                rounded-2xl
-                p-6
-                border
-                border-slate-100
-                shadow-sm
-              "
-            >
+            <div className="
+              bg-white
+              rounded-2xl
+              p-6
+              border
+              border-[#E5DDD2]
+              shadow-[0_8px_25px_rgba(16,28,46,0.12)]
+            ">
 
-              <div
-                className="
-                  flex
-                  items-center
-                  justify-between
-                "
-              >
+              <div className="
+                flex
+                items-center
+                justify-between
+                gap-4
+              ">
 
-                <div>
+                <div className="min-w-0">
 
-                  <p
-                    className="
-                      text-sm
-                      text-slate-500
-                    "
-                  >
-
+                  <p className="text-sm text-[#6F665B]">
                     This Month
-
                   </p>
 
-
-                  <h2
-                    className="
-                      text-3xl
-                      font-bold
-                      text-slate-800
-                      mt-2
-                    "
-                  >
-
-                    ₹
-                    {formatMoney(
-                      thisMonthIncome
-                    )}
-
+                  <h2 className="
+                    text-3xl
+                    font-bold
+                    text-[#101C2E]
+                    mt-2
+                    truncate
+                  ">
+                    ₹{formatMoney(thisMonthIncome)}
                   </h2>
+
+                  <p className="text-xs text-[#92643E] mt-2">
+                    Income received this month
+                  </p>
 
                 </div>
 
+                <div className="
+                  w-14
+                  h-14
+                  shrink-0
+                  rounded-2xl
+                  bg-[#56061D]
+                  flex
+                  items-center
+                  justify-center
+                ">
 
-                <div
-                  className="
-                    w-14
-                    h-14
-                    rounded-2xl
-                    bg-indigo-100
-                    flex
-                    items-center
-                    justify-center
-                  "
-                >
-
-                  <FaCalendarAlt
-                    className="
-                      text-indigo-600
-                      text-xl
-                    "
-                  />
+                  <FaCalendarAlt className="text-[#F3EBDD] text-xl" />
 
                 </div>
 
@@ -1207,73 +612,55 @@ function Income() {
 
             {/* ENTRIES */}
 
-            <div
-              className="
-                bg-white
-                rounded-2xl
-                p-6
-                border
-                border-slate-100
-                shadow-sm
-              "
-            >
+            <div className="
+              bg-white
+              rounded-2xl
+              p-6
+              border
+              border-[#E5DDD2]
+              shadow-[0_8px_25px_rgba(16,28,46,0.12)]
+            ">
 
-              <div
-                className="
-                  flex
-                  items-center
-                  justify-between
-                "
-              >
+              <div className="
+                flex
+                items-center
+                justify-between
+                gap-4
+              ">
 
-                <div>
+                <div className="min-w-0">
 
-                  <p
-                    className="
-                      text-sm
-                      text-slate-500
-                    "
-                  >
-
+                  <p className="text-sm text-[#6F665B]">
                     Income Entries
-
                   </p>
 
-
-                  <h2
-                    className="
-                      text-3xl
-                      font-bold
-                      text-slate-800
-                      mt-2
-                    "
-                  >
-
+                  <h2 className="
+                    text-3xl
+                    font-bold
+                    text-[#101C2E]
+                    mt-2
+                  ">
                     {incomes.length}
-
                   </h2>
+
+                  <p className="text-xs text-[#92643E] mt-2">
+                    Recorded transactions
+                  </p>
 
                 </div>
 
+                <div className="
+                  w-14
+                  h-14
+                  shrink-0
+                  rounded-2xl
+                  bg-[#92643E]
+                  flex
+                  items-center
+                  justify-center
+                ">
 
-                <div
-                  className="
-                    w-14
-                    h-14
-                    rounded-2xl
-                    bg-violet-100
-                    flex
-                    items-center
-                    justify-center
-                  "
-                >
-
-                  <FaMoneyBillWave
-                    className="
-                      text-violet-600
-                      text-xl
-                    "
-                  />
+                  <FaMoneyBillWave className="text-[#F3EBDD] text-xl" />
 
                 </div>
 
@@ -1285,97 +672,68 @@ function Income() {
 
 
           {/* =================================================
-              INCOME TABLE CARD
-          ================================================== */}
+              INCOME TABLE
+          ================================================= */}
 
-          <div
-            className="
-              bg-white
-              rounded-3xl
-              border
-              border-slate-100
-              shadow-sm
-              overflow-hidden
-            "
-          >
-
+          <div className="
+            bg-white
+            rounded-3xl
+            border
+            border-[#E5DDD2]
+            shadow-[0_10px_30px_rgba(16,28,46,0.15)]
+            overflow-hidden
+            w-full
+          ">
 
             {/* TABLE HEADER */}
 
-            <div
-              className="
-                p-6
-                border-b
-                border-slate-100
-              "
-            >
+            <div className="
+              p-5
+              sm:p-6
+              border-b
+              border-[#E5DDD2]
+            ">
 
-              <h2
-                className="
-                  text-2xl
-                  font-bold
-                  text-slate-800
-                "
-              >
-
+              <h2 className="
+                text-2xl
+                font-bold
+                text-[#101C2E]
+              ">
                 Income Records
-
               </h2>
 
-
-              <p
-                className="
-                  text-sm
-                  text-slate-500
-                  mt-1
-                "
-              >
-
+              <p className="text-sm text-[#786E62] mt-1">
                 Your latest income transactions
-
               </p>
 
             </div>
 
 
-            {/* =================================================
-                LOADING
-            ================================================== */}
+            {/* LOADING */}
 
             {loading ? (
 
-              <div
-                className="
-                  min-h-[300px]
-                  flex
-                  flex-col
-                  items-center
-                  justify-center
-                "
-              >
+              <div className="
+                min-h-[300px]
+                flex
+                flex-col
+                items-center
+                justify-center
+                p-6
+              ">
 
-                <div
-                  className="
-                    w-10
-                    h-10
-                    border-4
-                    border-indigo-200
-                    border-t-indigo-600
-                    rounded-full
-                    animate-spin
-                  "
-                ></div>
+                <div className="
+                  w-10
+                  h-10
+                  border-4
+                  border-[#92643E]/30
+                  border-t-[#92643E]
+                  rounded-full
+                  animate-spin
+                "></div>
 
-
-                <p
-                  className="
-                    text-slate-500
-                    mt-4
-                  "
-                >
-
+                <p className="text-[#786E62] mt-4">
                   Loading income records...
-
                 </p>
 
               </div>
@@ -1384,69 +742,47 @@ function Income() {
 
               /* EMPTY STATE */
 
-              <div
-                className="
-                  min-h-[350px]
+              <div className="
+                min-h-[350px]
+                flex
+                flex-col
+                items-center
+                justify-center
+                text-center
+                p-8
+              ">
+
+                <div className="
+                  w-20
+                  h-20
+                  rounded-3xl
+                  bg-[#92643E]/15
                   flex
-                  flex-col
                   items-center
                   justify-center
-                  text-center
-                  p-8
-                "
-              >
+                  mb-5
+                ">
 
-                <div
-                  className="
-                    w-20
-                    h-20
-                    rounded-3xl
-                    bg-indigo-50
-                    flex
-                    items-center
-                    justify-center
-                    mb-5
-                  "
-                >
-
-                  <FaWallet
-                    className="
-                      text-3xl
-                      text-indigo-500
-                    "
-                  />
+                  <FaWallet className="text-3xl text-[#92643E]" />
 
                 </div>
 
-
-                <h3
-                  className="
-                    text-xl
-                    font-bold
-                    text-slate-800
-                  "
-                >
-
+                <h3 className="
+                  text-xl
+                  font-bold
+                  text-[#101C2E]
+                ">
                   No Income Yet
-
                 </h3>
 
-
-                <p
-                  className="
-                    text-slate-500
-                    mt-2
-                    max-w-md
-                  "
-                >
-
-                  You haven't added any
-                  income records yet.
-                  Start by adding your
-                  first income.
-
+                <p className="
+                  text-[#786E62]
+                  mt-2
+                  max-w-md
+                ">
+                  You haven't added any income records yet.
+                  Start by adding your first income.
                 </p>
-
 
                 <button
                   onClick={openAddForm}
@@ -1455,13 +791,14 @@ function Income() {
                     mt-6
                     inline-flex
                     items-center
+                    justify-center
                     gap-2
                     px-5
                     py-3
                     rounded-xl
-                    bg-indigo-600
-                    hover:bg-indigo-700
-                    text-white
+                    bg-[#56061D]
+                    hover:bg-[#6E0A28]
+                    text-[#F3EBDD]
                     font-semibold
                     transition
                   "
@@ -1479,105 +816,71 @@ function Income() {
 
               /* TABLE */
 
-              <div
-                className="
-                  overflow-x-auto
-                "
-              >
+              <div className="overflow-x-auto">
 
-                <table
-                  className="
-                    w-full
-                  "
-                >
+                <table className="w-full min-w-[750px]">
 
                   <thead>
 
-                    <tr
-                      className="
-                        bg-slate-50
-                        border-b
-                        border-slate-200
-                      "
-                    >
+                    <tr className="
+                      bg-[#F8F5EF]
+                      border-b
+                      border-[#E5DDD2]
+                    ">
 
-                      <th
-                        className="
-                          text-left
-                          px-6
-                          py-4
-                          text-sm
-                          font-semibold
-                          text-slate-500
-                        "
-                      >
-
+                      <th className="
+                        text-left
+                        px-6
+                        py-4
+                        text-sm
+                        font-semibold
+                        text-[#786E62]
+                      ">
                         Income
-
                       </th>
 
-
-                      <th
-                        className="
-                          text-left
-                          px-6
-                          py-4
-                          text-sm
-                          font-semibold
-                          text-slate-500
-                        "
-                      >
-
+                      <th className="
+                        text-left
+                        px-6
+                        py-4
+                        text-sm
+                        font-semibold
+                        text-[#786E62]
+                      ">
                         Source
-
                       </th>
 
-
-                      <th
-                        className="
-                          text-left
-                          px-6
-                          py-4
-                          text-sm
-                          font-semibold
-                          text-slate-500
-                        "
-                      >
-
+                      <th className="
+                        text-left
+                        px-6
+                        py-4
+                        text-sm
+                        font-semibold
+                        text-[#786E62]
+                      ">
                         Date
-
                       </th>
 
-
-                      <th
-                        className="
-                          text-right
-                          px-6
-                          py-4
-                          text-sm
-                          font-semibold
-                          text-slate-500
-                        "
-                      >
-
+                      <th className="
+                        text-right
+                        px-6
+                        py-4
+                        text-sm
+                        font-semibold
+                        text-[#786E62]
+                      ">
                         Amount
-
                       </th>
 
-
-                      <th
-                        className="
-                          text-right
-                          px-6
-                          py-4
-                          text-sm
-                          font-semibold
-                          text-slate-500
-                        "
-                      >
-
+                      <th className="
+                        text-right
+                        px-6
+                        py-4
+                        text-sm
+                        font-semibold
+                        text-[#786E62]
+                      ">
                         Actions
-
                       </th>
 
                     </tr>
@@ -1587,259 +890,201 @@ function Income() {
 
                   <tbody>
 
-                    {incomes.map(
-                      (income) => (
+                    {incomes.map((income) => (
 
-                        <tr
-                          key={income.id}
-                          className="
-                            border-b
-                            border-slate-100
-                            last:border-0
-                            hover:bg-slate-50
-                            transition
-                          "
-                        >
+                      <tr
+                        key={income.id}
+                        className="
+                          border-b
+                          border-[#E5DDD2]
+                          last:border-0
+                          hover:bg-[#F3EBDD]
+                          transition
+                        "
+                      >
 
+                        {/* TITLE */}
 
-                          {/* TITLE */}
+                        <td className="px-6 py-5">
 
-                          <td
-                            className="
-                              px-6
-                              py-5
-                            "
-                          >
+                          <div className="
+                            flex
+                            items-center
+                            gap-3
+                          ">
 
-                            <div
-                              className="
-                                flex
-                                items-center
-                                gap-3
-                              "
-                            >
+                            <div className="
+                              w-11
+                              h-11
+                              rounded-xl
+                              bg-[#92643E]/20
+                              flex
+                              items-center
+                              justify-center
+                              flex-shrink-0
+                            ">
 
-                              <div
-                                className="
-                                  w-11
-                                  h-11
-                                  rounded-xl
-                                  bg-emerald-50
-                                  flex
-                                  items-center
-                                  justify-center
-                                  flex-shrink-0
-                                "
-                              >
-
-                                <FaArrowUp
-                                  className="
-                                    text-emerald-600
-                                  "
-                                />
-
-                              </div>
-
-
-                              <div>
-
-                                <p
-                                  className="
-                                    font-semibold
-                                    text-slate-800
-                                  "
-                                >
-
-                                  {income.title}
-
-                                </p>
-
-
-                                {income.description && (
-
-                                  <p
-                                    className="
-                                      text-xs
-                                      text-slate-400
-                                      mt-1
-                                      max-w-[250px]
-                                      truncate
-                                    "
-                                  >
-
-                                    {
-                                      income.description
-                                    }
-
-                                  </p>
-
-                                )}
-
-                              </div>
+                              <FaArrowUp className="text-[#C79A6B]" />
 
                             </div>
 
-                          </td>
 
+                            <div className="min-w-0">
 
-                          {/* SOURCE */}
-
-                          <td
-                            className="
-                              px-6
-                              py-5
-                            "
-                          >
-
-                            <span
-                              className="
-                                inline-flex
-                                px-3
-                                py-1
-                                rounded-full
-                                bg-indigo-50
-                                text-indigo-700
-                                text-xs
+                              <p className="
                                 font-semibold
-                              "
-                            >
+                                text-[#101C2E]
+                                truncate
+                                max-w-[250px]
+                              ">
+                                {income.title}
+                              </p>
 
-                              {getSourceName(
-                                income.source
+                              {income.description && (
+                                <p className="
+                                  text-xs
+                                  text-[#8B8175]
+                                  mt-1
+                                  max-w-[250px]
+                                  truncate
+                                ">
+                                  {income.description}
+                                </p>
                               )}
-
-                            </span>
-
-                          </td>
-
-
-                          {/* DATE */}
-
-                          <td
-                            className="
-                              px-6
-                              py-5
-                              text-slate-600
-                              text-sm
-                            "
-                          >
-
-                            {formatDate(
-                              income.income_date
-                            )}
-
-                          </td>
-
-
-                          {/* AMOUNT */}
-
-                          <td
-                            className="
-                              px-6
-                              py-5
-                              text-right
-                            "
-                          >
-
-                            <span
-                              className="
-                                font-bold
-                                text-emerald-600
-                                whitespace-nowrap
-                              "
-                            >
-
-                              +₹
-                              {formatMoney(
-                                income.amount
-                              )}
-
-                            </span>
-
-                          </td>
-
-
-                          {/* ACTIONS */}
-
-                          <td
-                            className="
-                              px-6
-                              py-5
-                            "
-                          >
-
-                            <div
-                              className="
-                                flex
-                                justify-end
-                                items-center
-                                gap-2
-                              "
-                            >
-
-                              <button
-                                onClick={() =>
-                                  openEditForm(
-                                    income
-                                  )
-                                }
-                                title="Edit income"
-                                className="
-                                  cursor-pointer
-                                  w-9
-                                  h-9
-                                  rounded-lg
-                                  bg-indigo-50
-                                  text-indigo-600
-                                  hover:bg-indigo-600
-                                  hover:text-white
-                                  flex
-                                  items-center
-                                  justify-center
-                                  transition
-                                "
-                              >
-
-                                <FaEdit />
-
-                              </button>
-
-
-                              <button
-                                onClick={() =>
-                                  setDeleteIncome(
-                                    income
-                                  )
-                                }
-                                title="Delete income"
-                                className="
-                                  cursor-pointer
-                                  w-9
-                                  h-9
-                                  rounded-lg
-                                  bg-rose-50
-                                  text-rose-600
-                                  hover:bg-rose-600
-                                  hover:text-white
-                                  flex
-                                  items-center
-                                  justify-center
-                                  transition
-                                "
-                              >
-
-                                <FaTrash />
-
-                              </button>
 
                             </div>
 
-                          </td>
+                          </div>
 
-                        </tr>
+                        </td>
 
-                      )
-                    )}
+
+                        {/* SOURCE */}
+
+                        <td className="px-6 py-5">
+
+                          <span className="
+                            inline-flex
+                            px-3
+                            py-1
+                            rounded-full
+                            bg-[#92643E]/20
+                            text-[#D6B18B]
+                            text-xs
+                            font-semibold
+                          ">
+                            {getSourceName(income.source)}
+                          </span>
+
+                        </td>
+
+
+                        {/* DATE */}
+
+                        <td className="
+                          px-6
+                          py-5
+                          text-[#6F665B]
+                          text-sm
+                        ">
+
+                          {formatDate(income.income_date)}
+
+                        </td>
+
+
+                        {/* AMOUNT */}
+
+                        <td className="
+                          px-6
+                          py-5
+                          text-right
+                        ">
+
+                          <span className="
+                            font-bold
+                            text-[#C79A6B]
+                            whitespace-nowrap
+                          ">
+                            +₹{formatMoney(income.amount)}
+                          </span>
+
+                        </td>
+
+
+                        {/* ACTIONS */}
+
+                        <td className="px-6 py-5">
+
+                          <div className="
+                            flex
+                            justify-end
+                            items-center
+                            gap-2
+                          ">
+
+                            {/* EDIT */}
+
+                            <button
+                              onClick={() => openEditForm(income)}
+                              title="Edit income"
+                              className="
+                                cursor-pointer
+                                w-9
+                                h-9
+                                rounded-lg
+                                bg-white
+                                border
+                                border-[#92643E]/40
+                                text-[#C79A6B]
+                                hover:bg-[#92643E]
+                                hover:text-[#101C2E]
+                                flex
+                                items-center
+                                justify-center
+                                transition
+                              "
+                            >
+
+                              <FaEdit />
+
+                            </button>
+
+
+                            {/* DELETE */}
+
+                            <button
+                              onClick={() => setDeleteIncome(income)}
+                              title="Delete income"
+                              className="
+                                cursor-pointer
+                                w-9
+                                h-9
+                                rounded-lg
+                                bg-[#56061D]/30
+                                border
+                                border-[#56061D]/50
+                                text-[#D98A9E]
+                                hover:bg-[#56061D]
+                                hover:text-[#101C2E]
+                                flex
+                                items-center
+                                justify-center
+                                transition
+                              "
+                            >
+
+                              <FaTrash />
+
+                            </button>
+
+                          </div>
+
+                        </td>
+
+                      </tr>
+
+                    ))}
 
                   </tbody>
 
@@ -1862,17 +1107,15 @@ function Income() {
 
       {showForm && (
 
-        <div
-          className="
-            fixed
-            inset-0
-            z-50
-            flex
-            items-center
-            justify-center
-            p-4
-          "
-        >
+        <div className="
+          fixed
+          inset-0
+          z-50
+          flex
+          items-center
+          justify-center
+          p-4
+        ">
 
           {/* BACKDROP */}
 
@@ -1880,7 +1123,7 @@ function Income() {
             className="
               absolute
               inset-0
-              bg-slate-950/60
+              bg-[#101C2E]/50
               backdrop-blur-sm
             "
             onClick={closeForm}
@@ -1889,42 +1132,43 @@ function Income() {
 
           {/* MODAL */}
 
-          <div
-            className="
-              relative
-              w-full
-              max-w-2xl
-              bg-white
-              rounded-3xl
-              shadow-2xl
-              overflow-hidden
-            "
-          >
-
+          <div className="
+            relative
+            w-full
+            max-w-2xl
+            max-h-[90vh]
+            bg-white
+            rounded-3xl
+            shadow-2xl
+            border
+            border-[#E5DDD2]
+            overflow-hidden
+            flex
+            flex-col
+          ">
 
             {/* MODAL HEADER */}
 
-            <div
-              className="
-                flex
-                items-center
-                justify-between
-                px-6
-                py-5
-                border-b
-                border-slate-100
-              "
-            >
+            <div className="
+              flex
+              items-center
+              justify-between
+              gap-4
+              px-5
+              sm:px-6
+              py-5
+              border-b
+              border-[#E5DDD2]
+              flex-shrink-0
+            ">
 
-              <div>
+              <div className="min-w-0">
 
-                <h2
-                  className="
-                    text-2xl
-                    font-bold
-                    text-slate-800
-                  "
-                >
+                <h2 className="
+                  text-2xl
+                  font-bold
+                  text-[#101C2E]
+                ">
 
                   {editingIncome
                     ? "Edit Income"
@@ -1932,14 +1176,11 @@ function Income() {
 
                 </h2>
 
-
-                <p
-                  className="
-                    text-sm
-                    text-slate-500
-                    mt-1
-                  "
-                >
+                <p className="
+                  text-sm
+                  text-[#786E62]
+                  mt-1
+                ">
 
                   {editingIncome
                     ? "Update your income details."
@@ -1956,10 +1197,11 @@ function Income() {
                   cursor-pointer
                   w-10
                   h-10
+                  shrink-0
                   rounded-xl
-                  bg-slate-100
-                  hover:bg-slate-200
-                  text-slate-500
+                  bg-[#F3EBDD]
+                  hover:bg-[#E8DCC8]
+                  text-[#6F665B]
                   flex
                   items-center
                   justify-center
@@ -1978,43 +1220,29 @@ function Income() {
 
             <form
               onSubmit={handleSubmit}
-              className="
-                p-6
-              "
+              className="p-5 sm:p-6 overflow-y-auto"
             >
 
-              <div
-                className="
-                  grid
-                  grid-cols-1
-                  md:grid-cols-2
-                  gap-5
-                "
-              >
-
+              <div className="
+                grid
+                grid-cols-1
+                md:grid-cols-2
+                gap-5
+              ">
 
                 {/* TITLE */}
 
-                <div
-                  className="
-                    md:col-span-2
-                  "
-                >
+                <div className="md:col-span-2">
 
-                  <label
-                    className="
-                      block
-                      text-sm
-                      font-semibold
-                      text-slate-700
-                      mb-2
-                    "
-                  >
-
+                  <label className="
+                    block
+                    text-sm
+                    font-semibold
+                    text-[#101C2E]
+                    mb-2
+                  ">
                     Title
-
                   </label>
-
 
                   <input
                     type="text"
@@ -2029,10 +1257,13 @@ function Income() {
                       py-3
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[#D8C8B4]
+                      bg-white
+                      text-[#101C2E]
+                      placeholder:text-[#A99F91]
                       focus:outline-none
                       focus:ring-2
-                      focus:ring-indigo-500
+                      focus:ring-[#92643E]
                       focus:border-transparent
                       transition
                     "
@@ -2045,42 +1276,28 @@ function Income() {
 
                 <div>
 
-                  <label
-                    className="
-                      block
-                      text-sm
-                      font-semibold
-                      text-slate-700
-                      mb-2
-                    "
-                  >
-
+                  <label className="
+                    block
+                    text-sm
+                    font-semibold
+                    text-[#101C2E]
+                    mb-2
+                  ">
                     Amount
-
                   </label>
 
+                  <div className="relative">
 
-                  <div
-                    className="
-                      relative
-                    "
-                  >
-
-                    <span
-                      className="
-                        absolute
-                        left-4
-                        top-1/2
-                        -translate-y-1/2
-                        text-slate-500
-                        font-semibold
-                      "
-                    >
-
+                    <span className="
+                      absolute
+                      left-4
+                      top-1/2
+                      -translate-y-1/2
+                      text-[#6F665B]
+                      font-semibold
+                    ">
                       ₹
-
                     </span>
-
 
                     <input
                       type="number"
@@ -2098,10 +1315,13 @@ function Income() {
                         py-3
                         rounded-xl
                         border
-                        border-slate-200
+                        border-[#D8C8B4]
+                        bg-white
+                        text-[#101C2E]
+                        placeholder:text-[#A99F91]
                         focus:outline-none
                         focus:ring-2
-                        focus:ring-indigo-500
+                        focus:ring-[#92643E]
                         focus:border-transparent
                         transition
                       "
@@ -2116,20 +1336,15 @@ function Income() {
 
                 <div>
 
-                  <label
-                    className="
-                      block
-                      text-sm
-                      font-semibold
-                      text-slate-700
-                      mb-2
-                    "
-                  >
-
+                  <label className="
+                    block
+                    text-sm
+                    font-semibold
+                    text-[#101C2E]
+                    mb-2
+                  ">
                     Source
-
                   </label>
-
 
                   <select
                     name="source"
@@ -2142,11 +1357,12 @@ function Income() {
                       py-3
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[#D8C8B4]
                       bg-white
+                      text-[#101C2E]
                       focus:outline-none
                       focus:ring-2
-                      focus:ring-indigo-500
+                      focus:ring-[#92643E]
                       focus:border-transparent
                       transition
                     "
@@ -2185,27 +1401,20 @@ function Income() {
 
                 <div>
 
-                  <label
-                    className="
-                      block
-                      text-sm
-                      font-semibold
-                      text-slate-700
-                      mb-2
-                    "
-                  >
-
+                  <label className="
+                    block
+                    text-sm
+                    font-semibold
+                    text-[#101C2E]
+                    mb-2
+                  ">
                     Income Date
-
                   </label>
-
 
                   <input
                     type="date"
                     name="income_date"
-                    value={
-                      formData.income_date
-                    }
+                    value={formData.income_date}
                     onChange={handleChange}
                     required
                     className="
@@ -2214,10 +1423,12 @@ function Income() {
                       py-3
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[#D8C8B4]
+                      bg-white
+                      text-[#101C2E]
                       focus:outline-none
                       focus:ring-2
-                      focus:ring-indigo-500
+                      focus:ring-[#92643E]
                       focus:border-transparent
                       transition
                     "
@@ -2228,44 +1439,30 @@ function Income() {
 
                 {/* DESCRIPTION */}
 
-                <div
-                  className="
-                    md:col-span-2
-                  "
-                >
+                <div className="md:col-span-2">
 
-                  <label
-                    className="
-                      block
-                      text-sm
-                      font-semibold
-                      text-slate-700
-                      mb-2
-                    "
-                  >
+                  <label className="
+                    block
+                    text-sm
+                    font-semibold
+                    text-[#101C2E]
+                    mb-2
+                  ">
 
                     Description
 
-                    <span
-                      className="
-                        font-normal
-                        text-slate-400
-                      "
-                    >
-
-                      {" "}
-                      (Optional)
-
+                    <span className="
+                      font-normal
+                      text-[#8F8274]
+                    ">
+                      {" "} (Optional)
                     </span>
 
                   </label>
 
-
                   <textarea
                     name="description"
-                    value={
-                      formData.description
-                    }
+                    value={formData.description}
                     onChange={handleChange}
                     placeholder="Add some details about this income..."
                     rows="4"
@@ -2275,11 +1472,14 @@ function Income() {
                       py-3
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[#D8C8B4]
+                      bg-white
+                      text-[#101C2E]
+                      placeholder:text-[#A99F91]
                       resize-none
                       focus:outline-none
                       focus:ring-2
-                      focus:ring-indigo-500
+                      focus:ring-[#92643E]
                       focus:border-transparent
                       transition
                     "
@@ -2292,17 +1492,17 @@ function Income() {
 
               {/* FORM BUTTONS */}
 
-              <div
-                className="
-                  flex
-                  justify-end
-                  gap-3
-                  mt-7
-                  pt-5
-                  border-t
-                  border-slate-100
-                "
-              >
+              <div className="
+                flex
+                flex-col-reverse
+                sm:flex-row
+                sm:justify-end
+                gap-3
+                mt-7
+                pt-5
+                border-t
+                border-[#E5DDD2]
+              ">
 
                 <button
                   type="button"
@@ -2314,18 +1514,16 @@ function Income() {
                     py-3
                     rounded-xl
                     border
-                    border-slate-200
-                    text-slate-600
-                    hover:bg-slate-50
+                    border-[#D8C8B4]
+                    text-[#6F665B]
+                    hover:bg-[#F3EBDD]
                     font-semibold
                     transition
                     disabled:opacity-50
                     disabled:cursor-not-allowed
                   "
                 >
-
                   Cancel
-
                 </button>
 
 
@@ -2337,11 +1535,12 @@ function Income() {
                     px-6
                     py-3
                     rounded-xl
-                    bg-indigo-600
-                    hover:bg-indigo-700
-                    text-white
+                    bg-[#56061D]
+                    hover:bg-[#6E0A28]
+                    text-[#F3EBDD]
                     font-semibold
                     transition
+                    shadow-lg
                     disabled:opacity-50
                     disabled:cursor-not-allowed
                   "
@@ -2372,17 +1571,15 @@ function Income() {
 
       {deleteIncome && (
 
-        <div
-          className="
-            fixed
-            inset-0
-            z-[60]
-            flex
-            items-center
-            justify-center
-            p-4
-          "
-        >
+        <div className="
+          fixed
+          inset-0
+          z-[60]
+          flex
+          items-center
+          justify-center
+          p-4
+        ">
 
           {/* BACKDROP */}
 
@@ -2390,112 +1587,90 @@ function Income() {
             className="
               absolute
               inset-0
-              bg-slate-950/60
+              bg-[#101C2E]/50
               backdrop-blur-sm
             "
             onClick={() => {
-
               if (!saving) {
-
                 setDeleteIncome(null);
-
               }
-
             }}
           ></div>
 
 
           {/* CONFIRMATION */}
 
-          <div
-            className="
-              relative
-              w-full
-              max-w-md
-              bg-white
-              rounded-3xl
-              shadow-2xl
-              p-7
-            "
-          >
+          <div className="
+            relative
+            w-full
+            max-w-md
+            bg-white
+            rounded-3xl
+            shadow-2xl
+            border
+            border-[#E5DDD2]
+            p-6
+            sm:p-7
+          ">
 
-            <div
-              className="
-                w-14
-                h-14
-                rounded-2xl
-                bg-rose-100
-                flex
-                items-center
-                justify-center
-                mb-5
-              "
-            >
+            <div className="
+              w-14
+              h-14
+              rounded-2xl
+              bg-[#56061D]/40
+              flex
+              items-center
+              justify-center
+              mb-5
+            ">
 
-              <FaTrash
-                className="
-                  text-rose-600
-                  text-xl
-                "
-              />
+              <FaTrash className="text-[#D98A9E] text-xl" />
 
             </div>
 
 
-            <h2
-              className="
-                text-2xl
-                font-bold
-                text-slate-800
-              "
-            >
-
+            <h2 className="
+              text-2xl
+              font-bold
+              text-[#101C2E]
+            ">
               Delete Income?
-
             </h2>
 
 
-            <p
-              className="
-                text-slate-500
-                mt-2
-                leading-relaxed
-              "
-            >
+            <p className="
+              text-[#786E62]
+              mt-2
+              leading-relaxed
+            ">
 
-              Are you sure you want to
-              delete{" "}
+              Are you sure you want to delete{" "}
 
-              <span
-                className="
-                  font-semibold
-                  text-slate-700
-                "
-              >
+              <span className="
+                font-semibold
+                text-[#101C2E]
+              ">
 
                 "{deleteIncome.title}"
 
               </span>
 
-              ? This action cannot be
-              undone.
+              ? This action cannot be undone.
 
             </p>
 
 
-            <div
-              className="
-                flex
-                justify-end
-                gap-3
-                mt-7
-              "
-            >
+            <div className="
+              flex
+              flex-col-reverse
+              sm:flex-row
+              sm:justify-end
+              gap-3
+              mt-7
+            ">
 
               <button
-                onClick={() =>
-                  setDeleteIncome(null)
-                }
+                onClick={() => setDeleteIncome(null)}
                 disabled={saving}
                 className="
                   cursor-pointer
@@ -2503,17 +1678,15 @@ function Income() {
                   py-3
                   rounded-xl
                   border
-                  border-slate-200
-                  text-slate-600
-                  hover:bg-slate-50
+                  border-[#D8C8B4]
+                  text-[#6F665B]
+                  hover:bg-[#F3EBDD]
                   font-semibold
                   transition
                   disabled:opacity-50
                 "
               >
-
                 Cancel
-
               </button>
 
 
@@ -2525,9 +1698,9 @@ function Income() {
                   px-5
                   py-3
                   rounded-xl
-                  bg-rose-600
-                  hover:bg-rose-700
-                  text-white
+                  bg-[#56061D]
+                  hover:bg-[#6E0A28]
+                  text-[#F3EBDD]
                   font-semibold
                   transition
                   disabled:opacity-50
@@ -2550,10 +1723,7 @@ function Income() {
       )}
 
     </div>
-
   );
-
 }
-
 
 export default Income;

@@ -62,6 +62,7 @@ function Savings() {
         Authorization: `Bearer ${token}`,
       },
     };
+
   };
 
 
@@ -103,6 +104,7 @@ function Savings() {
       progress_percentage: progress,
       status: status,
     };
+
   };
 
 
@@ -113,6 +115,8 @@ function Savings() {
   const fetchGoals = async () => {
 
     try {
+
+      setLoading(true);
 
       setError("");
 
@@ -127,11 +131,6 @@ function Savings() {
           : [];
 
       /*
-       * IMPORTANT:
-       *
-       * We no longer make a separate
-       * /progress/ request for every goal.
-       *
        * Progress is calculated immediately
        * from target_amount and saved_amount.
        */
@@ -309,22 +308,19 @@ function Savings() {
             getConfig()
           );
 
-        /*
-         * Update only this goal.
-         *
-         * DO NOT call fetchGoals().
-         */
 
         const updatedGoal =
           prepareGoal(
             response.data
           );
 
+
         setGoals((previousGoals) =>
-          previousGoals.map((goal) =>
-            goal.id === editingGoal.id
-              ? updatedGoal
-              : goal
+          previousGoals.map(
+            (goal) =>
+              goal.id === editingGoal.id
+                ? updatedGoal
+                : goal
           )
         );
 
@@ -344,15 +340,12 @@ function Savings() {
             getConfig()
           );
 
-        /*
-         * Add the new goal directly
-         * to the existing list.
-         */
 
         const newGoal =
           prepareGoal(
             response.data
           );
+
 
         setGoals((previousGoals) => [
           newGoal,
@@ -363,7 +356,7 @@ function Savings() {
 
 
       // =====================================================
-      // CLOSE FORM IMMEDIATELY
+      // CLOSE FORM
       // =====================================================
 
       setShowForm(false);
@@ -403,9 +396,7 @@ function Savings() {
                 ([field, message]) => {
 
                   if (
-                    Array.isArray(
-                      message
-                    )
+                    Array.isArray(message)
                   ) {
 
                     return `${field}: ${message.join(
@@ -419,6 +410,7 @@ function Savings() {
                 }
               )
               .join(" | ");
+
 
           setError(messages);
 
@@ -469,12 +461,6 @@ function Savings() {
         getConfig()
       );
 
-
-      /*
-       * Remove the goal directly from the UI.
-       *
-       * DO NOT call fetchGoals().
-       */
 
       setGoals((previousGoals) =>
         previousGoals.filter(
@@ -629,14 +615,26 @@ function Savings() {
 
   return (
 
-    <div className="min-h-screen bg-slate-50 flex">
-
+    <div
+      className="
+        min-h-screen
+        bg-[#F5F2EC]
+        flex
+        overflow-x-hidden
+      "
+    >
 
       {/* =====================================================
           SIDEBAR
       ====================================================== */}
 
-      <div className="w-[280px] bg-slate-950 text-white flex-shrink-0">
+      <div
+        className="
+          w-0
+          lg:w-[280px]
+          flex-shrink-0
+        "
+      >
 
         <Sidebar />
 
@@ -647,33 +645,66 @@ function Savings() {
           MAIN CONTENT
       ====================================================== */}
 
-      <div className="flex-1 min-w-0">
+      <div
+        className="
+          flex-1
+          min-w-0
+          w-full
+        "
+      >
 
         <Topbar />
 
 
-        <main className="p-6 md:p-8">
+        <main
+          className="
+            p-4
+            sm:p-6
+            md:p-8
+            w-full
+            max-w-full
+          "
+        >
 
 
           {/* =================================================
               HEADER
           ================================================== */}
 
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-8">
+          <div
+            className="
+              flex
+              flex-col
+              md:flex-row
+              md:items-center
+              md:justify-between
+              gap-5
+              mb-8
+            "
+          >
 
             <div>
 
-              <h1 className="text-3xl md:text-4xl font-bold text-slate-800">
-
+              <h1
+                className="
+                  text-3xl
+                  md:text-4xl
+                  font-bold
+                  text-[#101C2E]
+                "
+              >
                 Savings Goals
-
               </h1>
 
-              <p className="text-slate-500 mt-2">
 
+              <p
+                className="
+                  text-[#6F665B]
+                  mt-2
+                "
+              >
                 Set goals, track your progress,
                 and build your savings.
-
               </p>
 
             </div>
@@ -690,14 +721,16 @@ function Savings() {
                 px-5
                 py-3
                 rounded-xl
-                bg-indigo-600
-                hover:bg-indigo-700
+                bg-[#56061D]
+                hover:bg-[#6F0A27]
                 text-white
                 font-semibold
                 shadow-md
                 hover:shadow-lg
                 transition-all
                 duration-300
+                w-full
+                md:w-auto
               "
             >
 
@@ -716,14 +749,34 @@ function Savings() {
 
           {error && (
 
-            <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700">
+            <div
+              className="
+                mb-6
+                p-4
+                rounded-xl
+                bg-[#56061D]/10
+                border
+                border-[#56061D]/30
+                text-[#56061D]
+              "
+            >
 
-              <div className="flex items-start justify-between gap-4">
+              <div
+                className="
+                  flex
+                  items-start
+                  justify-between
+                  gap-4
+                "
+              >
 
-                <p className="text-sm font-medium">
-
+                <p
+                  className="
+                    text-sm
+                    font-medium
+                  "
+                >
                   {error}
-
                 </p>
 
 
@@ -733,8 +786,8 @@ function Savings() {
                   }
                   className="
                     cursor-pointer
-                    text-rose-500
-                    hover:text-rose-700
+                    text-[#7A263D]
+                    hover:text-[#56061D]
                   "
                 >
 
@@ -753,37 +806,88 @@ function Savings() {
               SUMMARY CARDS
           ================================================== */}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-
+          <div
+            className="
+              grid
+              grid-cols-1
+              md:grid-cols-2
+              xl:grid-cols-4
+              gap-6
+              mb-8
+            "
+          >
 
             {/* TOTAL TARGET */}
 
-            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+            <div
+              className="
+                bg-white
+                rounded-2xl
+                p-6
+                border
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
+              "
+            >
 
-              <div className="flex items-center justify-between">
+              <div
+                className="
+                  flex
+                  items-center
+                  justify-between
+                  gap-4
+                "
+              >
 
-                <div>
+                <div className="min-w-0">
 
-                  <p className="text-sm text-slate-500">
-
+                  <p
+                    className="
+                      text-sm
+                      text-[#6F665B]
+                    "
+                  >
                     Total Target
-
                   </p>
 
-                  <h2 className="text-3xl font-bold text-slate-800 mt-2">
 
+                  <h2
+                    className="
+                      text-3xl
+                      font-bold
+                      text-[#101C2E]
+                      mt-2
+                      break-words
+                    "
+                  >
                     ₹{formatMoney(
                       totalTarget
                     )}
-
                   </h2>
 
                 </div>
 
 
-                <div className="w-14 h-14 rounded-2xl bg-indigo-100 flex items-center justify-center">
+                <div
+                  className="
+                    w-14
+                    h-14
+                    rounded-2xl
+                    bg-[#92643E]
+                    flex
+                    items-center
+                    justify-center
+                    shadow-sm
+                    shrink-0
+                  "
+                >
 
-                  <FaBullseye className="text-indigo-600 text-xl" />
+                  <FaBullseye
+                    className="
+                      text-white
+                      text-xl
+                    "
+                  />
 
                 </div>
 
@@ -794,32 +898,75 @@ function Savings() {
 
             {/* TOTAL SAVED */}
 
-            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+            <div
+              className="
+                bg-white
+                rounded-2xl
+                p-6
+                border
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
+              "
+            >
 
-              <div className="flex items-center justify-between">
+              <div
+                className="
+                  flex
+                  items-center
+                  justify-between
+                  gap-4
+                "
+              >
 
-                <div>
+                <div className="min-w-0">
 
-                  <p className="text-sm text-slate-500">
-
+                  <p
+                    className="
+                      text-sm
+                      text-[#6F665B]
+                    "
+                  >
                     Total Saved
-
                   </p>
 
-                  <h2 className="text-3xl font-bold text-slate-800 mt-2">
 
+                  <h2
+                    className="
+                      text-3xl
+                      font-bold
+                      text-[#101C2E]
+                      mt-2
+                      break-words
+                    "
+                  >
                     ₹{formatMoney(
                       totalSaved
                     )}
-
                   </h2>
 
                 </div>
 
 
-                <div className="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center">
+                <div
+                  className="
+                    w-14
+                    h-14
+                    rounded-2xl
+                    bg-[#92643E]
+                    flex
+                    items-center
+                    justify-center
+                    shadow-sm
+                    shrink-0
+                  "
+                >
 
-                  <FaPiggyBank className="text-emerald-600 text-xl" />
+                  <FaPiggyBank
+                    className="
+                      text-white
+                      text-xl
+                    "
+                  />
 
                 </div>
 
@@ -830,32 +977,75 @@ function Savings() {
 
             {/* REMAINING */}
 
-            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+            <div
+              className="
+                bg-white
+                rounded-2xl
+                p-6
+                border
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
+              "
+            >
 
-              <div className="flex items-center justify-between">
+              <div
+                className="
+                  flex
+                  items-center
+                  justify-between
+                  gap-4
+                "
+              >
 
-                <div>
+                <div className="min-w-0">
 
-                  <p className="text-sm text-slate-500">
-
+                  <p
+                    className="
+                      text-sm
+                      text-[#6F665B]
+                    "
+                  >
                     Remaining
-
                   </p>
 
-                  <h2 className="text-3xl font-bold text-slate-800 mt-2">
 
+                  <h2
+                    className="
+                      text-3xl
+                      font-bold
+                      text-[#101C2E]
+                      mt-2
+                      break-words
+                    "
+                  >
                     ₹{formatMoney(
                       totalRemaining
                     )}
-
                   </h2>
 
                 </div>
 
 
-                <div className="w-14 h-14 rounded-2xl bg-violet-100 flex items-center justify-center">
+                <div
+                  className="
+                    w-14
+                    h-14
+                    rounded-2xl
+                    bg-[#56061D]
+                    flex
+                    items-center
+                    justify-center
+                    shadow-sm
+                    shrink-0
+                  "
+                >
 
-                  <FaCalendarAlt className="text-violet-600 text-xl" />
+                  <FaCalendarAlt
+                    className="
+                      text-white
+                      text-xl
+                    "
+                  />
 
                 </div>
 
@@ -864,32 +1054,74 @@ function Savings() {
             </div>
 
 
-            {/* PROGRESS */}
+            {/* OVERALL PROGRESS */}
 
-            <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+            <div
+              className="
+                bg-white
+                rounded-2xl
+                p-6
+                border
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
+              "
+            >
 
-              <div className="flex items-center justify-between">
+              <div
+                className="
+                  flex
+                  items-center
+                  justify-between
+                  gap-4
+                "
+              >
 
-                <div>
+                <div className="min-w-0">
 
-                  <p className="text-sm text-slate-500">
-
+                  <p
+                    className="
+                      text-sm
+                      text-[#6F665B]
+                    "
+                  >
                     Overall Progress
-
                   </p>
 
-                  <h2 className="text-3xl font-bold text-slate-800 mt-2">
 
+                  <h2
+                    className="
+                      text-3xl
+                      font-bold
+                      text-[#101C2E]
+                      mt-2
+                    "
+                  >
                     {overallProgress.toFixed(2)}%
-
                   </h2>
 
                 </div>
 
 
-                <div className="w-14 h-14 rounded-2xl bg-cyan-100 flex items-center justify-center">
+                <div
+                  className="
+                    w-14
+                    h-14
+                    rounded-2xl
+                    bg-[#92643E]
+                    flex
+                    items-center
+                    justify-center
+                    shadow-sm
+                    shrink-0
+                  "
+                >
 
-                  <FaCheckCircle className="text-cyan-600 text-xl" />
+                  <FaCheckCircle
+                    className="
+                      text-white
+                      text-xl
+                    "
+                  />
 
                 </div>
 
@@ -901,49 +1133,89 @@ function Savings() {
 
 
           {/* =================================================
-              OVERALL PROGRESS
+              OVERALL PROGRESS BAR
           ================================================== */}
 
           {goals.length > 0 && (
 
-            <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 mb-8">
+            <div
+              className="
+                bg-white
+                rounded-3xl
+                border
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
+                p-6
+                mb-8
+              "
+            >
 
-              <div className="flex justify-between items-center mb-3">
+              <div
+                className="
+                  flex
+                  flex-col
+                  sm:flex-row
+                  sm:justify-between
+                  sm:items-center
+                  gap-3
+                  mb-3
+                "
+              >
 
                 <div>
 
-                  <h2 className="text-xl font-bold text-slate-800">
-
+                  <h2
+                    className="
+                      text-xl
+                      font-bold
+                      text-[#101C2E]
+                    "
+                  >
                     Overall Savings Progress
-
                   </h2>
 
-                  <p className="text-sm text-slate-500 mt-1">
 
+                  <p
+                    className="
+                      text-sm
+                      text-[#6F665B]
+                      mt-1
+                    "
+                  >
                     {completedGoals} of{" "}
                     {goals.length} goals completed
-
                   </p>
 
                 </div>
 
 
-                <span className="font-bold text-indigo-600">
-
+                <span
+                  className="
+                    font-bold
+                    text-[#56061D]
+                  "
+                >
                   {overallProgress.toFixed(2)}%
-
                 </span>
 
               </div>
 
 
-              <div className="w-full h-4 bg-slate-100 rounded-full overflow-hidden">
+              <div
+                className="
+                  w-full
+                  h-4
+                  bg-[#F3EBDD]
+                  rounded-full
+                  overflow-hidden
+                "
+              >
 
                 <div
                   className="
                     h-full
                     rounded-full
-                    bg-indigo-600
+                    bg-[#92643E]
                     transition-all
                     duration-700
                   "
@@ -951,7 +1223,7 @@ function Savings() {
                     width:
                       `${overallProgress}%`,
                   }}
-                ></div>
+                />
 
               </div>
 
@@ -964,21 +1236,48 @@ function Savings() {
               SAVINGS GOALS
           ================================================== */}
 
-          <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+          <div
+            className="
+              bg-white
+              rounded-3xl
+              border
+              border-[#E5DDD2]
+              shadow-[0_8px_24px_rgba(16,28,46,0.08)]
+              overflow-hidden
+              w-full
+            "
+          >
 
-            <div className="p-6 border-b border-slate-100">
+            {/* SECTION HEADER */}
 
-              <h2 className="text-2xl font-bold text-slate-800">
+            <div
+              className="
+                p-6
+                border-b
+                border-[#E5DDD2]
+              "
+            >
 
+              <h2
+                className="
+                  text-2xl
+                  font-bold
+                  text-[#101C2E]
+                "
+              >
                 Your Savings Goals
-
               </h2>
 
-              <p className="text-sm text-slate-500 mt-1">
 
+              <p
+                className="
+                  text-sm
+                  text-[#6F665B]
+                  mt-1
+                "
+              >
                 Track each goal and see how
                 close you are to achieving it.
-
               </p>
 
             </div>
@@ -988,41 +1287,100 @@ function Savings() {
 
             {loading ? (
 
-              <div className="min-h-[300px] flex flex-col items-center justify-center">
+              <div
+                className="
+                  min-h-[300px]
+                  flex
+                  flex-col
+                  items-center
+                  justify-center
+                  bg-white
+                "
+              >
 
-                <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                <div
+                  className="
+                    w-10
+                    h-10
+                    border-4
+                    border-[#92643E]/30
+                    border-t-[#92643E]
+                    rounded-full
+                    animate-spin
+                  "
+                />
 
-                <p className="text-slate-500 mt-4">
-
+                <p
+                  className="
+                    text-[#6F665B]
+                    mt-4
+                  "
+                >
                   Loading savings goals...
-
                 </p>
 
               </div>
 
             ) : goals.length === 0 ? (
 
-              <div className="min-h-[350px] flex flex-col items-center justify-center text-center p-8">
+              <div
+                className="
+                  min-h-[350px]
+                  flex
+                  flex-col
+                  items-center
+                  justify-center
+                  text-center
+                  p-8
+                  bg-white
+                "
+              >
 
-                <div className="w-20 h-20 rounded-3xl bg-indigo-50 flex items-center justify-center mb-5">
+                <div
+                  className="
+                    w-20
+                    h-20
+                    rounded-3xl
+                    bg-[#92643E]/10
+                    border
+                    border-[#92643E]/20
+                    flex
+                    items-center
+                    justify-center
+                    mb-5
+                  "
+                >
 
-                  <FaBullseye className="text-3xl text-indigo-500" />
+                  <FaBullseye
+                    className="
+                      text-3xl
+                      text-[#92643E]
+                    "
+                  />
 
                 </div>
 
 
-                <h3 className="text-xl font-bold text-slate-800">
-
+                <h3
+                  className="
+                    text-xl
+                    font-bold
+                    text-[#101C2E]
+                  "
+                >
                   No Savings Goals Yet
-
                 </h3>
 
 
-                <p className="text-slate-500 mt-2 max-w-md">
-
+                <p
+                  className="
+                    text-[#6F665B]
+                    mt-2
+                    max-w-md
+                  "
+                >
                   Create your first savings goal
                   and start working toward it.
-
                 </p>
 
 
@@ -1033,15 +1391,18 @@ function Savings() {
                     mt-6
                     inline-flex
                     items-center
+                    justify-center
                     gap-2
                     px-5
                     py-3
                     rounded-xl
-                    bg-indigo-600
-                    hover:bg-indigo-700
+                    bg-[#56061D]
+                    hover:bg-[#6F0A27]
                     text-white
                     font-semibold
                     transition
+                    w-full
+                    sm:w-auto
                   "
                 >
 
@@ -1055,7 +1416,12 @@ function Savings() {
 
             ) : (
 
-              <div className="divide-y divide-slate-100">
+              <div
+                className="
+                  divide-y
+                  divide-[#E5DDD2]
+                "
+              >
 
                 {goals.map(
                   (goal) => (
@@ -1089,39 +1455,94 @@ function Savings() {
 
       {showForm && (
 
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div
+          className="
+            fixed
+            inset-0
+            z-50
+            flex
+            items-center
+            justify-center
+            p-4
+          "
+        >
+
+          {/* BACKDROP */}
 
           <div
             className="
               absolute
               inset-0
-              bg-slate-950/60
+              bg-[#101C2E]/50
               backdrop-blur-sm
             "
             onClick={closeForm}
-          ></div>
+          />
 
 
-          <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden">
+          {/* MODAL */}
 
-            <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+          <div
+            className="
+              relative
+              w-full
+              max-w-2xl
+              max-h-[90vh]
+              bg-white
+              rounded-3xl
+              shadow-2xl
+              overflow-y-auto
+              border
+              border-[#E5DDD2]
+            "
+          >
 
-              <div>
+            {/* MODAL HEADER */}
 
-                <h2 className="text-2xl font-bold text-slate-800">
+            <div
+              className="
+                flex
+                items-center
+                justify-between
+                px-5
+                sm:px-6
+                py-5
+                border-b
+                border-[#E5DDD2]
+                sticky
+                top-0
+                bg-white
+                z-10
+                gap-4
+              "
+            >
 
+              <div className="min-w-0">
+
+                <h2
+                  className="
+                    text-xl
+                    sm:text-2xl
+                    font-bold
+                    text-[#101C2E]
+                  "
+                >
                   {editingGoal
                     ? "Edit Savings Goal"
                     : "Add Savings Goal"}
-
                 </h2>
 
-                <p className="text-sm text-slate-500 mt-1">
 
+                <p
+                  className="
+                    text-sm
+                    text-[#6F665B]
+                    mt-1
+                  "
+                >
                   {editingGoal
                     ? "Update your savings goal."
                     : "Create a new goal to start saving."}
-
                 </p>
 
               </div>
@@ -1129,18 +1550,21 @@ function Savings() {
 
               <button
                 onClick={closeForm}
+                disabled={saving}
                 className="
                   cursor-pointer
                   w-10
                   h-10
                   rounded-xl
-                  bg-slate-100
-                  hover:bg-slate-200
-                  text-slate-500
+                  bg-[#F3EBDD]
+                  hover:bg-[#E5DDD2]
+                  text-[#6F665B]
                   flex
                   items-center
                   justify-center
                   transition
+                  disabled:opacity-50
+                  shrink-0
                 "
               >
 
@@ -1151,23 +1575,41 @@ function Savings() {
             </div>
 
 
+            {/* FORM */}
+
             <form
               onSubmit={handleSubmit}
-              className="p-6"
+              className="
+                p-5
+                sm:p-6
+              "
             >
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
+              <div
+                className="
+                  grid
+                  grid-cols-1
+                  md:grid-cols-2
+                  gap-5
+                "
+              >
 
                 {/* GOAL NAME */}
 
                 <div className="md:col-span-2">
 
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-
+                  <label
+                    className="
+                      block
+                      text-sm
+                      font-semibold
+                      text-[#101C2E]
+                      mb-2
+                    "
+                  >
                     Goal Name
-
                   </label>
+
 
                   <input
                     type="text"
@@ -1186,10 +1628,13 @@ function Savings() {
                       py-3
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[#D8C8B4]
+                      bg-white
+                      text-[#101C2E]
+                      placeholder:text-[#9A9085]
                       focus:outline-none
                       focus:ring-2
-                      focus:ring-indigo-500
+                      focus:ring-[#56061D]
                       focus:border-transparent
                     "
                   />
@@ -1201,19 +1646,34 @@ function Savings() {
 
                 <div>
 
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-
+                  <label
+                    className="
+                      block
+                      text-sm
+                      font-semibold
+                      text-[#101C2E]
+                      mb-2
+                    "
+                  >
                     Target Amount
-
                   </label>
+
 
                   <div className="relative">
 
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">
-
+                    <span
+                      className="
+                        absolute
+                        left-4
+                        top-1/2
+                        -translate-y-1/2
+                        text-[#6F665B]
+                        font-semibold
+                      "
+                    >
                       ₹
-
                     </span>
+
 
                     <input
                       type="number"
@@ -1235,10 +1695,12 @@ function Savings() {
                         py-3
                         rounded-xl
                         border
-                        border-slate-200
+                        border-[#D8C8B4]
+                        bg-white
+                        text-[#101C2E]
                         focus:outline-none
                         focus:ring-2
-                        focus:ring-indigo-500
+                        focus:ring-[#56061D]
                         focus:border-transparent
                       "
                     />
@@ -1252,19 +1714,34 @@ function Savings() {
 
                 <div>
 
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-
+                  <label
+                    className="
+                      block
+                      text-sm
+                      font-semibold
+                      text-[#101C2E]
+                      mb-2
+                    "
+                  >
                     Already Saved
-
                   </label>
+
 
                   <div className="relative">
 
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">
-
+                    <span
+                      className="
+                        absolute
+                        left-4
+                        top-1/2
+                        -translate-y-1/2
+                        text-[#6F665B]
+                        font-semibold
+                      "
+                    >
                       ₹
-
                     </span>
+
 
                     <input
                       type="number"
@@ -1286,10 +1763,12 @@ function Savings() {
                         py-3
                         rounded-xl
                         border
-                        border-slate-200
+                        border-[#D8C8B4]
+                        bg-white
+                        text-[#101C2E]
                         focus:outline-none
                         focus:ring-2
-                        focus:ring-indigo-500
+                        focus:ring-[#56061D]
                         focus:border-transparent
                       "
                     />
@@ -1303,11 +1782,18 @@ function Savings() {
 
                 <div className="md:col-span-2">
 
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">
-
+                  <label
+                    className="
+                      block
+                      text-sm
+                      font-semibold
+                      text-[#101C2E]
+                      mb-2
+                    "
+                  >
                     Deadline
-
                   </label>
+
 
                   <input
                     type="date"
@@ -1325,10 +1811,12 @@ function Savings() {
                       py-3
                       rounded-xl
                       border
-                      border-slate-200
+                      border-[#D8C8B4]
+                      bg-white
+                      text-[#101C2E]
                       focus:outline-none
                       focus:ring-2
-                      focus:ring-indigo-500
+                      focus:ring-[#56061D]
                       focus:border-transparent
                     "
                   />
@@ -1340,7 +1828,19 @@ function Savings() {
 
               {/* BUTTONS */}
 
-              <div className="flex justify-end gap-3 mt-7 pt-5 border-t border-slate-100">
+              <div
+                className="
+                  flex
+                  flex-col-reverse
+                  sm:flex-row
+                  sm:justify-end
+                  gap-3
+                  mt-7
+                  pt-5
+                  border-t
+                  border-[#E5DDD2]
+                "
+              >
 
                 <button
                   type="button"
@@ -1352,16 +1852,17 @@ function Savings() {
                     py-3
                     rounded-xl
                     border
-                    border-slate-200
-                    text-slate-600
-                    hover:bg-slate-50
+                    border-[#D8C8B4]
+                    text-[#6F665B]
+                    hover:bg-[#F3EBDD]
                     font-semibold
                     transition
+                    disabled:opacity-50
+                    w-full
+                    sm:w-auto
                   "
                 >
-
                   Cancel
-
                 </button>
 
 
@@ -1373,13 +1874,15 @@ function Savings() {
                     px-6
                     py-3
                     rounded-xl
-                    bg-indigo-600
-                    hover:bg-indigo-700
+                    bg-[#56061D]
+                    hover:bg-[#6F0A27]
                     text-white
                     font-semibold
                     transition
                     disabled:opacity-50
                     disabled:cursor-not-allowed
+                    w-full
+                    sm:w-auto
                   "
                 >
 
@@ -1408,13 +1911,25 @@ function Savings() {
 
       {deleteGoal && (
 
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div
+          className="
+            fixed
+            inset-0
+            z-[60]
+            flex
+            items-center
+            justify-center
+            p-4
+          "
+        >
+
+          {/* BACKDROP */}
 
           <div
             className="
               absolute
               inset-0
-              bg-slate-950/60
+              bg-[#101C2E]/50
               backdrop-blur-sm
             "
             onClick={() => {
@@ -1424,33 +1939,76 @@ function Savings() {
               }
 
             }}
-          ></div>
+          />
 
 
-          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-7">
+          {/* DIALOG */}
 
-            <div className="w-14 h-14 rounded-2xl bg-rose-100 flex items-center justify-center mb-5">
+          <div
+            className="
+              relative
+              w-full
+              max-w-md
+              bg-white
+              rounded-3xl
+              shadow-2xl
+              p-6
+              sm:p-7
+              border
+              border-[#E5DDD2]
+            "
+          >
 
-              <FaTrash className="text-rose-600 text-xl" />
+            <div
+              className="
+                w-14
+                h-14
+                rounded-2xl
+                bg-[#56061D]/10
+                flex
+                items-center
+                justify-center
+                mb-5
+              "
+            >
+
+              <FaTrash
+                className="
+                  text-[#7A263D]
+                  text-xl
+                "
+              />
 
             </div>
 
 
-            <h2 className="text-2xl font-bold text-slate-800">
-
+            <h2
+              className="
+                text-2xl
+                font-bold
+                text-[#101C2E]
+              "
+            >
               Delete Savings Goal?
-
             </h2>
 
 
-            <p className="text-slate-500 mt-2 leading-relaxed">
-
+            <p
+              className="
+                text-[#6F665B]
+                mt-2
+                leading-relaxed
+              "
+            >
               Are you sure you want to delete{" "}
 
-              <span className="font-semibold text-slate-700">
-
+              <span
+                className="
+                  font-semibold
+                  text-[#101C2E]
+                "
+              >
                 "{deleteGoal.goal_name}"
-
               </span>
 
               ?
@@ -1458,11 +2016,19 @@ function Savings() {
               <br />
 
               This action cannot be undone.
-
             </p>
 
 
-            <div className="flex justify-end gap-3 mt-7">
+            <div
+              className="
+                flex
+                flex-col-reverse
+                sm:flex-row
+                sm:justify-end
+                gap-3
+                mt-7
+              "
+            >
 
               <button
                 onClick={() =>
@@ -1475,16 +2041,16 @@ function Savings() {
                   py-3
                   rounded-xl
                   border
-                  border-slate-200
-                  text-slate-600
-                  hover:bg-slate-50
+                  border-[#D8C8B4]
+                  text-[#6F665B]
+                  hover:bg-[#F3EBDD]
                   font-semibold
                   transition
+                  w-full
+                  sm:w-auto
                 "
               >
-
                 Cancel
-
               </button>
 
 
@@ -1498,12 +2064,14 @@ function Savings() {
                   px-5
                   py-3
                   rounded-xl
-                  bg-rose-600
-                  hover:bg-rose-700
+                  bg-[#56061D]
+                  hover:bg-[#6F0A27]
                   text-white
                   font-semibold
                   transition
                   disabled:opacity-50
+                  w-full
+                  sm:w-auto
                 "
               >
 
@@ -1528,9 +2096,9 @@ function Savings() {
 }
 
 
-// =========================================================
-// SAVINGS GOAL CARD
-// =========================================================
+/* =========================================================
+   SAVINGS GOAL CARD
+========================================================= */
 
 function SavingsGoalCard({
   goal,
@@ -1545,16 +2113,23 @@ function SavingsGoalCard({
       goal.target_amount || 0
     );
 
+
   const saved =
     Number(
       goal.saved_amount || 0
     );
+
 
   const remaining =
     Math.max(
       target - saved,
       0
     );
+
+
+  // =========================================================
+  // REAL PROGRESS
+  // =========================================================
 
   const progress =
     target > 0
@@ -1563,6 +2138,7 @@ function SavingsGoalCard({
           100
         )
       : 0;
+
 
   const completed =
     saved >= target;
@@ -1573,17 +2149,18 @@ function SavingsGoalCard({
   // =========================================================
 
   let progressColor =
-    "bg-indigo-600";
+    "bg-[#8FB39B]";
+
 
   if (completed) {
 
     progressColor =
-      "bg-emerald-500";
+      "bg-[#92643E]";
 
   } else if (progress >= 80) {
 
     progressColor =
-      "bg-orange-500";
+      "bg-[#B4774D]";
 
   }
 
@@ -1595,10 +2172,12 @@ function SavingsGoalCard({
   const today =
     new Date();
 
+
   const deadline =
     new Date(
       goal.deadline
     );
+
 
   const daysRemaining =
     Math.ceil(
@@ -1619,8 +2198,9 @@ function SavingsGoalCard({
       goal.deadline
     )}`;
 
+
   let deadlineClass =
-    "text-slate-500";
+    "text-[#6F665B]";
 
 
   if (completed) {
@@ -1629,7 +2209,7 @@ function SavingsGoalCard({
       "Goal completed";
 
     deadlineClass =
-      "text-emerald-600 font-semibold";
+      "text-[#5F8069] font-semibold";
 
   } else if (
     daysRemaining < 0
@@ -1639,7 +2219,7 @@ function SavingsGoalCard({
       "Deadline passed";
 
     deadlineClass =
-      "text-rose-600 font-semibold";
+      "text-[#7A263D] font-semibold";
 
   } else if (
     daysRemaining <= 30
@@ -1649,7 +2229,7 @@ function SavingsGoalCard({
       `${daysRemaining} days remaining`;
 
     deadlineClass =
-      "text-orange-600 font-semibold";
+      "text-[#92643E] font-semibold";
 
   }
 
@@ -1660,37 +2240,96 @@ function SavingsGoalCard({
 
   return (
 
-    <div className="p-6 hover:bg-slate-50 transition">
+    <div
+      className="
+        p-5
+        sm:p-6
+        bg-white
+        hover:bg-[#FAF8F4]
+        transition
+      "
+    >
 
-      <div className="flex flex-col lg:flex-row lg:items-center gap-6">
+      <div
+        className="
+          flex
+          flex-col
+          lg:flex-row
+          lg:items-center
+          gap-6
+        "
+      >
 
 
-        {/* GOAL */}
+        {/* =================================================
+            GOAL
+        ================================================= */}
 
-        <div className="flex items-center gap-4 lg:w-[280px]">
+        <div
+          className="
+            flex
+            items-center
+            gap-4
+            lg:w-[280px]
+            shrink-0
+            min-w-0
+          "
+        >
 
-          <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
+          <div
+            className="
+              w-12
+              h-12
+              rounded-xl
+              bg-[#92643E]/10
+              border
+              border-[#92643E]/20
+              flex
+              items-center
+              justify-center
+              flex-shrink-0
+            "
+          >
 
             {completed ? (
 
-              <FaCheckCircle className="text-emerald-500 text-xl" />
+              <FaCheckCircle
+                className="
+                  text-[#92643E]
+                  text-xl
+                "
+              />
 
             ) : (
 
-              <FaBullseye className="text-indigo-600 text-xl" />
+              <FaBullseye
+                className="
+                  text-[#92643E]
+                  text-xl
+                "
+              />
 
             )}
 
           </div>
 
 
-          <div className="min-w-0">
+          <div
+            className="
+              min-w-0
+            "
+          >
 
-            <h3 className="font-bold text-slate-800 truncate">
-
+            <h3
+              className="
+                font-bold
+                text-[#101C2E]
+                truncate
+              "
+            >
               {goal.goal_name}
-
             </h3>
+
 
             <p
               className={`
@@ -1699,9 +2338,7 @@ function SavingsGoalCard({
                 ${deadlineClass}
               `}
             >
-
               {deadlineText}
-
             </p>
 
           </div>
@@ -1709,50 +2346,95 @@ function SavingsGoalCard({
         </div>
 
 
-        {/* PROGRESS */}
+        {/* =================================================
+            PROGRESS
+        ================================================= */}
 
-        <div className="flex-1">
+        <div
+          className="
+            flex-1
+            min-w-0
+          "
+        >
 
-          <div className="flex justify-between items-center mb-2">
+          <div
+            className="
+              flex
+              justify-between
+              items-center
+              gap-3
+              mb-2
+            "
+          >
 
-            <div>
+            <div
+              className="
+                min-w-0
+                text-sm
+              "
+            >
 
-              <span className="text-sm text-slate-500">
-
+              <span
+                className="
+                  text-[#6F665B]
+                "
+              >
                 Saved
-
               </span>
 
-              <span className="ml-2 font-semibold text-slate-800">
 
+              <span
+                className="
+                  ml-2
+                  font-semibold
+                  text-[#101C2E]
+                "
+              >
                 ₹{formatMoney(
                   saved
                 )}
-
               </span>
 
-              <span className="text-sm text-slate-400">
 
+              <span
+                className="
+                  text-[#9A9085]
+                "
+              >
                 {" "}of ₹
                 {formatMoney(
                   target
                 )}
-
               </span>
 
             </div>
 
 
-            <span className="text-sm font-semibold text-slate-600">
-
+            <span
+              className="
+                text-sm
+                font-semibold
+                text-[#101C2E]
+                shrink-0
+              "
+            >
               {progress.toFixed(2)}%
-
             </span>
 
           </div>
 
 
-          <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+          {/* PROGRESS BAR */}
+
+          <div
+            className="
+              w-full
+              h-3
+              bg-[#F3EBDD]
+              rounded-full
+              overflow-hidden
+            "
+          >
 
             <div
               className={`
@@ -1766,42 +2448,61 @@ function SavingsGoalCard({
                 width:
                   `${progress}%`,
               }}
-            ></div>
+            />
 
           </div>
 
 
-          <div className="flex justify-between mt-2 text-xs">
+          {/* BOTTOM INFORMATION */}
 
-            <span className="text-slate-500">
+          <div
+            className="
+              flex
+              flex-col
+              sm:flex-row
+              sm:justify-between
+              gap-1
+              mt-2
+              text-xs
+            "
+          >
 
+            <span
+              className="
+                text-[#6F665B]
+              "
+            >
               Remaining:
               {" "}
               ₹{formatMoney(
                 remaining
               )}
-
             </span>
 
 
             {completed ? (
 
-              <span className="text-emerald-600 font-semibold">
-
+              <span
+                className="
+                  text-[#5F8069]
+                  font-semibold
+                "
+              >
                 Goal Achieved ✓
-
               </span>
 
             ) : (
 
-              <span className="text-slate-400">
-
+              <span
+                className="
+                  text-[#9A9085]
+                "
+              >
                 Deadline:
                 {" "}
                 {formatDate(
                   goal.deadline
                 )}
-
               </span>
 
             )}
@@ -1811,10 +2512,20 @@ function SavingsGoalCard({
         </div>
 
 
-        {/* ACTIONS */}
+        {/* =================================================
+            ACTIONS
+        ================================================= */}
 
-        <div className="flex items-center justify-end gap-2 lg:w-[100px]">
-
+        <div
+          className="
+            flex
+            items-center
+            justify-end
+            gap-2
+            lg:w-[100px]
+            shrink-0
+          "
+        >
 
           {/* EDIT */}
 
@@ -1828,9 +2539,11 @@ function SavingsGoalCard({
               w-9
               h-9
               rounded-lg
-              bg-indigo-50
-              text-indigo-600
-              hover:bg-indigo-600
+              bg-[#92643E]/10
+              border
+              border-[#92643E]/20
+              text-[#92643E]
+              hover:bg-[#92643E]
               hover:text-white
               flex
               items-center
@@ -1856,9 +2569,11 @@ function SavingsGoalCard({
               w-9
               h-9
               rounded-lg
-              bg-rose-50
-              text-rose-600
-              hover:bg-rose-600
+              bg-[#56061D]/10
+              border
+              border-[#56061D]/20
+              text-[#7A263D]
+              hover:bg-[#56061D]
               hover:text-white
               flex
               items-center

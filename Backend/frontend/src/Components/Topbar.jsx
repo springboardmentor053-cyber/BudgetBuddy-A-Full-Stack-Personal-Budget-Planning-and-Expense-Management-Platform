@@ -7,13 +7,12 @@ import {
 import {
   FaBell,
   FaSearch,
-  FaMoon,
-  FaSun,
   FaCheckCircle,
   FaExclamationTriangle,
   FaExclamationCircle,
   FaInfoCircle,
   FaTimes,
+  FaBars,
 } from "react-icons/fa";
 
 import { MdAccountCircle } from "react-icons/md";
@@ -27,69 +26,35 @@ import api from "../services/api";
 
 
 function Topbar() {
-
-  // =========================================================
-  // DARK MODE
-  // =========================================================
-
-  const [darkMode, setDarkMode] = useState(() => {
-    return localStorage.getItem("theme") === "dark";
-  });
-
-
-  useEffect(() => {
-
-    if (darkMode) {
-
-      document.documentElement.classList.add("dark");
-
-      localStorage.setItem(
-        "theme",
-        "dark"
-      );
-
-    } else {
-
-      document.documentElement.classList.remove("dark");
-
-      localStorage.setItem(
-        "theme",
-        "light"
-      );
-
-    }
-
-  }, [darkMode]);
-
-
   const location = useLocation();
   const navigate = useNavigate();
 
 
-  // =========================================================
-  // PAGE TITLES
-  // =========================================================
+  /* =========================================================
+     SEARCH
+  ========================================================= */
+
+  const [
+    searchQuery,
+    setSearchQuery,
+  ] = useState("");
+
+
+  /* =========================================================
+     PAGE TITLES
+  ========================================================= */
 
   const pageTitles = {
-
     "/dashboard": "Financial Dashboard",
-
     "/income": "Income",
-
     "/expense": "Expenses",
-
     "/expenses": "Expenses",
-
+    "/transactions": "Transactions",
     "/budget": "Budgets",
-
     "/budgets": "Budgets",
-
     "/savings": "Savings Goals",
-
     "/notifications": "Notifications",
-
     "/reports": "Financial Reports",
-
   };
 
 
@@ -98,9 +63,9 @@ function Topbar() {
     "Financial Dashboard";
 
 
-  // =========================================================
-  // DATE
-  // =========================================================
+  /* =========================================================
+     DATE
+  ========================================================= */
 
   const today =
     new Date().toLocaleDateString(
@@ -114,69 +79,111 @@ function Topbar() {
     );
 
 
-  // =========================================================
-  // NOTIFICATIONS
-  // =========================================================
+  /* =========================================================
+     NOTIFICATIONS
+  ========================================================= */
 
   const [
     notifications,
     setNotifications,
   ] = useState([]);
 
-
   const [
     showNotifications,
     setShowNotifications,
   ] = useState(false);
-
 
   const [
     loadingNotifications,
     setLoadingNotifications,
   ] = useState(false);
 
-
-  // =========================================================
-  // NEW NOTIFICATION POPUP
-  // =========================================================
-
   const [
     newNotification,
     setNewNotification,
   ] = useState(null);
 
-
-  // Store IDs that were already known
   const previousNotificationIds =
     useRef(new Set());
 
-
-  // First fetch completed
   const firstNotificationFetch =
     useRef(true);
-
-
-  // =========================================================
-  // NOTIFICATION DROPDOWN REF
-  // =========================================================
 
   const notificationRef =
     useRef(null);
 
 
-  // =========================================================
-  // FETCH NOTIFICATIONS
-  // =========================================================
+  /* =========================================================
+     SEARCH
+  ========================================================= */
+
+  const handleSearch = () => {
+    const query = searchQuery.trim();
+
+    if (!query) {
+      navigate("/transactions");
+      return;
+    }
+
+    navigate(
+      `/transactions?search=${encodeURIComponent(
+        query
+      )}`
+    );
+  };
+
+
+  const handleSearchKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleSearch();
+    }
+  };
+
+
+  /* =========================================================
+     SEARCH URL SYNC
+  ========================================================= */
+
+  useEffect(() => {
+    const params =
+      new URLSearchParams(
+        location.search
+      );
+
+    const query =
+      params.get("search") || "";
+
+    setSearchQuery(query);
+  }, [location.search]);
+
+
+  /* =========================================================
+     MOBILE SIDEBAR
+  ========================================================= */
+
+  const openMobileSidebar = () => {
+    window.dispatchEvent(
+      new Event("toggle-sidebar")
+    );
+  };
+
+
+  /* =========================================================
+     FETCH NOTIFICATIONS
+  ========================================================= */
 
   const fetchNotifications = async () => {
-
     try {
-
       setLoadingNotifications(true);
 
       const token =
         localStorage.getItem("access");
 
+      if (!token) {
+        setNotifications([]);
+        return;
+      }
 
       const response =
         await api.get(
@@ -189,22 +196,10 @@ function Topbar() {
           }
         );
 
-
-      // -------------------------------------------------------
-      // SUPPORT BOTH:
-      // response.data = [...]
-      // response.data.results = [...]
-      // -------------------------------------------------------
-
       const data =
         Array.isArray(response.data)
           ? response.data
           : response.data?.results || [];
-
-
-      // -------------------------------------------------------
-      // SORT NEWEST FIRST
-      // -------------------------------------------------------
 
       const sortedNotifications =
         [...data].sort(
@@ -214,14 +209,11 @@ function Topbar() {
         );
 
 
-      // -------------------------------------------------------
-      // CHECK FOR NEW NOTIFICATION
-      // -------------------------------------------------------
+      /* =================================================
+         NEW NOTIFICATION
+      ================================================= */
 
-      if (
-        !firstNotificationFetch.current
-      ) {
-
+      if (!firstNotificationFetch.current) {
         const newlyCreated =
           sortedNotifications.filter(
             (notification) =>
@@ -230,50 +222,18 @@ function Topbar() {
               )
           );
 
-
         if (newlyCreated.length > 0) {
+          const newest = newlyCreated[0];
 
-          // Get newest notification
-          const newest =
-            newlyCreated[0];
-
-
-          // ---------------------------------------------------
-          // SHOW AUTOMATIC POPUP
-          // ---------------------------------------------------
-
-          setNewNotification(
-            newest
-          );
-
-
-          // ---------------------------------------------------
-          // OPEN NOTIFICATION DROPDOWN
-          // ---------------------------------------------------
-
-          setShowNotifications(
-            false
-          );
-
-
-          // ---------------------------------------------------
-          // CLOSE TOAST AFTER 5 SECONDS
-          // ---------------------------------------------------
+          setNewNotification(newest);
+          setShowNotifications(false);
 
           setTimeout(() => {
-
             setNewNotification(null);
-
           }, 5000);
-
         }
-
       }
 
-
-      // -------------------------------------------------------
-      // UPDATE KNOWN NOTIFICATION IDS
-      // -------------------------------------------------------
 
       previousNotificationIds.current =
         new Set(
@@ -283,125 +243,85 @@ function Topbar() {
           )
         );
 
-
       firstNotificationFetch.current =
         false;
-
 
       setNotifications(
         sortedNotifications
       );
 
-
     } catch (error) {
-
       console.error(
         "Unable to fetch notifications:",
         error
       );
-
     } finally {
-
-      setLoadingNotifications(
-        false
-      );
-
+      setLoadingNotifications(false);
     }
-
   };
 
 
-  // =========================================================
-  // INITIAL FETCH + AUTO REFRESH
-  // =========================================================
+  /* =========================================================
+     INITIAL FETCH + AUTO REFRESH
+  ========================================================= */
 
   useEffect(() => {
-
     fetchNotifications();
-
 
     const interval =
       setInterval(() => {
-
         fetchNotifications();
-
-      }, 3000);
-
+      }, 5000);
 
     return () => {
-
-      clearInterval(
-        interval
-      );
-
+      clearInterval(interval);
     };
-
   }, []);
 
 
-  // =========================================================
-  // CLOSE DROPDOWN WHEN PAGE CHANGES
-  // =========================================================
+  /* =========================================================
+     CLOSE NOTIFICATIONS WHEN PAGE CHANGES
+  ========================================================= */
 
   useEffect(() => {
-
-    setShowNotifications(
-      false
-    );
-
-    setNewNotification(
-      null
-    );
-
+    setShowNotifications(false);
+    setNewNotification(null);
   }, [location.pathname]);
 
 
-  // =========================================================
-  // CLOSE WHEN CLICKING OUTSIDE
-  // =========================================================
+  /* =========================================================
+     CLOSE DROPDOWN OUTSIDE
+  ========================================================= */
 
   useEffect(() => {
-
-    const handleOutsideClick =
-      (event) => {
-
-        if (
-          notificationRef.current &&
-          !notificationRef.current.contains(
-            event.target
-          )
-        ) {
-
-          setShowNotifications(
-            false
-          );
-
-        }
-
-      };
-
+    const handleOutsideClick = (event) => {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(
+          event.target
+        )
+      ) {
+        setShowNotifications(false);
+      }
+    };
 
     document.addEventListener(
       "mousedown",
       handleOutsideClick
     );
 
-
     return () => {
-
       document.removeEventListener(
         "mousedown",
         handleOutsideClick
       );
-
     };
-
   }, []);
 
 
-  // =========================================================
-  // UNREAD COUNT
-  // =========================================================
+  /* =========================================================
+     UNREAD COUNT
+  ========================================================= */
 
   const unreadCount =
     notifications.filter(
@@ -410,170 +330,123 @@ function Topbar() {
     ).length;
 
 
-  // =========================================================
-  // LATEST NOTIFICATIONS
-  // =========================================================
-
   const latestNotifications =
     notifications.slice(0, 5);
 
 
-  // =========================================================
-  // NOTIFICATION ICON
-  // =========================================================
+  /* =========================================================
+     NOTIFICATION ICON
+  ========================================================= */
 
-  const getNotificationIcon =
-    (type) => {
+  const getNotificationIcon = (type) => {
+    switch (type) {
+      case "SUCCESS":
+        return (
+          <FaCheckCircle
+            className="
+              text-[#92643E]
+              text-lg
+            "
+          />
+        );
 
-      switch (type) {
+      case "WARNING":
+        return (
+          <FaExclamationTriangle
+            className="
+              text-[#92643E]
+              text-lg
+            "
+          />
+        );
 
-        case "SUCCESS":
+      case "ALERT":
+        return (
+          <FaExclamationCircle
+            className="
+              text-[#56061D]
+              text-lg
+            "
+          />
+        );
 
-          return (
-            <FaCheckCircle
-              className="
-                text-emerald-500
-                text-lg
-              "
-            />
-          );
-
-
-        case "WARNING":
-
-          return (
-            <FaExclamationTriangle
-              className="
-                text-orange-500
-                text-lg
-              "
-            />
-          );
-
-
-        case "ALERT":
-
-          return (
-            <FaExclamationCircle
-              className="
-                text-red-500
-                text-lg
-              "
-            />
-          );
+      default:
+        return (
+          <FaInfoCircle
+            className="
+              text-[#101C2E]
+              text-lg
+            "
+          />
+        );
+    }
+  };
 
 
-        default:
+  /* =========================================================
+     DATE FORMAT
+  ========================================================= */
 
-          return (
-            <FaInfoCircle
-              className="
-                text-indigo-500
-                text-lg
-              "
-            />
-          );
+  const formatNotificationTime = (
+    dateString
+  ) => {
+    if (!dateString) {
+      return "";
+    }
 
+    return new Date(
+      dateString
+    ).toLocaleDateString(
+      "en-IN",
+      {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
       }
-
-    };
-
-
-  // =========================================================
-  // DATE FORMAT
-  // =========================================================
-
-  const formatNotificationTime =
-    (dateString) => {
-
-      if (!dateString) {
-        return "";
-      }
+    );
+  };
 
 
-      return new Date(
-        dateString
-      ).toLocaleDateString(
-        "en-IN",
-        {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        }
-      );
+  /* =========================================================
+     OPEN NOTIFICATIONS PAGE
+  ========================================================= */
 
-    };
+  const openNotificationsPage = () => {
+    setShowNotifications(false);
+    setNewNotification(null);
+
+    navigate("/notifications");
+  };
 
 
-  // =========================================================
-  // OPEN NOTIFICATIONS PAGE
-  // =========================================================
-
-  const openNotificationsPage =
-    () => {
-
-      setShowNotifications(
-        false
-      );
-
-      setNewNotification(
-        null
-      );
-
-      navigate(
-        "/notifications"
-      );
-
-    };
+  const toggleNotifications = () => {
+    setShowNotifications(
+      (previous) => !previous
+    );
+  };
 
 
-  // =========================================================
-  // TOGGLE NOTIFICATIONS
-  // =========================================================
+  const closeNewNotification = () => {
+    setNewNotification(null);
+  };
 
-  const toggleNotifications =
-    () => {
-
-      setShowNotifications(
-        (previous) => !previous
-      );
-
-    };
-
-
-  // =========================================================
-  // CLOSE NEW NOTIFICATION TOAST
-  // =========================================================
-
-  const closeNewNotification =
-    () => {
-
-      setNewNotification(
-        null
-      );
-
-    };
-
-
-  // =========================================================
-  // UI
-  // =========================================================
 
   return (
-
     <header
       className="
-        h-[80px]
+        min-h-[80px]
         bg-white
-        dark:bg-slate-900
         border-b
-        border-slate-200
-        dark:border-slate-700
-        px-6
+        border-[#E5DDD2]
+        px-4
+        sm:px-6
         md:px-8
+        py-3
         flex
+        flex-wrap
         items-center
         justify-between
+        gap-3
         sticky
         top-0
         z-40
@@ -584,30 +457,72 @@ function Topbar() {
           LEFT
       ====================================================== */}
 
-      <div>
+      <div
+        className="
+          flex
+          items-center
+          gap-3
+          min-w-0
+        "
+      >
 
-        <h1
+        {/* MOBILE MENU */}
+
+        <button
+          type="button"
+          onClick={openMobileSidebar}
           className="
-            text-2xl
-            font-bold
-            text-slate-800
-            dark:text-slate-100
+            lg:hidden
+            w-10
+            h-10
+            rounded-xl
+            bg-[#F8F5EF]
+            border
+            border-[#E5DDD2]
+            flex
+            items-center
+            justify-center
+            text-[#101C2E]
+            hover:bg-[#F3EBDD]
+            hover:text-[#56061D]
+            transition
+            cursor-pointer
+            shrink-0
           "
+          aria-label="Open menu"
         >
-          {pageTitle}
-        </h1>
+          <FaBars />
+        </button>
 
 
-        <p
-          className="
-            text-slate-500
-            dark:text-slate-400
-            text-sm
-            mt-1
-          "
-        >
-          {today}
-        </p>
+        <div className="min-w-0">
+
+          <h1
+            className="
+              text-lg
+              sm:text-xl
+              md:text-2xl
+              font-semibold
+              text-[#101C2E]
+              truncate
+            "
+          >
+            {pageTitle}
+          </h1>
+
+          <p
+            className="
+              text-[#6F665B]
+              text-xs
+              sm:text-sm
+              mt-1
+              truncate
+            "
+          >
+            {today}
+          </p>
+
+        </div>
 
       </div>
 
@@ -620,47 +535,74 @@ function Topbar() {
         className="
           flex
           items-center
-          gap-4
-          md:gap-6
+          gap-2
+          sm:gap-3
+          md:gap-4
         "
       >
 
         {/* =================================================
-            SEARCH
+            DESKTOP SEARCH
         ================================================== */}
 
         <div
           className="
             hidden
-            lg:flex
+            md:flex
             items-center
-            bg-slate-100
-            dark:bg-slate-800
+            bg-[#F8F5EF]
+            border
+            border-[#E5DDD2]
             rounded-xl
             px-4
-            py-2
-            w-80
+            py-2.5
+            w-56
+            lg:w-80
+            transition
+            focus-within:border-[#92643E]
           "
         >
 
-          <FaSearch
+          <button
+            type="button"
+            onClick={handleSearch}
+            title="Search transactions"
             className="
-              text-slate-400
+              flex
+              items-center
+              justify-center
+              cursor-pointer
               mr-3
+              shrink-0
             "
-          />
+          >
+            <FaSearch
+              className="
+                text-[#8B8175]
+                hover:text-[#92643E]
+                transition
+              "
+            />
+          </button>
 
 
           <input
             type="text"
+            value={searchQuery}
+            onChange={(event) =>
+              setSearchQuery(
+                event.target.value
+              )
+            }
+            onKeyDown={handleSearchKeyDown}
             placeholder="Search transactions..."
             className="
               bg-transparent
               outline-none
               w-full
-              text-slate-700
-              dark:text-slate-200
-              placeholder:text-slate-400
+              text-[#101C2E]
+              placeholder:text-[#A99F91]
+              text-sm
             "
           />
 
@@ -668,90 +610,80 @@ function Topbar() {
 
 
         {/* =================================================
-            DARK MODE
+            MOBILE SEARCH
         ================================================== */}
 
         <button
           type="button"
-          onClick={() =>
-            setDarkMode(
-              (previous) =>
-                !previous
-            )
-          }
-          title={
-            darkMode
-              ? "Switch to light mode"
-              : "Switch to dark mode"
-          }
+          onClick={() => {
+            const query =
+              window.prompt(
+                "Search transactions"
+              );
+
+            if (query !== null) {
+              setSearchQuery(query);
+
+              if (query.trim()) {
+                navigate(
+                  `/transactions?search=${encodeURIComponent(
+                    query.trim()
+                  )}`
+                );
+              } else {
+                navigate("/transactions");
+              }
+            }
+          }}
           className="
-            cursor-pointer
-            w-11
-            h-11
+            md:hidden
+            w-10
+            h-10
             rounded-xl
-            bg-slate-100
-            hover:bg-slate-200
-            dark:bg-slate-800
-            dark:hover:bg-slate-700
-            transition
+            bg-[#F8F5EF]
+            border
+            border-[#E5DDD2]
             flex
             items-center
             justify-center
+            text-[#101C2E]
+            hover:bg-[#F3EBDD]
+            hover:text-[#92643E]
+            transition
+            cursor-pointer
           "
+          title="Search"
         >
-
-          {darkMode ? (
-
-            <FaSun
-              className="
-                text-yellow-400
-              "
-            />
-
-          ) : (
-
-            <FaMoon
-              className="
-                text-slate-600
-                dark:text-slate-300
-              "
-            />
-
-          )}
-
+          <FaSearch />
         </button>
 
 
         {/* =================================================
-            NOTIFICATION
+            NOTIFICATIONS
         ================================================== */}
 
         <div
           ref={notificationRef}
-          className="
-            relative
-          "
+          className="relative"
         >
-
-          {/* =================================================
-              BELL
-          ================================================== */}
 
           <button
             type="button"
-            onClick={
-              toggleNotifications
-            }
+            onClick={toggleNotifications}
+            title="Notifications"
             className="
               cursor-pointer
               relative
-              w-11
-              h-11
+              w-10
+              h-10
+              sm:w-11
+              sm:h-11
               rounded-xl
-              bg-slate-100
-              hover:bg-slate-200
-              dark:bg-slate-800
-              dark:hover:bg-slate-700
+              bg-[#F8F5EF]
+              border
+              border-[#E5DDD2]
+              hover:bg-[#F3EBDD]
+              hover:border-[#92643E]
               transition
               flex
               items-center
@@ -761,44 +693,39 @@ function Topbar() {
 
             <FaBell
               className="
-                text-slate-600
-                dark:text-slate-200
+                text-[#101C2E]
+                text-base
+                sm:text-lg
               "
             />
 
 
-            {/* UNREAD BADGE */}
-
             {unreadCount > 0 && (
-
               <span
                 className="
                   absolute
                   -top-1
                   -right-1
-                  min-w-[20px]
+                  min-w-[19px]
                   h-5
                   px-1
                   rounded-full
-                  bg-red-500
+                  bg-[#56061D]
                   text-white
-                  text-[11px]
-                  font-bold
+                  text-[10px]
+                  sm:text-[11px]
+                  font-semibold
                   flex
                   items-center
                   justify-center
                   border-2
                   border-white
-                  dark:border-slate-900
                 "
               >
-
                 {unreadCount > 99
                   ? "99+"
                   : unreadCount}
-
               </span>
-
             )}
 
           </button>
@@ -809,24 +736,22 @@ function Topbar() {
           ================================================== */}
 
           {newNotification && (
-
             <div
               className="
                 fixed
-                top-24
-                right-6
+                top-20
+                sm:top-24
+                right-3
+                sm:right-6
                 z-[100]
                 w-[380px]
-                max-w-[calc(100vw-32px)]
-                bg-white
-                dark:bg-slate-800
+                max-w-[calc(100vw-24px)]
+                bg-[#F3EBDD]
                 border
-                border-slate-200
-                dark:border-slate-700
+                border-[#D8C8B4]
                 rounded-2xl
-                shadow-2xl
+                shadow-[0_20px_50px_rgba(16,28,46,0.20)]
                 overflow-hidden
-                animate-[slideIn_0.3s_ease-out]
               "
             >
 
@@ -839,37 +764,30 @@ function Topbar() {
                 "
               >
 
-                {/* ICON */}
-
                 <div
                   className="
                     w-10
                     h-10
                     rounded-xl
-                    bg-indigo-100
-                    dark:bg-indigo-900/40
+                    bg-[#E8DCC8]
+                    border
+                    border-[#D8C8B4]
                     flex
                     items-center
                     justify-center
                     flex-shrink-0
                   "
                 >
-
                   {getNotificationIcon(
                     newNotification.notification_type
                   )}
-
                 </div>
 
 
-                {/* CONTENT */}
-
-                <div
-                  className="
-                    flex-1
-                    min-w-0
-                  "
-                >
+                <div className="
+                  flex-1
+                  min-w-0
+                ">
 
                   <div
                     className="
@@ -882,31 +800,24 @@ function Topbar() {
 
                     <h4
                       className="
-                        font-bold
-                        text-slate-900
-                        dark:text-white
+                        font-semibold
+                        text-[#101C2E]
                         text-sm
                       "
                     >
                       {newNotification.title}
                     </h4>
 
-
                     <button
                       type="button"
-                      onClick={
-                        closeNewNotification
-                      }
+                      onClick={closeNewNotification}
                       className="
-                        text-slate-400
-                        hover:text-slate-700
-                        dark:hover:text-white
+                        text-[#9B9185]
+                        hover:text-[#56061D]
                         cursor-pointer
                       "
                     >
-
                       <FaTimes />
-
                     </button>
 
                   </div>
@@ -915,8 +826,7 @@ function Topbar() {
                   <p
                     className="
                       text-sm
-                      text-slate-600
-                      dark:text-slate-300
+                      text-[#625A52]
                       mt-1
                       leading-5
                     "
@@ -928,7 +838,7 @@ function Topbar() {
                   <p
                     className="
                       text-[11px]
-                      text-slate-400
+                      text-[#9B9185]
                       mt-2
                     "
                   >
@@ -942,68 +852,59 @@ function Topbar() {
               </div>
 
 
-              {/* VIEW */}
-
               <button
                 type="button"
-                onClick={
-                  openNotificationsPage
-                }
+                onClick={openNotificationsPage}
                 className="
                   w-full
-                  py-2
-                  bg-indigo-600
-                  hover:bg-indigo-700
-                  text-white
+                  py-2.5
+                  bg-[#56061D]
+                  hover:bg-[#6D0A27]
+                  text-[#F3EBDD]
                   text-sm
-                  font-semibold
+                  font-medium
                   cursor-pointer
+                  transition
                 "
               >
                 View Notification
               </button>
 
             </div>
-
           )}
 
 
           {/* =================================================
-              DROPDOWN
+              NOTIFICATION DROPDOWN
           ================================================== */}
 
           {showNotifications && (
-
             <div
               className="
                 absolute
                 right-0
-                top-14
+                top-12
+                sm:top-14
                 w-[400px]
-                max-w-[calc(100vw-32px)]
-                bg-white
-                dark:bg-slate-800
+                max-w-[calc(100vw-24px)]
+                bg-[#F3EBDD]
                 rounded-2xl
-                shadow-2xl
+                shadow-[0_20px_50px_rgba(16,28,46,0.20)]
                 border
-                border-slate-200
-                dark:border-slate-700
+                border-[#D8C8B4]
                 overflow-hidden
                 z-50
               "
             >
 
-              {/* HEADER */}
-
               <div
                 className="
-                  px-5
+                  px-4
+                  sm:px-5
                   py-4
-                  bg-white
-                  dark:bg-slate-800
+                  bg-[#F3EBDD]
                   border-b
-                  border-slate-200
-                  dark:border-slate-700
+                  border-[#D8C8B4]
                   flex
                   items-center
                   justify-between
@@ -1014,25 +915,22 @@ function Topbar() {
 
                   <h3
                     className="
-                      font-bold
-                      text-slate-900
-                      dark:text-white
-                      text-lg
+                      font-semibold
+                      text-[#101C2E]
+                      text-base
+                      sm:text-lg
                     "
                   >
                     Notifications
                   </h3>
 
-
                   <p
                     className="
                       text-xs
-                      text-slate-500
-                      dark:text-slate-300
+                      text-[#81776B]
                       mt-1
                     "
                   >
-
                     {unreadCount > 0
                       ? `${unreadCount} unread notification${
                           unreadCount > 1
@@ -1040,7 +938,6 @@ function Topbar() {
                             : ""
                         }`
                       : "You're all caught up"}
-
                   </p>
 
                 </div>
@@ -1048,30 +945,24 @@ function Topbar() {
 
                 <div
                   className="
-                    w-10
-                    h-10
+                    w-9
+                    h-9
+                    sm:w-10
+                    sm:h-10
                     rounded-xl
-                    bg-indigo-100
-                    dark:bg-indigo-900/40
+                    bg-[#E8DCC8]
+                    border
+                    border-[#D8C8B4]
                     flex
                     items-center
                     justify-center
                   "
                 >
-
-                  <FaBell
-                    className="
-                      text-indigo-600
-                      dark:text-indigo-400
-                    "
-                  />
-
+                  <FaBell className="text-[#56061D]" />
                 </div>
 
               </div>
 
-
-              {/* CONTENT */}
 
               {loadingNotifications ? (
 
@@ -1079,8 +970,7 @@ function Topbar() {
                   className="
                     py-12
                     text-center
-                    bg-white
-                    dark:bg-slate-800
+                    bg-[#F3EBDD]
                   "
                 >
 
@@ -1090,19 +980,17 @@ function Topbar() {
                       h-8
                       mx-auto
                       border-4
-                      border-indigo-200
-                      border-t-indigo-600
+                      border-[#D8C8B4]
+                      border-t-[#56061D]
                       rounded-full
                       animate-spin
                     "
-                  ></div>
-
+                  />
 
                   <p
                     className="
                       text-sm
-                      text-slate-500
-                      dark:text-slate-300
+                      text-[#81776B]
                       mt-3
                     "
                   >
@@ -1118,8 +1006,7 @@ function Topbar() {
                     py-12
                     px-6
                     text-center
-                    bg-white
-                    dark:bg-slate-800
+                    bg-[#F3EBDD]
                   "
                 >
 
@@ -1127,17 +1014,14 @@ function Topbar() {
                     className="
                       mx-auto
                       text-3xl
-                      text-slate-300
-                      dark:text-slate-600
+                      text-[#C4B8A8]
                     "
                   />
-
 
                   <p
                     className="
                       text-sm
-                      text-slate-500
-                      dark:text-slate-300
+                      text-[#81776B]
                       mt-3
                     "
                   >
@@ -1152,19 +1036,15 @@ function Topbar() {
                   className="
                     max-h-[380px]
                     overflow-y-auto
-                    bg-slate-50
-                    dark:bg-slate-900
+                    bg-[#E8DCC8]
                   "
                 >
 
                   {latestNotifications.map(
                     (notification) => (
-
                       <button
                         type="button"
-                        key={
-                          notification.id
-                        }
+                        key={notification.id}
                         onClick={
                           openNotificationsPage
                         }
@@ -1172,59 +1052,49 @@ function Topbar() {
                           cursor-pointer
                           w-full
                           text-left
-                          px-5
+                          px-4
+                          sm:px-5
                           py-4
                           flex
                           gap-3
                           border-b
-                          border-slate-200
-                          dark:border-slate-700
+                          border-[#D8C8B4]
                           transition
                           ${
                             notification.is_read
                               ? `
-                                bg-white
-                                hover:bg-slate-50
-                                dark:bg-slate-800
-                                dark:hover:bg-slate-700
+                                bg-[#F3EBDD]
+                                hover:bg-[#EFE3D1]
                               `
                               : `
-                                bg-indigo-50
-                                hover:bg-indigo-100
-                                dark:bg-indigo-950/50
-                                dark:hover:bg-indigo-950/70
+                                bg-[#E4D4C2]
+                                hover:bg-[#DCC9B5]
                               `
                           }
                         `}
                       >
 
-                        {/* ICON */}
-
                         <div
                           className="
-                            w-10
-                            h-10
+                            w-9
+                            h-9
+                            sm:w-10
+                            sm:h-10
                             rounded-xl
-                            bg-white
-                            dark:bg-slate-700
+                            bg-[#F3EBDD]
                             border
-                            border-slate-200
-                            dark:border-slate-600
+                            border-[#D8C8B4]
                             flex
                             items-center
                             justify-center
                             flex-shrink-0
                           "
                         >
-
                           {getNotificationIcon(
                             notification.notification_type
                           )}
-
                         </div>
 
-
-                        {/* TEXT */}
 
                         <div
                           className="
@@ -1247,32 +1117,26 @@ function Topbar() {
                                 truncate
                                 ${
                                   notification.is_read
-                                    ? "font-semibold"
-                                    : "font-bold"
+                                    ? "font-medium"
+                                    : "font-semibold"
                                 }
-                                text-slate-900
-                                dark:text-white
+                                text-[#101C2E]
                               `}
                             >
-                              {
-                                notification.title
-                              }
+                              {notification.title}
                             </h4>
 
 
                             {!notification.is_read && (
-
                               <span
                                 className="
                                   w-2
                                   h-2
                                   rounded-full
-                                  bg-indigo-600
-                                  dark:bg-indigo-400
+                                  bg-[#56061D]
                                   flex-shrink-0
                                 "
-                              ></span>
-
+                              />
                             )}
 
                           </div>
@@ -1282,14 +1146,11 @@ function Topbar() {
                             className="
                               text-sm
                               leading-5
-                              text-slate-600
-                              dark:text-slate-300
+                              text-[#625A52]
                               mt-1
                             "
                           >
-                            {
-                              notification.message
-                            }
+                            {notification.message}
                           </p>
 
 
@@ -1297,22 +1158,18 @@ function Topbar() {
                             className="
                               text-[11px]
                               font-medium
-                              text-slate-400
-                              dark:text-slate-500
+                              text-[#9B9185]
                               mt-2
                             "
                           >
-                            {
-                              formatNotificationTime(
-                                notification.created_at
-                              )
-                            }
+                            {formatNotificationTime(
+                              notification.created_at
+                            )}
                           </p>
 
                         </div>
 
                       </button>
-
                     )
                   )}
 
@@ -1321,18 +1178,13 @@ function Topbar() {
               )}
 
 
-              {/* VIEW ALL */}
-
               {notifications.length > 0 && (
-
                 <div
                   className="
                     p-3
-                    bg-white
-                    dark:bg-slate-800
+                    bg-[#F3EBDD]
                     border-t
-                    border-slate-200
-                    dark:border-slate-700
+                    border-[#D8C8B4]
                   "
                 >
 
@@ -1346,10 +1198,10 @@ function Topbar() {
                       w-full
                       py-2.5
                       rounded-xl
-                      bg-indigo-600
-                      hover:bg-indigo-700
-                      text-white
-                      font-semibold
+                      bg-[#56061D]
+                      hover:bg-[#6D0A27]
+                      text-[#F3EBDD]
+                      font-medium
                       text-sm
                       transition
                     "
@@ -1358,11 +1210,9 @@ function Topbar() {
                   </button>
 
                 </div>
-
               )}
 
             </div>
-
           )}
 
         </div>
@@ -1376,41 +1226,38 @@ function Topbar() {
           className="
             flex
             items-center
-            gap-3
+            gap-2
+            sm:gap-3
           "
         >
 
           <MdAccountCircle
             className="
-              text-5xl
-              text-indigo-600
+              text-4xl
+              sm:text-5xl
+              text-[#101C2E]
             "
           />
 
 
-          <div
-            className="
-              hidden
-              sm:block
-            "
-          >
+          <div className="hidden sm:block">
 
             <h3
               className="
-                font-semibold
-                text-slate-800
-                dark:text-slate-100
+                font-medium
+                text-[#101C2E]
+                text-sm
+                md:text-base
               "
             >
               Welcome Back
             </h3>
 
-
             <p
               className="
-                text-sm
-                text-slate-500
-                dark:text-slate-400
+                text-xs
+                md:text-sm
+                text-[#6F665B]
               "
             >
               BudgetBuddy User
@@ -1422,11 +1269,61 @@ function Topbar() {
 
       </div>
 
+
+      {/* =====================================================
+          MOBILE SEARCH BAR
+      ====================================================== */}
+
+      <div
+        className="
+          md:hidden
+          w-full
+          basis-full
+          flex
+          items-center
+          bg-[#F8F5EF]
+          border
+          border-[#E5DDD2]
+          rounded-xl
+          px-4
+          py-2.5
+          focus-within:border-[#92643E]
+        "
+      >
+
+        <FaSearch
+          className="
+            text-[#8B8175]
+            mr-3
+            shrink-0
+          "
+        />
+
+
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(event) =>
+            setSearchQuery(
+              event.target.value
+            )
+          }
+          onKeyDown={handleSearchKeyDown}
+          placeholder="Search transactions..."
+          className="
+            bg-transparent
+            outline-none
+            w-full
+            text-[#101C2E]
+            placeholder:text-[#A99F91]
+            text-sm
+          "
+        />
+
+      </div>
+
     </header>
-
   );
-
 }
-
 
 export default Topbar;

@@ -22,16 +22,20 @@ function Notifications() {
   // STATE
   // =========================================================
 
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] =
+    useState([]);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] =
+    useState(true);
 
-  const [error, setError] = useState("");
+  const [error, setError] =
+    useState("");
 
   const [deleteNotification, setDeleteNotification] =
     useState(null);
 
-  const [processing, setProcessing] = useState(false);
+  const [processing, setProcessing] =
+    useState(false);
 
 
   // =========================================================
@@ -60,15 +64,18 @@ function Notifications() {
       const token =
         localStorage.getItem("access");
 
-      const response = await api.get(
-        "notifications/",
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
-        }
-      );
+
+      const response =
+        await api.get(
+          "notifications/",
+          {
+            headers: {
+              Authorization:
+                `Bearer ${token}`,
+            },
+          }
+        );
+
 
       setNotifications(
         Array.isArray(response.data)
@@ -83,6 +90,7 @@ function Notifications() {
         err
       );
 
+
       setError(
         err.response?.data?.detail ||
         "Unable to load notifications."
@@ -93,6 +101,7 @@ function Notifications() {
       setLoading(false);
 
     }
+
   };
 
 
@@ -121,10 +130,12 @@ function Notifications() {
 
     }
 
+
     try {
 
       const token =
         localStorage.getItem("access");
+
 
       await api.patch(
         `notifications/${notification.id}/read/`,
@@ -136,6 +147,7 @@ function Notifications() {
           },
         }
       );
+
 
       setNotifications(
         (previous) =>
@@ -157,11 +169,13 @@ function Notifications() {
         err
       );
 
+
       setError(
         "Unable to mark notification as read."
       );
 
     }
+
   };
 
 
@@ -176,18 +190,22 @@ function Notifications() {
         (item) => !item.is_read
       );
 
+
     if (unread.length === 0) {
 
       return;
 
     }
 
+
     try {
 
       setProcessing(true);
 
+
       const token =
         localStorage.getItem("access");
+
 
       await Promise.all(
 
@@ -207,6 +225,7 @@ function Notifications() {
 
       );
 
+
       setNotifications(
         (previous) =>
           previous.map(
@@ -224,6 +243,7 @@ function Notifications() {
         err
       );
 
+
       setError(
         "Unable to mark all notifications as read."
       );
@@ -233,6 +253,7 @@ function Notifications() {
       setProcessing(false);
 
     }
+
   };
 
 
@@ -248,12 +269,15 @@ function Notifications() {
 
     }
 
+
     try {
 
       setProcessing(true);
 
+
       const token =
         localStorage.getItem("access");
+
 
       await api.delete(
         `notifications/${deleteNotification.id}/`,
@@ -265,6 +289,7 @@ function Notifications() {
         }
       );
 
+
       setNotifications(
         (previous) =>
           previous.filter(
@@ -274,6 +299,7 @@ function Notifications() {
           )
       );
 
+
       setDeleteNotification(null);
 
     } catch (err) {
@@ -282,6 +308,7 @@ function Notifications() {
         "Delete notification error:",
         err
       );
+
 
       setError(
         err.response?.data?.detail ||
@@ -293,6 +320,7 @@ function Notifications() {
       setProcessing(false);
 
     }
+
   };
 
 
@@ -319,34 +347,47 @@ function Notifications() {
 
         return (
           <FaCheckCircle
-            className="text-emerald-600"
+            className="
+              text-[#5F8069]
+            "
           />
         );
+
 
       case "WARNING":
 
         return (
           <FaExclamationTriangle
-            className="text-orange-600"
+            className="
+              text-[#92643E]
+            "
           />
         );
+
 
       case "ALERT":
 
         return (
           <FaExclamationCircle
-            className="text-rose-600"
+            className="
+              text-[#7A263D]
+            "
           />
         );
+
 
       default:
 
         return (
           <FaInfoCircle
-            className="text-indigo-600"
+            className="
+              text-[#92643E]
+            "
           />
         );
+
     }
+
   };
 
 
@@ -360,20 +401,25 @@ function Notifications() {
 
       case "SUCCESS":
 
-        return "bg-emerald-100";
+        return "bg-[#8FB39B]/20";
+
 
       case "WARNING":
 
-        return "bg-orange-100";
+        return "bg-[#92643E]/10";
+
 
       case "ALERT":
 
-        return "bg-rose-100";
+        return "bg-[#56061D]/10";
+
 
       default:
 
-        return "bg-indigo-100";
+        return "bg-[#92643E]/10";
+
     }
+
   };
 
 
@@ -381,7 +427,9 @@ function Notifications() {
   // DATE FORMAT
   // =========================================================
 
-  const formatDate = (dateString) => {
+  const formatDate = (
+    dateString
+  ) => {
 
     if (!dateString) {
 
@@ -389,8 +437,10 @@ function Notifications() {
 
     }
 
+
     const date =
       new Date(dateString);
+
 
     return date.toLocaleString(
       "en-IN",
@@ -402,6 +452,59 @@ function Notifications() {
         minute: "2-digit",
       }
     );
+
+  };
+
+
+  // =========================================================
+  // NOTIFICATION TYPE STYLE
+  // =========================================================
+
+  const getTypeStyle = (type) => {
+
+    switch (type) {
+
+      case "SUCCESS":
+
+        return `
+          bg-[#8FB39B]/15
+          text-[#5F8069]
+          border
+          border-[#8FB39B]/30
+        `;
+
+
+      case "WARNING":
+
+        return `
+          bg-[#92643E]/10
+          text-[#92643E]
+          border
+          border-[#92643E]/25
+        `;
+
+
+      case "ALERT":
+
+        return `
+          bg-[#56061D]/10
+          text-[#7A263D]
+          border
+          border-[#56061D]/20
+        `;
+
+
+      default:
+
+        return `
+          bg-[#92643E]/10
+          text-[#92643E]
+          border
+          border-[#92643E]/25
+        `;
+
+    }
+
   };
 
 
@@ -414,10 +517,12 @@ function Notifications() {
     <div
       className="
         min-h-screen
-        bg-slate-50
+        bg-[#F5F2EC]
         flex
+        overflow-x-hidden
       "
     >
+
 
       {/* =====================================================
           SIDEBAR
@@ -425,9 +530,8 @@ function Notifications() {
 
       <div
         className="
-          w-[280px]
-          bg-slate-950
-          text-white
+          w-0
+          lg:w-[280px]
           flex-shrink-0
         "
       >
@@ -445,6 +549,7 @@ function Notifications() {
         className="
           flex-1
           min-w-0
+          w-full
         "
       >
 
@@ -453,10 +558,14 @@ function Notifications() {
 
         <main
           className="
-            p-6
+            p-4
+            sm:p-6
             md:p-8
+            w-full
+            max-w-full
           "
         >
+
 
           {/* =================================================
               HEADER
@@ -489,16 +598,18 @@ function Notifications() {
                     w-12
                     h-12
                     rounded-2xl
-                    bg-indigo-100
+                    bg-[#92643E]
                     flex
                     items-center
                     justify-center
+                    shadow-sm
+                    shrink-0
                   "
                 >
 
                   <FaBell
                     className="
-                      text-indigo-600
+                      text-white
                       text-xl
                     "
                   />
@@ -513,7 +624,7 @@ function Notifications() {
                       text-3xl
                       md:text-4xl
                       font-bold
-                      text-slate-800
+                      text-[#101C2E]
                     "
                   >
                     Notifications
@@ -522,7 +633,7 @@ function Notifications() {
 
                   <p
                     className="
-                      text-slate-500
+                      text-[#6F665B]
                       mt-1
                     "
                   >
@@ -542,8 +653,12 @@ function Notifications() {
             {unreadCount > 0 && (
 
               <button
-                onClick={markAllAsRead}
-                disabled={processing}
+                onClick={
+                  markAllAsRead
+                }
+                disabled={
+                  processing
+                }
                 className="
                   cursor-pointer
                   inline-flex
@@ -553,14 +668,16 @@ function Notifications() {
                   px-5
                   py-3
                   rounded-xl
-                  bg-indigo-600
-                  hover:bg-indigo-700
+                  bg-[#56061D]
+                  hover:bg-[#6F0A27]
                   text-white
                   font-semibold
                   shadow-md
                   transition
                   disabled:opacity-50
                   disabled:cursor-not-allowed
+                  w-full
+                  md:w-auto
                 "
               >
 
@@ -586,17 +703,17 @@ function Notifications() {
                 mb-6
                 p-4
                 rounded-xl
-                bg-rose-50
+                bg-[#56061D]/10
                 border
-                border-rose-200
-                text-rose-700
+                border-[#56061D]/25
+                text-[#7A263D]
               "
             >
 
               <div
                 className="
                   flex
-                  items-center
+                  items-start
                   justify-between
                   gap-4
                 "
@@ -618,8 +735,9 @@ function Notifications() {
                   }
                   className="
                     cursor-pointer
-                    text-rose-500
-                    hover:text-rose-700
+                    text-[#7A263D]
+                    hover:text-[#56061D]
+                    shrink-0
                   "
                 >
 
@@ -648,6 +766,7 @@ function Notifications() {
             "
           >
 
+
             {/* TOTAL */}
 
             <div
@@ -656,8 +775,8 @@ function Notifications() {
                 rounded-2xl
                 p-6
                 border
-                border-slate-100
-                shadow-sm
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
               "
             >
 
@@ -666,6 +785,7 @@ function Notifications() {
                   flex
                   items-center
                   justify-between
+                  gap-4
                 "
               >
 
@@ -674,7 +794,7 @@ function Notifications() {
                   <p
                     className="
                       text-sm
-                      text-slate-500
+                      text-[#6F665B]
                     "
                   >
                     Total Notifications
@@ -685,7 +805,7 @@ function Notifications() {
                     className="
                       text-3xl
                       font-bold
-                      text-slate-800
+                      text-[#101C2E]
                       mt-2
                     "
                   >
@@ -700,16 +820,17 @@ function Notifications() {
                     w-14
                     h-14
                     rounded-2xl
-                    bg-indigo-100
+                    bg-[#92643E]
                     flex
                     items-center
                     justify-center
+                    shrink-0
                   "
                 >
 
                   <FaBell
                     className="
-                      text-indigo-600
+                      text-white
                       text-xl
                     "
                   />
@@ -729,8 +850,8 @@ function Notifications() {
                 rounded-2xl
                 p-6
                 border
-                border-slate-100
-                shadow-sm
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
               "
             >
 
@@ -739,6 +860,7 @@ function Notifications() {
                   flex
                   items-center
                   justify-between
+                  gap-4
                 "
               >
 
@@ -747,7 +869,7 @@ function Notifications() {
                   <p
                     className="
                       text-sm
-                      text-slate-500
+                      text-[#6F665B]
                     "
                   >
                     Unread
@@ -758,7 +880,7 @@ function Notifications() {
                     className="
                       text-3xl
                       font-bold
-                      text-slate-800
+                      text-[#101C2E]
                       mt-2
                     "
                   >
@@ -773,16 +895,17 @@ function Notifications() {
                     w-14
                     h-14
                     rounded-2xl
-                    bg-orange-100
+                    bg-[#56061D]
                     flex
                     items-center
                     justify-center
+                    shrink-0
                   "
                 >
 
                   <FaExclamationTriangle
                     className="
-                      text-orange-600
+                      text-white
                       text-xl
                     "
                   />
@@ -802,8 +925,8 @@ function Notifications() {
                 rounded-2xl
                 p-6
                 border
-                border-slate-100
-                shadow-sm
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
               "
             >
 
@@ -812,6 +935,7 @@ function Notifications() {
                   flex
                   items-center
                   justify-between
+                  gap-4
                 "
               >
 
@@ -820,7 +944,7 @@ function Notifications() {
                   <p
                     className="
                       text-sm
-                      text-slate-500
+                      text-[#6F665B]
                     "
                   >
                     Read
@@ -831,12 +955,14 @@ function Notifications() {
                     className="
                       text-3xl
                       font-bold
-                      text-slate-800
+                      text-[#101C2E]
                       mt-2
                     "
                   >
-                    {notifications.length -
-                      unreadCount}
+                    {
+                      notifications.length -
+                      unreadCount
+                    }
                   </h2>
 
                 </div>
@@ -847,16 +973,17 @@ function Notifications() {
                     w-14
                     h-14
                     rounded-2xl
-                    bg-emerald-100
+                    bg-[#8FB39B]
                     flex
                     items-center
                     justify-center
+                    shrink-0
                   "
                 >
 
                   <FaCheckCircle
                     className="
-                      text-emerald-600
+                      text-white
                       text-xl
                     "
                   />
@@ -879,25 +1006,32 @@ function Notifications() {
               bg-white
               rounded-3xl
               border
-              border-slate-100
-              shadow-sm
+              border-[#E5DDD2]
+              shadow-[0_8px_24px_rgba(16,28,46,0.08)]
               overflow-hidden
+              w-full
             "
           >
 
+            {/* HEADER */}
+
             <div
               className="
-                p-6
+                p-5
+                sm:p-6
                 border-b
-                border-slate-100
+                border-[#E5DDD2]
               "
             >
 
               <div
                 className="
                   flex
-                  items-center
-                  justify-between
+                  flex-col
+                  sm:flex-row
+                  sm:items-center
+                  sm:justify-between
+                  gap-3
                 "
               >
 
@@ -905,9 +1039,10 @@ function Notifications() {
 
                   <h2
                     className="
-                      text-2xl
+                      text-xl
+                      sm:text-2xl
                       font-bold
-                      text-slate-800
+                      text-[#101C2E]
                     "
                   >
                     Recent Notifications
@@ -917,11 +1052,12 @@ function Notifications() {
                   <p
                     className="
                       text-sm
-                      text-slate-500
+                      text-[#6F665B]
                       mt-1
                     "
                   >
-                    Your latest BudgetBuddy updates.
+                    Your latest BudgetBuddy
+                    updates.
                   </p>
 
                 </div>
@@ -931,11 +1067,14 @@ function Notifications() {
 
                   <span
                     className="
+                      self-start
                       px-3
                       py-1.5
                       rounded-full
-                      bg-indigo-100
-                      text-indigo-700
+                      bg-[#56061D]/10
+                      text-[#7A263D]
+                      border
+                      border-[#56061D]/15
                       text-sm
                       font-semibold
                     "
@@ -963,6 +1102,7 @@ function Notifications() {
                   flex-col
                   items-center
                   justify-center
+                  p-6
                 "
               >
 
@@ -971,17 +1111,16 @@ function Notifications() {
                     w-10
                     h-10
                     border-4
-                    border-indigo-200
-                    border-t-indigo-600
+                    border-[#92643E]/25
+                    border-t-[#92643E]
                     rounded-full
                     animate-spin
                   "
-                ></div>
-
+                />
 
                 <p
                   className="
-                    text-slate-500
+                    text-[#6F665B]
                     mt-4
                   "
                 >
@@ -993,7 +1132,7 @@ function Notifications() {
             ) : notifications.length === 0 ? (
 
               /* =================================================
-                  EMPTY
+                 EMPTY
               ================================================== */
 
               <div
@@ -1013,7 +1152,9 @@ function Notifications() {
                     w-20
                     h-20
                     rounded-3xl
-                    bg-indigo-50
+                    bg-[#92643E]/10
+                    border
+                    border-[#92643E]/20
                     flex
                     items-center
                     justify-center
@@ -1024,7 +1165,7 @@ function Notifications() {
                   <FaBell
                     className="
                       text-3xl
-                      text-indigo-500
+                      text-[#92643E]
                     "
                   />
 
@@ -1035,7 +1176,7 @@ function Notifications() {
                   className="
                     text-xl
                     font-bold
-                    text-slate-800
+                    text-[#101C2E]
                   "
                 >
                   No Notifications
@@ -1044,7 +1185,7 @@ function Notifications() {
 
                 <p
                   className="
-                    text-slate-500
+                    text-[#6F665B]
                     mt-2
                     max-w-md
                   "
@@ -1058,10 +1199,14 @@ function Notifications() {
 
             ) : (
 
+              /* =================================================
+                 NOTIFICATIONS
+              ================================================== */
+
               <div
                 className="
                   divide-y
-                  divide-slate-100
+                  divide-[#E5DDD2]
                 "
               >
 
@@ -1073,26 +1218,39 @@ function Notifications() {
                         notification.id
                       }
                       className={`
-  p-6
-  transition-all
-  duration-200
-  border-l-4
-  ${
-    notification.is_read
-      ? "bg-white hover:bg-slate-50 border-l-transparent"
-      : "bg-indigo-50 hover:bg-indigo-100 border-l-indigo-600"
-  }
-`}
+                        p-4
+                        sm:p-6
+                        transition-all
+                        duration-200
+                        border-l-4
+                        ${
+                          notification.is_read
+                            ? `
+                              bg-white
+                              hover:bg-[#FAF8F4]
+                              border-l-transparent
+                            `
+                            : `
+                              bg-[#F7F1E7]
+                              hover:bg-[#F3EBDD]
+                              border-l-[#56061D]
+                            `
+                        }
+                      `}
                     >
 
                       <div
                         className="
                           flex
+                          flex-col
+                          sm:flex-row
                           gap-4
                         "
                       >
 
-                        {/* ICON */}
+                        {/* =================================================
+                            ICON
+                        ================================================== */}
 
                         <div
                           className={`
@@ -1116,7 +1274,9 @@ function Notifications() {
                         </div>
 
 
-                        {/* CONTENT */}
+                        {/* =================================================
+                            CONTENT
+                        ================================================== */}
 
                         <div
                           className="
@@ -1129,9 +1289,6 @@ function Notifications() {
                             className="
                               flex
                               flex-col
-                              md:flex-row
-                              md:items-start
-                              md:justify-between
                               gap-3
                             "
                           >
@@ -1141,7 +1298,7 @@ function Notifications() {
                               <div
                                 className="
                                   flex
-                                  items-center
+                                  items-start
                                   gap-2
                                 "
                               >
@@ -1149,19 +1306,18 @@ function Notifications() {
                                 <h3
                                   className={`
                                     text-lg
+                                    leading-snug
                                     ${
                                       notification.is_read
                                         ? "font-semibold"
                                         : "font-bold"
                                     }
-                                    text-slate-800
+                                    text-[#101C2E]
                                   `}
                                 >
-
                                   {
                                     notification.title
                                   }
-
                                 </h3>
 
 
@@ -1172,9 +1328,11 @@ function Notifications() {
                                       w-2.5
                                       h-2.5
                                       rounded-full
-                                      bg-indigo-600
+                                      bg-[#56061D]
+                                      mt-2
+                                      shrink-0
                                     "
-                                  ></span>
+                                  />
 
                                 )}
 
@@ -1183,16 +1341,15 @@ function Notifications() {
 
                               <p
                                 className="
-                                  text-slate-500
+                                  text-[#6F665B]
                                   mt-1
                                   leading-relaxed
+                                  break-words
                                 "
                               >
-
                                 {
                                   notification.message
                                 }
-
                               </p>
 
                             </div>
@@ -1208,31 +1365,22 @@ function Notifications() {
                                 rounded-full
                                 text-xs
                                 font-semibold
-                                ${
-                                  notification.notification_type ===
-                                  "SUCCESS"
-                                    ? "bg-emerald-100 text-emerald-700"
-                                    : notification.notification_type ===
-                                      "WARNING"
-                                      ? "bg-orange-100 text-orange-700"
-                                      : notification.notification_type ===
-                                        "ALERT"
-                                        ? "bg-rose-100 text-rose-700"
-                                        : "bg-indigo-100 text-indigo-700"
-                                }
+                                ${getTypeStyle(
+                                  notification.notification_type
+                                )}
                               `}
                             >
-
                               {
                                 notification.notification_type
                               }
-
                             </span>
 
                           </div>
 
 
-                          {/* BOTTOM */}
+                          {/* =================================================
+                              BOTTOM
+                          ================================================== */}
 
                           <div
                             className="
@@ -1249,22 +1397,23 @@ function Notifications() {
                             <span
                               className="
                                 text-xs
-                                text-slate-400
+                                text-[#9A9085]
                               "
                             >
-
                               {
                                 formatDate(
                                   notification.created_at
                                 )
                               }
-
                             </span>
 
+
+                            {/* ACTIONS */}
 
                             <div
                               className="
                                 flex
+                                flex-wrap
                                 items-center
                                 gap-2
                               "
@@ -1284,13 +1433,16 @@ function Notifications() {
                                     cursor-pointer
                                     inline-flex
                                     items-center
+                                    justify-center
                                     gap-2
                                     px-3
                                     py-2
                                     rounded-lg
-                                    bg-indigo-50
-                                    text-indigo-600
-                                    hover:bg-indigo-600
+                                    bg-[#92643E]/10
+                                    text-[#92643E]
+                                    border
+                                    border-[#92643E]/20
+                                    hover:bg-[#92643E]
                                     hover:text-white
                                     text-sm
                                     font-semibold
@@ -1300,7 +1452,9 @@ function Notifications() {
 
                                   <FaCheck />
 
-                                  Mark as Read
+                                  <span>
+                                    Mark as Read
+                                  </span>
 
                                 </button>
 
@@ -1319,13 +1473,16 @@ function Notifications() {
                                   cursor-pointer
                                   inline-flex
                                   items-center
+                                  justify-center
                                   gap-2
                                   px-3
                                   py-2
                                   rounded-lg
-                                  bg-rose-50
-                                  text-rose-600
-                                  hover:bg-rose-600
+                                  bg-[#56061D]/10
+                                  text-[#7A263D]
+                                  border
+                                  border-[#56061D]/20
+                                  hover:bg-[#56061D]
                                   hover:text-white
                                   text-sm
                                   font-semibold
@@ -1335,7 +1492,9 @@ function Notifications() {
 
                                 <FaTrash />
 
-                                Delete
+                                <span>
+                                  Delete
+                                </span>
 
                               </button>
 
@@ -1387,7 +1546,8 @@ function Notifications() {
             className="
               absolute
               inset-0
-              bg-black/50
+              bg-[#101C2E]/50
+              backdrop-blur-sm
             "
             onClick={() => {
 
@@ -1400,7 +1560,7 @@ function Notifications() {
               }
 
             }}
-          ></div>
+          />
 
 
           {/* DIALOG */}
@@ -1414,7 +1574,10 @@ function Notifications() {
               bg-white
               rounded-3xl
               shadow-2xl
-              p-7
+              p-6
+              sm:p-7
+              border
+              border-[#E5DDD2]
             "
           >
 
@@ -1423,7 +1586,7 @@ function Notifications() {
                 w-14
                 h-14
                 rounded-2xl
-                bg-rose-100
+                bg-[#56061D]/10
                 flex
                 items-center
                 justify-center
@@ -1433,7 +1596,7 @@ function Notifications() {
 
               <FaTrash
                 className="
-                  text-rose-600
+                  text-[#7A263D]
                   text-xl
                 "
               />
@@ -1445,7 +1608,7 @@ function Notifications() {
               className="
                 text-2xl
                 font-bold
-                text-slate-800
+                text-[#101C2E]
               "
             >
               Delete Notification?
@@ -1454,18 +1617,19 @@ function Notifications() {
 
             <p
               className="
-                text-slate-500
+                text-[#6F665B]
                 mt-2
                 leading-relaxed
+                break-words
               "
             >
-
-              Are you sure you want to delete{" "}
+              Are you sure you want to
+              delete{" "}
 
               <span
                 className="
                   font-semibold
-                  text-slate-700
+                  text-[#101C2E]
                 "
               >
                 "{deleteNotification.title}"
@@ -1483,7 +1647,9 @@ function Notifications() {
             <div
               className="
                 flex
-                justify-end
+                flex-col-reverse
+                sm:flex-row
+                sm:justify-end
                 gap-3
                 mt-7
               "
@@ -1502,33 +1668,38 @@ function Notifications() {
                   py-3
                   rounded-xl
                   border
-                  border-slate-200
-                  text-slate-600
-                  hover:bg-slate-50
+                  border-[#D8C8B4]
+                  text-[#6F665B]
+                  hover:bg-[#F3EBDD]
                   font-semibold
                   transition
+                  w-full
+                  sm:w-auto
+                  disabled:opacity-50
                 "
               >
-
                 Cancel
-
               </button>
 
 
               <button
-                onClick={confirmDelete}
+                onClick={
+                  confirmDelete
+                }
                 disabled={processing}
                 className="
                   cursor-pointer
                   px-5
                   py-3
                   rounded-xl
-                  bg-rose-600
-                  hover:bg-rose-700
+                  bg-[#56061D]
+                  hover:bg-[#6F0A27]
                   text-white
                   font-semibold
                   transition
                   disabled:opacity-50
+                  w-full
+                  sm:w-auto
                 "
               >
 
@@ -1547,7 +1718,9 @@ function Notifications() {
       )}
 
     </div>
+
   );
+
 }
 
 

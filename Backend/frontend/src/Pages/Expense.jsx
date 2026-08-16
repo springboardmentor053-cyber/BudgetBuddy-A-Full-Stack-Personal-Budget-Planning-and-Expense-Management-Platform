@@ -15,29 +15,14 @@ import Sidebar from "../Components/Sidebar";
 import Topbar from "../Components/Topbar";
 import api from "../services/api";
 
-
 function Expense() {
-
-  // =========================================================
-  // STATE
-  // =========================================================
-
   const [expenses, setExpenses] = useState([]);
-
   const [loading, setLoading] = useState(true);
-
   const [error, setError] = useState("");
 
   const [showForm, setShowForm] = useState(false);
-
   const [editingExpense, setEditingExpense] = useState(null);
-
   const [deleteExpense, setDeleteExpense] = useState(null);
-
-
-  // =========================================================
-  // FORM DATA
-  // =========================================================
 
   const [formData, setFormData] = useState({
     title: "",
@@ -53,61 +38,42 @@ function Expense() {
   // =========================================================
 
   const fetchExpenses = async () => {
-
     try {
-
       setLoading(true);
       setError("");
 
-      const token =
-        localStorage.getItem("access");
+      const token = localStorage.getItem("access");
 
-      const response = await api.get(
-        "expenses/",
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await api.get("expenses/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      const data =
-        Array.isArray(response.data)
-          ? response.data
-          : response.data?.results || [];
+      const data = Array.isArray(response.data)
+        ? response.data
+        : response.data?.results || [];
 
       setExpenses(data);
-
     } catch (err) {
-
-      console.error(
-        "Expense fetch error:",
-        err
-      );
+      console.error("Expense fetch error:", err);
 
       setError(
         err.response?.data?.detail ||
-        "Unable to load expense records."
+          "Unable to load expense records."
       );
-
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
 
   // =========================================================
-  // INITIAL LOAD
+  // LOAD DATA
   // =========================================================
 
   useEffect(() => {
-
     fetchExpenses();
-
   }, []);
 
 
@@ -116,17 +82,12 @@ function Expense() {
   // =========================================================
 
   const handleChange = (event) => {
-
-    const {
-      name,
-      value,
-    } = event.target;
+    const { name, value } = event.target;
 
     setFormData((previous) => ({
       ...previous,
       [name]: value,
     }));
-
   };
 
 
@@ -135,9 +96,7 @@ function Expense() {
   // =========================================================
 
   const openAddForm = () => {
-
     setEditingExpense(null);
-
     setError("");
 
     setFormData({
@@ -145,14 +104,12 @@ function Expense() {
       amount: "",
       category: "Food",
       description: "",
-      expense_date:
-        new Date()
-          .toISOString()
-          .split("T")[0],
+      expense_date: new Date()
+        .toISOString()
+        .split("T")[0],
     });
 
     setShowForm(true);
-
   };
 
 
@@ -161,24 +118,18 @@ function Expense() {
   // =========================================================
 
   const openEditForm = (expense) => {
-
     setEditingExpense(expense);
-
     setError("");
 
     setFormData({
       title: expense.title || "",
       amount: expense.amount || "",
-      category:
-        expense.category || "Food",
-      description:
-        expense.description || "",
-      expense_date:
-        expense.expense_date || "",
+      category: expense.category || "Food",
+      description: expense.description || "",
+      expense_date: expense.expense_date || "",
     });
 
     setShowForm(true);
-
   };
 
 
@@ -187,9 +138,7 @@ function Expense() {
   // =========================================================
 
   const closeForm = () => {
-
     setShowForm(false);
-
     setEditingExpense(null);
 
     setFormData({
@@ -199,252 +148,126 @@ function Expense() {
       description: "",
       expense_date: "",
     });
-
   };
 
 
   // =========================================================
   // ADD / UPDATE EXPENSE
-  // OPTIMISTIC UI
   // =========================================================
 
   const handleSubmit = async (event) => {
-
     event.preventDefault();
-
     setError("");
 
-    const token =
-      localStorage.getItem("access");
+    const token = localStorage.getItem("access");
 
     const config = {
       headers: {
-        Authorization:
-          `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     };
 
-
     const data = {
-
-      title:
-        formData.title.trim(),
-
-      amount:
-        formData.amount,
-
-      category:
-        formData.category,
-
-      description:
-        formData.description.trim(),
-
-      expense_date:
-        formData.expense_date,
-
+      title: formData.title.trim(),
+      amount: formData.amount,
+      category: formData.category,
+      description: formData.description.trim(),
+      expense_date: formData.expense_date,
     };
 
 
     // =======================================================
-    // UPDATE EXPENSE
+    // UPDATE
     // =======================================================
 
     if (editingExpense) {
-
-      const oldExpenses =
-        [...expenses];
+      const oldExpenses = [...expenses];
 
       const updatedExpense = {
-
         ...editingExpense,
-
         ...data,
-
       };
 
-
-      // -----------------------------------------------------
-      // UPDATE UI IMMEDIATELY
-      // -----------------------------------------------------
-
       setExpenses((previous) =>
-        previous.map(
-          (expense) =>
-            expense.id ===
-            editingExpense.id
-              ? updatedExpense
-              : expense
+        previous.map((expense) =>
+          expense.id === editingExpense.id
+            ? updatedExpense
+            : expense
         )
       );
 
-
-      // -----------------------------------------------------
-      // CLOSE MODAL IMMEDIATELY
-      // -----------------------------------------------------
-
-      setShowForm(false);
-
-      setEditingExpense(null);
-
-
-      setFormData({
-        title: "",
-        amount: "",
-        category: "Food",
-        description: "",
-        expense_date: "",
-      });
-
-
-      // -----------------------------------------------------
-      // SEND REQUEST IN BACKGROUND
-      // -----------------------------------------------------
+      closeForm();
 
       try {
-
-        const response =
-          await api.put(
-            `expenses/${editingExpense.id}/`,
-            data,
-            config
-          );
-
-
-        // Replace optimistic data
-        // with actual backend data.
-
-        setExpenses((previous) =>
-          previous.map(
-            (expense) =>
-              expense.id ===
-              editingExpense.id
-                ? response.data
-                : expense
-          )
-        );
-
-      } catch (err) {
-
-        console.error(
-          "Expense update error:",
-          err
-        );
-
-
-        // Restore old data.
-
-        setExpenses(oldExpenses);
-
-
-        setError(
-          err.response?.data?.detail ||
-          "Unable to update expense."
-        );
-
-      }
-
-      return;
-
-    }
-
-
-    // =======================================================
-    // ADD EXPENSE
-    // =======================================================
-
-    const temporaryId =
-      `temporary-${Date.now()}`;
-
-
-    const temporaryExpense = {
-
-      id: temporaryId,
-
-      title:
-        data.title,
-
-      amount:
-        data.amount,
-
-      category:
-        data.category,
-
-      description:
-        data.description,
-
-      expense_date:
-        data.expense_date,
-
-    };
-
-
-    // -------------------------------------------------------
-    // SHOW NEW EXPENSE IMMEDIATELY
-    // -------------------------------------------------------
-
-    setExpenses((previous) => [
-
-      temporaryExpense,
-
-      ...previous,
-
-    ]);
-
-
-    // -------------------------------------------------------
-    // CLOSE MODAL IMMEDIATELY
-    // -------------------------------------------------------
-
-    setShowForm(false);
-
-    setEditingExpense(null);
-
-
-    setFormData({
-      title: "",
-      amount: "",
-      category: "Food",
-      description: "",
-      expense_date: "",
-    });
-
-
-    // -------------------------------------------------------
-    // SEND REQUEST IN BACKGROUND
-    // -------------------------------------------------------
-
-    try {
-
-      const response =
-        await api.post(
-          "expenses/",
+        const response = await api.put(
+          `expenses/${editingExpense.id}/`,
           data,
           config
         );
 
-
-      // Replace temporary record
-      // with real backend record.
-
-      setExpenses((previous) =>
-        previous.map(
-          (expense) =>
-            expense.id === temporaryId
+        setExpenses((previous) =>
+          previous.map((expense) =>
+            expense.id === editingExpense.id
               ? response.data
               : expense
-        )
+          )
+        );
+      } catch (err) {
+        console.error("Expense update error:", err);
+
+        setExpenses(oldExpenses);
+
+        setError(
+          err.response?.data?.detail ||
+            "Unable to update expense."
+        );
+      }
+
+      return;
+    }
+
+
+    // =======================================================
+    // CREATE
+    // =======================================================
+
+    const temporaryId = `temporary-${Date.now()}`;
+
+    const temporaryExpense = {
+      id: temporaryId,
+      title: data.title,
+      amount: data.amount,
+      category: data.category,
+      description: data.description,
+      expense_date: data.expense_date,
+    };
+
+    setExpenses((previous) => [
+      temporaryExpense,
+      ...previous,
+    ]);
+
+    closeForm();
+
+    try {
+      const response = await api.post(
+        "expenses/",
+        data,
+        config
       );
 
+      setExpenses((previous) =>
+        previous.map((expense) =>
+          expense.id === temporaryId
+            ? response.data
+            : expense
+        )
+      );
     } catch (err) {
-
       console.error(
         "Expense creation error:",
         err
       );
-
-
-      // Remove temporary record
-      // if backend failed.
 
       setExpenses((previous) =>
         previous.filter(
@@ -453,66 +276,36 @@ function Expense() {
         )
       );
 
-
       setError(
         err.response?.data?.detail ||
-        "Unable to add expense."
+          "Unable to add expense."
       );
-
     }
-
   };
 
 
   // =========================================================
   // DELETE EXPENSE
-  // OPTIMISTIC UI
   // =========================================================
 
   const confirmDelete = async () => {
+    if (!deleteExpense) return;
 
-    if (!deleteExpense) {
-      return;
-    }
-
-
-    const expenseToDelete =
-      deleteExpense;
-
-
-    const oldExpenses =
-      [...expenses];
-
-
-    // -------------------------------------------------------
-    // REMOVE FROM UI IMMEDIATELY
-    // -------------------------------------------------------
+    const expenseToDelete = deleteExpense;
+    const oldExpenses = [...expenses];
 
     setExpenses((previous) =>
       previous.filter(
         (expense) =>
-          expense.id !==
-          expenseToDelete.id
+          expense.id !== expenseToDelete.id
       )
     );
 
-
-    // -------------------------------------------------------
-    // CLOSE DELETE MODAL IMMEDIATELY
-    // -------------------------------------------------------
-
     setDeleteExpense(null);
 
-
-    // -------------------------------------------------------
-    // DELETE FROM BACKEND
-    // -------------------------------------------------------
-
     try {
-
       const token =
         localStorage.getItem("access");
-
 
       await api.delete(
         `expenses/${expenseToDelete.id}/`,
@@ -523,28 +316,19 @@ function Expense() {
           },
         }
       );
-
     } catch (err) {
-
       console.error(
         "Expense delete error:",
         err
       );
 
-
-      // Restore expense if
-      // backend request fails.
-
       setExpenses(oldExpenses);
-
 
       setError(
         err.response?.data?.detail ||
-        "Unable to delete expense."
+          "Unable to delete expense."
       );
-
     }
-
   };
 
 
@@ -552,60 +336,43 @@ function Expense() {
   // TOTAL EXPENSE
   // =========================================================
 
-  const totalExpense =
-    expenses.reduce(
+  const totalExpense = expenses.reduce(
+    (total, expense) =>
+      total + Number(expense.amount || 0),
+    0
+  );
+
+
+  // =========================================================
+  // THIS MONTH EXPENSE
+  // =========================================================
+
+  const today = new Date();
+  const currentMonth = today.getMonth();
+  const currentYear = today.getFullYear();
+
+  const thisMonthExpense = expenses
+    .filter((expense) => {
+      if (!expense.expense_date) {
+        return false;
+      }
+
+      const expenseDate = new Date(
+        expense.expense_date
+      );
+
+      return (
+        expenseDate.getMonth() ===
+          currentMonth &&
+        expenseDate.getFullYear() ===
+          currentYear
+      );
+    })
+    .reduce(
       (total, expense) =>
-        total +
-        Number(
-          expense.amount || 0
-        ),
+        total + Number(expense.amount || 0),
       0
     );
-
-
-  // =========================================================
-  // CURRENT MONTH EXPENSE
-  // =========================================================
-
-  const today =
-    new Date();
-
-  const currentMonth =
-    today.getMonth();
-
-  const currentYear =
-    today.getFullYear();
-
-
-  const thisMonthExpense =
-    expenses
-      .filter((expense) => {
-
-        if (!expense.expense_date) {
-          return false;
-        }
-
-        const expenseDate =
-          new Date(
-            expense.expense_date
-          );
-
-        return (
-          expenseDate.getMonth() ===
-            currentMonth &&
-          expenseDate.getFullYear() ===
-            currentYear
-        );
-
-      })
-      .reduce(
-        (total, expense) =>
-          total +
-          Number(
-            expense.amount || 0
-          ),
-        0
-      );
 
 
   // =========================================================
@@ -613,17 +380,13 @@ function Expense() {
   // =========================================================
 
   const formatMoney = (amount) => {
-
-    return Number(
-      amount || 0
-    ).toLocaleString(
+    return Number(amount || 0).toLocaleString(
       "en-IN",
       {
         minimumFractionDigits: 0,
         maximumFractionDigits: 2,
       }
     );
-
   };
 
 
@@ -632,13 +395,9 @@ function Expense() {
   // =========================================================
 
   const formatDate = (dateString) => {
+    if (!dateString) return "-";
 
-    if (!dateString) {
-      return "-";
-    }
-
-    const date =
-      new Date(dateString);
+    const date = new Date(dateString);
 
     return date.toLocaleDateString(
       "en-IN",
@@ -648,7 +407,6 @@ function Expense() {
         year: "numeric",
       }
     );
-
   };
 
 
@@ -656,49 +414,43 @@ function Expense() {
   // CATEGORY STYLE
   // =========================================================
 
-  const getCategoryStyle = (
-    category
-  ) => {
-
+  const getCategoryStyle = (category) => {
     const styles = {
-
       Food:
-        "bg-orange-50 text-orange-700",
+        "bg-[#92643E]/10 text-[#92643E] border border-[#92643E]/25",
 
       Transport:
-        "bg-blue-50 text-blue-700",
+        "bg-[#F3F0EA] text-[#6F665B] border border-[#D8C8B4]",
 
       Shopping:
-        "bg-pink-50 text-pink-700",
+        "bg-[#56061D]/10 text-[#7A263D] border border-[#56061D]/25",
 
       Bills:
-        "bg-yellow-50 text-yellow-700",
+        "bg-[#92643E]/10 text-[#92643E] border border-[#92643E]/25",
 
       Health:
-        "bg-red-50 text-red-700",
+        "bg-[#56061D]/10 text-[#7A263D] border border-[#56061D]/25",
 
       Education:
-        "bg-indigo-50 text-indigo-700",
+        "bg-[#F3F0EA] text-[#6F665B] border border-[#D8C8B4]",
 
       Entertainment:
-        "bg-purple-50 text-purple-700",
+        "bg-[#56061D]/10 text-[#7A263D] border border-[#56061D]/25",
 
       Travel:
-        "bg-cyan-50 text-cyan-700",
+        "bg-[#92643E]/10 text-[#92643E] border border-[#92643E]/25",
 
       Investment:
-        "bg-emerald-50 text-emerald-700",
+        "bg-[#92643E]/10 text-[#92643E] border border-[#92643E]/25",
 
       Other:
-        "bg-slate-100 text-slate-700",
-
+        "bg-[#F3F0EA] text-[#6F665B] border border-[#D8C8B4]",
     };
 
     return (
       styles[category] ||
-      "bg-slate-100 text-slate-700"
+      "bg-[#F3F0EA] text-[#6F665B] border border-[#D8C8B4]"
     );
-
   };
 
 
@@ -707,56 +459,30 @@ function Expense() {
   // =========================================================
 
   return (
-
-    <div
-      className="
-        min-h-screen
-        bg-slate-950
-        flex
-      "
-    >
+    <div className="min-h-screen bg-[#F8F5EF] flex overflow-x-hidden">
 
       {/* =====================================================
           SIDEBAR
       ====================================================== */}
 
-      <div
-        className="
-          w-[280px]
-          flex-shrink-0
-        "
-      >
-
+      <div className="w-0 lg:w-[280px] flex-shrink-0">
         <Sidebar />
-
       </div>
 
 
       {/* =====================================================
-          MAIN CONTENT
+          MAIN
       ====================================================== */}
 
-      <div
-        className="
-          flex-1
-          min-w-0
-          bg-slate-950
-        "
-      >
+      <div className="flex-1 min-w-0 w-full">
 
         <Topbar />
 
-
-        <main
-          className="
-            p-6
-            md:p-8
-          "
-        >
+        <main className="p-4 sm:p-6 md:p-8 w-full max-w-full">
 
           {/* =================================================
-              HEADER
-          ================================================== */}
+              PAGE HEADER
+          ================================================= */}
 
           <div
             className="
@@ -776,25 +502,25 @@ function Expense() {
                 className="
                   text-4xl
                   font-bold
-                  text-white
+                  text-[#101C2E]
                 "
               >
                 Expenses
               </h1>
 
-
               <p
                 className="
-                  text-slate-400
+                  text-[#6F665B]
                   mt-2
                 "
               >
-                Track and manage your
-                spending in one place.
+                Track and manage your spending in one place.
               </p>
 
             </div>
 
+
+            {/* ADD EXPENSE */}
 
             <button
               onClick={openAddForm}
@@ -807,11 +533,15 @@ function Expense() {
                 px-5
                 py-3
                 rounded-xl
-                bg-violet-600
-                hover:bg-violet-700
-                text-white
+                bg-[#56061D]
+                hover:bg-[#6E0A28]
+                text-[#F3EBDD]
                 font-semibold
-                transition
+                transition-all
+                duration-300
+                shadow-[0_8px_20px_rgba(86,6,29,0.12)]
+                w-full
+                md:w-auto
               "
             >
 
@@ -826,32 +556,28 @@ function Expense() {
 
           {/* =================================================
               ERROR
-          ================================================== */}
+          ================================================= */}
 
           {error && (
-
             <div
               className="
                 mb-6
                 p-4
                 rounded-xl
-                bg-red-950
+                bg-[#56061D]/10
                 border
-                border-red-800
-                text-red-300
+                border-[#56061D]/30
+                text-[#56061D]
               "
             >
-
               {error}
-
             </div>
-
           )}
 
 
           {/* =================================================
               SUMMARY CARDS
-          ================================================== */}
+          ================================================= */}
 
           <div
             className="
@@ -863,72 +589,60 @@ function Expense() {
             "
           >
 
-            {/* TOTAL */}
+            {/* TOTAL EXPENSE */}
 
             <div
               className="
-                bg-slate-800
-                rounded-2xl
+                bg-white
+                rounded-3xl
                 p-6
                 border
-                border-slate-700
+                border-[#E5DDD2]
+                shadow-[0_10px_30px_rgba(16,28,46,0.08)]
+                hover:-translate-y-1
+                transition-all
+                duration-300
               "
             >
 
-              <div
-                className="
-                  flex
-                  items-center
-                  justify-between
-                "
-              >
+              <div className="flex items-center justify-between">
 
                 <div>
 
-                  <p
-                    className="
-                      text-slate-400
-                    "
-                  >
+                  <p className="text-[#6F665B] text-sm">
                     Total Expenses
                   </p>
 
-
                   <h2
                     className="
                       text-3xl
                       font-bold
-                      text-white
+                      text-[#101C2E]
                       mt-2
                     "
                   >
-                    ₹
-                    {formatMoney(
-                      totalExpense
-                    )}
+                    ₹{formatMoney(totalExpense)}
                   </h2>
 
-                </div>
+                  <p className="text-xs text-[#92643E] mt-2">
+                    All recorded expenses
+                  </p>
 
+                </div>
 
                 <div
                   className="
                     w-14
                     h-14
                     rounded-2xl
-                    bg-rose-100
+                    bg-[#56061D]
                     flex
                     items-center
                     justify-center
+                    shadow-lg
                   "
                 >
-
-                  <FaWallet
-                    className="
-                      text-rose-600
-                    "
-                  />
-
+                  <FaWallet className="text-xl text-[#F3EBDD]" />
                 </div>
 
               </div>
@@ -936,72 +650,60 @@ function Expense() {
             </div>
 
 
-            {/* MONTH */}
+            {/* THIS MONTH */}
 
             <div
               className="
-                bg-slate-800
-                rounded-2xl
+                bg-white
+                rounded-3xl
                 p-6
                 border
-                border-slate-700
+                border-[#E5DDD2]
+                shadow-[0_10px_30px_rgba(16,28,46,0.08)]
+                hover:-translate-y-1
+                transition-all
+                duration-300
               "
             >
 
-              <div
-                className="
-                  flex
-                  items-center
-                  justify-between
-                "
-              >
+              <div className="flex items-center justify-between">
 
                 <div>
 
-                  <p
-                    className="
-                      text-slate-400
-                    "
-                  >
+                  <p className="text-[#6F665B] text-sm">
                     This Month
                   </p>
 
-
                   <h2
                     className="
                       text-3xl
                       font-bold
-                      text-white
+                      text-[#101C2E]
                       mt-2
                     "
                   >
-                    ₹
-                    {formatMoney(
-                      thisMonthExpense
-                    )}
+                    ₹{formatMoney(thisMonthExpense)}
                   </h2>
 
-                </div>
+                  <p className="text-xs text-[#92643E] mt-2">
+                    Expense received this month
+                  </p>
 
+                </div>
 
                 <div
                   className="
                     w-14
                     h-14
                     rounded-2xl
-                    bg-orange-100
+                    bg-[#92643E]
                     flex
                     items-center
                     justify-center
+                    shadow-lg
                   "
                 >
-
-                  <FaCalendarAlt
-                    className="
-                      text-orange-600
-                    "
-                  />
-
+                  <FaCalendarAlt className="text-xl text-[#F3EBDD]" />
                 </div>
 
               </div>
@@ -1009,69 +711,60 @@ function Expense() {
             </div>
 
 
-            {/* COUNT */}
+            {/* EXPENSE ENTRIES */}
 
             <div
               className="
-                bg-slate-800
-                rounded-2xl
+                bg-white
+                rounded-3xl
                 p-6
                 border
-                border-slate-700
+                border-[#E5DDD2]
+                shadow-[0_10px_30px_rgba(16,28,46,0.08)]
+                hover:-translate-y-1
+                transition-all
+                duration-300
               "
             >
 
-              <div
-                className="
-                  flex
-                  items-center
-                  justify-between
-                "
-              >
+              <div className="flex items-center justify-between">
 
                 <div>
 
-                  <p
-                    className="
-                      text-slate-400
-                    "
-                  >
+                  <p className="text-[#6F665B] text-sm">
                     Expense Entries
                   </p>
-
 
                   <h2
                     className="
                       text-3xl
                       font-bold
-                      text-white
+                      text-[#101C2E]
                       mt-2
                     "
                   >
                     {expenses.length}
                   </h2>
 
-                </div>
+                  <p className="text-xs text-[#92643E] mt-2">
+                    Recorded transactions
+                  </p>
 
+                </div>
 
                 <div
                   className="
                     w-14
                     h-14
                     rounded-2xl
-                    bg-violet-100
+                    bg-[#92643E]
                     flex
                     items-center
                     justify-center
+                    shadow-lg
                   "
                 >
-
-                  <FaMoneyBillWave
-                    className="
-                      text-violet-600
-                    "
-                  />
-
+                  <FaMoneyBillWave className="text-xl text-[#F3EBDD]" />
                 </div>
 
               </div>
@@ -1083,15 +776,17 @@ function Expense() {
 
           {/* =================================================
               EXPENSE RECORDS
-          ================================================== */}
+          ================================================= */}
 
           <div
             className="
-              bg-slate-800
+              bg-white
               rounded-3xl
               border
-              border-slate-700
+              border-[#E5DDD2]
               overflow-hidden
+              shadow-[0_10px_30px_rgba(16,28,46,0.08)]
+              w-full
             "
           >
 
@@ -1099,7 +794,7 @@ function Expense() {
               className="
                 p-6
                 border-b
-                border-slate-700
+                border-[#D8C8B4]
               "
             >
 
@@ -1107,17 +802,16 @@ function Expense() {
                 className="
                   text-2xl
                   font-bold
-                  text-white
+                  text-[#101C2E]
                 "
               >
                 Expense Records
               </h2>
 
-
               <p
                 className="
                   text-sm
-                  text-slate-400
+                  text-[#6F665B]
                   mt-1
                 "
               >
@@ -1127,9 +821,7 @@ function Expense() {
             </div>
 
 
-            {/* =================================================
-                LOADING
-            ================================================== */}
+            {/* LOADING */}
 
             {loading ? (
 
@@ -1148,8 +840,8 @@ function Expense() {
                     w-10
                     h-10
                     border-4
-                    border-slate-600
-                    border-t-violet-500
+                    border-[#E5DDD2]
+                    border-t-[#92643E]
                     rounded-full
                     animate-spin
                   "
@@ -1157,7 +849,7 @@ function Expense() {
 
                 <p
                   className="
-                    text-slate-400
+                    text-[#6F665B]
                     mt-4
                   "
                 >
@@ -1167,6 +859,8 @@ function Expense() {
               </div>
 
             ) : expenses.length === 0 ? (
+
+              /* EMPTY */
 
               <div
                 className="
@@ -1180,36 +874,39 @@ function Expense() {
                 "
               >
 
-                <FaWallet
+                <div
                   className="
-                    text-5xl
-                    text-slate-600
+                    w-16
+                    h-16
+                    rounded-2xl
+                    bg-[#56061D]/10
+                    flex
+                    items-center
+                    justify-center
                     mb-5
                   "
-                />
-
+                >
+                  <FaWallet className="text-2xl text-[#7A263D]" />
+                </div>
 
                 <h3
                   className="
                     text-xl
                     font-bold
-                    text-white
+                    text-[#101C2E]
                   "
                 >
                   No Expenses Yet
                 </h3>
 
-
                 <p
                   className="
-                    text-slate-400
+                    text-[#6F665B]
                     mt-2
                   "
                 >
-                  Start by adding your
-                  first expense.
+                  Start by adding your first expense.
                 </p>
-
 
                 <button
                   onClick={openAddForm}
@@ -1219,46 +916,34 @@ function Expense() {
                     px-5
                     py-3
                     rounded-xl
-                    bg-violet-600
-                    hover:bg-violet-700
-                    text-white
+                    bg-[#56061D]
+                    hover:bg-[#6E0A28]
+                    text-[#F3EBDD]
                     font-semibold
+                    transition
                   "
                 >
-
-                  <FaPlus
-                    className="
-                      inline
-                      mr-2
-                    "
-                  />
-
+                  <FaPlus className="inline mr-2" />
                   Add Expense
-
                 </button>
 
               </div>
 
             ) : (
 
-              <div
-                className="
-                  overflow-x-auto
-                "
-              >
+              /* TABLE */
 
-                <table
-                  className="
-                    w-full
-                  "
-                >
+              <div className="overflow-x-auto">
+
+                <table className="w-full min-w-[750px]">
 
                   <thead>
 
                     <tr
                       className="
                         border-b
-                        border-slate-700
+                        border-[#D8C8B4]
+                        bg-[#F8F5EF]
                       "
                     >
 
@@ -1269,13 +954,12 @@ function Expense() {
                           py-4
                           text-sm
                           font-semibold
-                          text-slate-400
+                          text-[#6F665B]
                         "
                       >
                         Expense
                       </th>
 
-
                       <th
                         className="
                           text-left
@@ -1283,13 +967,12 @@ function Expense() {
                           py-4
                           text-sm
                           font-semibold
-                          text-slate-400
+                          text-[#6F665B]
                         "
                       >
                         Category
                       </th>
 
-
                       <th
                         className="
                           text-left
@@ -1297,13 +980,12 @@ function Expense() {
                           py-4
                           text-sm
                           font-semibold
-                          text-slate-400
+                          text-[#6F665B]
                         "
                       >
                         Date
                       </th>
 
-
                       <th
                         className="
                           text-right
@@ -1311,13 +993,12 @@ function Expense() {
                           py-4
                           text-sm
                           font-semibold
-                          text-slate-400
+                          text-[#6F665B]
                         "
                       >
                         Amount
                       </th>
 
-
                       <th
                         className="
                           text-right
@@ -1325,7 +1006,7 @@ function Expense() {
                           py-4
                           text-sm
                           font-semibold
-                          text-slate-400
+                          text-[#6F665B]
                         "
                       >
                         Actions
@@ -1338,244 +1019,214 @@ function Expense() {
 
                   <tbody>
 
-                    {expenses.map(
-                      (expense) => (
+                    {expenses.map((expense) => (
 
-                        <tr
-                          key={expense.id}
+                      <tr
+                        key={expense.id}
+                        className="
+                          border-b
+                          border-[#E5DDD2]
+                          hover:bg-[#F8F5EF]
+                          transition
+                        "
+                      >
+
+                        {/* EXPENSE */}
+
+                        <td className="px-6 py-5">
+
+                          <div className="flex items-center gap-3">
+
+                            <div
+                              className="
+                                w-11
+                                h-11
+                                rounded-xl
+                                bg-[#56061D]/10
+                                border
+                                border-[#56061D]/25
+                                flex
+                                items-center
+                                justify-center
+                                shrink-0
+                              "
+                            >
+                              <FaArrowDown className="text-[#7A263D]" />
+                            </div>
+
+                            <div className="min-w-0">
+
+                              <p
+                                className="
+                                  font-semibold
+                                  text-[#101C2E]
+                                  truncate
+                                  max-w-[250px]
+                                "
+                              >
+                                {expense.title}
+                              </p>
+
+                              {expense.description && (
+                                <p
+                                  className="
+                                    text-xs
+                                    text-[#8B8175]
+                                    mt-1
+                                    max-w-[250px]
+                                    truncate
+                                  "
+                                >
+                                  {expense.description}
+                                </p>
+                              )}
+
+                            </div>
+
+                          </div>
+
+                        </td>
+
+
+                        {/* CATEGORY */}
+
+                        <td className="px-6 py-5">
+
+                          <span
+                            className={`
+                              inline-flex
+                              px-3
+                              py-1
+                              rounded-full
+                              text-xs
+                              font-semibold
+                              ${getCategoryStyle(
+                                expense.category
+                              )}
+                            `}
+                          >
+                            {expense.category || "Other"}
+                          </span>
+
+                        </td>
+
+
+                        {/* DATE */}
+
+                        <td
                           className="
-                            border-b
-                            border-slate-700
-                            hover:bg-slate-750
-                            transition
+                            px-6
+                            py-5
+                            text-sm
+                            text-[#6F665B]
+                          "
+                        >
+                          {formatDate(
+                            expense.expense_date
+                          )}
+                        </td>
+
+
+                        {/* AMOUNT */}
+
+                        <td
+                          className="
+                            px-6
+                            py-5
+                            text-right
                           "
                         >
 
-                          {/* EXPENSE */}
-
-                          <td
+                          <span
                             className="
-                              px-6
-                              py-5
+                              font-bold
+                              text-[#7A263D]
+                              whitespace-nowrap
+                            "
+                          >
+                            -₹
+                            {formatMoney(
+                              expense.amount
+                            )}
+                          </span>
+
+                        </td>
+
+
+                        {/* ACTIONS */}
+
+                        <td className="px-6 py-5">
+
+                          <div
+                            className="
+                              flex
+                              justify-end
+                              gap-2
                             "
                           >
 
-                            <div
+                            {/* EDIT */}
+
+                            <button
+                              onClick={() =>
+                                openEditForm(expense)
+                              }
+                              title="Edit expense"
                               className="
+                                cursor-pointer
+                                w-9
+                                h-9
+                                rounded-lg
+                                bg-[#92643E]/10
+                                border
+                                border-[#92643E]/25
+                                text-[#92643E]
+                                hover:bg-[#92643E]
+                                hover:text-[#F3EBDD]
                                 flex
                                 items-center
-                                gap-3
+                                justify-center
+                                transition
                               "
                             >
-
-                              <div
-                                className="
-                                  w-11
-                                  h-11
-                                  rounded-xl
-                                  bg-rose-100
-                                  flex
-                                  items-center
-                                  justify-center
-                                "
-                              >
-
-                                <FaArrowDown
-                                  className="
-                                    text-rose-600
-                                  "
-                                />
-
-                              </div>
+                              <FaEdit />
+                            </button>
 
 
-                              <div>
+                            {/* DELETE */}
 
-                                <p
-                                  className="
-                                    font-semibold
-                                    text-white
-                                  "
-                                >
-                                  {expense.title}
-                                </p>
-
-
-                                {expense.description && (
-
-                                  <p
-                                    className="
-                                      text-xs
-                                      text-slate-400
-                                      mt-1
-                                      max-w-[250px]
-                                      truncate
-                                    "
-                                  >
-                                    {
-                                      expense.description
-                                    }
-                                  </p>
-
-                                )}
-
-                              </div>
-
-                            </div>
-
-                          </td>
-
-
-                          {/* CATEGORY */}
-
-                          <td
-                            className="
-                              px-6
-                              py-5
-                            "
-                          >
-
-                            <span
-                              className={`
-                                inline-flex
-                                px-3
-                                py-1
-                                rounded-full
-                                text-xs
-                                font-semibold
-                                ${getCategoryStyle(
-                                  expense.category
-                                )}
-                              `}
-                            >
-                              {expense.category}
-                            </span>
-
-                          </td>
-
-
-                          {/* DATE */}
-
-                          <td
-                            className="
-                              px-6
-                              py-5
-                              text-sm
-                              text-slate-300
-                            "
-                          >
-                            {formatDate(
-                              expense.expense_date
-                            )}
-                          </td>
-
-
-                          {/* AMOUNT */}
-
-                          <td
-                            className="
-                              px-6
-                              py-5
-                              text-right
-                            "
-                          >
-
-                            <span
+                            <button
+                              onClick={() =>
+                                setDeleteExpense(expense)
+                              }
+                              title="Delete expense"
                               className="
-                                font-bold
-                                text-rose-500
-                                whitespace-nowrap
-                              "
-                            >
-                              -₹
-                              {formatMoney(
-                                expense.amount
-                              )}
-                            </span>
-
-                          </td>
-
-
-                          {/* ACTIONS */}
-
-                          <td
-                            className="
-                              px-6
-                              py-5
-                            "
-                          >
-
-                            <div
-                              className="
+                                cursor-pointer
+                                w-9
+                                h-9
+                                rounded-lg
+                                bg-[#56061D]/10
+                                border
+                                border-[#56061D]/25
+                                text-[#7A263D]
+                                hover:bg-[#56061D]
+                                hover:text-[#F3EBDD]
                                 flex
-                                justify-end
-                                gap-2
+                                items-center
+                                justify-center
+                                transition
                               "
                             >
+                              <FaTrash />
+                            </button>
 
-                              <button
-                                onClick={() =>
-                                  openEditForm(
-                                    expense
-                                  )
-                                }
-                                title="Edit expense"
-                                className="
-                                  cursor-pointer
-                                  w-9
-                                  h-9
-                                  rounded-lg
-                                  bg-violet-900
-                                  text-violet-300
-                                  hover:bg-violet-600
-                                  hover:text-white
-                                  flex
-                                  items-center
-                                  justify-center
-                                  transition
-                                "
-                              >
+                          </div>
 
-                                <FaEdit />
+                        </td>
 
-                              </button>
+                      </tr>
 
-
-                              <button
-                                onClick={() =>
-                                  setDeleteExpense(
-                                    expense
-                                  )
-                                }
-                                title="Delete expense"
-                                className="
-                                  cursor-pointer
-                                  w-9
-                                  h-9
-                                  rounded-lg
-                                  bg-rose-950
-                                  text-rose-400
-                                  hover:bg-rose-600
-                                  hover:text-white
-                                  flex
-                                  items-center
-                                  justify-center
-                                  transition
-                                "
-                              >
-
-                                <FaTrash />
-
-                              </button>
-
-                            </div>
-
-                          </td>
-
-                        </tr>
-
-                      )
-                    )}
+                    ))}
 
                   </tbody>
 
@@ -1614,7 +1265,7 @@ function Expense() {
             className="
               absolute
               inset-0
-              bg-black/60
+              bg-[#101C2E]/55
               backdrop-blur-sm
             "
             onClick={closeForm}
@@ -1626,16 +1277,17 @@ function Expense() {
               relative
               w-full
               max-w-2xl
-              bg-slate-800
+              max-h-[90vh]
+              bg-white
               rounded-3xl
               border
-              border-slate-700
+              border-[#D8C8B4]
               shadow-2xl
-              overflow-hidden
+              overflow-y-auto
             "
           >
 
-            {/* MODAL HEADER */}
+            {/* HEADER */}
 
             <div
               className="
@@ -1645,7 +1297,11 @@ function Expense() {
                 px-6
                 py-5
                 border-b
-                border-slate-700
+                border-[#D8C8B4]
+                sticky
+                top-0
+                bg-white
+                z-10
               "
             >
 
@@ -1655,7 +1311,7 @@ function Expense() {
                   className="
                     text-2xl
                     font-bold
-                    text-white
+                    text-[#101C2E]
                   "
                 >
                   {editingExpense
@@ -1663,11 +1319,10 @@ function Expense() {
                     : "Add Expense"}
                 </h2>
 
-
                 <p
                   className="
                     text-sm
-                    text-slate-400
+                    text-[#6F665B]
                     mt-1
                   "
                 >
@@ -1687,17 +1342,17 @@ function Expense() {
                   w-10
                   h-10
                   rounded-xl
-                  bg-slate-700
-                  hover:bg-slate-600
-                  text-slate-300
+                  bg-[#F3EBDD]
+                  hover:bg-[#E8DCC8]
+                  text-[#6F665B]
                   flex
                   items-center
                   justify-center
+                  transition
+                  shrink-0
                 "
               >
-
                 <FaTimes />
-
               </button>
 
             </div>
@@ -1721,24 +1376,19 @@ function Expense() {
 
                 {/* TITLE */}
 
-                <div
-                  className="
-                    md:col-span-2
-                  "
-                >
+                <div className="md:col-span-2">
 
                   <label
                     className="
                       block
                       text-sm
                       font-semibold
-                      text-slate-300
+                      text-[#6F665B]
                       mb-2
                     "
                   >
                     Title
                   </label>
-
 
                   <input
                     type="text"
@@ -1752,14 +1402,14 @@ function Expense() {
                       px-4
                       py-3
                       rounded-xl
-                      bg-slate-900
+                      bg-white
                       border
-                      border-slate-600
-                      text-white
-                      placeholder-slate-500
+                      border-[#D8C8B4]
+                      text-[#101C2E]
+                      placeholder:text-[#A99F91]
                       focus:outline-none
                       focus:ring-2
-                      focus:ring-violet-500
+                      focus:ring-[#92643E]
                     "
                   />
 
@@ -1775,19 +1425,14 @@ function Expense() {
                       block
                       text-sm
                       font-semibold
-                      text-slate-300
+                      text-[#6F665B]
                       mb-2
                     "
                   >
                     Amount
                   </label>
 
-
-                  <div
-                    className="
-                      relative
-                    "
-                  >
+                  <div className="relative">
 
                     <span
                       className="
@@ -1795,12 +1440,11 @@ function Expense() {
                         left-4
                         top-1/2
                         -translate-y-1/2
-                        text-slate-400
+                        text-[#92643E]
                       "
                     >
                       ₹
                     </span>
-
 
                     <input
                       type="number"
@@ -1817,14 +1461,14 @@ function Expense() {
                         pr-4
                         py-3
                         rounded-xl
-                        bg-slate-900
+                        bg-white
                         border
-                        border-slate-600
-                        text-white
-                        placeholder-slate-500
+                        border-[#D8C8B4]
+                        text-[#101C2E]
+                        placeholder:text-[#A99F91]
                         focus:outline-none
                         focus:ring-2
-                        focus:ring-violet-500
+                        focus:ring-[#92643E]
                       "
                     />
 
@@ -1842,13 +1486,12 @@ function Expense() {
                       block
                       text-sm
                       font-semibold
-                      text-slate-300
+                      text-[#6F665B]
                       mb-2
                     "
                   >
                     Category
                   </label>
-
 
                   <select
                     name="category"
@@ -1860,13 +1503,13 @@ function Expense() {
                       px-4
                       py-3
                       rounded-xl
-                      bg-slate-900
+                      bg-white
                       border
-                      border-slate-600
-                      text-white
+                      border-[#D8C8B4]
+                      text-[#101C2E]
                       focus:outline-none
                       focus:ring-2
-                      focus:ring-violet-500
+                      focus:ring-[#92643E]
                     "
                   >
 
@@ -1924,20 +1567,17 @@ function Expense() {
                       block
                       text-sm
                       font-semibold
-                      text-slate-300
+                      text-[#6F665B]
                       mb-2
                     "
                   >
                     Expense Date
                   </label>
 
-
                   <input
                     type="date"
                     name="expense_date"
-                    value={
-                      formData.expense_date
-                    }
+                    value={formData.expense_date}
                     onChange={handleChange}
                     required
                     className="
@@ -1945,13 +1585,13 @@ function Expense() {
                       px-4
                       py-3
                       rounded-xl
-                      bg-slate-900
+                      bg-white
                       border
-                      border-slate-600
-                      text-white
+                      border-[#D8C8B4]
+                      text-[#101C2E]
                       focus:outline-none
                       focus:ring-2
-                      focus:ring-violet-500
+                      focus:ring-[#92643E]
                     "
                   />
 
@@ -1960,28 +1600,23 @@ function Expense() {
 
                 {/* DESCRIPTION */}
 
-                <div
-                  className="
-                    md:col-span-2
-                  "
-                >
+                <div className="md:col-span-2">
 
                   <label
                     className="
                       block
                       text-sm
                       font-semibold
-                      text-slate-300
+                      text-[#6F665B]
                       mb-2
                     "
                   >
-
                     Description
 
                     <span
                       className="
                         font-normal
-                        text-slate-500
+                        text-[#8B8175]
                       "
                     >
                       {" "}
@@ -1990,12 +1625,9 @@ function Expense() {
 
                   </label>
 
-
                   <textarea
                     name="description"
-                    value={
-                      formData.description
-                    }
+                    value={formData.description}
                     onChange={handleChange}
                     placeholder="Add some details about this expense..."
                     rows="4"
@@ -2004,15 +1636,15 @@ function Expense() {
                       px-4
                       py-3
                       rounded-xl
-                      bg-slate-900
+                      bg-white
                       border
-                      border-slate-600
-                      text-white
-                      placeholder-slate-500
+                      border-[#D8C8B4]
+                      text-[#101C2E]
+                      placeholder:text-[#A99F91]
                       resize-none
                       focus:outline-none
                       focus:ring-2
-                      focus:ring-violet-500
+                      focus:ring-[#92643E]
                     "
                   />
 
@@ -2026,12 +1658,14 @@ function Expense() {
               <div
                 className="
                   flex
-                  justify-end
+                  flex-col-reverse
+                  sm:flex-row
+                  sm:justify-end
                   gap-3
                   mt-7
                   pt-5
                   border-t
-                  border-slate-700
+                  border-[#D8C8B4]
                 "
               >
 
@@ -2043,10 +1677,13 @@ function Expense() {
                     px-5
                     py-3
                     rounded-xl
-                    bg-slate-700
-                    hover:bg-slate-600
-                    text-slate-200
+                    bg-[#F3EBDD]
+                    hover:bg-[#E8DCC8]
+                    text-[#6F665B]
                     font-semibold
+                    transition
+                    w-full
+                    sm:w-auto
                   "
                 >
                   Cancel
@@ -2060,17 +1697,19 @@ function Expense() {
                     px-6
                     py-3
                     rounded-xl
-                    bg-violet-600
-                    hover:bg-violet-700
-                    text-white
+                    bg-[#56061D]
+                    hover:bg-[#6E0A28]
+                    text-[#F3EBDD]
                     font-semibold
+                    transition
+                    shadow-lg
+                    w-full
+                    sm:w-auto
                   "
                 >
-
                   {editingExpense
                     ? "Update Expense"
                     : "Save Expense"}
-
                 </button>
 
               </div>
@@ -2106,7 +1745,7 @@ function Expense() {
             className="
               absolute
               inset-0
-              bg-black/60
+              bg-[#101C2E]/55
               backdrop-blur-sm
             "
             onClick={() =>
@@ -2120,12 +1759,13 @@ function Expense() {
               relative
               w-full
               max-w-md
-              bg-slate-800
+              bg-white
               rounded-3xl
               border
-              border-slate-700
+              border-[#D8C8B4]
               shadow-2xl
-              p-7
+              p-6
+              sm:p-7
             "
           >
 
@@ -2134,21 +1774,16 @@ function Expense() {
                 w-14
                 h-14
                 rounded-2xl
-                bg-rose-950
+                bg-[#56061D]/10
+                border
+                border-[#56061D]/25
                 flex
                 items-center
                 justify-center
                 mb-5
               "
             >
-
-              <FaTrash
-                className="
-                  text-rose-500
-                  text-xl
-                "
-              />
-
+              <FaTrash className="text-[#7A263D] text-xl" />
             </div>
 
 
@@ -2156,7 +1791,7 @@ function Expense() {
               className="
                 text-2xl
                 font-bold
-                text-white
+                text-[#101C2E]
               "
             >
               Delete Expense?
@@ -2165,34 +1800,32 @@ function Expense() {
 
             <p
               className="
-                text-slate-400
+                text-[#6F665B]
                 mt-3
                 leading-relaxed
               "
             >
-
-              Are you sure you want to
-              delete{" "}
+              Are you sure you want to delete{" "}
 
               <span
                 className="
                   font-semibold
-                  text-white
+                  text-[#101C2E]
                 "
               >
                 "{deleteExpense.title}"
               </span>
 
-              ? This action cannot be
-              undone.
-
+              ? This action cannot be undone.
             </p>
 
 
             <div
               className="
                 flex
-                justify-end
+                flex-col-reverse
+                sm:flex-row
+                sm:justify-end
                 gap-3
                 mt-7
               "
@@ -2208,10 +1841,13 @@ function Expense() {
                   px-5
                   py-3
                   rounded-xl
-                  bg-slate-700
-                  hover:bg-slate-600
-                  text-slate-200
+                  bg-[#F3EBDD]
+                  hover:bg-[#E8DCC8]
+                  text-[#6F665B]
                   font-semibold
+                  transition
+                  w-full
+                  sm:w-auto
                 "
               >
                 Cancel
@@ -2226,10 +1862,13 @@ function Expense() {
                   px-5
                   py-3
                   rounded-xl
-                  bg-rose-600
-                  hover:bg-rose-700
-                  text-white
+                  bg-[#56061D]
+                  hover:bg-[#6E0A28]
+                  text-[#F3EBDD]
                   font-semibold
+                  transition
+                  w-full
+                  sm:w-auto
                 "
               >
                 Yes, Delete
@@ -2244,10 +1883,7 @@ function Expense() {
       )}
 
     </div>
-
   );
-
 }
-
 
 export default Expense;

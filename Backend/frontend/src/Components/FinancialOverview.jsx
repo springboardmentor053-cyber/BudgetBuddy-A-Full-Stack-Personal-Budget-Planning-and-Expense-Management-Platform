@@ -4,46 +4,98 @@ import {
   FaPiggyBank,
 } from "react-icons/fa6";
 
+
 function FinancialOverview({
   totalIncome = 0,
   totalExpense = 0,
   currentBalance = 0,
 }) {
-  const income = Number(totalIncome) || 0;
-  const expense = Number(totalExpense) || 0;
-  const savings = Number(currentBalance) || 0;
 
-  // Calculate expense percentage relative to income
+  const income =
+    Number(totalIncome) || 0;
+
+  const expense =
+    Number(totalExpense) || 0;
+
+  const savings =
+    Number(currentBalance) || 0;
+
+
+  /*
+  ========================================================
+  REAL CALCULATIONS FROM DASHBOARD DATA
+  ========================================================
+  */
+
   const expensePercentage =
     income > 0
-      ? Math.min((expense / income) * 100, 100)
+      ? Math.min(
+          (expense / income) * 100,
+          100
+        )
       : 0;
 
-  // Calculate savings percentage relative to income
+
   const savingsPercentage =
     income > 0
-      ? Math.min((savings / income) * 100, 100)
+      ? Math.min(
+          (savings / income) * 100,
+          100
+        )
       : 0;
 
-  return (
-    <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
 
-      {/* Header */}
+  return (
+
+    <div
+      className="
+        rounded-[1.5rem]
+        p-6
+        shadow-[0_10px_30px_rgba(16,28,46,0.08)]
+        border
+        h-full
+      "
+      style={{
+        backgroundColor: "#FFFFFF",
+        borderColor: "#E5DDD2",
+      }}
+    >
+
+      {/* =================================================
+          HEADER
+      ================================================= */}
 
       <div className="mb-8">
 
-        <h2 className="text-2xl font-bold text-slate-800">
+        <h2
+          className="
+            text-2xl
+            font-semibold
+            tracking-tight
+          "
+          style={{
+            color: "#101C2E",
+          }}
+        >
           Monthly Financial Overview
         </h2>
 
-        <p className="text-slate-500 mt-1">
+
+        <p
+          className="mt-1"
+          style={{
+            color: "#6F665B",
+          }}
+        >
           Your financial performance this month
         </p>
 
       </div>
 
 
-      {/* Income */}
+      {/* =================================================
+          INCOME
+      ================================================= */}
 
       <div className="mb-8">
 
@@ -51,37 +103,94 @@ function FinancialOverview({
 
           <div className="flex items-center gap-3">
 
-            <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center">
+            {/* Icon */}
 
-              <FaArrowTrendUp className="text-indigo-600" />
+            <div
+              className="
+                w-9
+                h-9
+                rounded-xl
+                flex
+                items-center
+                justify-center
+                border
+              "
+              style={{
+                backgroundColor:
+                  "rgba(146,100,62,0.08)",
+                borderColor:
+                  "rgba(146,100,62,0.20)",
+              }}
+            >
+
+              <FaArrowTrendUp
+                style={{
+                  color: "#92643E",
+                }}
+              />
 
             </div>
 
-            <span className="font-semibold text-slate-700">
+
+            <span
+              className="font-medium"
+              style={{
+                color: "#101C2E",
+              }}
+            >
               Income
             </span>
 
           </div>
 
-          <span className="font-bold text-slate-800">
+
+          <span
+            className="font-semibold"
+            style={{
+              color: "#92643E",
+            }}
+          >
             ₹{income.toLocaleString("en-IN")}
           </span>
 
         </div>
 
-        <div className="w-full h-3 rounded-full bg-slate-100">
+
+        {/* Progress background */}
+
+        <div
+          className="
+            w-full
+            h-3
+            rounded-full
+            overflow-hidden
+          "
+          style={{
+            backgroundColor: "#EDE5D9",
+          }}
+        >
 
           <div
-            className="bg-indigo-600 h-3 rounded-full transition-all duration-700"
-            style={{ width: "100%" }}
-          ></div>
+            className="
+              h-3
+              rounded-full
+              transition-all
+              duration-700
+            "
+            style={{
+              width: "100%",
+              backgroundColor: "#92643E",
+            }}
+          />
 
         </div>
 
       </div>
 
 
-      {/* Expense */}
+      {/* =================================================
+          EXPENSE
+      ================================================= */}
 
       <div className="mb-8">
 
@@ -89,43 +198,104 @@ function FinancialOverview({
 
           <div className="flex items-center gap-3">
 
-            <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center">
+            {/* Icon */}
 
-              <FaArrowTrendDown className="text-purple-600" />
+            <div
+              className="
+                w-9
+                h-9
+                rounded-xl
+                flex
+                items-center
+                justify-center
+                border
+              "
+              style={{
+                backgroundColor:
+                  "rgba(86,6,29,0.06)",
+                borderColor:
+                  "rgba(86,6,29,0.15)",
+              }}
+            >
+
+              <FaArrowTrendDown
+                style={{
+                  color: "#56061D",
+                }}
+              />
 
             </div>
 
-            <span className="font-semibold text-slate-700">
+
+            <span
+              className="font-medium"
+              style={{
+                color: "#101C2E",
+              }}
+            >
               Expense
             </span>
 
           </div>
 
-          <span className="font-bold text-slate-800">
+
+          <span
+            className="font-semibold"
+            style={{
+              color: "#56061D",
+            }}
+          >
             ₹{expense.toLocaleString("en-IN")}
           </span>
 
         </div>
 
-        <div className="w-full h-3 rounded-full bg-slate-100">
+
+        {/* Progress */}
+
+        <div
+          className="
+            w-full
+            h-3
+            rounded-full
+            overflow-hidden
+          "
+          style={{
+            backgroundColor: "#EDE5D9",
+          }}
+        >
 
           <div
-            className="bg-purple-600 h-3 rounded-full transition-all duration-700"
+            className="
+              h-3
+              rounded-full
+              transition-all
+              duration-700
+            "
             style={{
               width: `${expensePercentage}%`,
+              backgroundColor: "#56061D",
             }}
-          ></div>
+          />
 
         </div>
 
-        <p className="text-xs text-slate-400 mt-2">
+
+        <p
+          className="text-xs mt-2"
+          style={{
+            color: "#8B8175",
+          }}
+        >
           {expensePercentage.toFixed(0)}% of your income
         </p>
 
       </div>
 
 
-      {/* Savings */}
+      {/* =================================================
+          SAVINGS
+      ================================================= */}
 
       <div>
 
@@ -133,36 +303,95 @@ function FinancialOverview({
 
           <div className="flex items-center gap-3">
 
-            <div className="w-9 h-9 rounded-xl bg-violet-50 flex items-center justify-center">
+            {/* Icon */}
 
-              <FaPiggyBank className="text-violet-600" />
+            <div
+              className="
+                w-9
+                h-9
+                rounded-xl
+                flex
+                items-center
+                justify-center
+                border
+              "
+              style={{
+                backgroundColor:
+                  "rgba(146,100,62,0.08)",
+                borderColor:
+                  "rgba(146,100,62,0.20)",
+              }}
+            >
+
+              <FaPiggyBank
+                style={{
+                  color: "#92643E",
+                }}
+              />
 
             </div>
 
-            <span className="font-semibold text-slate-700">
+
+            <span
+              className="font-medium"
+              style={{
+                color: "#101C2E",
+              }}
+            >
               Savings
             </span>
 
           </div>
 
-          <span className="font-bold text-slate-800">
+
+          <span
+            className="font-semibold"
+            style={{
+              color: "#92643E",
+            }}
+          >
             ₹{savings.toLocaleString("en-IN")}
           </span>
 
         </div>
 
-        <div className="w-full h-3 rounded-full bg-slate-100">
+
+        {/* Progress */}
+
+        <div
+          className="
+            w-full
+            h-3
+            rounded-full
+            overflow-hidden
+          "
+          style={{
+            backgroundColor: "#EDE5D9",
+          }}
+        >
 
           <div
-            className="bg-violet-500 h-3 rounded-full transition-all duration-700"
+            className="
+              h-3
+              rounded-full
+              transition-all
+              duration-700
+            "
             style={{
               width: `${savingsPercentage}%`,
+              backgroundColor: "#92643E",
             }}
-          ></div>
+          />
 
         </div>
 
-        <p className="text-xs text-slate-400 mt-2">
+
+        <p
+          className="text-xs mt-2"
+          style={{
+            color: "#8B8175",
+          }}
+        >
           {savingsPercentage.toFixed(0)}% of your income
         </p>
 

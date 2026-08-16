@@ -7,6 +7,7 @@ import {
   FaWallet,
   FaPiggyBank,
   FaFileAlt,
+  FaMoneyBillWave,
 } from "react-icons/fa";
 
 import {
@@ -146,6 +147,7 @@ function Reports() {
 
 
       // Refresh analytics
+
       await fetchReport();
 
 
@@ -233,16 +235,18 @@ function Reports() {
       <div
         className="
           min-h-screen
-          bg-slate-50
+          bg-[#F5F2EC]
           flex
+          overflow-x-hidden
         "
       >
 
+        {/* SIDEBAR */}
+
         <div
           className="
-            w-[280px]
-            bg-slate-950
-            text-white
+            w-0
+            lg:w-[280px]
             flex-shrink-0
           "
         >
@@ -252,9 +256,13 @@ function Reports() {
         </div>
 
 
+        {/* MAIN */}
+
         <div
           className="
             flex-1
+            min-w-0
+            w-full
           "
         >
 
@@ -268,6 +276,7 @@ function Reports() {
               flex-col
               items-center
               justify-center
+              p-6
             "
           >
 
@@ -276,18 +285,19 @@ function Reports() {
                 w-12
                 h-12
                 border-4
-                border-indigo-200
-                border-t-indigo-600
+                border-[#92643E]/25
+                border-t-[#56061D]
                 rounded-full
                 animate-spin
               "
-            ></div>
+            />
 
 
             <p
               className="
-                text-slate-500
+                text-[#6F665B]
                 mt-4
+                text-center
               "
             >
               Preparing your financial report...
@@ -315,16 +325,18 @@ function Reports() {
       <div
         className="
           min-h-screen
-          bg-slate-50
+          bg-[#F5F2EC]
           flex
+          overflow-x-hidden
         "
       >
 
+        {/* SIDEBAR */}
+
         <div
           className="
-            w-[280px]
-            bg-slate-950
-            text-white
+            w-0
+            lg:w-[280px]
             flex-shrink-0
           "
         >
@@ -334,9 +346,13 @@ function Reports() {
         </div>
 
 
+        {/* MAIN */}
+
         <div
           className="
             flex-1
+            min-w-0
+            w-full
           "
         >
 
@@ -345,26 +361,54 @@ function Reports() {
 
           <div
             className="
-              p-8
+              p-4
+              sm:p-6
+              md:p-8
             "
           >
 
             <div
               className="
                 bg-white
-                rounded-2xl
+                rounded-3xl
                 border
-                border-rose-200
-                p-8
+                border-[#E5DDD2]
+                p-6
+                sm:p-8
                 text-center
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
               "
             >
+
+              <div
+                className="
+                  w-16
+                  h-16
+                  mx-auto
+                  rounded-2xl
+                  bg-[#56061D]/10
+                  flex
+                  items-center
+                  justify-center
+                  mb-5
+                "
+              >
+
+                <FaChartBar
+                  className="
+                    text-[#56061D]
+                    text-2xl
+                  "
+                />
+
+              </div>
+
 
               <h2
                 className="
                   text-2xl
                   font-bold
-                  text-slate-800
+                  text-[#101C2E]
                 "
               >
                 Unable to Load Report
@@ -373,7 +417,7 @@ function Reports() {
 
               <p
                 className="
-                  text-slate-500
+                  text-[#6F665B]
                   mt-2
                 "
               >
@@ -392,8 +436,8 @@ function Reports() {
                   px-5
                   py-3
                   rounded-xl
-                  bg-indigo-600
-                  hover:bg-indigo-700
+                  bg-[#56061D]
+                  hover:bg-[#6F0A27]
                   text-white
                   font-semibold
                   transition
@@ -447,18 +491,22 @@ function Reports() {
     ) || [];
 
 
+  // =========================================================
+  // CHART COLORS
+  // =========================================================
+
   const COLORS = [
 
-    "#4F46E5",
-    "#6366F1",
-    "#8B5CF6",
-    "#A855F7",
-    "#EC4899",
-    "#F97316",
-    "#10B981",
-    "#06B6D4",
-    "#EAB308",
-    "#64748B",
+    "#56061D",
+    "#92643E",
+    "#7A263D",
+    "#B4774D",
+    "#8FB39B",
+    "#6F665B",
+    "#A67C5B",
+    "#934B5F",
+    "#C49A6C",
+    "#101C2E",
 
   ];
 
@@ -472,8 +520,9 @@ function Reports() {
     <div
       className="
         min-h-screen
-        bg-slate-50
+        bg-[#F5F2EC]
         flex
+        overflow-x-hidden
       "
     >
 
@@ -483,9 +532,8 @@ function Reports() {
 
       <div
         className="
-          w-[280px]
-          bg-slate-950
-          text-white
+          w-0
+          lg:w-[280px]
           flex-shrink-0
         "
       >
@@ -503,6 +551,7 @@ function Reports() {
         className="
           flex-1
           min-w-0
+          w-full
         "
       >
 
@@ -511,8 +560,11 @@ function Reports() {
 
         <main
           className="
-            p-6
+            p-4
+            sm:p-6
             md:p-8
+            w-full
+            max-w-full
           "
         >
 
@@ -537,6 +589,7 @@ function Reports() {
                 flex
                 items-center
                 gap-4
+                min-w-0
               "
             >
 
@@ -545,16 +598,18 @@ function Reports() {
                   w-14
                   h-14
                   rounded-2xl
-                  bg-indigo-100
+                  bg-[#56061D]
                   flex
                   items-center
                   justify-center
+                  shrink-0
+                  shadow-sm
                 "
               >
 
                 <FaChartBar
                   className="
-                    text-indigo-600
+                    text-[#F3EBDD]
                     text-2xl
                   "
                 />
@@ -562,14 +617,18 @@ function Reports() {
               </div>
 
 
-              <div>
+              <div
+                className="
+                  min-w-0
+                "
+              >
 
                 <h1
                   className="
                     text-3xl
                     md:text-4xl
                     font-bold
-                    text-slate-800
+                    text-[#101C2E]
                   "
                 >
                   Financial Reports
@@ -578,7 +637,7 @@ function Reports() {
 
                 <p
                   className="
-                    text-slate-500
+                    text-[#6F665B]
                     mt-1
                   "
                 >
@@ -592,7 +651,7 @@ function Reports() {
 
 
             {/* =================================================
-                GENERATE REPORT BUTTON
+                GENERATE REPORT
             ================================================== */}
 
             <button
@@ -612,17 +671,16 @@ function Reports() {
                 px-5
                 py-3
                 rounded-xl
-                bg-gradient-to-r
-                from-indigo-600
-                to-violet-600
-                hover:from-indigo-700
-                hover:to-violet-700
+                bg-[#56061D]
+                hover:bg-[#6F0A27]
                 text-white
                 font-semibold
-                shadow-lg
+                shadow-md
                 transition
                 disabled:opacity-50
                 disabled:cursor-not-allowed
+                w-full
+                md:w-auto
               "
             >
 
@@ -649,10 +707,10 @@ function Reports() {
                 px-5
                 py-4
                 rounded-xl
-                bg-emerald-50
+                bg-[#8FB39B]/15
                 border
-                border-emerald-200
-                text-emerald-700
+                border-[#8FB39B]/30
+                text-[#5F8069]
                 font-medium
               "
             >
@@ -674,10 +732,10 @@ function Reports() {
                 px-5
                 py-4
                 rounded-xl
-                bg-rose-50
+                bg-[#56061D]/10
                 border
-                border-rose-200
-                text-rose-700
+                border-[#56061D]/20
+                text-[#7A263D]
                 font-medium
               "
             >
@@ -710,8 +768,8 @@ function Reports() {
                 rounded-2xl
                 p-6
                 border
-                border-slate-100
-                shadow-sm
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
               "
             >
 
@@ -720,16 +778,21 @@ function Reports() {
                   flex
                   items-start
                   justify-between
+                  gap-4
                 "
               >
 
-                <div>
+                <div
+                  className="
+                    min-w-0
+                  "
+                >
 
                   <p
                     className="
                       text-sm
                       font-medium
-                      text-slate-500
+                      text-[#6F665B]
                     "
                   >
                     Total Income
@@ -740,8 +803,9 @@ function Reports() {
                     className="
                       text-2xl
                       font-bold
-                      text-slate-800
+                      text-[#101C2E]
                       mt-2
+                      break-words
                     "
                   >
                     {formatCurrency(
@@ -757,16 +821,17 @@ function Reports() {
                     w-12
                     h-12
                     rounded-xl
-                    bg-indigo-100
+                    bg-[#92643E]/10
                     flex
                     items-center
                     justify-center
+                    shrink-0
                   "
                 >
 
                   <FaArrowUp
                     className="
-                      text-indigo-600
+                      text-[#92643E]
                     "
                   />
 
@@ -778,17 +843,14 @@ function Reports() {
               <p
                 className="
                   text-xs
-                  text-slate-400
+                  text-[#9A9085]
                   mt-4
                 "
               >
-
                 {formatNumber(
                   report.income_transactions
                 )}{" "}
-
                 income transactions
-
               </p>
 
             </div>
@@ -802,8 +864,8 @@ function Reports() {
                 rounded-2xl
                 p-6
                 border
-                border-slate-100
-                shadow-sm
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
               "
             >
 
@@ -812,16 +874,21 @@ function Reports() {
                   flex
                   items-start
                   justify-between
+                  gap-4
                 "
               >
 
-                <div>
+                <div
+                  className="
+                    min-w-0
+                  "
+                >
 
                   <p
                     className="
                       text-sm
                       font-medium
-                      text-slate-500
+                      text-[#6F665B]
                     "
                   >
                     Total Expenses
@@ -832,8 +899,9 @@ function Reports() {
                     className="
                       text-2xl
                       font-bold
-                      text-slate-800
+                      text-[#101C2E]
                       mt-2
+                      break-words
                     "
                   >
                     {formatCurrency(
@@ -849,16 +917,17 @@ function Reports() {
                     w-12
                     h-12
                     rounded-xl
-                    bg-purple-100
+                    bg-[#56061D]/10
                     flex
                     items-center
                     justify-center
+                    shrink-0
                   "
                 >
 
                   <FaArrowDown
                     className="
-                      text-purple-600
+                      text-[#7A263D]
                     "
                   />
 
@@ -870,17 +939,14 @@ function Reports() {
               <p
                 className="
                   text-xs
-                  text-slate-400
+                  text-[#9A9085]
                   mt-4
                 "
               >
-
                 {formatNumber(
                   report.expense_transactions
                 )}{" "}
-
                 expense transactions
-
               </p>
 
             </div>
@@ -894,8 +960,8 @@ function Reports() {
                 rounded-2xl
                 p-6
                 border
-                border-slate-100
-                shadow-sm
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
               "
             >
 
@@ -904,16 +970,21 @@ function Reports() {
                   flex
                   items-start
                   justify-between
+                  gap-4
                 "
               >
 
-                <div>
+                <div
+                  className="
+                    min-w-0
+                  "
+                >
 
                   <p
                     className="
                       text-sm
                       font-medium
-                      text-slate-500
+                      text-[#6F665B]
                     "
                   >
                     Total Savings
@@ -924,8 +995,9 @@ function Reports() {
                     className="
                       text-2xl
                       font-bold
-                      text-slate-800
+                      text-[#101C2E]
                       mt-2
+                      break-words
                     "
                   >
                     {formatCurrency(
@@ -941,16 +1013,17 @@ function Reports() {
                     w-12
                     h-12
                     rounded-xl
-                    bg-emerald-100
+                    bg-[#8FB39B]/20
                     flex
                     items-center
                     justify-center
+                    shrink-0
                   "
                 >
 
                   <FaPiggyBank
                     className="
-                      text-emerald-600
+                      text-[#5F8069]
                     "
                   />
 
@@ -962,7 +1035,7 @@ function Reports() {
               <p
                 className="
                   text-xs
-                  text-slate-400
+                  text-[#9A9085]
                   mt-4
                 "
               >
@@ -980,8 +1053,8 @@ function Reports() {
                 rounded-2xl
                 p-6
                 border
-                border-slate-100
-                shadow-sm
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
               "
             >
 
@@ -990,16 +1063,21 @@ function Reports() {
                   flex
                   items-start
                   justify-between
+                  gap-4
                 "
               >
 
-                <div>
+                <div
+                  className="
+                    min-w-0
+                  "
+                >
 
                   <p
                     className="
                       text-sm
                       font-medium
-                      text-slate-500
+                      text-[#6F665B]
                     "
                   >
                     Current Balance
@@ -1010,8 +1088,9 @@ function Reports() {
                     className="
                       text-2xl
                       font-bold
-                      text-slate-800
+                      text-[#101C2E]
                       mt-2
+                      break-words
                     "
                   >
                     {formatCurrency(
@@ -1027,16 +1106,17 @@ function Reports() {
                     w-12
                     h-12
                     rounded-xl
-                    bg-cyan-100
+                    bg-[#92643E]/10
                     flex
                     items-center
                     justify-center
+                    shrink-0
                   "
                 >
 
                   <FaWallet
                     className="
-                      text-cyan-600
+                      text-[#92643E]
                     "
                   />
 
@@ -1048,7 +1128,7 @@ function Reports() {
               <p
                 className="
                   text-xs
-                  text-slate-400
+                  text-[#9A9085]
                   mt-4
                 "
               >
@@ -1074,24 +1154,29 @@ function Reports() {
             "
           >
 
-            {/* EXPENSE CATEGORY */}
+            {/* =================================================
+                EXPENSE CATEGORY
+            ================================================== */}
 
             <div
               className="
                 bg-white
                 rounded-3xl
                 border
-                border-slate-100
-                shadow-sm
-                p-6
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
+                p-5
+                sm:p-6
+                min-w-0
               "
             >
 
               <h2
                 className="
-                  text-2xl
+                  text-xl
+                  sm:text-2xl
                   font-bold
-                  text-slate-800
+                  text-[#101C2E]
                 "
               >
                 Expense by Category
@@ -1100,7 +1185,7 @@ function Reports() {
 
               <p
                 className="
-                  text-slate-500
+                  text-[#6F665B]
                   text-sm
                   mt-1
                   mb-5
@@ -1126,14 +1211,14 @@ function Reports() {
                   <FaMoneyBillWave
                     className="
                       text-4xl
-                      text-slate-300
+                      text-[#D8C8B4]
                     "
                   />
 
 
                   <p
                     className="
-                      text-slate-500
+                      text-[#6F665B]
                       mt-4
                     "
                   >
@@ -1212,24 +1297,29 @@ function Reports() {
             </div>
 
 
-            {/* INCOME VS EXPENSE */}
+            {/* =================================================
+                INCOME VS EXPENSE
+            ================================================== */}
 
             <div
               className="
                 bg-white
                 rounded-3xl
                 border
-                border-slate-100
-                shadow-sm
-                p-6
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
+                p-5
+                sm:p-6
+                min-w-0
               "
             >
 
               <h2
                 className="
-                  text-2xl
+                  text-xl
+                  sm:text-2xl
                   font-bold
-                  text-slate-800
+                  text-[#101C2E]
                 "
               >
                 Income vs Expense
@@ -1238,7 +1328,7 @@ function Reports() {
 
               <p
                 className="
-                  text-slate-500
+                  text-[#6F665B]
                   text-sm
                   mt-1
                   mb-5
@@ -1248,62 +1338,80 @@ function Reports() {
               </p>
 
 
-              <ResponsiveContainer
-                width="100%"
-                height={340}
+              <div
+                className="
+                  w-full
+                  overflow-hidden
+                "
               >
 
-                <BarChart
-                  data={
-                    incomeExpenseData
-                  }
-                  margin={{
-                    top: 10,
-                    right: 10,
-                    left: 10,
-                    bottom: 10,
-                  }}
+                <ResponsiveContainer
+                  width="100%"
+                  height={340}
                 >
 
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="#E2E8F0"
-                  />
-
-
-                  <XAxis
-                    dataKey="name"
-                  />
-
-
-                  <YAxis />
-
-
-                  <Tooltip
-                    formatter={(
-                      value
-                    ) =>
-                      formatCurrency(
-                        value
-                      )
+                  <BarChart
+                    data={
+                      incomeExpenseData
                     }
-                  />
+                    margin={{
+                      top: 10,
+                      right: 10,
+                      left: 0,
+                      bottom: 10,
+                    }}
+                  >
+
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#E5DDD2"
+                    />
 
 
-                  <Bar
-                    dataKey="amount"
-                    fill="#4F46E5"
-                    radius={[
-                      10,
-                      10,
-                      0,
-                      0,
-                    ]}
-                  />
+                    <XAxis
+                      dataKey="name"
+                      tick={{
+                        fill: "#6F665B",
+                        fontSize: 12,
+                      }}
+                    />
 
-                </BarChart>
 
-              </ResponsiveContainer>
+                    <YAxis
+                      tick={{
+                        fill: "#6F665B",
+                        fontSize: 12,
+                      }}
+                    />
+
+
+                    <Tooltip
+                      formatter={(
+                        value
+                      ) =>
+                        formatCurrency(
+                          value
+                        )
+                      }
+                    />
+
+
+                    <Bar
+                      dataKey="amount"
+                      fill="#56061D"
+                      radius={[
+                        10,
+                        10,
+                        0,
+                        0,
+                      ]}
+                    />
+
+                  </BarChart>
+
+                </ResponsiveContainer>
+
+              </div>
 
             </div>
 
@@ -1323,24 +1431,28 @@ function Reports() {
             "
           >
 
-            {/* RECENT INCOME */}
+            {/* =================================================
+                RECENT INCOME
+            ================================================== */}
 
             <div
               className="
                 bg-white
                 rounded-3xl
                 border
-                border-slate-100
-                shadow-sm
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
                 overflow-hidden
+                min-w-0
               "
             >
 
               <div
                 className="
-                  p-6
+                  p-5
+                  sm:p-6
                   border-b
-                  border-slate-100
+                  border-[#E5DDD2]
                 "
               >
 
@@ -1357,29 +1469,34 @@ function Reports() {
                       w-10
                       h-10
                       rounded-xl
-                      bg-indigo-100
+                      bg-[#92643E]/10
                       flex
                       items-center
                       justify-center
+                      shrink-0
                     "
                   >
 
                     <FaArrowUp
                       className="
-                        text-indigo-600
+                        text-[#92643E]
                       "
                     />
 
                   </div>
 
 
-                  <div>
+                  <div
+                    className="
+                      min-w-0
+                    "
+                  >
 
                     <h2
                       className="
                         text-xl
                         font-bold
-                        text-slate-800
+                        text-[#101C2E]
                       "
                     >
                       Recent Income
@@ -1389,7 +1506,7 @@ function Reports() {
                     <p
                       className="
                         text-sm
-                        text-slate-500
+                        text-[#6F665B]
                       "
                     >
                       Your latest income entries.
@@ -1408,7 +1525,7 @@ function Reports() {
                   className="
                     p-8
                     text-center
-                    text-slate-500
+                    text-[#6F665B]
                   "
                 >
                   No income transactions found.
@@ -1419,7 +1536,7 @@ function Reports() {
                 <div
                   className="
                     divide-y
-                    divide-slate-100
+                    divide-[#E5DDD2]
                   "
                 >
 
@@ -1433,19 +1550,27 @@ function Reports() {
                         className="
                           p-5
                           flex
-                          items-center
-                          justify-between
-                          hover:bg-slate-50
+                          flex-col
+                          sm:flex-row
+                          sm:items-center
+                          sm:justify-between
+                          gap-3
+                          hover:bg-[#FAF8F4]
                           transition
                         "
                       >
 
-                        <div>
+                        <div
+                          className="
+                            min-w-0
+                          "
+                        >
 
                           <h3
                             className="
                               font-semibold
-                              text-slate-800
+                              text-[#101C2E]
+                              break-words
                             "
                           >
                             {income.title}
@@ -1455,15 +1580,13 @@ function Reports() {
                           <p
                             className="
                               text-xs
-                              text-slate-400
+                              text-[#9A9085]
                               mt-1
                             "
                           >
-
                             {income.source}
                             {" • "}
                             {income.income_date}
-
                           </p>
 
                         </div>
@@ -1472,7 +1595,10 @@ function Reports() {
                         <span
                           className="
                             font-bold
-                            text-indigo-600
+                            text-[#92643E]
+                            whitespace-nowrap
+                            self-start
+                            sm:self-auto
                           "
                         >
 
@@ -1496,24 +1622,28 @@ function Reports() {
             </div>
 
 
-            {/* RECENT EXPENSES */}
+            {/* =================================================
+                RECENT EXPENSES
+            ================================================== */}
 
             <div
               className="
                 bg-white
                 rounded-3xl
                 border
-                border-slate-100
-                shadow-sm
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
                 overflow-hidden
+                min-w-0
               "
             >
 
               <div
                 className="
-                  p-6
+                  p-5
+                  sm:p-6
                   border-b
-                  border-slate-100
+                  border-[#E5DDD2]
                 "
               >
 
@@ -1530,29 +1660,34 @@ function Reports() {
                       w-10
                       h-10
                       rounded-xl
-                      bg-purple-100
+                      bg-[#56061D]/10
                       flex
                       items-center
                       justify-center
+                      shrink-0
                     "
                   >
 
                     <FaArrowDown
                       className="
-                        text-purple-600
+                        text-[#7A263D]
                       "
                     />
 
                   </div>
 
 
-                  <div>
+                  <div
+                    className="
+                      min-w-0
+                    "
+                  >
 
                     <h2
                       className="
                         text-xl
                         font-bold
-                        text-slate-800
+                        text-[#101C2E]
                       "
                     >
                       Recent Expenses
@@ -1562,7 +1697,7 @@ function Reports() {
                     <p
                       className="
                         text-sm
-                        text-slate-500
+                        text-[#6F665B]
                       "
                     >
                       Your latest spending activity.
@@ -1581,7 +1716,7 @@ function Reports() {
                   className="
                     p-8
                     text-center
-                    text-slate-500
+                    text-[#6F665B]
                   "
                 >
                   No expense transactions found.
@@ -1592,7 +1727,7 @@ function Reports() {
                 <div
                   className="
                     divide-y
-                    divide-slate-100
+                    divide-[#E5DDD2]
                   "
                 >
 
@@ -1606,19 +1741,27 @@ function Reports() {
                         className="
                           p-5
                           flex
-                          items-center
-                          justify-between
-                          hover:bg-slate-50
+                          flex-col
+                          sm:flex-row
+                          sm:items-center
+                          sm:justify-between
+                          gap-3
+                          hover:bg-[#FAF8F4]
                           transition
                         "
                       >
 
-                        <div>
+                        <div
+                          className="
+                            min-w-0
+                          "
+                        >
 
                           <h3
                             className="
                               font-semibold
-                              text-slate-800
+                              text-[#101C2E]
+                              break-words
                             "
                           >
                             {expense.title}
@@ -1628,15 +1771,13 @@ function Reports() {
                           <p
                             className="
                               text-xs
-                              text-slate-400
+                              text-[#9A9085]
                               mt-1
                             "
                           >
-
                             {expense.category}
                             {" • "}
                             {expense.expense_date}
-
                           </p>
 
                         </div>
@@ -1645,7 +1786,10 @@ function Reports() {
                         <span
                           className="
                             font-bold
-                            text-purple-600
+                            text-[#7A263D]
+                            whitespace-nowrap
+                            self-start
+                            sm:self-auto
                           "
                         >
 
