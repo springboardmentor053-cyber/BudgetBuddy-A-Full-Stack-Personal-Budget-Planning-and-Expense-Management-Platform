@@ -1,5 +1,6 @@
 from decimal import Decimal
 import calendar
+from datetime import date
 
 from django.db.models import Sum
 from rest_framework import status
@@ -26,50 +27,120 @@ class DashboardAPIView(APIView):
         user = request.user
 
         # =====================================================
+        # CURRENT MONTH
+        # =====================================================
+
+        today = date.today()
+
+        current_year = today.year
+        current_month_number = today.month
+
+        current_month_name = calendar.month_name[
+            current_month_number
+        ]
+
+        # =====================================================
         # 1. FINANCIAL SUMMARY
         # =====================================================
+
+        # -----------------------------------------------------
+        # ALL-TIME TOTAL INCOME
+        # -----------------------------------------------------
 
         total_income = (
             Income.objects
             .filter(user=user)
-            .aggregate(total=Sum("amount"))["total"]
+            .aggregate(total=Sum("amount"))
+            .get("total")
             or Decimal("0.00")
         )
+
+        # -----------------------------------------------------
+        # ALL-TIME TOTAL EXPENSE
+        # -----------------------------------------------------
 
         total_expense = (
             Expense.objects
             .filter(user=user)
-            .aggregate(total=Sum("amount"))["total"]
+            .aggregate(total=Sum("amount"))
+            .get("total")
             or Decimal("0.00")
         )
+
+        # -----------------------------------------------------
+        # CURRENT BALANCE
+        # -----------------------------------------------------
 
         current_balance = (
             total_income - total_expense
         )
 
+        # -----------------------------------------------------
+        # TOTAL SAVINGS
+        # -----------------------------------------------------
+
         total_savings = (
             SavingsGoal.objects
             .filter(user=user)
-            .aggregate(total=Sum("saved_amount"))["total"]
+            .aggregate(total=Sum("saved_amount"))
+            .get("total")
             or Decimal("0.00")
+        )
+
+        # =====================================================
+        # CURRENT MONTH BUDGET
+        # =====================================================
+
+        current_month_budgets = (
+            Budget.objects
+            .filter(
+                user=user,
+                month__iexact=current_month_name,
+            )
         )
 
         total_budget = (
-            Budget.objects
-            .filter(user=user)
-            .aggregate(total=Sum("amount"))["total"]
+            current_month_budgets
+            .aggregate(total=Sum("amount"))
+            .get("total")
             or Decimal("0.00")
         )
 
+        # =====================================================
+        # CURRENT MONTH EXPENSE
+        # =====================================================
+
+        current_month_expense = (
+            Expense.objects
+            .filter(
+                user=user,
+                date__year=current_year,
+                date__month=current_month_number,
+            )
+            .aggregate(total=Sum("amount"))
+            .get("total")
+            or Decimal("0.00")
+        )
+
+        # -----------------------------------------------------
+        # REMAINING CURRENT MONTH BUDGET
+        # -----------------------------------------------------
+
         remaining_budget = (
-            total_budget - total_expense
+            total_budget - current_month_expense
         )
 
         financial_summary = {
+
+            # All-time values
             "total_income": total_income,
             "total_expense": total_expense,
             "current_balance": current_balance,
             "total_savings": total_savings,
+
+            # Current-month budget values
+            "total_budget": total_budget,
+            "current_month_expense": current_month_expense,
             "remaining_budget": remaining_budget,
         }
 
@@ -87,9 +158,23 @@ class DashboardAPIView(APIView):
             .order_by("-total_amount")
         )
 
-        category_analysis = list(
-            category_expenses
-        )
+        category_analysis = []
+
+        for item in category_expenses:
+
+            category_analysis.append(
+                {
+                    "category": (
+                        item["category"]
+                        or "Uncategorized"
+                    ),
+
+                    "total_amount": (
+                        item["total_amount"]
+                        or Decimal("0.00")
+                    ),
+                }
+            )
 
         # =====================================================
         # 3. MONTHLY EXPENSE TREND
@@ -120,12 +205,15 @@ class DashboardAPIView(APIView):
             monthly_trend.append(
                 {
                     "year": item["date__year"],
+
                     "month": calendar.month_name[
                         month_number
                     ],
-                    "total_amount": item[
-                        "total_amount"
-                    ],
+
+                    "total_amount": (
+                        item["total_amount"]
+                        or Decimal("0.00")
+                    ),
                 }
             )
 
@@ -149,10 +237,18 @@ class DashboardAPIView(APIView):
             recent_transactions.append(
                 {
                     "id": expense.id,
+
                     "title": expense.title,
+
                     "amount": expense.amount,
-                    "category": expense.category,
+
+                    "category": (
+                        expense.category
+                        or "Uncategorized"
+                    ),
+
                     "date": expense.date,
+
                     "type": "expense",
                 }
             )
@@ -177,13 +273,19 @@ class DashboardAPIView(APIView):
             latest_notifications.append(
                 {
                     "id": notification.id,
+
                     "title": notification.title,
+
                     "message": notification.message,
+
                     "notification_type": (
                         notification.notification_type
                     ),
+
                     "priority": notification.priority,
+
                     "is_read": notification.is_read,
+
                     "created_at": (
                         notification.created_at
                     ),
@@ -204,10 +306,10 @@ class DashboardAPIView(APIView):
 
         for goal in savings_goals:
 
+            # Ignore completed goals
             if (
                 goal.target_amount > 0
-                and goal.saved_amount
-                >= goal.target_amount
+                and goal.saved_amount >= goal.target_amount
             ):
                 continue
 
@@ -230,21 +332,28 @@ class DashboardAPIView(APIView):
             active_savings_goals.append(
                 {
                     "id": goal.id,
+
                     "title": goal.title,
+
                     "target_amount": (
                         goal.target_amount
                     ),
+
                     "saved_amount": (
                         goal.saved_amount
                     ),
+
                     "remaining_amount": (
                         goal.target_amount
                         - goal.saved_amount
                     ),
+
                     "percentage": percentage,
+
                     "target_date": (
                         goal.target_date
                     ),
+
                     "description": (
                         goal.description
                     ),
@@ -252,7 +361,7 @@ class DashboardAPIView(APIView):
             )
 
         # =====================================================
-        # 7. HIGHEST / LOWEST EXPENSE
+        # 7. EXPENSE ANALYSIS
         # =====================================================
 
         expenses = (
@@ -262,25 +371,37 @@ class DashboardAPIView(APIView):
 
         highest = (
             expenses
-            .order_by("-amount", "-id")
+            .order_by(
+                "-amount",
+                "-id",
+            )
             .first()
         )
 
         lowest = (
             expenses
-            .order_by("amount", "id")
+            .order_by(
+                "amount",
+                "id",
+            )
             .first()
         )
 
         latest = (
             expenses
-            .order_by("-date", "-id")
+            .order_by(
+                "-date",
+                "-id",
+            )
             .first()
         )
 
         oldest = (
             expenses
-            .order_by("date", "id")
+            .order_by(
+                "date",
+                "id",
+            )
             .first()
         )
 
@@ -291,39 +412,62 @@ class DashboardAPIView(APIView):
 
             return {
                 "id": expense.id,
+
                 "title": expense.title,
+
                 "amount": expense.amount,
-                "category": expense.category,
+
+                "category": (
+                    expense.category
+                    or "Uncategorized"
+                ),
+
                 "date": expense.date,
             }
 
         expense_analysis = {
-            "highest_expense": expense_data(highest),
-            "lowest_expense": expense_data(lowest),
-            "latest_expense": expense_data(latest),
-            "oldest_expense": expense_data(oldest),
+
+            "highest_expense":
+                expense_data(highest),
+
+            "lowest_expense":
+                expense_data(lowest),
+
+            "latest_expense":
+                expense_data(latest),
+
+            "oldest_expense":
+                expense_data(oldest),
         }
 
         # =====================================================
-        # FINAL DASHBOARD RESPONSE
+        # 8. FINAL DASHBOARD RESPONSE
         # =====================================================
 
         return Response(
             {
-                "financial_summary": financial_summary,
+                "financial_summary":
+                    financial_summary,
 
-                "category_analysis": category_analysis,
+                "category_analysis":
+                    category_analysis,
 
-                "monthly_trend": monthly_trend,
+                "monthly_trend":
+                    monthly_trend,
 
-                "recent_transactions": recent_transactions,
+                "recent_transactions":
+                    recent_transactions,
 
-                "latest_notifications": latest_notifications,
+                "latest_notifications":
+                    latest_notifications,
 
-                "active_savings_goals": active_savings_goals,
+                "active_savings_goals":
+                    active_savings_goals,
 
-                "expense_analysis": expense_analysis,
+                "expense_analysis":
+                    expense_analysis,
             },
+
             status=status.HTTP_200_OK,
         )
 
@@ -354,30 +498,43 @@ class ExpenseAnalysisAPIView(APIView):
                     "latest_expense": None,
                     "oldest_expense": None,
                 },
+
                 status=status.HTTP_200_OK,
             )
 
         highest = (
             expenses
-            .order_by("-amount", "-id")
+            .order_by(
+                "-amount",
+                "-id",
+            )
             .first()
         )
 
         lowest = (
             expenses
-            .order_by("amount", "id")
+            .order_by(
+                "amount",
+                "id",
+            )
             .first()
         )
 
         latest = (
             expenses
-            .order_by("-date", "-id")
+            .order_by(
+                "-date",
+                "-id",
+            )
             .first()
         )
 
         oldest = (
             expenses
-            .order_by("date", "id")
+            .order_by(
+                "date",
+                "id",
+            )
             .first()
         )
 
@@ -385,9 +542,16 @@ class ExpenseAnalysisAPIView(APIView):
 
             return {
                 "id": expense.id,
+
                 "title": expense.title,
+
                 "amount": expense.amount,
-                "category": expense.category,
+
+                "category": (
+                    expense.category
+                    or "Uncategorized"
+                ),
+
                 "date": expense.date,
             }
 
@@ -405,5 +569,6 @@ class ExpenseAnalysisAPIView(APIView):
                 "oldest_expense":
                     expense_data(oldest),
             },
+
             status=status.HTTP_200_OK,
         )

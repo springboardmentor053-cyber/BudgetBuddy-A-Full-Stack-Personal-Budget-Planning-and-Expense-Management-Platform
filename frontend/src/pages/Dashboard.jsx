@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 import SummaryCard from "../components/SummaryCard";
 import IncomeExpenseChart from "../components/charts/IncomeExpenseChart";
 import ExpensePieChart from "../components/charts/ExpensePieChart";
+import MonthlyExpenseChart from "../components/charts/MonthlyExpenseChart";
 import api from "../services/api";
 import "../styles/dashboard.css";
 
@@ -25,6 +26,7 @@ function Dashboard() {
     recent_transactions: [],
     latest_notifications: [],
     active_savings_goals: [],
+
     expense_analysis: {
       highest_expense: null,
       lowest_expense: null,
@@ -35,6 +37,7 @@ function Dashboard() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
 
   // =====================================================
   // FETCH DASHBOARD
@@ -51,6 +54,30 @@ function Dashboard() {
           return;
         }
 
+        // =================================================
+        // GET CURRENT LOGGED-IN USER
+        // =================================================
+
+        const userResponse = await api.get(
+          "users/me/",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        console.log(
+          "Current user:",
+          userResponse.data
+        );
+
+        setCurrentUser(userResponse.data);
+
+        // =================================================
+        // GET DASHBOARD DATA
+        // =================================================
+
         const response = await api.get(
           "analytics/dashboard/",
           {
@@ -65,10 +92,54 @@ function Dashboard() {
           response.data
         );
 
-        setSummary(response.data);
+        setSummary({
+          financial_summary: {
+            total_income:
+              response.data?.financial_summary?.total_income || 0,
+
+            total_expense:
+              response.data?.financial_summary?.total_expense || 0,
+
+            current_balance:
+              response.data?.financial_summary?.current_balance || 0,
+
+            total_savings:
+              response.data?.financial_summary?.total_savings || 0,
+
+            remaining_budget:
+              response.data?.financial_summary?.remaining_budget || 0,
+          },
+
+          category_analysis:
+            response.data?.category_analysis || [],
+
+          monthly_trend:
+            response.data?.monthly_trend || [],
+
+          recent_transactions:
+            response.data?.recent_transactions || [],
+
+          latest_notifications:
+            response.data?.latest_notifications || [],
+
+          active_savings_goals:
+            response.data?.active_savings_goals || [],
+
+          expense_analysis:
+            response.data?.expense_analysis || {
+              highest_expense: null,
+              lowest_expense: null,
+              latest_expense: null,
+              oldest_expense: null,
+            },
+        });
+
         setError("");
       } catch (err) {
-        console.error("Dashboard error:", err);
+        console.error(
+          "Dashboard error:",
+          err
+        );
 
         setError(
           err.response?.data?.detail ||
@@ -88,10 +159,13 @@ function Dashboard() {
   // =====================================================
 
   const formatCurrency = (amount) => {
-    return Number(amount || 0).toLocaleString("en-IN", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
+    return Number(amount || 0).toLocaleString(
+      "en-IN",
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }
+    );
   };
 
   // =====================================================
@@ -101,18 +175,100 @@ function Dashboard() {
   const formatDate = (date) => {
     if (!date) return "—";
 
-    return new Date(date).toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+    return new Date(date).toLocaleDateString(
+      "en-IN",
+      {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }
+    );
+  };
+
+  // =====================================================
+  // NAVIGATION SHORTCUTS
+  // =====================================================
+
+  const goToIncome = () => {
+    window.location.href = "/income";
+  };
+
+  const goToExpenses = () => {
+    window.location.href = "/expenses";
+  };
+
+  const goToBudgets = () => {
+    window.location.href = "/budgets";
+  };
+
+  const goToSavingsGoals = () => {
+    window.location.href = "/savings-goals";
   };
 
   // =====================================================
   // FINANCIAL SUMMARY
   // =====================================================
 
-  const financial = summary.financial_summary;
+  const financial =
+    summary.financial_summary || {};
+
+  const totalIncome =
+    Number(financial.total_income || 0);
+
+  const totalExpense =
+    Number(financial.total_expense || 0);
+
+  const currentBalance =
+    Number(financial.current_balance || 0);
+
+  // =====================================================
+  // FINANCIAL HEALTH
+  // =====================================================
+
+  let financialHealth = 0;
+
+  let financialHealthMessage =
+    "You're ready to start your financial journey.";
+
+  /*
+    CASE 1:
+    New account with no financial activity.
+  */
+
+  if (
+    totalIncome === 0 &&
+    totalExpense === 0
+  ) {
+    financialHealth = 0;
+
+    financialHealthMessage =
+      "You're ready to start your financial journey.";
+  }
+
+  /*
+    CASE 2:
+    User has financial activity and
+    income is greater than or equal to expenses.
+  */
+
+  else if (currentBalance >= 0) {
+    financialHealth = 85;
+
+    financialHealthMessage =
+      "Your finances are looking healthy.";
+  }
+
+  /*
+    CASE 3:
+    Expenses are greater than income.
+  */
+
+  else {
+    financialHealth = 45;
+
+    financialHealthMessage =
+      "Your expenses are currently higher than your income.";
+  }
 
   // =====================================================
   // TOTAL BUDGET
@@ -129,7 +285,9 @@ function Dashboard() {
   const budgetPercentage =
     totalBudget > 0
       ? Math.min(
-          (Number(financial.total_expense || 0) /
+          (Number(
+            financial.total_expense || 0
+          ) /
             totalBudget) *
             100,
           100
@@ -140,7 +298,8 @@ function Dashboard() {
   // EXPENSE ANALYSIS
   // =====================================================
 
-  const expenseAnalysis = summary.expense_analysis || {};
+  const expenseAnalysis =
+    summary.expense_analysis || {};
 
   // =====================================================
   // RENDER
@@ -168,20 +327,25 @@ function Dashboard() {
         <div className="dashboard-hero">
 
           <div>
+
             <p className="dashboard-eyebrow">
               Financial Overview
             </p>
 
             <h1>
-              Hello, Saiharshitha 👋
+              Hello,{" "}
+              {currentUser?.username || "there"} 👋
             </h1>
 
             <p className="dashboard-subtitle">
               Welcome back! Here's your financial overview.
             </p>
+
           </div>
 
-          {/* FINANCIAL HEALTH */}
+          {/* =================================================
+              FINANCIAL HEALTH
+          ================================================= */}
 
           <div className="health-card">
 
@@ -190,15 +354,11 @@ function Dashboard() {
             </h3>
 
             <div className="health-score">
-              {Number(financial.current_balance) >= 0
-                ? "85%"
-                : "45%"}
+              {financialHealth}%
             </div>
 
             <p>
-              {Number(financial.current_balance) >= 0
-                ? "Your finances are looking healthy."
-                : "Your expenses are currently higher than your income."}
+              {financialHealthMessage}
             </p>
 
           </div>
@@ -280,47 +440,81 @@ function Dashboard() {
             <section className="dashboard-mini-grid">
 
               <div className="mini-stat-card">
+
                 <span>💎</span>
+
                 <div>
-                  <p>Total Savings</p>
+
+                  <p>
+                    Total Savings
+                  </p>
+
                   <strong>
                     ₹
                     {formatCurrency(
                       financial.total_savings
                     )}
                   </strong>
+
                 </div>
+
               </div>
 
               <div className="mini-stat-card">
+
                 <span>💳</span>
+
                 <div>
-                  <p>Total Budget</p>
+
+                  <p>
+                    Total Budget
+                  </p>
+
                   <strong>
                     ₹
-                    {formatCurrency(totalBudget)}
+                    {formatCurrency(
+                      totalBudget
+                    )}
                   </strong>
+
                 </div>
+
               </div>
 
               <div className="mini-stat-card">
+
                 <span>🧾</span>
+
                 <div>
-                  <p>Expense Categories</p>
+
+                  <p>
+                    Expense Categories
+                  </p>
+
                   <strong>
                     {summary.category_analysis.length}
                   </strong>
+
                 </div>
+
               </div>
 
               <div className="mini-stat-card">
+
                 <span>🎯</span>
+
                 <div>
-                  <p>Active Goals</p>
+
+                  <p>
+                    Active Goals
+                  </p>
+
                   <strong>
                     {summary.active_savings_goals.length}
                   </strong>
+
                 </div>
+
               </div>
 
             </section>
@@ -331,12 +525,16 @@ function Dashboard() {
 
             <section className="dashboard-charts">
 
-              {/* INCOME VS EXPENSE */}
+              {/* =================================================
+                  INCOME VS EXPENSE
+              ================================================= */}
 
               <div className="chart-card">
 
                 <div className="chart-header">
+
                   <div>
+
                     <h2>
                       Income vs Expense
                     </h2>
@@ -344,7 +542,9 @@ function Dashboard() {
                     <p>
                       Compare your overall income and spending
                     </p>
+
                   </div>
+
                 </div>
 
                 <IncomeExpenseChart
@@ -354,27 +554,30 @@ function Dashboard() {
 
               </div>
 
-              {/* EXPENSE DISTRIBUTION */}
+              {/* =================================================
+                  EXPENSE DISTRIBUTION
+              ================================================= */}
 
               <div className="chart-card">
 
                 <div className="chart-header">
+
                   <div>
+
                     <h2>
                       Expense Distribution
                     </h2>
 
                     <p>
-                      Overview of your expense balance
+                      See how your expenses are distributed by category
                     </p>
+
                   </div>
+
                 </div>
 
                 <ExpensePieChart
-                  expense={financial.total_expense}
-                  remaining={
-                    financial.remaining_budget
-                  }
+                  data={summary.category_analysis}
                 />
 
               </div>
@@ -387,12 +590,16 @@ function Dashboard() {
 
             <section className="dashboard-content-grid">
 
-              {/* CATEGORY ANALYSIS */}
+              {/* =================================================
+                  CATEGORY ANALYSIS
+              ================================================= */}
 
               <div className="dashboard-panel">
 
                 <div className="panel-header">
+
                   <div>
+
                     <h2>
                       Category-wise Expenses
                     </h2>
@@ -400,7 +607,9 @@ function Dashboard() {
                     <p>
                       See where your money is being spent
                     </p>
+
                   </div>
+
                 </div>
 
                 {summary.category_analysis.length > 0 ? (
@@ -411,16 +620,17 @@ function Dashboard() {
                       (item, index) => {
 
                         const percentage =
-                          financial.total_expense > 0
+                          Number(
+                            financial.total_expense || 0
+                          ) > 0
                             ? (
-                                (Number(
-                                  item.total_amount
+                                Number(
+                                  item.total_amount || 0
                                 ) /
                                   Number(
-                                    financial.total_expense
-                                  )) *
-                                100
-                              )
+                                    financial.total_expense || 0
+                                  )
+                              ) * 100
                             : 0;
 
                         return (
@@ -432,7 +642,8 @@ function Dashboard() {
                             <div className="analytics-row-top">
 
                               <span>
-                                {item.category}
+                                {item.category ||
+                                  "Uncategorized"}
                               </span>
 
                               <strong>
@@ -445,6 +656,7 @@ function Dashboard() {
                             </div>
 
                             <div className="analytics-bar">
+
                               <div
                                 className="analytics-bar-fill"
                                 style={{
@@ -454,10 +666,12 @@ function Dashboard() {
                                   )}%`,
                                 }}
                               />
+
                             </div>
 
                             <small>
                               {percentage.toFixed(1)}%
+                              {" "}
                               of total expenses
                             </small>
 
@@ -471,6 +685,7 @@ function Dashboard() {
                 ) : (
 
                   <div className="empty-state">
+
                     <div className="empty-icon">
                       📊
                     </div>
@@ -482,18 +697,23 @@ function Dashboard() {
                     <p>
                       Expense category information will appear here.
                     </p>
+
                   </div>
 
                 )}
 
               </div>
 
-              {/* MONTHLY TREND */}
+              {/* =================================================
+                  MONTHLY TREND
+              ================================================= */}
 
               <div className="dashboard-panel">
 
                 <div className="panel-header">
+
                   <div>
+
                     <h2>
                       Monthly Expense Trend
                     </h2>
@@ -501,54 +721,21 @@ function Dashboard() {
                     <p>
                       Track spending month by month
                     </p>
+
                   </div>
+
                 </div>
 
                 {summary.monthly_trend.length > 0 ? (
 
-                  <div className="monthly-list">
-
-                    {summary.monthly_trend.map(
-                      (item, index) => (
-
-                        <div
-                          className="monthly-row"
-                          key={`${item.year}-${item.month}-${index}`}
-                        >
-
-                          <div className="monthly-icon">
-                            📅
-                          </div>
-
-                          <div className="monthly-info">
-
-                            <strong>
-                              {item.month} {item.year}
-                            </strong>
-
-                            <span>
-                              Monthly expenses
-                            </span>
-
-                          </div>
-
-                          <strong className="expense-amount">
-                            ₹
-                            {formatCurrency(
-                              item.total_amount
-                            )}
-                          </strong>
-
-                        </div>
-
-                      )
-                    )}
-
-                  </div>
+                  <MonthlyExpenseChart
+                    data={summary.monthly_trend}
+                  />
 
                 ) : (
 
                   <div className="empty-state">
+
                     <div className="empty-icon">
                       📈
                     </div>
@@ -560,6 +747,7 @@ function Dashboard() {
                     <p>
                       Monthly expense information will appear here.
                     </p>
+
                   </div>
 
                 )}
@@ -574,12 +762,16 @@ function Dashboard() {
 
             <section className="dashboard-content-grid">
 
-              {/* RECENT TRANSACTIONS */}
+              {/* =================================================
+                  RECENT TRANSACTIONS
+              ================================================= */}
 
               <div className="dashboard-panel">
 
                 <div className="panel-header">
+
                   <div>
+
                     <h2>
                       Recent Transactions
                     </h2>
@@ -587,7 +779,9 @@ function Dashboard() {
                     <p>
                       Your latest financial activity
                     </p>
+
                   </div>
+
                 </div>
 
                 {summary.recent_transactions.length > 0 ? (
@@ -606,16 +800,16 @@ function Dashboard() {
 
                             <div
                               className={`transaction-icon ${
-                                transaction.type ===
-                                "income"
+                                transaction.type === "income"
                                   ? "income-transaction"
                                   : "expense-transaction"
                               }`}
                             >
-                              {transaction.type ===
-                              "income"
+
+                              {transaction.type === "income"
                                 ? "↑"
                                 : "↓"}
+
                             </div>
 
                             <div>
@@ -638,14 +832,13 @@ function Dashboard() {
 
                             <strong
                               className={
-                                transaction.type ===
-                                "income"
+                                transaction.type === "income"
                                   ? "income-amount"
                                   : "expense-amount"
                               }
                             >
-                              {transaction.type ===
-                              "income"
+
+                              {transaction.type === "income"
                                 ? "+"
                                 : "-"}
 
@@ -653,6 +846,7 @@ function Dashboard() {
                               {formatCurrency(
                                 transaction.amount
                               )}
+
                             </strong>
 
                             <span>
@@ -673,6 +867,7 @@ function Dashboard() {
                 ) : (
 
                   <div className="empty-state">
+
                     <div className="empty-icon">
                       📋
                     </div>
@@ -684,18 +879,23 @@ function Dashboard() {
                     <p>
                       Add your first income or expense to get started.
                     </p>
+
                   </div>
 
                 )}
 
               </div>
 
-              {/* BUDGET SUMMARY */}
+              {/* =================================================
+                  BUDGET SUMMARY
+              ================================================= */}
 
               <div className="dashboard-panel">
 
                 <div className="panel-header">
+
                   <div>
+
                     <h2>
                       Budget Summary
                     </h2>
@@ -703,12 +903,15 @@ function Dashboard() {
                     <p>
                       Track your monthly spending
                     </p>
+
                   </div>
+
                 </div>
 
                 <div className="budget-overview">
 
                   <div className="budget-overview-row">
+
                     <span>
                       Total Budget
                     </span>
@@ -719,9 +922,11 @@ function Dashboard() {
                         totalBudget
                       )}
                     </strong>
+
                   </div>
 
                   <div className="budget-overview-row">
+
                     <span>
                       Total Expense
                     </span>
@@ -732,9 +937,11 @@ function Dashboard() {
                         financial.total_expense
                       )}
                     </strong>
+
                   </div>
 
                   <div className="budget-overview-row">
+
                     <span>
                       Remaining Budget
                     </span>
@@ -742,7 +949,7 @@ function Dashboard() {
                     <strong
                       className={
                         Number(
-                          financial.remaining_budget
+                          financial.remaining_budget || 0
                         ) < 0
                           ? "expense-amount"
                           : "income-amount"
@@ -753,6 +960,7 @@ function Dashboard() {
                         financial.remaining_budget
                       )}
                     </strong>
+
                   </div>
 
                 </div>
@@ -760,6 +968,7 @@ function Dashboard() {
                 <div className="budget-progress">
 
                   <div className="progress-header">
+
                     <span>
                       Budget Usage
                     </span>
@@ -770,24 +979,32 @@ function Dashboard() {
                       )}
                       %
                     </span>
+
                   </div>
 
                   <div className="progress-bar">
+
                     <div
                       className="progress-fill"
                       style={{
                         width: `${budgetPercentage}%`,
                       }}
                     />
+
                   </div>
 
                 </div>
+
+                {/* =================================================
+                    QUICK ACTIONS
+                ================================================= */}
 
                 <div className="quick-actions">
 
                   <button
                     type="button"
                     className="quick-action income-action"
+                    onClick={goToIncome}
                   >
                     ➕ Add Income
                   </button>
@@ -795,6 +1012,7 @@ function Dashboard() {
                   <button
                     type="button"
                     className="quick-action expense-action"
+                    onClick={goToExpenses}
                   >
                     ➖ Add Expense
                   </button>
@@ -802,8 +1020,17 @@ function Dashboard() {
                   <button
                     type="button"
                     className="quick-action budget-action"
+                    onClick={goToBudgets}
                   >
                     📊 Create Budget
+                  </button>
+
+                  <button
+                    type="button"
+                    className="quick-action savings-action"
+                    onClick={goToSavingsGoals}
+                  >
+                    🎯 Savings Goal
                   </button>
 
                 </div>
@@ -819,7 +1046,9 @@ function Dashboard() {
             <section className="dashboard-panel analytics-full-panel">
 
               <div className="panel-header">
+
                 <div>
+
                   <h2>
                     Expense Analysis
                   </h2>
@@ -827,7 +1056,9 @@ function Dashboard() {
                   <p>
                     Highest, lowest, latest and oldest expenses
                   </p>
+
                 </div>
+
               </div>
 
               <div className="expense-analysis-grid">
@@ -841,6 +1072,7 @@ function Dashboard() {
                   </div>
 
                   <div>
+
                     <span>
                       Highest Expense
                     </span>
@@ -849,26 +1081,30 @@ function Dashboard() {
                       {expenseAnalysis.highest_expense
                         ? `₹${formatCurrency(
                             expenseAnalysis
-                              .highest_expense
-                              .amount
+                              .highest_expense.amount
                           )}`
                         : "—"}
                     </h3>
 
                     <p>
-                      {expenseAnalysis.highest_expense
-                        ?.title || "No data"}
+                      {expenseAnalysis
+                        .highest_expense?.title ||
+                        "No data"}
                     </p>
 
                     <small>
                       {expenseAnalysis.highest_expense
-                        ? `${expenseAnalysis.highest_expense.category} • ${formatDate(
+                        ? `${
                             expenseAnalysis
-                              .highest_expense
-                              .date
+                              .highest_expense.category ||
+                            "Uncategorized"
+                          } • ${formatDate(
+                            expenseAnalysis
+                              .highest_expense.date
                           )}`
                         : ""}
                     </small>
+
                   </div>
 
                 </div>
@@ -882,6 +1118,7 @@ function Dashboard() {
                   </div>
 
                   <div>
+
                     <span>
                       Lowest Expense
                     </span>
@@ -890,26 +1127,30 @@ function Dashboard() {
                       {expenseAnalysis.lowest_expense
                         ? `₹${formatCurrency(
                             expenseAnalysis
-                              .lowest_expense
-                              .amount
+                              .lowest_expense.amount
                           )}`
                         : "—"}
                     </h3>
 
                     <p>
-                      {expenseAnalysis.lowest_expense
-                        ?.title || "No data"}
+                      {expenseAnalysis
+                        .lowest_expense?.title ||
+                        "No data"}
                     </p>
 
                     <small>
                       {expenseAnalysis.lowest_expense
-                        ? `${expenseAnalysis.lowest_expense.category} • ${formatDate(
+                        ? `${
                             expenseAnalysis
-                              .lowest_expense
-                              .date
+                              .lowest_expense.category ||
+                            "Uncategorized"
+                          } • ${formatDate(
+                            expenseAnalysis
+                              .lowest_expense.date
                           )}`
                         : ""}
                     </small>
+
                   </div>
 
                 </div>
@@ -923,6 +1164,7 @@ function Dashboard() {
                   </div>
 
                   <div>
+
                     <span>
                       Latest Expense
                     </span>
@@ -931,26 +1173,30 @@ function Dashboard() {
                       {expenseAnalysis.latest_expense
                         ? `₹${formatCurrency(
                             expenseAnalysis
-                              .latest_expense
-                              .amount
+                              .latest_expense.amount
                           )}`
                         : "—"}
                     </h3>
 
                     <p>
-                      {expenseAnalysis.latest_expense
-                        ?.title || "No data"}
+                      {expenseAnalysis
+                        .latest_expense?.title ||
+                        "No data"}
                     </p>
 
                     <small>
                       {expenseAnalysis.latest_expense
-                        ? `${expenseAnalysis.latest_expense.category} • ${formatDate(
+                        ? `${
                             expenseAnalysis
-                              .latest_expense
-                              .date
+                              .latest_expense.category ||
+                            "Uncategorized"
+                          } • ${formatDate(
+                            expenseAnalysis
+                              .latest_expense.date
                           )}`
                         : ""}
                     </small>
+
                   </div>
 
                 </div>
@@ -964,6 +1210,7 @@ function Dashboard() {
                   </div>
 
                   <div>
+
                     <span>
                       Oldest Expense
                     </span>
@@ -972,26 +1219,30 @@ function Dashboard() {
                       {expenseAnalysis.oldest_expense
                         ? `₹${formatCurrency(
                             expenseAnalysis
-                              .oldest_expense
-                              .amount
+                              .oldest_expense.amount
                           )}`
                         : "—"}
                     </h3>
 
                     <p>
-                      {expenseAnalysis.oldest_expense
-                        ?.title || "No data"}
+                      {expenseAnalysis
+                        .oldest_expense?.title ||
+                        "No data"}
                     </p>
 
                     <small>
                       {expenseAnalysis.oldest_expense
-                        ? `${expenseAnalysis.oldest_expense.category} • ${formatDate(
+                        ? `${
                             expenseAnalysis
-                              .oldest_expense
-                              .date
+                              .oldest_expense.category ||
+                            "Uncategorized"
+                          } • ${formatDate(
+                            expenseAnalysis
+                              .oldest_expense.date
                           )}`
                         : ""}
                     </small>
+
                   </div>
 
                 </div>
@@ -1006,12 +1257,16 @@ function Dashboard() {
 
             <section className="dashboard-content-grid">
 
-              {/* NOTIFICATIONS */}
+              {/* =================================================
+                  NOTIFICATIONS
+              ================================================= */}
 
               <div className="dashboard-panel">
 
                 <div className="panel-header">
+
                   <div>
+
                     <h2>
                       Latest Notifications
                     </h2>
@@ -1019,7 +1274,9 @@ function Dashboard() {
                     <p>
                       Important updates about your finances
                     </p>
+
                   </div>
+
                 </div>
 
                 {summary.latest_notifications.length > 0 ? (
@@ -1031,8 +1288,7 @@ function Dashboard() {
 
                         <div
                           className={`notification-item ${
-                            notification.priority ===
-                            "HIGH"
+                            notification.priority === "HIGH"
                               ? "notification-high"
                               : ""
                           }`}
@@ -1040,6 +1296,7 @@ function Dashboard() {
                         >
 
                           <div className="notification-icon">
+
                             {notification.notification_type ===
                             "GOAL_COMPLETED"
                               ? "🎉"
@@ -1047,6 +1304,7 @@ function Dashboard() {
                                 "BUDGET_WARNING"
                               ? "⚠️"
                               : "🔔"}
+
                           </div>
 
                           <div className="notification-content">
@@ -1085,6 +1343,7 @@ function Dashboard() {
                 ) : (
 
                   <div className="empty-state">
+
                     <div className="empty-icon">
                       🔔
                     </div>
@@ -1096,18 +1355,23 @@ function Dashboard() {
                     <p>
                       You are all caught up.
                     </p>
+
                   </div>
 
                 )}
 
               </div>
 
-              {/* SAVINGS GOALS */}
+              {/* =================================================
+                  SAVINGS GOALS
+              ================================================= */}
 
               <div className="dashboard-panel">
 
                 <div className="panel-header">
+
                   <div>
+
                     <h2>
                       Active Savings Goals
                     </h2>
@@ -1115,7 +1379,9 @@ function Dashboard() {
                     <p>
                       Track your savings progress
                     </p>
+
                   </div>
+
                 </div>
 
                 {summary.active_savings_goals.length > 0 ? (
@@ -1133,6 +1399,7 @@ function Dashboard() {
                           <div className="goal-top">
 
                             <div>
+
                               <h3>
                                 🎯 {goal.title}
                               </h3>
@@ -1145,6 +1412,7 @@ function Dashboard() {
                                   )}
                                 </span>
                               )}
+
                             </div>
 
                             <strong>
@@ -1154,6 +1422,7 @@ function Dashboard() {
                           </div>
 
                           <div className="goal-progress">
+
                             <div
                               className="goal-progress-fill"
                               style={{
@@ -1165,6 +1434,7 @@ function Dashboard() {
                                 )}%`,
                               }}
                             />
+
                           </div>
 
                           <div className="goal-bottom">
@@ -1195,6 +1465,7 @@ function Dashboard() {
                 ) : (
 
                   <div className="empty-state">
+
                     <div className="empty-icon">
                       🎯
                     </div>
@@ -1206,9 +1477,24 @@ function Dashboard() {
                     <p>
                       Create a savings goal to start tracking your progress.
                     </p>
+
                   </div>
 
                 )}
+
+                {/* SAVINGS GOAL SHORTCUT */}
+
+                <button
+                  type="button"
+                  className="quick-action savings-action"
+                  onClick={goToSavingsGoals}
+                  style={{
+                    marginTop: "16px",
+                    width: "100%",
+                  }}
+                >
+                  🎯 Manage Savings Goals
+                </button>
 
               </div>
 

@@ -87,7 +87,7 @@ function Reports() {
       }
 
       let url =
-        `financial-summary-report/?filter=${filter}`;
+  `reports/financial-summary-report/?filter=${filter}`;
 
       // -----------------------------------------------------
       // CUSTOM DATE RANGE
@@ -164,7 +164,7 @@ function Reports() {
       }
 
       let url =
-        `report/pdf/?filter=${filter}`;
+  `reports/report/pdf/?filter=${filter}`;
 
       // -----------------------------------------------------
       // CUSTOM DATE RANGE

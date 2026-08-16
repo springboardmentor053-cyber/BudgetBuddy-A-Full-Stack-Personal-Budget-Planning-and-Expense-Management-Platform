@@ -5,6 +5,7 @@ import "../styles/expenses.css";
 
 function Expenses() {
   const [expenses, setExpenses] = useState([]);
+
   const [formData, setFormData] = useState({
     title: "",
     amount: "",
@@ -16,24 +17,83 @@ function Expenses() {
   const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   const getTokenConfig = () => ({
     headers: {
-      Authorization: `Bearer ${localStorage.getItem("access")}`,
+      Authorization: `Bearer ${localStorage.getItem(
+        "access"
+      )}`,
     },
   });
+
+  const getErrorMessage = (err, fallback) => {
+    const data = err.response?.data;
+
+    if (!data) {
+      return fallback;
+    }
+
+    if (typeof data === "string") {
+      return data;
+    }
+
+    if (data.detail) {
+      return data.detail;
+    }
+
+    if (data.error) {
+      return data.error;
+    }
+
+    if (typeof data === "object") {
+      const messages = [];
+
+      Object.entries(data).forEach(
+        ([field, value]) => {
+          if (Array.isArray(value)) {
+            value.forEach((message) => {
+              messages.push(
+                `${field}: ${message}`
+              );
+            });
+          } else if (value) {
+            messages.push(
+              `${field}: ${value}`
+            );
+          }
+        }
+      );
+
+      if (messages.length > 0) {
+        return messages.join(" ");
+      }
+    }
+
+    return fallback;
+  };
 
   const fetchExpenses = async () => {
     try {
       setLoading(true);
       setError("");
 
-      const response = await api.get("expenses/", getTokenConfig());
-      setExpenses(response.data);
+      const response = await api.get(
+        "expenses/expenses/",
+        getTokenConfig()
+      );
+
+      const data = Array.isArray(response.data)
+        ? response.data
+        : response.data?.results || [];
+
+      setExpenses(data);
     } catch (err) {
       setError(
-        err.response?.data?.detail ||
+        getErrorMessage(
+          err,
           "Unable to load expense records."
+        )
       );
     } finally {
       setLoading(false);
@@ -45,10 +105,19 @@ function Expenses() {
   }, []);
 
   const handleChange = (event) => {
-    setFormData({
-      ...formData,
-      [event.target.name]: event.target.value,
-    });
+    const {
+      name,
+      value,
+    } = event.target;
+
+    setFormData((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+
+    if (error) {
+      setError("");
+    }
   };
 
   const resetForm = () => {
@@ -61,39 +130,78 @@ function Expenses() {
     });
 
     setEditingId(null);
+    setError("");
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError("");
 
-    if (!formData.title || !formData.amount || !formData.date) {
-      setError("Please fill in title, amount, and expense date.");
+    const title = formData.title.trim();
+    const amount = Number(formData.amount);
+
+    if (!title) {
+      setError(
+        "Expense title is required."
+      );
       return;
     }
 
+    if (!formData.amount) {
+      setError(
+        "Expense amount is required."
+      );
+      return;
+    }
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      setError(
+        "Expense amount must be greater than 0."
+      );
+      return;
+    }
+
+    if (!formData.date) {
+      setError(
+        "Expense date is required."
+      );
+      return;
+    }
+
+    const dataToSend = {
+      ...formData,
+      title,
+    };
+
     try {
+      setSaving(true);
+
       if (editingId) {
         await api.put(
-          `expenses/${editingId}/`,
-          formData,
+          `expenses/expenses/${editingId}/`,
+          dataToSend,
           getTokenConfig()
         );
       } else {
         await api.post(
-          "expenses/",
-          formData,
+          "expenses/expenses/",
+          dataToSend,
           getTokenConfig()
         );
       }
 
       resetForm();
-      fetchExpenses();
+
+      await fetchExpenses();
     } catch (err) {
       setError(
-        err.response?.data?.detail ||
+        getErrorMessage(
+          err,
           "Unable to save expense."
+        )
       );
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -101,12 +209,16 @@ function Expenses() {
     setEditingId(expense.id);
 
     setFormData({
-      title: expense.title,
-      amount: expense.amount,
-      category: expense.category,
-      date: expense.date,
-      description: expense.description || "",
+      title: expense.title || "",
+      amount: expense.amount || "",
+      category:
+        expense.category || "Miscellaneous",
+      date: expense.date || "",
+      description:
+        expense.description || "",
     });
+
+    setError("");
 
     window.scrollTo({
       top: 0,
@@ -119,21 +231,41 @@ function Expenses() {
       "Are you sure you want to delete this expense?"
     );
 
-    if (!confirmed) return;
+    if (!confirmed) {
+      return;
+    }
 
     try {
+      setError("");
+
       await api.delete(
-        `expenses/${id}/`,
+        `expenses/expenses/${id}/`,
         getTokenConfig()
       );
 
-      fetchExpenses();
+      if (editingId === id) {
+        resetForm();
+      }
+
+      await fetchExpenses();
     } catch (err) {
       setError(
-        err.response?.data?.detail ||
+        getErrorMessage(
+          err,
           "Unable to delete expense."
+        )
       );
     }
+  };
+
+  const formatAmount = (amount) => {
+    return Number(amount || 0).toLocaleString(
+      "en-IN",
+      {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }
+    );
   };
 
   return (
@@ -164,67 +296,102 @@ function Expenses() {
         <section className="expenses-grid">
           <div className="expenses-form-card">
             <h2>
-              {editingId ? "Update Expense" : "Add Expense"}
+              {editingId
+                ? "Update Expense"
+                : "Add Expense"}
             </h2>
 
             <form onSubmit={handleSubmit}>
-              <label>Title</label>
+              <label htmlFor="expense-title">
+                Title
+              </label>
 
               <input
+                id="expense-title"
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="Example: Lunch at college"
+                maxLength={100}
               />
 
-              <label>Amount</label>
+              <label htmlFor="expense-amount">
+                Amount
+              </label>
 
               <input
+                id="expense-amount"
                 type="number"
                 name="amount"
                 value={formData.amount}
                 onChange={handleChange}
                 placeholder="Enter amount"
-                min="0"
+                min="0.01"
                 step="0.01"
               />
 
-              <label>Category</label>
+              <label htmlFor="expense-category">
+                Category
+              </label>
 
               <select
+                id="expense-category"
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
               >
-                <option value="Food">Food</option>
-                <option value="Travel">Travel</option>
-                <option value="Shopping">Shopping</option>
-                <option value="Education">Education</option>
+                <option value="Food">
+                  Food
+                </option>
+
+                <option value="Travel">
+                  Travel
+                </option>
+
+                <option value="Shopping">
+                  Shopping
+                </option>
+
+                <option value="Education">
+                  Education
+                </option>
+
                 <option value="Entertainment">
                   Entertainment
                 </option>
+
                 <option value="Healthcare">
                   Healthcare
                 </option>
-                <option value="Bills">Bills</option>
+
+                <option value="Bills">
+                  Bills
+                </option>
+
                 <option value="Miscellaneous">
                   Miscellaneous
                 </option>
               </select>
 
-              <label>Expense Date</label>
+              <label htmlFor="expense-date">
+                Expense Date
+              </label>
 
               <input
+                id="expense-date"
                 type="date"
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
               />
 
-              <label>Description</label>
+              <label htmlFor="expense-description">
+                Description
+              </label>
 
               <textarea
+                id="expense-description"
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
@@ -233,8 +400,13 @@ function Expenses() {
               />
 
               <div className="expenses-form-actions">
-                <button type="submit">
-                  {editingId
+                <button
+                  type="submit"
+                  disabled={saving}
+                >
+                  {saving
+                    ? "Saving..."
+                    : editingId
                     ? "Update Expense"
                     : "Add Expense"}
                 </button>
@@ -244,6 +416,7 @@ function Expenses() {
                     type="button"
                     className="cancel-button"
                     onClick={resetForm}
+                    disabled={saving}
                   >
                     Cancel
                   </button>
@@ -256,10 +429,15 @@ function Expenses() {
             <div className="expenses-list-header">
               <div>
                 <h2>Expense Records</h2>
-                <p>Your saved expense entries</p>
+
+                <p>
+                  Your saved expense entries
+                </p>
               </div>
 
-              <span>{expenses.length} records</span>
+              <span>
+                {expenses.length} records
+              </span>
             </div>
 
             {loading ? (
@@ -284,37 +462,58 @@ function Expenses() {
                   </thead>
 
                   <tbody>
-                    {expenses.map((expense) => (
-                      <tr key={expense.id}>
-                        <td>{expense.title}</td>
-                        <td>{expense.category}</td>
-                        <td>{expense.date}</td>
-                        <td className="expense-amount">
-                          ₹{expense.amount}
-                        </td>
-                        <td>
-                          <div className="table-actions">
-                            <button
-                              className="edit-button"
-                              onClick={() =>
-                                handleEdit(expense)
-                              }
-                            >
-                              Edit
-                            </button>
+                    {expenses.map(
+                      (expense) => (
+                        <tr key={expense.id}>
+                          <td>
+                            {expense.title}
+                          </td>
 
-                            <button
-                              className="delete-button"
-                              onClick={() =>
-                                handleDelete(expense.id)
-                              }
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                          <td>
+                            {expense.category}
+                          </td>
+
+                          <td>
+                            {expense.date}
+                          </td>
+
+                          <td className="expense-amount">
+                            ₹
+                            {formatAmount(
+                              expense.amount
+                            )}
+                          </td>
+
+                          <td>
+                            <div className="table-actions">
+                              <button
+                                type="button"
+                                className="edit-button"
+                                onClick={() =>
+                                  handleEdit(
+                                    expense
+                                  )
+                                }
+                              >
+                                Edit
+                              </button>
+
+                              <button
+                                type="button"
+                                className="delete-button"
+                                onClick={() =>
+                                  handleDelete(
+                                    expense.id
+                                  )
+                                }
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    )}
                   </tbody>
                 </table>
               </div>

@@ -1,34 +1,38 @@
-# Environment variables / secrets
+# Environment variables
 .env
-.env.*
+*.env
 
-# Python virtual environments
-venv/
-.venv/
-backend/venv/
-
-# Python cache
+# Python
 __pycache__/
-**/__pycache__/
-*.pyc
+*.py[cod]
 *.pyo
 
-# Django database
+# Django
 db.sqlite3
-backend/db.sqlite3
+staticfiles/
+media/
+
+# Virtual environments
+venv/
+env/
+.venv/
 
 # Node
 node_modules/
 frontend/node_modules/
 
-# Frontend build files
-dist/
+# Build files
 frontend/dist/
+frontend/build/
 
-# IDE / editor files
+# IDE
 .vscode/
 .idea/
 
 # OS files
 .DS_Store
 Thumbs.db
+
+# Local backup / secret-related files
+*.bundle
+secret-replacements.txt

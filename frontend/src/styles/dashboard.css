@@ -1,6 +1,7 @@
 /* =========================================================
    BUDGETBUDDY - DASHBOARD
-   Fully supports Light + Dark Theme
+   Complete Dashboard Styling
+   Light + Dark Theme
 ========================================================= */
 
 
@@ -13,6 +14,7 @@
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
+
   transition:
     background-color 0.25s ease,
     color 0.25s ease;
@@ -27,7 +29,9 @@
   width: calc(100% - 72px);
   margin-left: 72px;
   min-height: 100vh;
+
   padding: 32px;
+
   background: var(--bg);
   color: var(--text);
 
@@ -45,8 +49,9 @@
 
 .dashboard-hero {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+
   gap: 30px;
 
   margin-bottom: 28px;
@@ -69,7 +74,7 @@
 }
 
 .dashboard-eyebrow {
-  margin-bottom: 8px;
+  margin: 0 0 8px;
 
   color: rgba(255, 255, 255, 0.78);
 
@@ -81,7 +86,7 @@
 }
 
 .dashboard-hero h1 {
-  margin-bottom: 8px;
+  margin: 0 0 8px;
 
   color: #ffffff;
 
@@ -120,7 +125,7 @@
 }
 
 .health-card h3 {
-  margin-bottom: 10px;
+  margin: 0 0 10px;
 
   color: #ffffff;
 
@@ -158,7 +163,6 @@
   border-radius: 12px;
 
   background: var(--danger-light);
-
   color: var(--danger);
 
   border: 1px solid var(--border);
@@ -211,6 +215,8 @@
 }
 
 .summary-card {
+  min-width: 0;
+
   background: var(--surface);
 
   border: 1px solid var(--border);
@@ -243,7 +249,7 @@
 }
 
 .summary-title {
-  margin-bottom: 8px;
+  margin: 0 0 8px;
 
   color: var(--text-secondary);
 
@@ -258,11 +264,15 @@
 
   font-size: 26px;
   font-weight: 700;
+
+  word-break: break-word;
 }
 
 .summary-icon {
   width: 50px;
   height: 50px;
+
+  min-width: 50px;
 
   display: flex;
   align-items: center;
@@ -322,7 +332,8 @@
 
   transition:
     transform 0.2s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    background-color 0.25s ease;
 }
 
 .mini-stat-card:hover {
@@ -334,6 +345,8 @@
 .mini-stat-card > span {
   width: 42px;
   height: 42px;
+
+  min-width: 42px;
 
   display: flex;
   align-items: center;
@@ -394,6 +407,10 @@
     box-shadow 0.25s ease;
 }
 
+.chart-card:hover {
+  box-shadow: var(--shadow-hover);
+}
+
 .chart-header {
   display: flex;
 
@@ -412,7 +429,7 @@
 }
 
 .chart-header p {
-  margin-top: 5px;
+  margin: 5px 0 0;
 
   color: var(--text-secondary);
 
@@ -458,6 +475,10 @@
     box-shadow 0.25s ease;
 }
 
+.dashboard-panel:hover {
+  box-shadow: var(--shadow-hover);
+}
+
 .analytics-full-panel {
   margin-bottom: 25px;
 }
@@ -482,7 +503,7 @@
 }
 
 .panel-header p {
-  margin-top: 5px;
+  margin: 5px 0 0;
 
   color: var(--text-secondary);
 
@@ -502,11 +523,17 @@
   gap: 18px;
 }
 
+.analytics-row {
+  width: 100%;
+}
+
 .analytics-row-top {
   display: flex;
 
   justify-content: space-between;
   align-items: center;
+
+  gap: 15px;
 
   margin-bottom: 7px;
 }
@@ -593,6 +620,8 @@
 .monthly-icon {
   width: 40px;
   height: 40px;
+
+  min-width: 40px;
 
   display: flex;
   align-items: center;
@@ -706,7 +735,7 @@
 }
 
 .transaction-left h3 {
-  margin-bottom: 4px;
+  margin: 0 0 4px;
 
   color: var(--text);
 
@@ -865,10 +894,12 @@
 .quick-action {
   width: 100%;
 
+  display: flex;
+  align-items: center;
+
   padding: 13px 15px;
 
-  border: none;
-
+  border: 1px solid transparent;
   border-radius: 12px;
 
   text-align: left;
@@ -882,13 +913,21 @@
 
   transition:
     transform 0.2s ease,
-    filter 0.2s ease;
+    filter 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .quick-action:hover {
   transform: translateX(4px);
 
   filter: brightness(0.96);
+
+  box-shadow: var(--shadow);
+}
+
+.quick-action:active {
+  transform: translateX(2px);
 }
 
 .income-action {
@@ -921,6 +960,8 @@
 }
 
 .expense-analysis-card {
+  min-width: 0;
+
   display: flex;
 
   align-items: flex-start;
@@ -961,6 +1002,10 @@
   background: var(--primary-light);
 
   font-size: 18px;
+}
+
+.expense-analysis-card > div:last-child {
+  min-width: 0;
 }
 
 .expense-analysis-card span {
@@ -1027,6 +1072,16 @@
   background: var(--surface-hover);
 
   border: 1px solid var(--border);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.notification-item:hover {
+  transform: translateY(-2px);
+
+  box-shadow: var(--shadow);
 }
 
 .notification-high {
@@ -1070,6 +1125,8 @@
   color: var(--text);
 
   font-size: 13px;
+
+  line-height: 1.4;
 }
 
 .notification-content p {
@@ -1093,6 +1150,8 @@
   height: 7px;
 
   display: inline-block;
+
+  flex-shrink: 0;
 
   border-radius: 50%;
 
@@ -1120,6 +1179,16 @@
   background: var(--surface-hover);
 
   border: 1px solid var(--border);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.goal-item:hover {
+  transform: translateY(-2px);
+
+  box-shadow: var(--shadow);
 }
 
 .goal-top {
@@ -1132,12 +1201,22 @@
   margin-bottom: 10px;
 }
 
+.goal-top > div {
+  min-width: 0;
+}
+
 .goal-top h3 {
   margin: 0 0 4px;
 
   color: var(--text);
 
   font-size: 14px;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
 }
 
 .goal-top span {
@@ -1147,6 +1226,8 @@
 }
 
 .goal-top > strong {
+  flex-shrink: 0;
+
   color: var(--primary);
 
   font-size: 14px;
@@ -1184,6 +1265,8 @@
 
   justify-content: space-between;
 
+  gap: 10px;
+
   margin-top: 7px;
 
   color: var(--text-secondary);
@@ -1206,6 +1289,8 @@
   align-items: center;
   justify-content: center;
 
+  padding: 20px;
+
   text-align: center;
 }
 
@@ -1216,7 +1301,7 @@
 }
 
 .empty-state h3 {
-  margin-bottom: 7px;
+  margin: 0 0 7px;
 
   color: var(--text);
 
@@ -1225,6 +1310,8 @@
 
 .empty-state p {
   max-width: 300px;
+
+  margin: 0;
 
   color: var(--text-secondary);
 
@@ -1358,6 +1445,23 @@
     font-size: 24px;
   }
 
+  .dashboard-subtitle {
+    font-size: 13px;
+  }
+
+  .health-card {
+    min-width: 0;
+    padding: 18px;
+  }
+
+  .health-score {
+    font-size: 36px;
+  }
+
+  .summary-card {
+    padding: 18px;
+  }
+
   .summary-card h3 {
     font-size: 23px;
   }
@@ -1374,5 +1478,13 @@
 
   .expense-analysis-card {
     padding: 15px;
+  }
+
+  .quick-action {
+    padding: 12px;
+  }
+
+  .goal-top h3 {
+    max-width: 180px;
   }
 }

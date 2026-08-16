@@ -17,6 +17,10 @@ from rest_framework.permissions import (
 from rest_framework.response import Response
 
 
+# =====================================================
+# REGISTER SERIALIZERS
+# =====================================================
+
 RegisterRequestSerializer = inline_serializer(
     name="RegisterRequest",
     fields={
@@ -28,12 +32,14 @@ RegisterRequestSerializer = inline_serializer(
     },
 )
 
+
 MessageResponseSerializer = inline_serializer(
     name="UserMessageResponse",
     fields={
         "message": serializers.CharField(),
     },
 )
+
 
 ErrorResponseSerializer = inline_serializer(
     name="UserErrorResponse",
@@ -42,6 +48,24 @@ ErrorResponseSerializer = inline_serializer(
     },
 )
 
+
+# =====================================================
+# USER PROFILE SERIALIZER
+# =====================================================
+
+UserProfileSerializer = inline_serializer(
+    name="UserProfileResponse",
+    fields={
+        "id": serializers.IntegerField(),
+        "username": serializers.CharField(),
+        "email": serializers.EmailField(),
+    },
+)
+
+
+# =====================================================
+# REGISTER
+# =====================================================
 
 @extend_schema(
     request=RegisterRequestSerializer,
@@ -55,21 +79,41 @@ ErrorResponseSerializer = inline_serializer(
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def register_user(request):
+
     username = request.data.get("username")
     email = request.data.get("email")
     password = request.data.get("password")
 
-    if User.objects.filter(
-        username=username
-    ).exists():
+    # -------------------------------------------------
+    # CHECK REQUIRED FIELDS
+    # -------------------------------------------------
+
+    if not username or not email or not password:
         return Response(
             {
-                "error": (
-                    "Username already exists"
-                )
+                "error": "All fields are required."
             },
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+    # -------------------------------------------------
+    # CHECK USERNAME
+    # -------------------------------------------------
+
+    if User.objects.filter(
+        username=username
+    ).exists():
+
+        return Response(
+            {
+                "error": "Username already exists"
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    # -------------------------------------------------
+    # CREATE USER
+    # -------------------------------------------------
 
     User.objects.create_user(
         username=username,
@@ -79,13 +123,44 @@ def register_user(request):
 
     return Response(
         {
-            "message": (
-                "User registered successfully"
-            )
+            "message": "User registered successfully"
         },
         status=status.HTTP_201_CREATED,
     )
 
+
+# =====================================================
+# CURRENT USER
+# =====================================================
+
+@extend_schema(
+    responses={
+        200: UserProfileSerializer,
+    },
+    description=(
+        "Return the currently authenticated user's "
+        "profile."
+    ),
+)
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def current_user(request):
+
+    user = request.user
+
+    return Response(
+        {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+        },
+        status=status.HTTP_200_OK,
+    )
+
+
+# =====================================================
+# PROTECTED TEST VIEW
+# =====================================================
 
 @extend_schema(
     responses={
@@ -99,10 +174,10 @@ def register_user(request):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def protected_view(request):
+
     return Response(
         {
-            "message": (
-                "You are authenticated"
-            )
-        }
+            "message": "You are authenticated"
+        },
+        status=status.HTTP_200_OK,
     )

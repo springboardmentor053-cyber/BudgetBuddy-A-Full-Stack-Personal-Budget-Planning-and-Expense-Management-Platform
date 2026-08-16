@@ -46,7 +46,7 @@ function Register() {
     try {
       setLoading(true);
 
-      const response = await api.post("register/", {
+      const response = await api.post("users/register/", {
         username: formData.username,
         email: formData.email,
         password: formData.password,
@@ -68,7 +68,7 @@ function Register() {
       setError(
         err.response?.data?.error ||
           err.response?.data?.detail ||
-          "Registration failed. Please check whether the backend is running."
+          "Registration failed. Please try again."
       );
     } finally {
       setLoading(false);
@@ -147,15 +147,21 @@ function Register() {
             />
 
             {error && (
-              <p className="error-message">{error}</p>
+              <p className="error-message">
+                {error}
+              </p>
             )}
 
             {message && (
-              <p className="success-message">{message}</p>
+              <p className="success-message">
+                {message}
+              </p>
             )}
 
             <button type="submit" disabled={loading}>
-              {loading ? "Creating account..." : "Create Account"}
+              {loading
+                ? "Creating account..."
+                : "Create Account"}
             </button>
           </form>
 

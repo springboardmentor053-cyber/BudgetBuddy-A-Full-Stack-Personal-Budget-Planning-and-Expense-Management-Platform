@@ -14,40 +14,62 @@ class ExpenseViewSet(viewsets.ModelViewSet):
 
     serializer_class = ExpenseSerializer
     permission_classes = [IsAuthenticated]
-    queryset = Expense.objects.all()
 
     def get_queryset(self):
 
-        if getattr(self, "swagger_fake_view", False):
+        if getattr(
+            self,
+            "swagger_fake_view",
+            False,
+        ):
             return Expense.objects.none()
 
         queryset = Expense.objects.filter(
             user=self.request.user
         )
 
-        category = self.request.query_params.get("category")
+        category = self.request.query_params.get(
+            "category"
+        )
 
         if category:
             queryset = queryset.filter(
                 category=category
             )
 
-        sort = self.request.query_params.get("sort")
+        sort = self.request.query_params.get(
+            "sort"
+        )
 
         if sort == "latest":
-            queryset = queryset.order_by("-date", "-id")
+            queryset = queryset.order_by(
+                "-date",
+                "-id",
+            )
 
         elif sort == "oldest":
-            queryset = queryset.order_by("date", "id")
+            queryset = queryset.order_by(
+                "date",
+                "id",
+            )
 
         elif sort == "highest":
-            queryset = queryset.order_by("-amount")
+            queryset = queryset.order_by(
+                "-amount",
+                "-id",
+            )
 
         elif sort == "lowest":
-            queryset = queryset.order_by("amount")
+            queryset = queryset.order_by(
+                "amount",
+                "id",
+            )
 
         else:
-            queryset = queryset.order_by("-date", "-id")
+            queryset = queryset.order_by(
+                "-date",
+                "-id",
+            )
 
         return queryset
 
@@ -103,12 +125,17 @@ class ExpenseViewSet(viewsets.ModelViewSet):
             expense_date=expense_date,
         )
 
-    @action(detail=False, methods=["get"])
+    @action(
+        detail=False,
+        methods=["get"],
+    )
     def total(self, request):
 
         total_expense = (
             self.get_queryset()
-            .aggregate(total=Sum("amount"))["total"]
+            .aggregate(
+                total=Sum("amount")
+            )["total"]
             or 0
         )
 
@@ -119,15 +146,37 @@ class ExpenseViewSet(viewsets.ModelViewSet):
             status=status.HTTP_200_OK,
         )
 
-    @action(detail=False, methods=["get"])
+    @action(
+        detail=False,
+        methods=["get"],
+    )
     def insights(self, request):
 
         queryset = self.get_queryset()
 
-        highest = queryset.order_by("-amount").first()
-        lowest = queryset.order_by("amount").first()
-        latest = queryset.order_by("-date", "-id").first()
-        oldest = queryset.order_by("date", "id").first()
+        highest = (
+            queryset
+            .order_by("-amount", "-id")
+            .first()
+        )
+
+        lowest = (
+            queryset
+            .order_by("amount", "id")
+            .first()
+        )
+
+        latest = (
+            queryset
+            .order_by("-date", "-id")
+            .first()
+        )
+
+        oldest = (
+            queryset
+            .order_by("date", "id")
+            .first()
+        )
 
         def expense_data(expense):
 
@@ -144,10 +193,17 @@ class ExpenseViewSet(viewsets.ModelViewSet):
 
         return Response(
             {
-                "highest_expense": expense_data(highest),
-                "lowest_expense": expense_data(lowest),
-                "latest_expense": expense_data(latest),
-                "oldest_expense": expense_data(oldest),
+                "highest_expense":
+                    expense_data(highest),
+
+                "lowest_expense":
+                    expense_data(lowest),
+
+                "latest_expense":
+                    expense_data(latest),
+
+                "oldest_expense":
+                    expense_data(oldest),
             },
             status=status.HTTP_200_OK,
         )

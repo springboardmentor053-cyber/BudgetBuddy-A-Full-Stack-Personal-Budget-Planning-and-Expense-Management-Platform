@@ -3,6 +3,7 @@ from django.db import models
 
 
 class Expense(models.Model):
+
     CATEGORY_CHOICES = [
         ("Food", "Food"),
         ("Travel", "Travel"),
@@ -22,7 +23,9 @@ class Expense(models.Model):
         blank=True,
     )
 
-    title = models.CharField(max_length=100)
+    title = models.CharField(
+        max_length=100
+    )
 
     amount = models.DecimalField(
         max_digits=10,
@@ -37,7 +40,9 @@ class Expense(models.Model):
 
     date = models.DateField()
 
-    description = models.TextField(blank=True)
+    description = models.TextField(
+        blank=True
+    )
 
     def __str__(self):
         return f"{self.title} - {self.amount}"
