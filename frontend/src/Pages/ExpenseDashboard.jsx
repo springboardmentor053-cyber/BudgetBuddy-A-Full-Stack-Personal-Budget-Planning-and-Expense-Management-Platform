@@ -70,10 +70,10 @@ export default function ExpenseDashboard() {
       };
 
       const response = await expenseService.createExpense(payload);
-      if (response.budget_alert?.triggered) setBudgetWarning(response.budget_alert);
+      if (response.budget_alert) setBudgetWarning(response.budget_alert);
       const createdExpense = response.expense;
-      if (createdExpense.is_over_budget) {
-        setBudgetWarning(`⚠️ ${createdExpense.over_budget_message}`);
+      if (!response.budget_alert && createdExpense.is_over_budget) {
+        setBudgetWarning({ message: createdExpense.over_budget_message });
       }
       setExpenses((current) => [createdExpense, ...current]);
       setForm(initialFormState);

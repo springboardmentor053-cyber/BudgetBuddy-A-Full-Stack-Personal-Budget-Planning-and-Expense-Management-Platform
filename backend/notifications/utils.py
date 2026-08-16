@@ -1,22 +1,19 @@
 """Utilities for delivering budget-spending notifications."""
 
-from decimal import Decimal
 import threading
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
+from django.core.validators import validate_email
 
 from .models import Notification
-
-
-# Replace with your secondary test email address if testing self-delivery.
-ALERT_RECIPIENT = 'xyz699911@gmail.com'
 
 
 def _send_email_thread(subject, message, recipient_list):
     """Send an email and report delivery results from the background thread."""
     try:
-        sender_email = getattr(settings, 'DEFAULT_FROM_EMAIL', ALERT_RECIPIENT)
+        sender_email = settings.EMAIL_HOST_USER
         print(f"[EMAIL ENGINE] Attempting to send '{subject}' from {sender_email} to {recipient_list}...")
 
         html_message = f"""
@@ -44,30 +41,24 @@ def _send_email_thread(subject, message, recipient_list):
 def check_and_send_budget_alert(user, category, total_spent, budget_limit):
     """Create and email an alert when category spending reaches a budget tier."""
     category = category.strip()
-    total_spent = Decimal(str(total_spent))
-    budget_limit = Decimal(str(budget_limit))
 
-    if budget_limit <= 0:
+    if float(budget_limit) <= 0:
         return None
 
-    percentage = (total_spent / budget_limit) * Decimal('100')
+    percentage = (float(total_spent) / float(budget_limit)) * 100
 
-    if percentage >= Decimal('100'):
+    if percentage >= 100:
         priority = 'HIGH'
         app_title = f'🚨 Budget Exceeded: {category}'
         email_subject = f'[Budget Exceeded] {category}'
-    elif percentage >= Decimal('90'):
+    elif percentage >= 90:
         priority = 'HIGH'
         app_title = f'🚨 Critical Budget Alert (90%): {category}'
         email_subject = f'[Critical Budget Alert 90%] {category}'
-    elif percentage >= Decimal('80'):
+    elif percentage >= 80:
         priority = 'MEDIUM'
         app_title = f'⚠️ Budget Alert (80%): {category}'
         email_subject = f'[Budget Alert 80%] {category}'
-    elif percentage >= Decimal('75'):
-        priority = 'LOW'
-        app_title = f'🔔 Budget Warning (75%): {category}'
-        email_subject = f'[Budget Warning 75%] {category}'
     else:
         return None
 
@@ -84,10 +75,17 @@ def check_and_send_budget_alert(user, category, total_spent, budget_limit):
         priority=priority,
     )
 
-    target_email = user.email if (user and user.email) else ALERT_RECIPIENT
-    recipient_list = [target_email]
+    print(
+        f'[BUDGET ALERT] Triggered for user {user.email} - Category: {category}, '
+        f'Spent: ₹{total_spent}, Limit: ₹{budget_limit}, Utilized: {percentage:.1f}%'
+    )
+    try:
+        validate_email(user.email)
+    except (AttributeError, TypeError, ValidationError):
+        print(f'[BUDGET ALERT WARNING] Email not sent: user has no valid email address ({getattr(user, "email", "")!r}).')
+        return notification
 
-    print(f'[EMAIL ENGINE] Starting background email thread for {recipient_list}...')
+    recipient_list = [user.email]
     threading.Thread(
         target=_send_email_thread,
         args=(email_subject, message, recipient_list),
