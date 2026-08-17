@@ -1,123 +1,271 @@
+/* =========================================================
+   GLOBAL RESET
+========================================================= */
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    margin: 0;
+    min-height: 100%;
 }
 
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #f8fafc;
-}
+    margin: 0;
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
 
+    background: #f5f7fb;
+    color: #172033;
 
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-body {
-  margin: 0;
+    transition:
+        background-color 0.25s ease,
+        color 0.25s ease;
 }
 
 #root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+    width: 100%;
+    min-height: 100vh;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+
+/* =========================================================
+   LIGHT THEME
+========================================================= */
+
+:root {
+    --app-bg: #f5f7fb;
+    --app-surface: #ffffff;
+    --app-surface-soft: #f8fafc;
+
+    --app-text: #111827;
+    --app-text-secondary: #6b7280;
+    --app-text-muted: #9ca3af;
+
+    --app-border: #edf0f5;
+    --app-border-strong: #e5e7eb;
+
+    --app-primary: #6366f1;
+    --app-primary-dark: #4f46e5;
+
+    --app-success: #10b981;
+    --app-danger: #ef4444;
+    --app-warning: #f59e0b;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
+
+/* =========================================================
+   DARK THEME
+========================================================= */
+
+body.dark-mode {
+    background: #0f172a;
+    color: #f8fafc;
+
+    --app-bg: #0f172a;
+    --app-surface: #1e293b;
+    --app-surface-soft: #172033;
+
+    --app-text: #f8fafc;
+    --app-text-secondary: #cbd5e1;
+    --app-text-muted: #94a3b8;
+
+    --app-border: #334155;
+    --app-border-strong: #475569;
+
+    --app-primary: #818cf8;
+    --app-primary-dark: #6366f1;
+
+    --app-success: #34d399;
+    --app-danger: #f87171;
+    --app-warning: #fbbf24;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+
+/* =========================================================
+   GLOBAL TRANSITION
+========================================================= */
+
+body,
+button,
+input,
+select,
+textarea {
+    transition:
+        background-color 0.25s ease,
+        color 0.25s ease,
+        border-color 0.25s ease;
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+
+/* =========================================================
+   DARK MODE — PAGE BACKGROUNDS
+========================================================= */
+
+body.dark-mode .dashboard,
+body.dark-mode .analytics-page,
+body.dark-mode .reports-page,
+body.dark-mode .budget-page,
+body.dark-mode .income-page,
+body.dark-mode .expenses-page,
+body.dark-mode .savings-page,
+body.dark-mode .notifications-page,
+body.dark-mode .settings-page {
+    background: #0f172a;
+    color: #f8fafc;
+}
+
+
+/* =========================================================
+   DARK MODE — COMMON CARDS
+========================================================= */
+
+body.dark-mode .dashboard-panel,
+body.dark-mode .summary-card,
+body.dark-mode .report-card,
+body.dark-mode .budget-form-panel,
+body.dark-mode .budgets-list-panel,
+body.dark-mode .budget-item,
+body.dark-mode .goal-card,
+body.dark-mode .notification-item,
+body.dark-mode .transaction-item,
+body.dark-mode .quick-actions-panel {
+    background: #1e293b;
+    border-color: #334155;
+    color: #f8fafc;
+}
+
+
+/* =========================================================
+   DARK MODE — HEADINGS
+========================================================= */
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6 {
+    color: #f8fafc;
+}
+
+
+/* =========================================================
+   DARK MODE — SECONDARY TEXT
+========================================================= */
+
+body.dark-mode p {
+    color: #cbd5e1;
+}
+
+
+/* =========================================================
+   DARK MODE — INPUTS
+========================================================= */
+
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea {
+    background: #172033;
+    color: #f8fafc;
+    border-color: #475569;
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+    color: #94a3b8;
+}
+
+
+/* =========================================================
+   DARK MODE — SECONDARY BUTTONS
+========================================================= */
+
+body.dark-mode .secondary-button,
+body.dark-mode .view-button,
+body.dark-mode .cancel-budget-button {
+    background: #1e293b;
+    color: #f8fafc;
+    border-color: #475569;
+}
+
+
+/* =========================================================
+   DARK MODE — QUICK ACTION BUTTONS
+========================================================= */
+
+body.dark-mode .quick-actions button {
+    background: #1e293b;
+    color: #f8fafc;
+    border-color: #475569;
+}
+
+
+/* =========================================================
+   DARK MODE — LIST ITEMS
+========================================================= */
+
+body.dark-mode .budget-item,
+body.dark-mode .transaction-item,
+body.dark-mode .notification-item {
+    background: #172033;
+    border-color: #334155;
+}
+
+
+/* =========================================================
+   DARK MODE — PROGRESS TRACKS
+========================================================= */
+
+body.dark-mode .budget-progress,
+body.dark-mode .goal-progress {
+    background: #334155;
+}
+
+
+/* =========================================================
+   DARK MODE — SCROLLBAR
+========================================================= */
+
+body.dark-mode ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+body.dark-mode ::-webkit-scrollbar-track {
+    background: #0f172a;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 10px;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+
+button {
+    -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid #818cf8;
+    outline-offset: 2px;
 }

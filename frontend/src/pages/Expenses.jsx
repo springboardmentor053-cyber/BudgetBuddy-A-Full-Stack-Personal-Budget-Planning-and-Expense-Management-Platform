@@ -1,45 +1,31 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
+import "./Expenses.css";
 
 function Expenses() {
-
-  // =========================
-  // STATE
-  // =========================
-
   const [expenses, setExpenses] = useState([]);
-
   const [loading, setLoading] = useState(true);
-
   const [error, setError] = useState("");
-
   const [success, setSuccess] = useState("");
 
-  // Form states
   const [category, setCategory] = useState("FOOD");
   const [amount, setAmount] = useState("");
   const [expenseDate, setExpenseDate] = useState("");
   const [description, setDescription] = useState("");
 
-  // Edit mode
   const [editingId, setEditingId] = useState(null);
-
   const [submitting, setSubmitting] = useState(false);
 
-
-  // =========================
+  // =========================================================
   // FETCH EXPENSES
-  // =========================
+  // =========================================================
 
   useEffect(() => {
     fetchExpenses();
   }, []);
 
-
   const fetchExpenses = async () => {
-
     try {
-
       setLoading(true);
       setError("");
 
@@ -50,184 +36,233 @@ function Expenses() {
         return;
       }
 
-      const response = await axios.get(
-        "http://127.0.0.1:8000/api/expenses/",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await api.get("expenses/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      // Handle different possible API response formats
       if (Array.isArray(response.data)) {
-
         setExpenses(response.data);
-
-      } else if (response.data.results) {
-
+      } else if (response.data?.results) {
         setExpenses(response.data.results);
-
       } else {
-
         setExpenses([]);
-
       }
 
     } catch (error) {
-
       console.error("Expense Error:", error);
 
       if (error.response?.status === 401) {
-
         setError(
           "Your login session has expired. Please login again."
         );
-
       } else {
-
         setError(
-          "Unable to load expense data."
+          error.apiMessage ||
+          "Unable to load expense data. Please try again."
         );
-
       }
 
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
 
-  // =========================
+  // =========================================================
+  // VALIDATION
+  // =========================================================
+
+  const validateForm = () => {
+
+    if (!category) {
+      setError("Please select an expense category.");
+      return false;
+    }
+
+    if (!amount || amount.trim() === "") {
+      setError("Please enter the expense amount.");
+      return false;
+    }
+
+    if (Number(amount) <= 0) {
+      setError("Amount must be greater than zero.");
+      return false;
+    }
+
+    if (!expenseDate) {
+      setError("Please select the expense date.");
+      return false;
+    }
+
+    return true;
+  };
+
+
+  // =========================================================
+  // FORMAT BACKEND VALIDATION ERRORS
+  // =========================================================
+
+  const getBackendErrorMessage = (error) => {
+
+    const data = error.response?.data;
+
+    if (!data) {
+      return (
+        error.apiMessage ||
+        "Unable to save expense. Please try again."
+      );
+    }
+
+    // Example:
+    // { "amount": ["Ensure this value is greater than 0."] }
+
+    if (typeof data === "object") {
+
+      const messages = [];
+
+      Object.entries(data).forEach(
+        ([field, fieldErrors]) => {
+
+          if (Array.isArray(fieldErrors)) {
+
+            fieldErrors.forEach((message) => {
+
+              const fieldName =
+                field === "amount"
+                  ? "Amount"
+                  : field === "date"
+                  ? "Expense date"
+                  : field === "category"
+                  ? "Category"
+                  : field === "description"
+                  ? "Description"
+                  : field;
+
+              messages.push(
+                `${fieldName}: ${message}`
+              );
+
+            });
+
+          } else if (typeof fieldErrors === "string") {
+
+            messages.push(
+              `${field}: ${fieldErrors}`
+            );
+
+          }
+
+        }
+      );
+
+      if (messages.length > 0) {
+        return messages.join(" ");
+      }
+    }
+
+    return (
+      error.apiMessage ||
+      "Unable to save expense. Please check your details."
+    );
+  };
+
+
+  // =========================================================
   // ADD / UPDATE EXPENSE
-  // =========================
+  // =========================================================
 
   const handleSubmit = async (e) => {
 
     e.preventDefault();
 
-    setSubmitting(true);
-
     setError("");
-
     setSuccess("");
 
+    // Frontend validation
+    if (!validateForm()) {
+      return;
+    }
+
+    setSubmitting(true);
 
     try {
 
       const token = localStorage.getItem("access");
 
       if (!token) {
-
         setError(
           "Please login before adding an expense."
         );
-
         return;
-
       }
 
-
       const expenseData = {
-
-        category: category,
-
-        amount: amount,
-
-        expense_date: expenseDate,
-
-        description: description,
-
+        category,
+        amount,
+        date: expenseDate,
+        description,
       };
 
 
-      // =========================
-      // UPDATE EXPENSE
-      // =========================
+      // =====================================================
+      // UPDATE EXISTING EXPENSE
+      // =====================================================
 
       if (editingId) {
 
-        const response = await axios.put(
-
-          `http://127.0.0.1:8000/api/expenses/${editingId}/`,
-
+        const response = await api.put(
+          `expenses/${editingId}/`,
           expenseData,
-
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
-
         );
 
-
-        setExpenses(
-
-          expenses.map((expense) =>
-
+        setExpenses((current) =>
+          current.map((expense) =>
             expense.id === editingId
-
               ? response.data
-
               : expense
-
           )
-
         );
-
 
         setSuccess(
           "Expense updated successfully!"
         );
 
-
       }
 
-      // =========================
-      // ADD EXPENSE
-      // =========================
+      // =====================================================
+      // CREATE NEW EXPENSE
+      // =====================================================
 
       else {
 
-        const response = await axios.post(
-
-          "http://127.0.0.1:8000/api/expenses/",
-
+        const response = await api.post(
+          "expenses/",
           expenseData,
-
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
-
         );
 
-
-        setExpenses([
-
+        setExpenses((current) => [
           response.data,
-
-          ...expenses,
-
+          ...current,
         ]);
-
 
         setSuccess(
           "Expense added successfully!"
         );
-
       }
 
-
-      // Clear form
-
       resetForm();
-
 
     } catch (error) {
 
@@ -236,115 +271,162 @@ function Expenses() {
         error
       );
 
+      // Authentication error
+      if (error.response?.status === 401) {
 
-      if (error.response?.data) {
-
-        console.log(
-          "Backend Error:",
-          error.response.data
+        setError(
+          "Your login session has expired. Please login again."
         );
 
       }
 
+      // Permission error
+      else if (error.response?.status === 403) {
 
-      setError(
-        "Unable to save expense. Please check your details."
-      );
+        setError(
+          "You do not have permission to save this expense."
+        );
+
+      }
+
+      // Validation / bad request
+      else if (error.response?.status === 400) {
+
+        setError(
+          getBackendErrorMessage(error)
+        );
+
+      }
+
+      // Server unavailable
+      else if (error.response?.status >= 500) {
+
+        setError(
+          "The server is currently unavailable. Your expense was not saved. Please try again later."
+        );
+
+      }
+
+      // No response from API
+      else if (!error.response) {
+
+        setError(
+          "Unable to connect to the server. Please check your connection and try again."
+        );
+
+      }
+
+      // Everything else
+      else {
+
+        setError(
+          error.apiMessage ||
+          "Unable to save expense. Please check your details and try again."
+        );
+
+      }
 
     } finally {
 
       setSubmitting(false);
 
     }
-
   };
 
 
-  // =========================
+  // =========================================================
   // DELETE EXPENSE
-  // =========================
+  // =========================================================
 
   const handleDelete = async (id) => {
 
     const confirmDelete = window.confirm(
-
       "Are you sure you want to delete this expense?"
-
     );
 
-
     if (!confirmDelete) {
-
       return;
-
     }
-
 
     try {
 
+      setError("");
+      setSuccess("");
+
       const token = localStorage.getItem("access");
 
+      if (!token) {
+        setError(
+          "Please login before deleting an expense."
+        );
+        return;
+      }
 
-      await axios.delete(
-
-        `http://127.0.0.1:8000/api/expenses/${id}/`,
-
+      await api.delete(
+        `expenses/${id}/`,
         {
-
           headers: {
-
             Authorization: `Bearer ${token}`,
-
           },
-
         }
-
       );
 
-
-      setExpenses(
-
-        expenses.filter(
-
+      setExpenses((current) =>
+        current.filter(
           (expense) => expense.id !== id
-
         )
-
       );
-
 
       setSuccess(
-
         "Expense deleted successfully!"
-
       );
-
 
     } catch (error) {
 
       console.error(
-
         "Delete Expense Error:",
-
         error
-
       );
 
+      if (error.response?.status === 401) {
 
-      setError(
+        setError(
+          "Your login session has expired. Please login again."
+        );
 
-        "Unable to delete expense."
+      } else if (error.response?.status === 403) {
 
-      );
+        setError(
+          "You do not have permission to delete this expense."
+        );
 
+      } else if (error.response?.status === 404) {
+
+        setError(
+          "This expense could not be found. It may have already been deleted."
+        );
+
+      } else if (!error.response) {
+
+        setError(
+          "Unable to connect to the server. Please check your connection and try again."
+        );
+
+      } else {
+
+        setError(
+          error.apiMessage ||
+          "Unable to delete expense. Please try again."
+        );
+
+      }
     }
-
   };
 
 
-  // =========================
+  // =========================================================
   // EDIT EXPENSE
-  // =========================
+  // =========================================================
 
   const handleEdit = (expense) => {
 
@@ -354,30 +436,25 @@ function Expenses() {
 
     setAmount(expense.amount);
 
-    setExpenseDate(expense.expense_date);
+    setExpenseDate(expense.date);
 
     setDescription(
       expense.description || ""
     );
 
     setSuccess("");
-
     setError("");
 
     window.scrollTo({
-
       top: 0,
-
       behavior: "smooth",
-
     });
-
   };
 
 
-  // =========================
+  // =========================================================
   // RESET FORM
-  // =========================
+  // =========================================================
 
   const resetForm = () => {
 
@@ -394,119 +471,87 @@ function Expenses() {
   };
 
 
-  // =========================
-  // CALCULATE TOTAL
-  // =========================
+  // =========================================================
+  // TOTAL EXPENSE
+  // =========================================================
 
   const totalExpense = expenses.reduce(
-
     (total, expense) =>
-
-      total + Number(expense.amount || 0),
-
+      total +
+      Number(expense.amount || 0),
     0
-
   );
 
 
-  // =========================
+  // =========================================================
   // CATEGORY ICON
-  // =========================
+  // =========================================================
 
   const getCategoryIcon = (category) => {
 
     const icons = {
-
       FOOD: "🍔",
-
       TRANSPORT: "🚗",
-
       EDUCATION: "📚",
-
       SHOPPING: "🛍️",
-
       ENTERTAINMENT: "🎬",
-
       HEALTH: "💊",
-
       BILLS: "🧾",
-
       OTHER: "📦",
-
     };
 
-
     return icons[category] || "💸";
-
   };
 
 
-  // =========================
+  // =========================================================
   // CATEGORY NAME
-  // =========================
+  // =========================================================
 
   const getCategoryName = (category) => {
 
     const names = {
-
       FOOD: "Food",
-
       TRANSPORT: "Transport",
-
       EDUCATION: "Education",
-
       SHOPPING: "Shopping",
-
       ENTERTAINMENT: "Entertainment",
-
       HEALTH: "Health",
-
       BILLS: "Bills",
-
       OTHER: "Other",
-
     };
 
-
     return names[category] || category;
-
   };
 
 
-  // =========================
+  // =========================================================
   // UI
-  // =========================
+  // =========================================================
 
   return (
 
     <div className="expense-page">
 
+      {/* =================================================
+          HEADER
+      ================================================= */}
 
-      {/* =========================
-          PAGE HEADER
-      ========================= */}
-
-      <div className="page-header">
+      <div className="expense-header">
 
         <div>
 
-          <span className="page-badge">
-
+          <span className="expense-badge">
             💳 EXPENSE TRACKER
-
           </span>
 
           <h1>
-
             Expense Management
-
           </h1>
 
           <p>
-
-            Track, categorize, and manage your
-            daily expenses.
-
+            Track, categorize, and manage your daily
+            expenses with ease.
           </p>
 
         </div>
@@ -514,37 +559,32 @@ function Expenses() {
       </div>
 
 
-      {/* =========================
+      {/* =================================================
           SUCCESS MESSAGE
-      ========================= */}
+      ================================================= */}
 
       {success && (
 
-        <div className="success-message">
+        <div className="expense-alert success-alert">
 
-          ✅ {success}
+          <span>✓</span>
 
-        </div>
+          <div>
 
-      )}
+            <strong>
+              Success
+            </strong>
 
+            <p>
+              {success}
+            </p>
 
-      {/* =========================
-          ERROR MESSAGE
-      ========================= */}
-
-      {error && (
-
-        <div className="error-message">
-
-          ⚠️ {error}
+          </div>
 
           <button
-            onClick={fetchExpenses}
+            onClick={() => setSuccess("")}
           >
-
-            Try Again
-
+            ×
           </button>
 
         </div>
@@ -552,56 +592,124 @@ function Expenses() {
       )}
 
 
-      {/* =========================
-          SUMMARY
-      ========================= */}
+      {/* =================================================
+          ERROR MESSAGE
+      ================================================= */}
 
-      <div className="expense-summary">
+      {error && (
 
-        <div className="expense-summary-card">
+        <div className="expense-alert error-alert">
 
-          <div className="summary-icon">
+          <span>⚠</span>
 
-            💸
+          <div>
+
+            <strong>
+              Something went wrong
+            </strong>
+
+            <p>
+              {error}
+            </p>
 
           </div>
 
-          <div>
+          <button
+            onClick={() => setError("")}
+          >
+            ×
+          </button>
+
+        </div>
+
+      )}
+
+
+      {/* =================================================
+          SUMMARY
+      ================================================= */}
+
+      <div className="expense-summary">
+
+        <div className="expense-summary-card expense-total-card">
+
+          <div className="summary-icon">
+            💸
+          </div>
+
+          <div className="summary-content">
 
             <span>
               Total Expenses
             </span>
 
             <h2>
-
-              ₹{totalExpense.toFixed(2)}
-
+              ₹
+              {totalExpense.toLocaleString(
+                "en-IN",
+                {
+                  minimumFractionDigits: 2,
+                }
+              )}
             </h2>
+
+            <small>
+              Overall spending
+            </small>
 
           </div>
 
         </div>
 
 
-        <div className="expense-summary-card">
+        <div className="expense-summary-card transaction-card">
 
           <div className="summary-icon">
-
             📊
-
           </div>
 
-          <div>
+          <div className="summary-content">
 
             <span>
               Transactions
             </span>
 
             <h2>
-
               {expenses.length}
-
             </h2>
+
+            <small>
+              Recorded expenses
+            </small>
+
+          </div>
+
+        </div>
+
+
+        <div className="expense-summary-card tracking-card">
+
+          <div className="summary-icon">
+            🎯
+          </div>
+
+          <div className="summary-content">
+
+            <span>
+              Tracking Status
+            </span>
+
+            <h2>
+              {expenses.length > 0
+                ? "Active"
+                : "Ready"}
+            </h2>
+
+            <small>
+              {expenses.length > 0
+                ? "Expenses being tracked"
+                : "Add your first expense"}
+            </small>
 
           </div>
 
@@ -610,13 +718,17 @@ function Expenses() {
       </div>
 
 
-      {/* =========================
-          ADD / EDIT FORM
-      ========================= */}
+      {/* =================================================
+          FORM
+      ================================================= */}
 
       <div className="expense-form-panel">
 
         <div className="form-panel-header">
+
+          <div className="form-heading-icon">
+            {editingId ? "✏️" : "➕"}
+          </div>
 
           <div>
 
@@ -654,35 +766,26 @@ function Expenses() {
           className="expense-form"
         >
 
-
           {/* CATEGORY */}
 
           <div className="form-group">
 
             <label>
-
               Expense Category
-
             </label>
 
-            <div className="select-wrapper">
+            <div className="input-container">
 
               <span className="input-icon">
-
                 {getCategoryIcon(category)}
-
               </span>
 
               <select
-
                 value={category}
-
                 onChange={(e) =>
                   setCategory(e.target.value)
                 }
-
                 required
-
               >
 
                 <option value="FOOD">
@@ -729,37 +832,25 @@ function Expenses() {
           <div className="form-group">
 
             <label>
-
               Amount
-
             </label>
 
-            <div className="amount-input">
+            <div className="amount-container">
 
               <span>
-
                 ₹
-
               </span>
 
               <input
-
                 type="number"
-
-                min="0"
-
+                min="0.01"
                 step="0.01"
-
                 placeholder="Enter amount"
-
                 value={amount}
-
                 onChange={(e) =>
                   setAmount(e.target.value)
                 }
-
                 required
-
               />
 
             </div>
@@ -772,23 +863,17 @@ function Expenses() {
           <div className="form-group">
 
             <label>
-
               Expense Date
-
             </label>
 
             <input
-
+              className="date-input"
               type="date"
-
               value={expenseDate}
-
               onChange={(e) =>
                 setExpenseDate(e.target.value)
               }
-
               required
-
             />
 
           </div>
@@ -796,27 +881,24 @@ function Expenses() {
 
           {/* DESCRIPTION */}
 
-          <div className="form-group full-width">
+          <div className="form-group description-group">
 
             <label>
-
               Description
-
             </label>
 
             <textarea
-
               placeholder="Example: Lunch with friends"
-
               value={description}
-
               onChange={(e) =>
                 setDescription(e.target.value)
               }
-
-              rows="4"
-
+              rows="3"
             />
+
+            <small>
+              Add a short note to remember this expense.
+            </small>
 
           </div>
 
@@ -826,24 +908,16 @@ function Expenses() {
           <div className="form-actions">
 
             <button
-
               type="submit"
-
-              className="primary-button"
-
+              className="expense-primary-button"
               disabled={submitting}
-
             >
 
               {submitting
-
                 ? "Saving..."
-
                 : editingId
-
-                  ? "✏️ Update Expense"
-
-                  : "+ Add Expense"}
+                ? "✏️ Update Expense"
+                : "+ Add Expense"}
 
             </button>
 
@@ -851,68 +925,54 @@ function Expenses() {
             {editingId && (
 
               <button
-
                 type="button"
-
-                className="secondary-button"
-
+                className="expense-secondary-button"
                 onClick={resetForm}
-
               >
-
                 Cancel
-
               </button>
 
             )}
 
           </div>
 
-
         </form>
 
       </div>
 
 
-      {/* =========================
-          EXPENSE LIST
-      ========================= */}
+      {/* =================================================
+          TRANSACTION HISTORY
+      ================================================= */}
 
       <div className="expense-list-panel">
-
 
         <div className="list-header">
 
           <div>
 
             <span className="section-label">
-
               TRANSACTION HISTORY
-
             </span>
 
             <h2>
-
               Your Expenses
-
             </h2>
 
             <p>
-
               View and manage your recorded expenses.
-
             </p>
 
           </div>
 
           <div className="transaction-count">
 
-            {expenses.length}
+            <strong>
+              {expenses.length}
+            </strong>
 
             <span>
-
               Transactions
-
             </span>
 
           </div>
@@ -920,28 +980,22 @@ function Expenses() {
         </div>
 
 
-        {/* LOADING */}
+        {/* =================================================
+            LOADING
+        ================================================= */}
 
         {loading && (
 
-          <div className="empty-state">
+          <div className="expense-empty-state">
 
-            <div className="loading-icon">
-
-              ⏳
-
-            </div>
+            <div className="loading-spinner"></div>
 
             <h3>
-
               Loading expenses...
-
             </h3>
 
             <p>
-
               Please wait while we fetch your transactions.
-
             </p>
 
           </div>
@@ -949,31 +1003,27 @@ function Expenses() {
         )}
 
 
-        {/* EMPTY */}
+        {/* =================================================
+            EMPTY
+        ================================================= */}
 
         {!loading &&
           !error &&
           expenses.length === 0 && (
 
-            <div className="empty-state">
+            <div className="expense-empty-state">
 
-              <div className="empty-icon">
-
+              <div className="empty-expense-icon">
                 💸
-
               </div>
 
               <h3>
-
                 No expenses yet
-
               </h3>
 
               <p>
-
                 Start tracking your spending by
                 adding your first expense above.
-
               </p>
 
             </div>
@@ -981,7 +1031,9 @@ function Expenses() {
           )}
 
 
-        {/* EXPENSES */}
+        {/* =================================================
+            LIST
+        ================================================= */}
 
         {!loading &&
           expenses.length > 0 && (
@@ -991,15 +1043,9 @@ function Expenses() {
               {expenses.map((expense) => (
 
                 <div
-
                   className="expense-item"
-
                   key={expense.id}
-
                 >
-
-
-                  {/* ICON */}
 
                   <div className="expense-icon">
 
@@ -1009,8 +1055,6 @@ function Expenses() {
 
                   </div>
 
-
-                  {/* DETAILS */}
 
                   <div className="expense-details">
 
@@ -1032,81 +1076,63 @@ function Expenses() {
                   </div>
 
 
-                  {/* DATE */}
-
                   <div className="expense-date">
 
                     <span>
-
                       Date
-
                     </span>
 
                     <strong>
-
-                      {expense.expense_date}
-
+                      {expense.date}
                     </strong>
 
                   </div>
 
-
-                  {/* AMOUNT */}
 
                   <div className="expense-amount">
 
                     <strong>
 
-                      -₹{Number(
+                      -₹
+                      {Number(
                         expense.amount
-                      ).toFixed(2)}
+                      ).toLocaleString(
+                        "en-IN",
+                        {
+                          minimumFractionDigits: 2,
+                        }
+                      )}
 
                     </strong>
 
                   </div>
 
 
-                  {/* ACTIONS */}
-
                   <div className="expense-actions">
 
                     <button
-
                       className="edit-button"
-
                       onClick={() =>
                         handleEdit(expense)
                       }
-
                       title="Edit Expense"
-
                     >
-
                       ✏️
-
                     </button>
 
-
                     <button
-
                       className="delete-button"
-
                       onClick={() =>
                         handleDelete(
                           expense.id
                         )
                       }
-
                       title="Delete Expense"
-
                     >
-
                       🗑️
-
                     </button>
 
                   </div>
-
 
                 </div>
 
@@ -1118,11 +1144,8 @@ function Expenses() {
 
       </div>
 
-
     </div>
-
   );
-
 }
 
 export default Expenses;

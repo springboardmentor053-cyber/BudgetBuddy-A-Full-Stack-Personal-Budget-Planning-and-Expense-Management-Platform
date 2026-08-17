@@ -1,0 +1,1350 @@
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+.dashboard {
+    min-height: 100vh;
+    padding: 32px;
+    background: #f5f7fb;
+    color: #172033;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.dashboard-eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #6366f1;
+    margin-bottom: 8px;
+}
+
+.dashboard-header h1 {
+    margin: 0;
+    font-size: 34px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.dashboard-header p {
+    margin: 8px 0 0;
+    color: #6b7280;
+    font-size: 15px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.header-button {
+    border: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.primary-button {
+    background: #6366f1;
+    color: white;
+}
+
+.secondary-button {
+    background: white;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+}
+
+.header-button:hover {
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   SUMMARY CARDS
+========================================================= */
+
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(190px, 1fr));
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+
+/* =========================================================
+   SUMMARY CARD
+========================================================= */
+
+.summary-card {
+    position: relative;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+    padding: 18px 20px;
+
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+
+    background: white;
+    border-radius: 16px;
+
+    border: 1px solid #edf0f5;
+
+    box-shadow:
+        0 8px 24px rgba(15, 23, 42, 0.05);
+
+    transition: all 0.25s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 14px 30px rgba(15, 23, 42, 0.09);
+}
+
+
+/* =========================================================
+   DECORATIVE CIRCLE
+========================================================= */
+
+.summary-card::after {
+    content: "";
+
+    position: absolute;
+
+    width: 80px;
+    height: 80px;
+
+    right: -30px;
+    bottom: -30px;
+
+    border-radius: 50%;
+
+    opacity: 0.08;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   SUMMARY ICON
+========================================================= */
+
+.summary-icon {
+    width: 46px;
+    height: 46px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 13px;
+
+    font-size: 22px;
+}
+
+
+/* =========================================================
+   SUMMARY CONTENT
+========================================================= */
+
+.summary-content {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+}
+
+
+/* CARD TITLE */
+
+.summary-content span {
+    display: block;
+
+    color: #6b7280;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    /* IMPORTANT:
+       Allows titles like "Total Expenses"
+       to wrap instead of getting cut */
+    white-space: normal;
+
+    line-height: 1.4;
+}
+
+
+/* CARD AMOUNT */
+
+.summary-content h2 {
+    margin: 7px 0 4px;
+
+    font-size: 18px;
+
+    color: #111827;
+
+    /* Keep amount in one line */
+    white-space: nowrap;
+
+    overflow: visible;
+
+    text-overflow: clip;
+    letter-spacing: -0.3px;
+}
+
+
+/* CARD SUBTITLE */
+
+.summary-content small {
+    display: block;
+
+    color: #9ca3af;
+
+    font-size: 11px;
+
+    white-space: normal;
+
+    line-height: 1.3;
+}
+
+
+/* =========================================================
+   INCOME CARD
+========================================================= */
+
+.income-card {
+    border-top: 3px solid #10b981;
+}
+
+.income-card .summary-icon {
+    background: #ecfdf5;
+}
+
+
+/* =========================================================
+   EXPENSE CARD
+========================================================= */
+
+.expense-card {
+    border-top: 3px solid #ef4444;
+}
+
+.expense-card .summary-icon {
+    background: #fef2f2;
+}
+
+
+/* =========================================================
+   BALANCE CARD
+========================================================= */
+
+.balance-card {
+    border-top: 3px solid #6366f1;
+}
+
+.balance-card .summary-icon {
+    background: #eef2ff;
+}
+
+
+/* =========================================================
+   SAVINGS CARD
+========================================================= */
+
+.savings-card {
+    border-top: 3px solid #0ea5e9;
+}
+
+.savings-card .summary-icon {
+    background: #f0f9ff;
+}
+
+
+/* =========================================================
+   BUDGET CARD
+========================================================= */
+
+.budget-card {
+    border-top: 3px solid #f59e0b;
+}
+
+.budget-card .summary-icon {
+    background: #fffbeb;
+}
+
+
+/* =========================================================
+   RESPONSIVE SUMMARY CARDS
+========================================================= */
+
+@media (max-width: 1200px) {
+
+    .summary-cards {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 850px) {
+
+    .summary-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 550px) {
+
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .summary-card {
+        padding: 18px;
+    }
+
+    .summary-content h2 {
+        font-size: 20px;
+    }
+
+}
+
+
+/* =========================================================
+   QUICK ACTIONS
+========================================================= */
+
+.quick-actions-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 25px;
+
+    padding: 22px 24px;
+
+    margin-bottom: 24px;
+
+    background: linear-gradient(
+        135deg,
+        #ffffff,
+        #f8f9ff
+    );
+
+    border: 1px solid #e8eaf4;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.quick-actions-panel h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.quick-actions-panel p {
+    margin: 5px 0 0;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.quick-actions button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 11px 15px;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 10px;
+
+    background: white;
+
+    color: #374151;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.25s ease;
+}
+
+.quick-actions button:hover {
+    border-color: #6366f1;
+    color: #6366f1;
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   PANELS
+========================================================= */
+
+.dashboard-panel {
+    background: white;
+
+    border: 1px solid #edf0f5;
+
+    border-radius: 16px;
+
+    padding: 24px;
+
+    margin-bottom: 24px;
+
+    box-shadow:
+        0 8px 24px rgba(15, 23, 42, 0.045);
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+.panel-header h2 {
+    margin: 0;
+
+    font-size: 18px;
+
+    color: #111827;
+}
+
+.panel-header p {
+    margin: 6px 0 0;
+
+    color: #9ca3af;
+
+    font-size: 13px;
+}
+
+.panel-icon {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: #f5f3ff;
+
+    border-radius: 10px;
+
+    font-size: 18px;
+}
+
+.view-button {
+    padding: 8px 13px;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 8px;
+
+    background: white;
+
+    color: #6366f1;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   CHARTS
+========================================================= */
+
+.charts-grid {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 24px;
+}
+
+.chart-panel {
+    min-height: 420px;
+}
+
+.chart-container {
+    width: 100%;
+    height: 320px;
+}
+
+.empty-chart {
+    height: 320px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #9ca3af;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   BUDGET STATUS
+========================================================= */
+
+.budget-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.budget-item {
+    padding: 17px;
+
+    background: #f8fafc;
+
+    border: 1px solid #eef1f5;
+
+    border-radius: 12px;
+}
+
+.budget-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 15px;
+}
+
+.budget-item-top strong {
+    display: block;
+
+    font-size: 15px;
+
+    color: #1f2937;
+}
+
+.budget-item-top span {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #9ca3af;
+
+    font-size: 12px;
+}
+
+.budget-status {
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+.status-safe {
+    color: #047857;
+    background: #d1fae5;
+}
+
+.status-warning {
+    color: #b45309;
+    background: #fef3c7;
+}
+
+.status-high {
+    color: #c2410c;
+    background: #ffedd5;
+}
+
+.status-exceeded {
+    color: #b91c1c;
+    background: #fee2e2;
+}
+
+.budget-progress {
+    height: 9px;
+
+    margin: 15px 0 10px;
+
+    background: #e5e7eb;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+}
+
+.budget-progress-fill {
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        #6366f1,
+        #8b5cf6
+    );
+
+    border-radius: inherit;
+
+    transition: width 0.5s ease;
+}
+
+.budget-item-bottom {
+    display: flex;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    color: #6b7280;
+
+    font-size: 12px;
+}
+
+.budget-item-bottom strong {
+    color: #374151;
+}
+
+
+/* =========================================================
+   SAVINGS GOALS
+========================================================= */
+
+.goals-grid {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 16px;
+}
+
+.goal-card {
+    padding: 18px;
+
+    background: #fafaff;
+
+    border: 1px solid #e9e7ff;
+
+    border-radius: 14px;
+}
+
+.goal-header {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+.goal-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: #ede9fe;
+
+    border-radius: 11px;
+}
+
+.goal-header h3 {
+    margin: 0;
+
+    font-size: 15px;
+}
+
+.goal-header span {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #8b5cf6;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+.goal-amounts {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: baseline;
+
+    gap: 10px;
+
+    margin-top: 20px;
+}
+
+.goal-amounts strong {
+    font-size: 17px;
+}
+
+.goal-amounts span {
+    color: #9ca3af;
+
+    font-size: 11px;
+}
+
+.goal-progress {
+    height: 9px;
+
+    margin: 14px 0 9px;
+
+    background: #e5e7eb;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+}
+
+.goal-progress-fill {
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        #8b5cf6,
+        #6366f1
+    );
+
+    border-radius: inherit;
+}
+
+.goal-footer {
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    color: #6b7280;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   BOTTOM GRID
+========================================================= */
+
+.bottom-grid {
+    display: grid;
+
+    grid-template-columns: 1.15fr 0.85fr;
+
+    gap: 24px;
+}
+
+
+/* =========================================================
+   TRANSACTIONS
+========================================================= */
+
+.transactions-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    max-height: 400px;
+
+    overflow-y: auto;
+}
+
+.transaction-item {
+    display: grid;
+
+    grid-template-columns:
+        45px
+        minmax(0, 1fr)
+        110px
+        135px;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 13px;
+
+    background: #f8fafc;
+
+    border: 1px solid #eef1f5;
+
+    border-radius: 11px;
+
+    transition: 0.2s ease;
+}
+
+.transaction-item:hover {
+    background: #f3f4f6;
+}
+
+.transaction-icon {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    background: #fef2f2;
+
+    border-radius: 10px;
+
+    font-size: 18px;
+}
+
+.transaction-details {
+    display: flex;
+
+    flex-direction: column;
+
+    min-width: 0;
+}
+
+.transaction-details strong {
+    color: #1f2937;
+
+    font-size: 13px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+.transaction-details span {
+    margin-top: 4px;
+
+    color: #9ca3af;
+
+    font-size: 11px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+.transaction-date {
+    color: #9ca3af;
+
+    font-size: 11px;
+
+    white-space: nowrap;
+}
+
+.transaction-amount {
+    text-align: right;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+.expense-amount {
+    color: #ef4444;
+}
+
+
+/* =========================================================
+   CATEGORY ANALYSIS
+========================================================= */
+
+.category-row {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 12px 0;
+
+    border-bottom: 1px solid #eef1f5;
+}
+
+.category-row:last-child {
+    border-bottom: none;
+}
+
+.category-row span {
+    color: #4b5563;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+.category-row strong {
+    color: #111827;
+
+    font-size: 13px;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
+
+.notifications-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 11px;
+
+    max-height: 400px;
+
+    overflow-y: auto;
+}
+
+.notification-item {
+    display: flex;
+
+    gap: 12px;
+
+    padding: 13px;
+
+    border-radius: 11px;
+
+    border: 1px solid #eef1f5;
+
+    background: #f8fafc;
+}
+
+.notification-item.unread {
+    background: #f5f3ff;
+
+    border-color: #ddd6fe;
+}
+
+.notification-icon {
+    width: 38px;
+    height: 38px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    background: white;
+
+    border-radius: 10px;
+}
+
+.notification-content {
+    min-width: 0;
+}
+
+.notification-title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    flex-wrap: wrap;
+}
+
+.notification-title strong {
+    font-size: 13px;
+}
+
+.notification-content p {
+    margin: 5px 0 0;
+
+    color: #6b7280;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+.new-badge {
+    padding: 3px 6px;
+
+    background: #6366f1;
+
+    color: white;
+
+    border-radius: 5px;
+
+    font-size: 8px;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   FINANCIAL HEALTH
+========================================================= */
+
+.financial-summary-banner {
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        repeat(3, 150px);
+
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 24px;
+
+    margin-top: 0;
+
+    background: linear-gradient(
+        135deg,
+        #312e81,
+        #6366f1
+    );
+
+    color: white;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 12px 30px rgba(79, 70, 229, 0.25);
+}
+
+.financial-summary-banner > div:first-child span {
+    font-size: 11px;
+
+    letter-spacing: 1px;
+
+    opacity: 0.75;
+
+    font-weight: 700;
+}
+
+.financial-summary-banner h2 {
+    margin: 7px 0 0;
+
+    font-size: 17px;
+}
+
+.health-stat {
+    padding-left: 20px;
+
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.health-stat span {
+    display: block;
+
+    font-size: 11px;
+
+    opacity: 0.7;
+}
+
+.health-stat strong {
+    display: block;
+
+    margin-top: 5px;
+
+    font-size: 22px;
+}
+
+
+/* =========================================================
+   EMPTY / LOADING / ERROR
+========================================================= */
+
+.empty-message {
+    padding: 25px;
+
+    text-align: center;
+
+    color: #9ca3af;
+
+    font-size: 13px;
+}
+
+.dashboard-message {
+    min-height: 80vh;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #f5f7fb;
+}
+
+.loading-card,
+.error-card {
+    width: 350px;
+
+    padding: 35px;
+
+    background: white;
+
+    border-radius: 18px;
+
+    text-align: center;
+
+    box-shadow:
+        0 15px 40px rgba(15, 23, 42, 0.08);
+}
+
+.loading-card h2,
+.error-card h2 {
+    margin: 15px 0 8px;
+
+    color: #1f2937;
+}
+
+.loading-card p {
+    margin: 0;
+
+    color: #9ca3af;
+
+    font-size: 13px;
+}
+
+.loading-spinner {
+    width: 42px;
+    height: 42px;
+
+    margin: auto;
+
+    border: 4px solid #e5e7eb;
+
+    border-top-color: #6366f1;
+
+    border-radius: 50%;
+
+    animation: spin 0.8s linear infinite;
+}
+
+.error-icon {
+    font-size: 40px;
+}
+
+.retry-button {
+    margin-top: 15px;
+
+    padding: 10px 20px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #6366f1;
+
+    color: white;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+@keyframes spin {
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1250px) {
+
+    .summary-cards {
+        grid-template-columns: repeat(2, minmax(190px, 1fr));
+    }
+
+    .goals-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+@media (max-width: 550px){
+    .summary-cards{
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
+
+@media (max-width: 950px) {
+
+    .dashboard {
+        padding: 22px;
+    }
+
+    .charts-grid,
+    .bottom-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .financial-summary-banner {
+        grid-template-columns: 1fr 1fr;
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .dashboard {
+        padding: 15px;
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .header-actions {
+        width: 100%;
+    }
+
+    .header-button {
+        flex: 1;
+    }
+
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .quick-actions-panel {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .quick-actions {
+        width: 100%;
+    }
+
+    .quick-actions button {
+        flex: 1;
+    }
+
+    .goals-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .transaction-item {
+        grid-template-columns: 45px 1fr;
+    }
+
+    .transaction-date,
+    .transaction-amount {
+        grid-column: 2;
+
+        text-align: left;
+    }
+
+    .financial-summary-banner {
+        grid-template-columns: 1fr;
+    }
+
+    .health-stat {
+        padding-left: 0;
+
+        padding-top: 12px;
+
+        border-left: none;
+
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+}
+
+
+/* =========================================================
+   EXTRA SMALL DEVICES
+========================================================= */
+
+@media (max-width: 400px) {
+
+    .dashboard {
+        padding: 12px;
+    }
+
+    .summary-card {
+        gap: 10px;
+
+        padding: 15px;
+    }
+
+    .summary-icon {
+        width: 44px;
+        height: 44px;
+
+        font-size: 21px;
+    }
+
+    .summary-content span {
+        font-size: 12px;
+    }
+
+    .summary-content h2 {
+        font-size: 18px;
+    }
+
+    .summary-content small {
+        font-size: 10px;
+    }
+
+}

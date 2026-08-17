@@ -1,0 +1,1122 @@
+/* =========================================================
+   BUDGET PAGE
+========================================================= */
+
+.budget-page {
+    min-height: 100vh;
+    padding: 32px;
+    background: #f5f7fb;
+    color: #172033;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.budget-header {
+    margin-bottom: 28px;
+}
+
+.budget-eyebrow {
+    display: inline-block;
+    margin-bottom: 8px;
+    color: #6366f1;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.budget-header h1 {
+    margin: 0;
+    color: #111827;
+    font-size: 34px;
+    font-weight: 800;
+}
+
+.budget-header p {
+    margin: 8px 0 0;
+    color: #6b7280;
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   GLOBAL ALERTS
+========================================================= */
+
+.budget-alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 16px;
+    margin-bottom: 20px;
+    border-radius: 11px;
+    font-size: 13px;
+}
+
+.budget-alert p {
+    flex: 1;
+    margin: 0;
+}
+
+.success-alert {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #047857;
+}
+
+.error-alert {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+}
+
+.error-alert button {
+    padding: 7px 12px;
+    border: none;
+    border-radius: 7px;
+    background: #ef4444;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   SUMMARY
+========================================================= */
+
+.budget-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.budget-summary-card {
+    position: relative;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    min-width: 0;
+    padding: 21px;
+
+    background: white;
+    border: 1px solid #edf0f5;
+    border-radius: 16px;
+
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+
+    transition: 0.25s ease;
+}
+
+.budget-summary-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.09);
+}
+
+.budget-summary-icon {
+    width: 52px;
+    height: 52px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+    font-size: 24px;
+}
+
+.budget-summary-card span {
+    display: block;
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.budget-summary-card h2 {
+    margin: 7px 0 4px;
+    color: #111827;
+    font-size: 21px;
+    font-weight: 800;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.budget-summary-card small {
+    color: #9ca3af;
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   SUMMARY COLORS
+========================================================= */
+
+.total-budget-card {
+    border-top: 3px solid #6366f1;
+}
+
+.total-budget-card .budget-summary-icon {
+    background: #eef2ff;
+}
+
+.expense-budget-card {
+    border-top: 3px solid #ef4444;
+}
+
+.expense-budget-card .budget-summary-icon {
+    background: #fef2f2;
+}
+
+.remaining-budget-card {
+    border-top: 3px solid #10b981;
+}
+
+.remaining-budget-card .budget-summary-icon {
+    background: #ecfdf5;
+}
+
+.overspent-budget-card {
+    border-top: 3px solid #f59e0b;
+}
+
+.overspent-budget-card .budget-summary-icon {
+    background: #fffbeb;
+}
+
+.negative-value {
+    color: #dc2626 !important;
+}
+
+
+/* =========================================================
+   CREATE / EDIT PANEL
+========================================================= */
+
+.budget-form-panel {
+    margin-bottom: 24px;
+    padding: 24px;
+
+    background: white;
+
+    border: 1px solid #edf0f5;
+    border-radius: 16px;
+
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.045);
+}
+
+.budget-form-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 22px;
+}
+
+.section-label {
+    display: block;
+    margin-bottom: 7px;
+
+    color: #6366f1;
+
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+}
+
+.budget-form-header h2,
+.budgets-list-header h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.budget-form-header p,
+.budgets-list-header p {
+    margin: 6px 0 0;
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+.form-header-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f5f3ff;
+    border-radius: 11px;
+
+    font-size: 20px;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.budget-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.budget-form-group {
+    min-width: 0;
+}
+
+.budget-form-group label {
+    display: block;
+    margin-bottom: 7px;
+
+    color: #374151;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.budget-form-group input,
+.budget-form-group select {
+    width: 100%;
+    box-sizing: border-box;
+
+    height: 46px;
+    padding: 0 13px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    background: #fafbfc;
+    color: #1f2937;
+
+    font-size: 13px;
+    outline: none;
+
+    transition: 0.2s ease;
+}
+
+.budget-form-group input:focus,
+.budget-form-group select:focus {
+    border-color: #6366f1;
+    background: white;
+
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+
+/* =========================================================
+   CATEGORY
+========================================================= */
+
+.budget-input-wrapper {
+    position: relative;
+}
+
+.budget-input-wrapper > span {
+    position: absolute;
+
+    left: 13px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    pointer-events: none;
+
+    font-size: 17px;
+}
+
+.budget-input-wrapper select {
+    padding-left: 43px;
+}
+
+
+/* =========================================================
+   MONEY
+========================================================= */
+
+.money-input {
+    display: flex;
+    align-items: center;
+
+    height: 46px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    background: #fafbfc;
+
+    overflow: hidden;
+    transition: 0.2s ease;
+}
+
+.money-input:focus-within {
+    border-color: #6366f1;
+    background: white;
+
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.money-input span {
+    padding-left: 14px;
+
+    color: #6b7280;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.money-input input {
+    width: 100%;
+    height: 100%;
+
+    border: none;
+    background: transparent;
+
+    box-shadow: none;
+    outline: none;
+}
+
+.money-input input:focus {
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   FORM BUTTONS
+========================================================= */
+
+.budget-form-actions {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.create-budget-button {
+    flex: 1;
+
+    height: 46px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: linear-gradient(
+        135deg,
+        #6366f1,
+        #4f46e5
+    );
+
+    color: white;
+
+    font-size: 13px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow: 0 7px 18px rgba(79, 70, 229, 0.2);
+
+    transition: 0.25s ease;
+}
+
+.create-budget-button:hover {
+    transform: translateY(-2px);
+
+    box-shadow: 0 10px 24px rgba(79, 70, 229, 0.28);
+}
+
+.create-budget-button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.cancel-budget-button {
+    height: 46px;
+    padding: 0 20px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    background: white;
+    color: #6b7280;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.cancel-budget-button:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    color: #374151;
+}
+
+
+/* =========================================================
+   BUDGET LIST PANEL
+========================================================= */
+
+.budgets-list-panel {
+    padding: 24px;
+
+    background: white;
+
+    border: 1px solid #edf0f5;
+    border-radius: 16px;
+
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.045);
+}
+
+.budgets-list-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 20px;
+    margin-bottom: 22px;
+}
+
+.budget-count {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 8px 12px;
+
+    background: #f5f3ff;
+
+    border-radius: 9px;
+
+    color: #6366f1;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.budget-count strong {
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   BUDGET LIST
+========================================================= */
+
+.budget-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+
+/* =========================================================
+   BUDGET ITEM
+========================================================= */
+
+.budget-item {
+    padding: 18px;
+
+    background: #f8fafc;
+
+    border: 1px solid #eef1f5;
+
+    border-radius: 13px;
+
+    transition: 0.2s ease;
+}
+
+.budget-item:hover {
+    border-color: #ddd6fe;
+    background: #fafaff;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   BUDGET TOP
+========================================================= */
+
+.budget-item-top {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+.budget-title {
+    display: flex;
+
+    align-items: center;
+    gap: 12px;
+
+    min-width: 0;
+}
+
+.budget-category-icon {
+    width: 43px;
+    height: 43px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #ede9fe;
+
+    border-radius: 11px;
+
+    font-size: 19px;
+}
+
+.budget-title h3 {
+    margin: 0;
+
+    color: #1f2937;
+
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.budget-title p {
+    margin: 4px 0 0;
+
+    color: #9ca3af;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.budget-item-actions {
+    display: flex;
+
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 8px;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.budget-status {
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+.status-safe {
+    color: #047857;
+    background: #d1fae5;
+}
+
+.status-warning {
+    color: #b45309;
+    background: #fef3c7;
+}
+
+.status-high {
+    color: #c2410c;
+    background: #ffedd5;
+}
+
+.status-exceeded {
+    color: #b91c1c;
+    background: #fee2e2;
+}
+
+.status-neutral {
+    color: #6b7280;
+    background: #e5e7eb;
+}
+
+
+/* =========================================================
+   EDIT / DELETE
+========================================================= */
+
+.budget-edit-button,
+.budget-delete-button {
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border-radius: 9px;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.budget-edit-button {
+    border: 1px solid #ddd6fe;
+
+    background: #f5f3ff;
+
+    color: #6366f1;
+}
+
+.budget-edit-button:hover {
+    background: #ede9fe;
+    border-color: #c4b5fd;
+
+    transform: translateY(-2px);
+}
+
+.budget-delete-button {
+    border: 1px solid #fecaca;
+
+    background: #fef2f2;
+
+    color: #dc2626;
+}
+
+.budget-delete-button:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   AMOUNTS
+========================================================= */
+
+.budget-amount-row {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 15px;
+
+    margin-bottom: 18px;
+}
+
+.budget-amount-row div {
+    display: flex;
+
+    flex-direction: column;
+    gap: 4px;
+}
+
+.budget-amount-row span {
+    color: #9ca3af;
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.budget-amount-row strong {
+    color: #1f2937;
+
+    font-size: 14px;
+}
+
+.spent-value {
+    color: #ef4444 !important;
+}
+
+.remaining-value {
+    color: #059669 !important;
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+.budget-progress-section {
+    padding-top: 14px;
+
+    border-top: 1px solid #e5e7eb;
+}
+
+.budget-progress-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 7px;
+
+    color: #9ca3af;
+
+    font-size: 10px;
+}
+
+.budget-progress-header strong {
+    color: #374151;
+}
+
+.budget-progress {
+    width: 100%;
+
+    height: 8px;
+
+    overflow: hidden;
+
+    background: #e5e7eb;
+
+    border-radius: 20px;
+}
+
+.budget-progress-fill {
+    height: 100%;
+
+    min-width: 2px;
+
+    border-radius: inherit;
+
+    transition: width 0.5s ease;
+}
+
+.budget-progress-fill.status-safe {
+    background: linear-gradient(
+        90deg,
+        #10b981,
+        #34d399
+    );
+}
+
+.budget-progress-fill.status-warning {
+    background: linear-gradient(
+        90deg,
+        #f59e0b,
+        #fbbf24
+    );
+}
+
+.budget-progress-fill.status-high {
+    background: linear-gradient(
+        90deg,
+        #f97316,
+        #fb923c
+    );
+}
+
+.budget-progress-fill.status-exceeded {
+    background: linear-gradient(
+        90deg,
+        #ef4444,
+        #f87171
+    );
+}
+
+
+/* =========================================================
+   BUDGET ALERT BOX
+========================================================= */
+
+.budget-alert-box {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 11px;
+
+    margin-top: 16px;
+
+    padding: 13px 15px;
+
+    border-radius: 11px;
+
+    border: 1px solid transparent;
+}
+
+.budget-alert-icon {
+    width: 30px;
+    height: 30px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    font-size: 16px;
+}
+
+.budget-alert-content {
+    min-width: 0;
+}
+
+.budget-alert-content strong {
+    display: block;
+
+    margin-bottom: 3px;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.budget-alert-content p {
+    margin: 0;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+
+/* SAFE */
+
+.budget-alert-box.safe {
+    background: #ecfdf5;
+    border-color: #bbf7d0;
+    color: #047857;
+}
+
+.budget-alert-box.safe .budget-alert-icon {
+    background: #d1fae5;
+}
+
+
+/* WARNING */
+
+.budget-alert-box.warning {
+    background: #fffbeb;
+    border-color: #fde68a;
+    color: #a16207;
+}
+
+.budget-alert-box.warning .budget-alert-icon {
+    background: #fef3c7;
+}
+
+
+/* HIGH WARNING */
+
+.budget-alert-box.high {
+    background: #fff7ed;
+    border-color: #fed7aa;
+    color: #c2410c;
+}
+
+.budget-alert-box.high .budget-alert-icon {
+    background: #ffedd5;
+}
+
+
+/* EXCEEDED */
+
+.budget-alert-box.exceeded {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #b91c1c;
+}
+
+.budget-alert-box.exceeded .budget-alert-icon {
+    background: #fee2e2;
+}
+
+
+/* NEUTRAL */
+
+.budget-alert-box.neutral {
+    background: #f3f4f6;
+    border-color: #e5e7eb;
+    color: #4b5563;
+}
+
+.budget-alert-box.neutral .budget-alert-icon {
+    background: #e5e7eb;
+}
+
+
+/* =========================================================
+   EMPTY / LOADING
+========================================================= */
+
+.budget-empty-state {
+    padding: 55px 20px;
+
+    text-align: center;
+}
+
+.budget-empty-icon {
+    width: 65px;
+    height: 65px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 15px;
+
+    background: #f5f3ff;
+
+    border-radius: 17px;
+
+    font-size: 30px;
+}
+
+.budget-empty-state h3 {
+    margin: 0;
+
+    color: #374151;
+
+    font-size: 16px;
+}
+
+.budget-empty-state p {
+    max-width: 400px;
+
+    margin: 7px auto 0;
+
+    color: #9ca3af;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+.budget-loading-spinner {
+    width: 38px;
+    height: 38px;
+
+    margin: 0 auto 15px;
+
+    border: 4px solid #e5e7eb;
+
+    border-top-color: #6366f1;
+
+    border-radius: 50%;
+
+    animation: budget-spin 0.8s linear infinite;
+}
+
+@keyframes budget-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1200px) {
+    .budget-summary {
+        grid-template-columns: repeat(
+            2,
+            minmax(0, 1fr)
+        );
+    }
+}
+
+
+@media (max-width: 850px) {
+    .budget-page {
+        padding: 22px;
+    }
+
+    .budget-form {
+        grid-template-columns: 1fr;
+    }
+
+    .budget-form-actions {
+        align-items: stretch;
+    }
+}
+
+
+@media (max-width: 650px) {
+    .budget-page {
+        padding: 15px;
+    }
+
+    .budget-header h1 {
+        font-size: 28px;
+    }
+
+    .budget-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .budget-form-panel,
+    .budgets-list-panel {
+        padding: 18px;
+    }
+
+    .budget-form-header,
+    .budgets-list-header {
+        flex-direction: column;
+    }
+
+    .budget-amount-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .budget-item-top {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .budget-item-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .budget-status {
+        align-self: center;
+    }
+
+    .budget-form-actions {
+        flex-direction: column;
+    }
+
+    .create-budget-button,
+    .cancel-budget-button {
+        width: 100%;
+    }
+
+    .budget-alert-box {
+        padding: 12px;
+    }
+}

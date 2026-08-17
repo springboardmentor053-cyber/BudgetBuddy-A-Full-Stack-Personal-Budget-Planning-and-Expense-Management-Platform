@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import "./Login.css";
 
 function Login() {
   const navigate = useNavigate();
@@ -10,6 +11,11 @@ function Login() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // =========================================================
+  // LOGIN
+  // =========================================================
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -18,35 +24,47 @@ function Login() {
     setLoading(true);
 
     try {
-      // Send username and password to Django JWT API
       const response = await axios.post(
         "http://127.0.0.1:8000/api/token/",
         {
-          username: username,
-          password: password,
+          username,
+          password,
         }
       );
 
-      // Save JWT tokens in browser
-      localStorage.setItem(
-        "access",
-        response.data.access
-      );
+      // =====================================================
+      // SAVE JWT TOKENS
+      // =====================================================
 
-      localStorage.setItem(
-        "refresh",
-        response.data.refresh
-      );
+      localStorage.setItem("access", response.data.access);
+      localStorage.setItem("refresh", response.data.refresh);
 
-      // Go to Dashboard
+      // =====================================================
+      // GO TO DASHBOARD
+      // =====================================================
+
       navigate("/");
 
     } catch (error) {
       console.error("Login Error:", error);
 
-      setError(
-        "Invalid username or password. Please try again."
-      );
+      // =====================================================
+      // LOGIN ERROR
+      // =====================================================
+
+      if (error.response) {
+        if (error.response.status === 401) {
+          setError("Invalid username or password.");
+        } else {
+          setError(
+            "Unable to login. Please check your details and try again."
+          );
+        }
+      } else {
+        setError(
+          "Unable to connect to the server. Please try again."
+        );
+      }
 
     } finally {
       setLoading(false);
@@ -58,70 +76,173 @@ function Login() {
 
       <div className="login-card">
 
-        {/* Logo */}
+        {/* =================================================
+            LOGO
+        ================================================= */}
+
         <div className="login-logo">
           💰
         </div>
 
-        {/* Heading */}
-        <h1>Welcome Back!</h1>
 
-        <p>
+        {/* =================================================
+            HEADING
+        ================================================= */}
+
+        <h1>
+          Welcome Back! 👋
+        </h1>
+
+        <p className="login-subtitle">
           Login to manage your finances with BudgetBuddy.
         </p>
 
-        {/* Login Form */}
+
+        {/* =================================================
+            LOGIN FORM
+        ================================================= */}
+
         <form onSubmit={handleLogin}>
 
-          {/* Username */}
-          <label>
-            Username
-          </label>
+          {/* =================================================
+              USERNAME
+          ================================================= */}
 
-          <input
-            type="text"
-            placeholder="Enter your username"
-            value={username}
-            onChange={(e) =>
-              setUsername(e.target.value)
-            }
-            required
-          />
+          <div className="form-group">
 
-          {/* Password */}
-          <label>
-            Password
-          </label>
+            <label htmlFor="username">
+              Username
+            </label>
 
-          <input
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) =>
-              setPassword(e.target.value)
-            }
-            required
-          />
+            <input
+              id="username"
+              type="text"
+              placeholder="Enter your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              autoComplete="username"
+            />
 
-          {/* Error Message */}
+          </div>
+
+
+          {/* =================================================
+              PASSWORD
+          ================================================= */}
+
+          <div className="form-group">
+
+            <label htmlFor="password">
+              Password
+            </label>
+
+            <div className="password-field">
+
+              <input
+                id="password"
+                type={
+                  showPassword
+                    ? "text"
+                    : "password"
+                }
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) =>
+                  setPassword(e.target.value)
+                }
+                required
+                autoComplete="current-password"
+              />
+
+              <button
+                type="button"
+                className="show-password"
+                onClick={() =>
+                  setShowPassword(!showPassword)
+                }
+              >
+                {showPassword
+                  ? "Hide"
+                  : "Show"}
+              </button>
+
+            </div>
+
+          </div>
+
+
+          {/* =================================================
+              ERROR MESSAGE
+          ================================================= */}
+
           {error && (
             <p className="login-error">
-              {error}
+              ⚠️ {error}
             </p>
           )}
 
-          {/* Login Button */}
+
+          {/* =================================================
+              LOGIN BUTTON
+          ================================================= */}
+
           <button
             type="submit"
+            className="login-button"
             disabled={loading}
           >
             {loading
               ? "Logging in..."
-              : "Login"
-            }
+              : "Login"}
           </button>
 
         </form>
+
+
+        {/* =================================================
+            REGISTER LINK
+        ================================================= */}
+
+        <div
+          style={{
+            textAlign: "center",
+            marginTop: "20px",
+            fontSize: "14px",
+            color: "#6b7280"
+          }}
+        >
+
+          <span>
+            Don't have an account?{" "}
+          </span>
+
+          <button
+            type="button"
+            onClick={() => navigate("/register")}
+            style={{
+              border: "none",
+              background: "transparent",
+              color: "#6366f1",
+              fontWeight: "700",
+              cursor: "pointer",
+              padding: 0,
+              fontSize: "14px"
+            }}
+          >
+            Create Account
+          </button>
+
+        </div>
+
+
+        {/* =================================================
+            SECURITY
+        ================================================= */}
+
+        <p className="login-security">
+          🔒 Your financial information is securely protected.
+        </p>
 
       </div>
 

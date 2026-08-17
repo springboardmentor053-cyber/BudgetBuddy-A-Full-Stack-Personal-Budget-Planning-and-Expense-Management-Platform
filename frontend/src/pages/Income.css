@@ -1,0 +1,1064 @@
+/* =========================================================
+   INCOME PAGE
+========================================================= */
+
+.income-page {
+    min-height: 100vh;
+    padding: 32px;
+    background: #f5f7fb;
+    color: #172033;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.income-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.income-eyebrow {
+    display: inline-block;
+    margin-bottom: 8px;
+    color: #10b981;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.income-header h1 {
+    margin: 0;
+    color: #111827;
+    font-size: 34px;
+    font-weight: 800;
+}
+
+.income-header p {
+    margin: 8px 0 0;
+    color: #6b7280;
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   ALERTS
+========================================================= */
+
+.income-alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+    padding: 13px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.income-alert p {
+    flex: 1;
+    margin: 0;
+}
+
+.income-alert button {
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    cursor: pointer;
+    color: inherit;
+}
+
+.success-alert {
+    color: #047857;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+}
+
+.error-alert {
+    color: #b91c1c;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+}
+
+
+/* =========================================================
+   SUMMARY
+========================================================= */
+
+.income-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.income-summary-card {
+    position: relative;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    min-width: 0;
+    padding: 22px;
+
+    background: white;
+    border: 1px solid #edf0f5;
+    border-radius: 16px;
+
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+
+    transition: 0.25s ease;
+}
+
+.income-summary-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.09);
+}
+
+.income-summary-card::after {
+    content: "";
+
+    position: absolute;
+
+    width: 80px;
+    height: 80px;
+
+    right: -30px;
+    bottom: -30px;
+
+    border-radius: 50%;
+
+    opacity: 0.07;
+
+    pointer-events: none;
+}
+
+.income-summary-icon {
+    width: 54px;
+    height: 54px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    font-size: 25px;
+}
+
+.income-summary-content {
+    min-width: 0;
+}
+
+.income-summary-content span {
+    display: block;
+
+    color: #6b7280;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.income-summary-content h2 {
+    margin: 7px 0 4px;
+
+    color: #111827;
+
+    font-size: 23px;
+    font-weight: 800;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.income-summary-content small {
+    color: #9ca3af;
+    font-size: 11px;
+}
+
+.total-income-card {
+    border-top: 3px solid #10b981;
+}
+
+.total-income-card .income-summary-icon {
+    background: #ecfdf5;
+}
+
+.records-card {
+    border-top: 3px solid #6366f1;
+}
+
+.records-card .income-summary-icon {
+    background: #eef2ff;
+}
+
+.average-card {
+    border-top: 3px solid #0ea5e9;
+}
+
+.average-card .income-summary-icon {
+    background: #f0f9ff;
+}
+
+
+/* =========================================================
+   FORM PANEL
+========================================================= */
+
+.income-form-panel {
+    margin-bottom: 24px;
+
+    padding: 25px;
+
+    background: white;
+
+    border: 1px solid #edf0f5;
+    border-radius: 16px;
+
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.045);
+}
+
+.income-form-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    margin-bottom: 24px;
+}
+
+.form-title-icon {
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #ecfdf5;
+
+    font-size: 21px;
+}
+
+.section-label {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #10b981;
+
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.3px;
+}
+
+.income-form-header h2 {
+    margin: 0;
+
+    color: #111827;
+
+    font-size: 19px;
+}
+
+.income-form-header p {
+    margin: 5px 0 0;
+
+    color: #9ca3af;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.income-form {
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 20px;
+}
+
+.income-form-group {
+    min-width: 0;
+}
+
+.income-full-width {
+    grid-column: 1 / -1;
+}
+
+.income-form-group label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #374151;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.income-input-wrapper {
+    position: relative;
+}
+
+.income-input-icon {
+    position: absolute;
+
+    left: 14px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    font-size: 17px;
+
+    pointer-events: none;
+}
+
+.income-input-wrapper input,
+.income-input-wrapper select {
+    width: 100%;
+    height: 48px;
+
+    box-sizing: border-box;
+
+    padding: 0 15px 0 45px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    background: #fafbfc;
+
+    color: #1f2937;
+
+    font-size: 13px;
+
+    outline: none;
+
+    transition: 0.2s ease;
+}
+
+.income-input-wrapper input:focus,
+.income-input-wrapper select:focus {
+    border-color: #10b981;
+
+    background: white;
+
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+
+/* =========================================================
+   AMOUNT
+========================================================= */
+
+.income-amount-wrapper {
+    display: flex;
+    align-items: center;
+
+    height: 48px;
+
+    overflow: hidden;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    background: #fafbfc;
+
+    transition: 0.2s ease;
+}
+
+.income-amount-wrapper:focus-within {
+    border-color: #10b981;
+
+    background: white;
+
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.income-amount-wrapper span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 100%;
+
+    color: #10b981;
+
+    background: #ecfdf5;
+
+    font-weight: 800;
+}
+
+.income-amount-wrapper input {
+    flex: 1;
+
+    height: 100%;
+
+    padding: 0 14px;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #111827;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   DATE
+========================================================= */
+
+.income-date-input {
+    width: 100%;
+    height: 48px;
+
+    box-sizing: border-box;
+
+    padding: 0 14px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    background: #fafbfc;
+
+    color: #374151;
+
+    font-size: 13px;
+
+    outline: none;
+}
+
+.income-date-input:focus {
+    border-color: #10b981;
+
+    background: white;
+
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+
+/* =========================================================
+   TEXTAREA
+========================================================= */
+
+.income-form-group textarea {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 13px 14px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    background: #fafbfc;
+
+    color: #374151;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    outline: none;
+
+    resize: vertical;
+
+    transition: 0.2s ease;
+}
+
+.income-form-group textarea:focus {
+    border-color: #10b981;
+
+    background: white;
+
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+
+/* =========================================================
+   FORM BUTTONS
+========================================================= */
+
+.income-form-actions {
+    grid-column: 1 / -1;
+
+    display: flex;
+    gap: 10px;
+
+    margin-top: 2px;
+}
+
+.income-primary-button {
+    padding: 12px 20px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #10b981;
+
+    color: white;
+
+    font-size: 13px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition: 0.25s ease;
+}
+
+.income-primary-button:hover {
+    background: #059669;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 7px 18px rgba(16, 185, 129, 0.22);
+}
+
+.income-primary-button:disabled {
+    opacity: 0.65;
+
+    cursor: not-allowed;
+
+    transform: none;
+
+    box-shadow: none;
+}
+
+.income-cancel-button {
+    padding: 12px 18px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    background: white;
+
+    color: #6b7280;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.income-cancel-button:hover {
+    background: #f9fafb;
+    color: #374151;
+}
+
+
+/* =========================================================
+   INCOME LIST PANEL
+========================================================= */
+
+.income-list-panel {
+    padding: 25px;
+
+    background: white;
+
+    border: 1px solid #edf0f5;
+    border-radius: 16px;
+
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.045);
+}
+
+.income-list-header {
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 20px;
+}
+
+.income-list-header h2 {
+    margin: 0;
+
+    color: #111827;
+
+    font-size: 19px;
+}
+
+.income-list-header p {
+    margin: 6px 0 0;
+
+    color: #9ca3af;
+
+    font-size: 13px;
+}
+
+.income-count {
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 9px 12px;
+
+    background: #ecfdf5;
+
+    border-radius: 9px;
+
+    color: #047857;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.income-count strong {
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   INCOME LIST
+========================================================= */
+
+.income-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    max-height: 500px;
+
+    overflow-y: auto;
+}
+
+.income-item {
+    display: grid;
+
+    grid-template-columns: 50px minmax(180px, 1fr) 120px 150px 90px;
+
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 14px;
+
+    background: #f8fafc;
+
+    border: 1px solid #eef1f5;
+
+    border-radius: 12px;
+
+    transition: 0.2s ease;
+}
+
+.income-item:hover {
+    background: #f0fdf4;
+
+    border-color: #d1fae5;
+
+    transform: translateX(2px);
+}
+
+
+/* =========================================================
+   INCOME ICON
+========================================================= */
+
+.income-item-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: #ecfdf5;
+
+    font-size: 19px;
+}
+
+
+/* =========================================================
+   DETAILS
+========================================================= */
+
+.income-item-details {
+    min-width: 0;
+}
+
+.income-item-details h3 {
+    margin: 0 0 5px;
+
+    color: #1f2937;
+
+    font-size: 14px;
+}
+
+.income-item-details p {
+    margin: 6px 0 0;
+
+    color: #9ca3af;
+
+    font-size: 11px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+.income-source-badge {
+    display: inline-block;
+
+    padding: 4px 7px;
+
+    background: #eefdf6;
+
+    color: #047857;
+
+    border-radius: 5px;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.4px;
+}
+
+
+/* =========================================================
+   DATE
+========================================================= */
+
+.income-item-date span,
+.income-item-amount span {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #9ca3af;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    letter-spacing: 0.6px;
+}
+
+.income-item-date strong {
+    color: #4b5563;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   AMOUNT
+========================================================= */
+
+.income-item-amount strong {
+    color: #059669;
+
+    font-size: 14px;
+
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.income-item-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 7px;
+}
+
+.income-item-actions button {
+    width: 35px;
+    height: 35px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    transition: 0.2s ease;
+}
+
+.income-edit-button {
+    border: 1px solid #ddd6fe;
+
+    background: #f5f3ff;
+}
+
+.income-edit-button:hover {
+    background: #ede9fe;
+
+    transform: translateY(-2px);
+}
+
+.income-delete-button {
+    border: 1px solid #fecaca;
+
+    background: #fef2f2;
+}
+
+.income-delete-button:hover {
+    background: #fee2e2;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.income-empty-state {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 260px;
+
+    text-align: center;
+}
+
+.income-empty-icon {
+    width: 70px;
+    height: 70px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 15px;
+
+    border-radius: 20px;
+
+    background: #ecfdf5;
+
+    font-size: 30px;
+}
+
+.income-empty-state h3 {
+    margin: 0 0 7px;
+
+    color: #374151;
+
+    font-size: 17px;
+}
+
+.income-empty-state p {
+    max-width: 360px;
+
+    margin: 0;
+
+    color: #9ca3af;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   LOADING SPINNER
+========================================================= */
+
+.income-loading-spinner {
+    width: 40px;
+    height: 40px;
+
+    margin-bottom: 15px;
+
+    border: 4px solid #d1fae5;
+
+    border-top-color: #10b981;
+
+    border-radius: 50%;
+
+    animation: income-spin 0.8s linear infinite;
+}
+
+@keyframes income-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   RETRY
+========================================================= */
+
+.income-retry-button {
+    margin-top: 15px;
+
+    padding: 10px 18px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: #10b981;
+
+    color: white;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.income-retry-button:hover {
+    background: #059669;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .income-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .average-card {
+        grid-column: 1 / -1;
+    }
+
+    .income-item {
+        grid-template-columns:
+            50px
+            minmax(150px, 1fr)
+            110px
+            140px
+            80px;
+    }
+}
+
+
+@media (max-width: 850px) {
+
+    .income-page {
+        padding: 22px;
+    }
+
+    .income-form {
+        grid-template-columns: 1fr;
+    }
+
+    .income-full-width {
+        grid-column: auto;
+    }
+
+    .income-form-actions {
+        grid-column: auto;
+    }
+
+    .income-item {
+        grid-template-columns: 50px 1fr auto;
+    }
+
+    .income-item-date,
+    .income-item-amount {
+        grid-column: 2;
+    }
+
+    .income-item-actions {
+        grid-column: 3;
+        grid-row: 1 / span 2;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .income-page {
+        padding: 15px;
+    }
+
+    .income-header h1 {
+        font-size: 28px;
+    }
+
+    .income-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .average-card {
+        grid-column: auto;
+    }
+
+    .income-form-panel,
+    .income-list-panel {
+        padding: 18px;
+    }
+
+    .income-list-header {
+        flex-direction: column;
+    }
+
+    .income-item {
+        grid-template-columns: 45px 1fr;
+    }
+
+    .income-item-actions {
+        grid-column: 2;
+
+        justify-content: flex-start;
+
+        margin-top: 8px;
+    }
+
+    .income-item-date,
+    .income-item-amount {
+        grid-column: 2;
+    }
+
+    .income-form-actions {
+        flex-direction: column;
+    }
+
+    .income-primary-button,
+    .income-cancel-button {
+        width: 100%;
+    }
+}

@@ -9,6 +9,10 @@ function Sidebar() {
       </div>
 
       <nav className="sidebar-nav">
+        <NavLink to="/login">
+    🔑 Login
+  </NavLink>
+
 
         <NavLink to="/" end>
           🏠 Dashboard
@@ -26,8 +30,20 @@ function Sidebar() {
           📊 Budgets
         </NavLink>
 
+        <NavLink to="/savings">
+          🎯 Savings
+        </NavLink>
+
+        <NavLink to="/notifications">
+          🔔 Notifications
+        </NavLink>
+
         <NavLink to="/analytics">
           📈 Analytics
+        </NavLink>
+
+        <NavLink to="/reports">
+          📑 Reports
         </NavLink>
 
         <NavLink to="/settings">
