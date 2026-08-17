@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 
 from expenses.models import Expense
 from notifications.models import Notification
+from notifications.utils import create_notification_and_email
 
 from .models import Budget, SavingsGoal
 
@@ -56,7 +57,7 @@ class BudgetViewSet(viewsets.ModelViewSet):
         )
 
         # Automatically create Budget Created notification
-        Notification.objects.create(
+        create_notification_and_email(
             user=self.request.user,
 
             title=(
@@ -80,7 +81,7 @@ class BudgetViewSet(viewsets.ModelViewSet):
         budget = serializer.save()
 
         # Automatically create Budget Updated notification
-        Notification.objects.create(
+        create_notification_and_email(
             user=self.request.user,
 
             title=(
@@ -136,7 +137,7 @@ class SavingsGoalViewSet(
         )
 
         # Automatically create Savings Goal Created notification
-        Notification.objects.create(
+        create_notification_and_email(
             user=self.request.user,
 
             title=(
@@ -149,6 +150,7 @@ class SavingsGoalViewSet(
                 f"savings goal with a target of "
                 f"₹{savings_goal.target_amount} "
                 f"has been created successfully."
+                f" Target date: {savings_goal.target_date or 'Not set'}."
             ),
 
             notification_type=(
