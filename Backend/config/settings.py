@@ -32,7 +32,7 @@ DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = os.getenv(
     "ALLOWED_HOSTS",
-    "localhost,127.0.0.1,budgetbuddy-backend-xtl4.onrender.com"
+    "localhost,127.0.0.1"
 ).split(",")
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
