@@ -168,7 +168,9 @@ def send_notification_email(user, title, message):
 </p>
 
                 <div class="btn-container">
-                    <a href="http://localhost:3000/dashboard" class="btn">Open BudgetBuddy</a>
+                    <a href="https://budget-buddy-a-full-stack-personal.vercel.app/dashboard" class="btn">
+    Open BudgetBuddy
+</a>
                 </div>
             </div>
             <div class="email-footer">

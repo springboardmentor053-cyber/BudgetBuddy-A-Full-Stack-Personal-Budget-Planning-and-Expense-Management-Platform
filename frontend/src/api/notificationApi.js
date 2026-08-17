@@ -1,8 +1,10 @@
 import axios from "axios";
 
 // Change this base URL to match your backend port/route
-const API_URL = "http://localhost:8000/api/notifications/";
-
+const API_URL = `${
+  import.meta.env.VITE_API_URL ||
+  "https://budgetbuddy-backend-xtl4.onrender.com/api"
+}/notifications/`;
 export const getNotifications = async () => {
   const token = localStorage.getItem("access");
   return await axios.get(API_URL, {

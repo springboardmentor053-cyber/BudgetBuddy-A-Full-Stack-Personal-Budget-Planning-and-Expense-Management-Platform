@@ -1,7 +1,9 @@
 import axios from "axios";
 
 // Base API URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://budgetbuddy-backend-xtl4.onrender.com/api";
 
 // Create an Axios instance with default headers
 const apiClient = axios.create({
