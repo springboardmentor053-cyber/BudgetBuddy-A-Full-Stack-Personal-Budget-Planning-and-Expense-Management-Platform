@@ -21,9 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # =====================================================
 
 load_dotenv(
-    BASE_DIR / ".env"
+    BASE_DIR.parent / ".env"
 )
-
 
 # =====================================================
 # SECURITY
