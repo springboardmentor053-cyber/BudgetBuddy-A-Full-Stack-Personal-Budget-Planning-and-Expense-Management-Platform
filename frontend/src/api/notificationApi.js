@@ -3,7 +3,7 @@ import axios from "axios";
 // Change this base URL to match your backend port/route
 const API_URL = `${
   import.meta.env.VITE_API_URL ||
-  "https://budgetbuddy-backend-xtl4.onrender.com/api"
+  "https://budgetbuddy-backend-h7j9.onrender.com/api"
 }/notifications/`;
 export const getNotifications = async () => {
   const token = localStorage.getItem("access");

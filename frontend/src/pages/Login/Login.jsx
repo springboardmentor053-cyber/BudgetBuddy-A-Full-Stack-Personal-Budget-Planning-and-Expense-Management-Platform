@@ -30,7 +30,7 @@ export default function Login() {
     localStorage.removeItem("user");
 
     // Login
-    const res = await axios.post( "https://budgetbuddy-backend-xtl4.onrender.com/api/token/", {
+    const res = await axios.post( "https://budgetbuddy-backend-h7j9.onrender.com/api/token/", {
       username: formData.username,
       password: formData.password,
     });
@@ -41,7 +41,7 @@ export default function Login() {
 
     // Get the currently logged-in user's profile
     const profileRes = await axios.get(
-      "https://budgetbuddy-backend-xtl4.onrender.com/api/users/profiles/",
+      "https://budgetbuddy-backend-h7j9.onrender.com/api/users/profiles/",
       {
         headers: {
           Authorization: `Bearer ${res.data.access}`,

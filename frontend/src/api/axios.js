@@ -1,7 +1,7 @@
 // src/api/axios.js
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "https://budgetbuddy-backend-xtl4.onrender.com/api/";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://budgetbuddy-backend-h7j9.onrender.com/api/";
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,

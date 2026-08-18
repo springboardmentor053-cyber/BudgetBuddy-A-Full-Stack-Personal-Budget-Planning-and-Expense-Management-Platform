@@ -36,7 +36,7 @@ export default function Register() {
     }
 
     try {
-      const response = await axios.post("https://budgetbuddy-backend-xtl4.onrender.com/api/users/register/", {
+      const response = await axios.post("https://budgetbuddy-backend-h7j9.onrender.com/api/users/register/", {
         full_name: formData.full_name,
         username: formData.username,
         email: formData.email,
