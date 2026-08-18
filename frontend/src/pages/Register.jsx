@@ -13,6 +13,9 @@ function Register() {
     confirmPassword: "",
   });
 
+  const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -23,8 +26,12 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    setMessage("");
+    setErrorMessage("");
+
+    // Password validation
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      setErrorMessage("Passwords do not match.");
       return;
     }
 
@@ -40,35 +47,110 @@ function Register() {
 
       console.log(response.data);
 
-      alert("Registration Successful!");
+      setMessage(
+        "Registration successful! Redirecting to login..."
+      );
 
-      navigate("/login");
+      // Give the user time to see the message
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
 
     } catch (error) {
-
       console.log(error);
 
-      if (error.response) {
-        console.log(error.response.data);
-        alert(JSON.stringify(error.response.data));
+      if (error.response?.data) {
+        const data = error.response.data;
+
+        // Convert Django/DRF validation errors into readable text
+        if (typeof data === "object") {
+          const errorText = Object.entries(data)
+            .map(([field, errors]) => {
+              const formattedErrors = Array.isArray(errors)
+                ? errors.join(", ")
+                : errors;
+
+              return `${field}: ${formattedErrors}`;
+            })
+            .join(" | ");
+
+          setErrorMessage(errorText);
+        } else {
+          setErrorMessage(String(data));
+        }
+
       } else {
-        alert(error.message);
+        setErrorMessage(
+          "Unable to connect to the server. Please try again."
+        );
       }
     }
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: "600px" }}>
+    <div
+      className="container mt-5 mb-5"
+      style={{ maxWidth: "600px" }}
+    >
+
       <div className="card shadow p-4">
 
         <h2 className="text-center text-success mb-4">
           Create Account
         </h2>
 
+        {/* ============================= */}
+        {/* Success Message */}
+        {/* ============================= */}
+
+        {message && (
+          <div
+            className="alert alert-success alert-dismissible fade show"
+            role="alert"
+          >
+            <strong>✅ Success:</strong>{" "}
+            {message}
+
+            <button
+              type="button"
+              className="btn-close"
+              onClick={() => setMessage("")}
+            ></button>
+          </div>
+        )}
+
+        {/* ============================= */}
+        {/* Error Message */}
+        {/* ============================= */}
+
+        {errorMessage && (
+          <div
+            className="alert alert-danger alert-dismissible fade show"
+            role="alert"
+          >
+            <strong>❌ Error:</strong>{" "}
+            {errorMessage}
+
+            <button
+              type="button"
+              className="btn-close"
+              onClick={() =>
+                setErrorMessage("")
+              }
+            ></button>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit}>
 
+          {/* Full Name */}
+
           <div className="mb-3">
-            <label className="form-label">Full Name</label>
+
+            <label className="form-label">
+              Full Name
+            </label>
+
             <input
               type="text"
               name="fullname"
@@ -78,10 +160,17 @@ function Register() {
               onChange={handleChange}
               required
             />
+
           </div>
 
+          {/* Username */}
+
           <div className="mb-3">
-            <label className="form-label">Username</label>
+
+            <label className="form-label">
+              Username
+            </label>
+
             <input
               type="text"
               name="username"
@@ -91,10 +180,17 @@ function Register() {
               onChange={handleChange}
               required
             />
+
           </div>
 
+          {/* Email */}
+
           <div className="mb-3">
-            <label className="form-label">Email</label>
+
+            <label className="form-label">
+              Email
+            </label>
+
             <input
               type="email"
               name="email"
@@ -104,10 +200,17 @@ function Register() {
               onChange={handleChange}
               required
             />
+
           </div>
 
+          {/* Password */}
+
           <div className="mb-3">
-            <label className="form-label">Password</label>
+
+            <label className="form-label">
+              Password
+            </label>
+
             <input
               type="password"
               name="password"
@@ -117,10 +220,17 @@ function Register() {
               onChange={handleChange}
               required
             />
+
           </div>
 
+          {/* Confirm Password */}
+
           <div className="mb-3">
-            <label className="form-label">Confirm Password</label>
+
+            <label className="form-label">
+              Confirm Password
+            </label>
+
             <input
               type="password"
               name="confirmPassword"
@@ -130,7 +240,10 @@ function Register() {
               onChange={handleChange}
               required
             />
+
           </div>
+
+          {/* Register Button */}
 
           <button
             type="submit"
@@ -142,11 +255,17 @@ function Register() {
         </form>
 
         <p className="text-center mt-3">
+
           Already have an account?{" "}
-          <Link to="/login">Login</Link>
+
+          <Link to="/login">
+            Login
+          </Link>
+
         </p>
 
       </div>
+
     </div>
   );
 }

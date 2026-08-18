@@ -8,10 +8,32 @@ from .views import (
 )
 
 router = DefaultRouter()
-router.register(r"income", IncomeViewSet, basename="income")
+
+router.register(
+    r"income",
+    IncomeViewSet,
+    basename="income",
+)
 
 urlpatterns = [
-    path("summary/", financial_summary, name="financial-summary"),
-    path("dashboard/", transaction_dashboard, name="transaction-dashboard"),
-    path("", include(router.urls)),
+
+    # Financial Summary API
+    path(
+        "summary/",
+        financial_summary,
+        name="financial-summary",
+    ),
+
+    # Income Dashboard API
+    path(
+        "income-dashboard/",
+        transaction_dashboard,
+        name="transaction-dashboard",
+    ),
+
+    # Income CRUD APIs
+    path(
+        "",
+        include(router.urls),
+    ),
 ]

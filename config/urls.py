@@ -12,6 +12,10 @@ urlpatterns = [
     path("api/", include("expenses.urls")),
     path("api/", include("budgets.urls")),
     path("api/", include("income.urls")),
+    path("api/savings/", include("savings.urls")),
+    path("api/", include("reports.urls")),
+    path("api/",include("notifications.urls")),
+    path("api/", include("analytics.urls")),
 
     path("api/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),

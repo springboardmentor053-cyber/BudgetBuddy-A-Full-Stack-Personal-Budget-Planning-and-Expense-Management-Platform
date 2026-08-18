@@ -1,0 +1,187 @@
+.sidebar{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100vh;
+
+    background: #0f172a;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 25px 18px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    scrollbar-width: thin;
+    scrollbar-color: #475569 transparent;
+}
+
+.sidebar-logo{
+    color:white;
+    font-size:28px;
+    font-weight:bold;
+    margin-bottom:35px;
+}
+
+.sidebar-heading{
+    color:#94a3b8;
+    font-size:12px;
+    margin:20px 0 10px;
+    text-transform:uppercase;
+}
+
+.sidebar-link{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    color:#cbd5e1;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:6px;
+    transition:0.3s;
+}
+
+.sidebar-link:hover{
+    background:#1e293b;
+    color:white;
+}
+
+.sidebar-link.active{
+    background:#2563eb;
+    color:white;
+
+    box-shadow:
+        0 8px 20px rgba(37,99,235,.35);
+}
+
+.sidebar-link i{
+    font-size:18px;
+}
+
+.sidebar-logout{
+    margin-top:auto;
+}
+.sidebar::-webkit-scrollbar{
+    width:6px;
+}
+
+.sidebar::-webkit-scrollbar-track{
+    background:transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb{
+    background:#475569;
+    border-radius:10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover{
+    background:#64748b;
+}
+/* ===========================
+   Logo
+=========================== */
+
+.sidebar-logo{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin-bottom:40px;
+}
+
+.logo-icon{
+    width:48px;
+    height:48px;
+
+    border-radius:12px;
+
+    background:#2563eb;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:24px;
+}
+
+.sidebar-logo h4{
+    color:white;
+    margin:0;
+    font-size:20px;
+}
+
+.sidebar-logo p{
+    color:#94a3b8;
+    font-size:13px;
+    margin:2px 0 0;
+}
+
+/* ===========================
+   Footer
+=========================== */
+
+.sidebar-footer{
+    margin-top:auto;
+    padding-top:20px;
+    border-top:1px solid #334155;
+}
+
+.user-card{
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    margin-bottom:20px;
+}
+
+.avatar{
+
+    width:42px;
+    height:42px;
+
+    border-radius:50%;
+
+    background:#2563eb;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    color:white;
+
+    font-weight:bold;
+}
+
+.user-card strong{
+    color:white;
+}
+
+.user-card p{
+    color:#94a3b8;
+    font-size:12px;
+    margin:0;
+}
+
+.logout-btn{
+
+    width:100%;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#dc2626;
+
+    color:white;
+
+    padding:12px;
+
+    transition:.3s;
+}
+
+.logout-btn:hover{
+
+    background:#b91c1c;
+}
