@@ -17,6 +17,8 @@ from dotenv import load_dotenv
 load_dotenv()
 SECRET_KEY = os.environ.get('SECRET_KEY', 'default-dev-key')
 EMAIL_HOST_PASSWORD = os.environ.get('SENDGRID_API_KEY')
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+FCM_SERVER_KEY = os.environ.get('FCM_SERVER_KEY', '')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

@@ -11,24 +11,33 @@ function Login() {
     e.preventDefault();
     setError('');
 
+    const cleanUsername = username.trim();
+
+    if (cleanUsername.length < 3) {
+      setError('Username must be at least 3 characters long.');
+      return;
+    }
+
+    if (!password || password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      return;
+    }
+
     try {
       const response = await fetch('http://127.0.0.1:8000/api/auth/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username: cleanUsername, password }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // Save access token & username for header greetings
         localStorage.setItem('token', data.access);
         localStorage.setItem('refresh_token', data.refresh);
-        localStorage.setItem('username', data.username || username);
-        
-        // Navigate directly to dashboard
+        localStorage.setItem('username', data.username || cleanUsername);
         navigate('/dashboard');
       } else {
         setError(data.detail || 'Invalid username or password');
@@ -45,7 +54,7 @@ function Login() {
       left: 0,
       width: '100vw',
       height: '100vh',
-      background: '#1a252f', // Matching sidebar navy tone
+      background: '#1a252f',
       color: '#ecf0f1',
       fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
       display: 'flex',
@@ -58,42 +67,39 @@ function Login() {
       <div style={{
         maxWidth: '400px',
         width: '100%',
-        backgroundColor: '#243342', // Mid-tone slate card
+        backgroundColor: '#243342',
         borderRadius: '12px',
         padding: '35px 30px',
         boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
         border: '1px solid rgba(255, 255, 255, 0.08)'
       }}>
-        
-        {/* Title Block */}
-        <h2 style={{ 
-          textAlign: 'center', 
-          marginBottom: '8px', 
+        <h2 style={{
+          textAlign: 'center',
+          marginBottom: '8px',
           color: '#ffffff',
           fontSize: '1.75rem',
           fontWeight: '700'
         }}>
-          Login to <span style={{ color: '#3498db' }}>BudgetBuddy</span> 
+          Login to <span style={{ color: '#3498db' }}>BudgetBuddy</span>
         </h2>
-        
-        <p style={{ 
-          textAlign: 'center', 
-          color: '#bdc3c7', 
-          fontSize: '0.9rem', 
-          marginBottom: '24px' 
+
+        <p style={{
+          textAlign: 'center',
+          color: '#bdc3c7',
+          fontSize: '0.9rem',
+          marginBottom: '24px'
         }}>
           Enter your details below to log in
         </p>
 
-        {/* Error Alert */}
         {error && (
-          <div style={{ 
-            background: 'rgba(231, 76, 60, 0.15)', 
-            border: '1px solid #e74c3c', 
-            color: '#e74c3c', 
-            padding: '10px', 
-            borderRadius: '6px', 
-            textAlign: 'left', 
+          <div style={{
+            background: 'rgba(231, 76, 60, 0.15)',
+            border: '1px solid #e74c3c',
+            color: '#e74c3c',
+            padding: '10px',
+            borderRadius: '6px',
+            textAlign: 'left',
             fontSize: '0.88rem',
             marginBottom: '20px',
             fontWeight: '600'
@@ -107,24 +113,28 @@ function Login() {
             <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: '#bdc3c7', fontWeight: '600', textAlign: 'left' }}>
               Username
             </label>
-            <input 
-              type="text" 
-              placeholder="e.g. john_doe" 
+            <input
+              type="text"
+              placeholder="e.g. john_doe"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              style={{ 
-                width: '100%', 
-                padding: '12px', 
-                borderRadius: '6px', 
-                border: '1px solid rgba(255, 255, 255, 0.15)', 
-                background: '#1a252f', 
+              minLength={3}
+              maxLength={30}
+              pattern="^[a-zA-Z0-9_]+$"
+              title="Use 3-30 characters with letters, numbers, and underscores only."
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '6px',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                background: '#1a252f',
                 color: 'white',
                 fontSize: '0.95rem',
                 outline: 'none',
                 boxSizing: 'border-box',
                 textAlign: 'left'
-              }} 
+              }}
             />
           </div>
 
@@ -132,37 +142,38 @@ function Login() {
             <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: '#bdc3c7', fontWeight: '600', textAlign: 'left' }}>
               Password
             </label>
-            <input 
-              type="password" 
-              placeholder="••••••••" 
+            <input
+              type="password"
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              style={{ 
-                width: '100%', 
-                padding: '12px', 
-                borderRadius: '6px', 
-                border: '1px solid rgba(255, 255, 255, 0.15)', 
-                background: '#1a252f', 
+              minLength={8}
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '6px',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                background: '#1a252f',
                 color: 'white',
                 fontSize: '0.95rem',
                 outline: 'none',
                 boxSizing: 'border-box',
                 textAlign: 'left'
-              }} 
+              }}
             />
           </div>
 
-          <button 
-            type="submit" 
-            style={{ 
-              padding: '12px', 
-              background: '#3498db', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '6px', 
-              fontSize: '1rem', 
-              fontWeight: '700', 
+          <button
+            type="submit"
+            style={{
+              padding: '12px',
+              background: '#3498db',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              fontSize: '1rem',
+              fontWeight: '700',
               cursor: 'pointer',
               marginTop: '8px',
               transition: 'background 0.2s ease',

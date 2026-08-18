@@ -971,55 +971,6 @@ function Reports() {
             </div>
           </div>
 
-          {/* 4. FINANCIAL HEALTH SCORE CARD (BOTTOM-MIDDLE) */}
-          <div style={{ 
-            background: '#2b3d4e', 
-            borderRadius: '16px', 
-            padding: '20px', 
-            boxShadow: '0 8px 25px rgba(43, 61, 78, 0.25)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            display: 'flex',
-            flexDirection: 'column',
-            justify: 'space-between',
-            gridColumn: '2 / 3',
-            gridRow: '2 / 3'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '1.2rem' }}></span>
-                <h3 style={{ margin: 0, color: '#ffffff', fontSize: '1.05rem', fontWeight: '700' }}>Financial Health Score</h3>
-              </div>
-              <span style={{ 
-                fontSize: '0.75rem', 
-                fontWeight: '800', 
-                color: healthStatus.color,
-                background: 'rgba(255, 255, 255, 0.1)',
-                padding: '3px 8px',
-                borderRadius: '6px'
-              }}>
-                {healthStatus.label}
-              </span>
-            </div>
-
-            <hr style={{ border: 'none', borderTop: '1px solid rgba(255, 255, 255, 0.15)', margin: '10px 0' }} />
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-                <span style={{ fontSize: '2rem', fontWeight: '800', color: healthStatus.color }}>{healthScore}</span>
-                <span style={{ color: '#94a3b8', fontSize: '0.9rem', fontWeight: '600' }}>/ 100</span>
-              </div>
-
-              {/* Progress bar */}
-              <div style={{ width: '100%', background: 'rgba(255, 255, 255, 0.1)', height: '10px', borderRadius: '6px', overflow: 'hidden' }}>
-                <div style={{ width: `${healthScore}%`, background: healthStatus.color, height: '100%', transition: 'width 0.4s ease' }} />
-              </div>
-
-              <span style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>
-                {healthScore >= 70 ? 'Keep maintaining high savings & low budget usage!' : 'Consider reducing overall spending to boost score.'}
-              </span>
-            </div>
-          </div>
-
           {/* 5. EXTENDED RECENT ACTIVITY CARD (RIGHT SIDE SPANNING BOTH ROWS) */}
           <div style={{ 
             background: '#2b3d4e', 

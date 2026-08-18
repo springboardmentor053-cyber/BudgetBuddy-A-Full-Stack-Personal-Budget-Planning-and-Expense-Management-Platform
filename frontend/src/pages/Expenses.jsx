@@ -226,6 +226,8 @@ function Expenses() {
                   placeholder="e.g. Groceries" 
                   value={title} 
                   onChange={(e) => setTitle(e.target.value)}
+                  maxLength={80}
+                  required
                   style={inputStyle}
                 />
               </div>
@@ -239,6 +241,10 @@ function Expenses() {
                   placeholder="e.g. 250" 
                   value={amount} 
                   onChange={(e) => setAmount(e.target.value)}
+                  min="0.01"
+                  step="0.01"
+                  inputMode="decimal"
+                  required
                   style={inputStyle}
                 />
               </div>
@@ -264,6 +270,8 @@ function Expenses() {
                   type="date"
                   value={expenseDate}
                   onChange={(e) => setExpenseDate(e.target.value)}
+                  max={new Date().toISOString().split('T')[0]}
+                  required
                   style={inputStyle}
                 />
               </div>
@@ -329,9 +337,9 @@ function Expenses() {
                     {editingId === e.id ? (
                       /* Editing Mode Form Row */
                       <div style={{ display: 'flex', gap: '10px', width: '100%', alignItems: 'center', flexWrap: 'wrap' }}>
-                        <input type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} style={{ ...inputStyle, flex: 1, minWidth: '120px', padding: '8px 10px' }} />
-                        <input type="number" value={editAmount} onChange={(e) => setEditAmount(e.target.value)} style={{ ...inputStyle, width: '100px', padding: '8px 10px' }} />
-                        <input type="date" value={editExpenseDate} onChange={(e) => setEditExpenseDate(e.target.value)} style={{ ...inputStyle, width: '140px', padding: '8px 10px' }} />
+                        <input type="text" maxLength={80} value={editTitle} onChange={(e) => setEditTitle(e.target.value)} style={{ ...inputStyle, flex: 1, minWidth: '120px', padding: '8px 10px' }} />
+                        <input type="number" min="0.01" step="0.01" inputMode="decimal" value={editAmount} onChange={(e) => setEditAmount(e.target.value)} style={{ ...inputStyle, width: '100px', padding: '8px 10px' }} />
+                        <input type="date" max={new Date().toISOString().split('T')[0]} value={editExpenseDate} onChange={(e) => setEditExpenseDate(e.target.value)} style={{ ...inputStyle, width: '140px', padding: '8px 10px' }} />
                         <select value={editCategory} onChange={(e) => setEditCategory(e.target.value)} style={{ ...inputStyle, width: '130px', padding: '8px 10px' }}>
                           {categories.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                         </select>

@@ -52,7 +52,6 @@ function Settings() {
 
   const [emailAlerts, setEmailAlerts] = useState(true);
   const [pushNotifs, setPushNotifs] = useState(true);
-  const [weeklyDigest, setWeeklyDigest] = useState(false);
 
   const [profileMsg, setProfileMsg] = useState({ type: '', text: '' });
   const [passwordMsg, setPasswordMsg] = useState({ type: '', text: '' });
@@ -436,13 +435,6 @@ function Settings() {
               <input type="checkbox" checked={pushNotifs} onChange={(e) => setPushNotifs(e.target.checked)} style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: '#3498db' }} />
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <h4 style={{ margin: 0, color: currentTheme.textMain, fontSize: '1rem', fontWeight: '600' }}>Weekly Summary</h4>
-                <p style={{ margin: '4px 0 0 0', color: currentTheme.textMuted, fontSize: '0.85rem' }}>Get a weekly summary breakdown of your spending habits and progress.</p>
-              </div>
-              <input type="checkbox" checked={weeklyDigest} onChange={(e) => setWeeklyDigest(e.target.checked)} style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: '#3498db' }} />
-            </div>
           </div>
         </div>
 

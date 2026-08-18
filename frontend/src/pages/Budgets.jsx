@@ -278,6 +278,10 @@ function Budgets() {
                 placeholder="e.g. 5000"
                 value={amount} 
                 onChange={(e) => setAmount(e.target.value)}
+                min="0.01"
+                step="0.01"
+                inputMode="decimal"
+                required
                 style={inputStyle}
               />
             </div>
@@ -299,6 +303,9 @@ function Budgets() {
                 type="number" 
                 value={year} 
                 onChange={(e) => setYear(parseInt(e.target.value, 10) || '')}
+                min="2000"
+                max="2100"
+                required
                 style={inputStyle}
               />
             </div>
@@ -450,6 +457,9 @@ function Budgets() {
                             type="number" 
                             value={editAmount} 
                             onChange={(e) => setEditAmount(e.target.value)}
+                            min="0.01"
+                            step="0.01"
+                            inputMode="decimal"
                             placeholder="New limit"
                             style={{ width: '100px', padding: '6px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', backgroundColor: '#ffffff', color: '#0f172a' }}
                           />

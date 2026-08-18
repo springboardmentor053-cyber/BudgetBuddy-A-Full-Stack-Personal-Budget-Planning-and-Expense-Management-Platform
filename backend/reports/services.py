@@ -1,6 +1,10 @@
 from datetime import date, datetime
+import json
+import urllib.error
+import urllib.request
 from django.db.models import Sum
 from django.utils import timezone
+from django.conf import settings
 
 from budgets.models import Budget
 from expenses.models import Expense
@@ -304,4 +308,271 @@ def get_expense_extremes_and_bounds(user, month=None, year=None, start_date=None
         "lowest_expense": format_expense(lowest),
         "latest_expense": format_expense(latest),
         "oldest_expense": format_expense(oldest),
+    }
+
+
+def build_ai_overview_payload(user, month=None, year=None, start_date=None, end_date=None, all_time=False):
+    financial_summary = get_financial_summary(
+        user,
+        month=month,
+        year=year,
+        start_date=start_date,
+        end_date=end_date,
+        all_time=all_time,
+    )
+    expense_report = get_expense_report(
+        user,
+        month=month,
+        year=year,
+        start_date=start_date,
+        end_date=end_date,
+        all_time=all_time,
+    )
+    income_summary = [
+        {
+            "id": inc.id,
+            "title": inc.title,
+            "amount": float(inc.amount),
+            "source": inc.source,
+            "source_label": {
+                "SALARY": "Salary",
+                "FREELANCING": "Freelancing",
+                "POCKET_MONEY": "Pocket Money",
+                "INVESTMENTS": "Investments",
+                "SCHOLARSHIP": "Scholarship",
+                "BUSINESS": "Business",
+                "OTHER": "Other Sources",
+            }.get(inc.source, inc.source),
+            "income_date": inc.income_date.strftime("%Y-%m-%d") if inc.income_date else None,
+            "description": getattr(inc, "description", ""),
+        }
+        for inc in filter_transactions(
+            Income.objects.filter(user=user), "income_date", month, year, start_date, end_date, all_time
+        ).order_by("-income_date")
+    ]
+    category_analysis = get_category_expense_analysis(
+        user,
+        month=month,
+        year=year,
+        start_date=start_date,
+        end_date=end_date,
+        all_time=all_time,
+    )
+    monthly_trend = get_monthly_expense_trend(
+        user,
+        month=month,
+        year=year,
+        start_date=start_date,
+        end_date=end_date,
+        all_time=all_time,
+    )
+    top_expense_categories = sorted(
+        category_analysis.items(),
+        key=lambda item: item[1],
+        reverse=True,
+    )[:5]
+
+    return {
+        "financial_summary": financial_summary,
+        "expense_summary": expense_report[:10],
+        "income_summary": income_summary[:10],
+        "category_analysis": top_expense_categories,
+        "monthly_trend": monthly_trend,
+    }
+
+
+def _sanitize_currency_text(text):
+    if not text:
+        return text
+    return text.replace('$', '₹')
+
+
+def generate_gemini_finance_chat(payload, question, history=None):
+    api_key = getattr(settings, "GEMINI_API_KEY", "")
+    if not api_key:
+        return {
+            "answer": "Set GEMINI_API_KEY on the backend to enable the finance chat.",
+            "status": "missing_api_key",
+        }
+
+    history = history or []
+    prompt = f"""
+You are a helpful personal finance chat assistant.
+Answer in plain English.
+Use rupee symbol ₹ for all amounts. Never use dollar signs.
+Keep the answer concise and practical.
+
+Finance context:
+{json.dumps(payload, indent=2)}
+
+Conversation history:
+{json.dumps(history, indent=2)}
+
+User question:
+{question}
+"""
+
+    request_body = {
+        "contents": [
+            {
+                "parts": [{"text": prompt}]
+            }
+        ],
+    }
+
+    request = urllib.request.Request(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
+        data=json.dumps(request_body).encode("utf-8"),
+        headers={
+            "Content-Type": "application/json",
+            "x-goog-api-key": api_key,
+        },
+        method="POST",
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            response_data = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        details = exc.read().decode("utf-8", errors="ignore")
+        return {
+            "answer": _sanitize_currency_text(details[:500] or "Gemini returned an error."),
+            "status": "error",
+        }
+    except Exception as exc:
+        return {
+            "answer": _sanitize_currency_text(str(exc)[:500]),
+            "status": "error",
+        }
+
+    text = (
+        response_data.get("candidates", [{}])[0]
+        .get("content", {})
+        .get("parts", [{}])[0]
+        .get("text", "")
+    )
+
+    try:
+        parsed = json.loads(text)
+        if isinstance(parsed, dict):
+            answer = parsed.get("answer") or parsed.get("summary") or text
+            return {
+                "answer": _sanitize_currency_text(answer),
+                "status": parsed.get("status", "ok"),
+            }
+    except Exception:
+        pass
+
+    return {
+        "answer": _sanitize_currency_text(text or "Gemini returned an empty response."),
+        "status": "ok",
+    }
+
+
+def generate_gemini_ai_overview(payload):
+    api_key = getattr(settings, "GEMINI_API_KEY", "")
+    if not api_key:
+        return {
+            "title": "AI overview unavailable",
+            "summary": "Set GEMINI_API_KEY on the backend to enable Gemini-powered insights.",
+            "highlights": [],
+            "recommendations": [],
+            "status": "missing_api_key",
+        }
+
+    prompt = f"""
+You are a helpful personal finance analyst.
+Return valid JSON only with this schema:
+{{
+  "title": "short title",
+  "summary": "2-4 sentence plain-English overview",
+  "highlights": ["short bullet 1", "short bullet 2", "short bullet 3"],
+  "recommendations": ["action 1", "action 2", "action 3"]
+}}
+
+Use this finance data:
+{json.dumps(payload, indent=2)}
+Use ₹ for all amounts and never use $.
+"""
+
+    request_body = {
+        "contents": [
+            {
+                "parts": [
+                    {"text": prompt}
+                ]
+            }
+        ],
+    }
+
+    request = urllib.request.Request(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
+        data=json.dumps(request_body).encode("utf-8"),
+        headers={
+            "Content-Type": "application/json",
+            "x-goog-api-key": api_key,
+        },
+        method="POST",
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            response_data = json.loads(response.read().decode("utf-8"))
+        if response_data.get("error"):
+            error_info = response_data["error"]
+            return {
+                "title": "AI overview temporarily unavailable",
+                "summary": "Gemini returned an API error while generating the overview.",
+                "highlights": [],
+                "recommendations": [str(error_info)[:300]],
+                "status": "error",
+            }
+    except urllib.error.HTTPError as exc:
+        details = exc.read().decode("utf-8", errors="ignore")
+        return {
+            "title": "AI overview temporarily unavailable",
+            "summary": "Gemini returned an error while generating the overview.",
+            "highlights": [],
+            "recommendations": [details[:300] or "Check Gemini API access and quota."],
+            "status": "error",
+        }
+    except Exception as exc:
+        return {
+            "title": "AI overview temporarily unavailable",
+            "summary": "Unable to contact Gemini right now.",
+            "highlights": [],
+            "recommendations": [str(exc)[:300]],
+            "status": "error",
+        }
+
+    candidates = response_data.get("candidates") or []
+    if not candidates:
+        return {
+            "title": "AI overview temporarily unavailable",
+            "summary": "Gemini returned no response candidates.",
+            "highlights": [],
+            "recommendations": [],
+            "status": "error",
+        }
+
+    text = (
+        candidates[0]
+        .get("content", {})
+        .get("parts", [{}])[0]
+        .get("text", "")
+    )
+
+    try:
+        parsed = json.loads(text)
+        if isinstance(parsed, dict):
+            return {**parsed, "status": "ok"}
+    except Exception:
+        pass
+
+    return {
+        "title": "AI overview",
+        "summary": _sanitize_currency_text(text or "Gemini returned an empty response."),
+        "highlights": [],
+        "recommendations": [],
+        "status": "ok",
     }

@@ -247,6 +247,10 @@ function Income() {
                   placeholder="e.g. 5000" 
                   value={amount} 
                   onChange={(e) => setAmount(e.target.value)}
+                  min="0.01"
+                  step="0.01"
+                  inputMode="decimal"
+                  required
                   style={inputStyle}
                 />
               </div>
@@ -257,6 +261,8 @@ function Income() {
                   type="date" 
                   value={incomeDate} 
                   onChange={(e) => setIncomeDate(e.target.value)}
+                  max={new Date().toISOString().split('T')[0]}
+                  required
                   style={inputStyle}
                 />
               </div>
@@ -322,8 +328,8 @@ function Income() {
                     {editingId === inc.id ? (
                       /* Editing Form View layout */
                       <div style={{ display: 'flex', gap: '10px', width: '100%', alignItems: 'center', flexWrap: 'wrap' }}>
-                        <input type="number" value={editAmount} onChange={(e) => setEditAmount(e.target.value)} style={{ ...inputStyle, width: '110px', padding: '8px 10px' }} />
-                        <input type="date" value={editDate} onChange={(e) => setEditDate(e.target.value)} style={{ ...inputStyle, width: '140px', padding: '8px 10px' }} />
+                        <input type="number" min="0.01" step="0.01" inputMode="decimal" value={editAmount} onChange={(e) => setEditAmount(e.target.value)} style={{ ...inputStyle, width: '110px', padding: '8px 10px' }} />
+                        <input type="date" max={new Date().toISOString().split('T')[0]} value={editDate} onChange={(e) => setEditDate(e.target.value)} style={{ ...inputStyle, width: '140px', padding: '8px 10px' }} />
                         <select value={editSource} onChange={(e) => setEditSource(e.target.value)} style={{ ...inputStyle, width: '130px', padding: '8px 10px' }}>
                           {incomeCategories.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                         </select>

@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import Income from './pages/Income';
 import Expenses from './pages/Expenses';
 import Budgets from './pages/Budgets';
+import Dashboard from './pages/Dashboard';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import Savings from './pages/Savings';
@@ -37,8 +38,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Redirect /dashboard directly to /reports */}
-        <Route path="/dashboard" element={<Navigate to="/reports" replace />} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
         {/* Protected Routes */}
         <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />

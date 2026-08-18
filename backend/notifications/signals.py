@@ -8,6 +8,7 @@ from income.models import Income
 from savings.models import SavingsGoal
 from budgets.models import Budget
 from .models import Notification
+from .utils import send_fcm_push_to_user
 
 
 # Helper function to trigger email reliably with error logging
@@ -134,6 +135,7 @@ def expense_creation_notification(sender, instance, created, **kwargs):
             priority="LOW",
         )
         send_notification_email(instance.user, title, message)
+        send_fcm_push_to_user(instance.user, title, message, {"type": "expense", "title": instance.title})
 
 
 @receiver(post_save, sender=Income)
@@ -150,3 +152,4 @@ def income_creation_notification(sender, instance, created, **kwargs):
             priority="LOW",
         )
         send_notification_email(instance.user, title, message)
+        send_fcm_push_to_user(instance.user, title, message, {"type": "income", "title": instance.title})

@@ -291,6 +291,9 @@ function Savings() {
                 value={targetAmount} 
                 onChange={(e) => setTargetAmount(e.target.value)}
                 required 
+                min="0.01"
+                step="0.01"
+                inputMode="decimal"
                 style={inputStyle}
               />
             </div>
@@ -302,6 +305,9 @@ function Savings() {
                 placeholder="e.g. 5000" 
                 value={savedAmount} 
                 onChange={(e) => setSavedAmount(e.target.value)}
+                min="0"
+                step="0.01"
+                inputMode="decimal"
                 style={inputStyle}
               />
             </div>
@@ -313,6 +319,7 @@ function Savings() {
                 value={targetDate} 
                 onChange={(e) => setTargetDate(e.target.value)}
                 required 
+                min={new Date().toISOString().split('T')[0]}
                 style={inputStyle}
               />
             </div>
@@ -429,6 +436,9 @@ function Savings() {
                             placeholder="+ Amount" 
                             value={depositAmount} 
                             onChange={(e) => setDepositAmount(e.target.value)}
+                            min="0.01"
+                            step="0.01"
+                            inputMode="decimal"
                             style={{ width: '100px', padding: '6px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem', backgroundColor: '#ffffff', color: '#0f172a' }}
                           />
                           <button onClick={() => handleAddDeposit(g)} style={{ padding: '6px 12px', background: '#10b981', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '700' }}>
@@ -507,6 +517,7 @@ function Savings() {
                   value={editName} 
                   onChange={(e) => setEditName(e.target.value)} 
                   required 
+                  maxLength={80}
                   style={inputStyle}
                 />
               </div>
@@ -518,6 +529,9 @@ function Savings() {
                   value={editTarget} 
                   onChange={(e) => setEditTarget(e.target.value)} 
                   required 
+                  min="0.01"
+                  step="0.01"
+                  inputMode="decimal"
                   style={inputStyle}
                 />
               </div>
@@ -528,6 +542,9 @@ function Savings() {
                   type="number" 
                   value={editSaved} 
                   onChange={(e) => setEditSaved(e.target.value)} 
+                  min="0"
+                  step="0.01"
+                  inputMode="decimal"
                   style={inputStyle}
                 />
               </div>
@@ -538,6 +555,7 @@ function Savings() {
                   type="date" 
                   value={editDate} 
                   onChange={(e) => setEditDate(e.target.value)} 
+                  min={new Date().toISOString().split('T')[0]}
                   required 
                   style={inputStyle}
                 />

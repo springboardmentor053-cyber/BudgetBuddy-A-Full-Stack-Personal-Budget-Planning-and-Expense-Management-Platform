@@ -9,10 +9,37 @@ function Register() {
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
+  const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+  const isStrongPassword = (value) =>
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(value);
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess(false);
+
+    const cleanUsername = username.trim();
+    const cleanEmail = email.trim();
+
+    if (cleanUsername.length < 3) {
+      setError('Username must be at least 3 characters long.');
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9_]+$/.test(cleanUsername)) {
+      setError('Username can only include letters, numbers, and underscores.');
+      return;
+    }
+
+    if (!isValidEmail(cleanEmail)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    if (!isStrongPassword(password)) {
+      setError('Password must be 8+ characters and include uppercase, lowercase, a number, and a symbol.');
+      return;
+    }
 
     try {
       const response = await fetch('http://127.0.0.1:8000/api/auth/register/', {
@@ -20,14 +47,13 @@ function Register() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username: cleanUsername, email: cleanEmail, password }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
         setSuccess(true);
-        // Redirect automatically to login page after 2 seconds
         setTimeout(() => {
           navigate('/login');
         }, 2000);
@@ -46,7 +72,7 @@ function Register() {
       left: 0,
       width: '100vw',
       height: '100vh',
-      background: '#1a252f', // Matching sidebar dark navy tone
+      background: '#1a252f',
       color: '#ecf0f1',
       fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
       display: 'flex',
@@ -59,42 +85,39 @@ function Register() {
       <div style={{
         maxWidth: '400px',
         width: '100%',
-        backgroundColor: '#243342', // Mid-tone slate card
+        backgroundColor: '#243342',
         borderRadius: '12px',
         padding: '35px 30px',
         boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
         border: '1px solid rgba(255, 255, 255, 0.08)'
       }}>
-        
-        {/* Title Block */}
-        <h2 style={{ 
-          textAlign: 'center', 
-          marginBottom: '8px', 
+        <h2 style={{
+          textAlign: 'center',
+          marginBottom: '8px',
           color: '#ffffff',
           fontSize: '1.75rem',
           fontWeight: '700'
         }}>
-          Create an Account 
+          Create an Account
         </h2>
-        
-        <p style={{ 
-          textAlign: 'center', 
-          color: '#bdc3c7', 
-          fontSize: '0.9rem', 
-          marginBottom: '24px' 
+
+        <p style={{
+          textAlign: 'center',
+          color: '#bdc3c7',
+          fontSize: '0.9rem',
+          marginBottom: '24px'
         }}>
           Join BudgetBuddy to start tracking your finances
         </p>
 
-        {/* Error Alert */}
         {error && (
-          <div style={{ 
-            background: 'rgba(231, 76, 60, 0.15)', 
-            border: '1px solid #e74c3c', 
-            color: '#e74c3c', 
-            padding: '10px', 
-            borderRadius: '6px', 
-            textAlign: 'left', 
+          <div style={{
+            background: 'rgba(231, 76, 60, 0.15)',
+            border: '1px solid #e74c3c',
+            color: '#e74c3c',
+            padding: '10px',
+            borderRadius: '6px',
+            textAlign: 'left',
             fontSize: '0.88rem',
             marginBottom: '20px',
             fontWeight: '600'
@@ -103,15 +126,14 @@ function Register() {
           </div>
         )}
 
-        {/* Success Alert */}
         {success && (
-          <div style={{ 
-            background: 'rgba(46, 204, 113, 0.15)', 
-            border: '1px solid #2ecc71', 
-            color: '#2ecc71', 
-            padding: '10px', 
-            borderRadius: '6px', 
-            textAlign: 'left', 
+          <div style={{
+            background: 'rgba(46, 204, 113, 0.15)',
+            border: '1px solid #2ecc71',
+            color: '#2ecc71',
+            padding: '10px',
+            borderRadius: '6px',
+            textAlign: 'left',
             fontSize: '0.88rem',
             marginBottom: '20px',
             fontWeight: '600'
@@ -125,23 +147,27 @@ function Register() {
             <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: '#bdc3c7', fontWeight: '600' }}>
               Username
             </label>
-            <input 
-              type="text" 
-              placeholder="e.g. john_doe" 
+            <input
+              type="text"
+              placeholder="e.g. john_doe"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              style={{ 
-                width: '100%', 
-                padding: '12px', 
-                borderRadius: '6px', 
-                border: '1px solid rgba(255, 255, 255, 0.15)', 
-                background: '#1a252f', 
+              minLength={3}
+              maxLength={30}
+              pattern="^[a-zA-Z0-9_]+$"
+              title="Use 3-30 characters with letters, numbers, and underscores only."
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '6px',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                background: '#1a252f',
                 color: 'white',
                 fontSize: '0.95rem',
                 outline: 'none',
                 boxSizing: 'border-box'
-              }} 
+              }}
             />
           </div>
 
@@ -149,23 +175,24 @@ function Register() {
             <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: '#bdc3c7', fontWeight: '600' }}>
               Email Address
             </label>
-            <input 
-              type="email" 
-              placeholder="e.g. john@example.com" 
+            <input
+              type="email"
+              placeholder="e.g. john@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              style={{ 
-                width: '100%', 
-                padding: '12px', 
-                borderRadius: '6px', 
-                border: '1px solid rgba(255, 255, 255, 0.15)', 
-                background: '#1a252f', 
+              maxLength={254}
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '6px',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                background: '#1a252f',
                 color: 'white',
                 fontSize: '0.95rem',
                 outline: 'none',
                 boxSizing: 'border-box'
-              }} 
+              }}
             />
           </div>
 
@@ -173,36 +200,39 @@ function Register() {
             <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: '#bdc3c7', fontWeight: '600' }}>
               Password
             </label>
-            <input 
-              type="password" 
-              placeholder="••••••••" 
+            <input
+              type="password"
+              placeholder="Enter a strong password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              style={{ 
-                width: '100%', 
-                padding: '12px', 
-                borderRadius: '6px', 
-                border: '1px solid rgba(255, 255, 255, 0.15)', 
-                background: '#1a252f', 
+              minLength={8}
+              pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$"
+              title="Use 8+ characters with uppercase, lowercase, a number, and a symbol."
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '6px',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                background: '#1a252f',
                 color: 'white',
                 fontSize: '0.95rem',
                 outline: 'none',
                 boxSizing: 'border-box'
-              }} 
+              }}
             />
           </div>
 
-          <button 
-            type="submit" 
-            style={{ 
-              padding: '12px', 
-              background: '#2ecc71', // App Success Green
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '6px', 
-              fontSize: '1rem', 
-              fontWeight: '700', 
+          <button
+            type="submit"
+            style={{
+              padding: '12px',
+              background: '#2ecc71',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              fontSize: '1rem',
+              fontWeight: '700',
               cursor: 'pointer',
               marginTop: '8px',
               transition: 'background 0.2s ease',

@@ -2,8 +2,8 @@
 from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Notification
-from .serializers import NotificationSerializer
+from .models import Notification, DeviceToken
+from .serializers import NotificationSerializer, DeviceTokenSerializer
 
 # Task 4: View Notifications & Create Notification
 class NotificationListCreateView(generics.ListCreateAPIView):
@@ -36,3 +36,31 @@ class MarkNotificationAsReadView(APIView):
             return Response({'message': 'Notification marked as read.'}, status=status.HTTP_200_OK)
         except Notification.DoesNotExist:
             return Response({'error': 'Notification not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class DeviceTokenRegisterView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = DeviceTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        token = serializer.validated_data['token']
+        device_token, _ = DeviceToken.objects.update_or_create(
+            token=token,
+            defaults={'user': request.user},
+        )
+        return Response({
+            'id': device_token.id,
+            'token': device_token.token,
+        }, status=status.HTTP_201_CREATED)
+
+
+class DeviceTokenDeleteView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request):
+        token = request.data.get('token')
+        if not token:
+            return Response({'error': 'token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        DeviceToken.objects.filter(user=request.user, token=token).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -1,6 +1,6 @@
 # notifications/serializers.py
 from rest_framework import serializers
-from .models import Notification
+from .models import Notification, DeviceToken
 
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -16,3 +16,10 @@ class NotificationSerializer(serializers.ModelSerializer):
             'created_at',
         ]
         read_only_fields = ['id', 'user', 'created_at']
+
+
+class DeviceTokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DeviceToken
+        fields = ['id', 'token', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
