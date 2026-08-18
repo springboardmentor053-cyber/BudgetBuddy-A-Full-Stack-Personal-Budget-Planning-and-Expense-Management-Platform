@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import SummaryCard from "../components/SummaryCard";
 import IncomeExpenseChart from "../components/charts/IncomeExpenseChart";
@@ -8,6 +9,12 @@ import api from "../services/api";
 import "../styles/dashboard.css";
 
 function Dashboard() {
+  // =====================================================
+  // NAVIGATION
+  // =====================================================
+
+  const navigate = useNavigate();
+
   // =====================================================
   // DASHBOARD STATE
   // =====================================================
@@ -190,19 +197,19 @@ function Dashboard() {
   // =====================================================
 
   const goToIncome = () => {
-    window.location.href = "/income";
+    navigate("/income");
   };
 
   const goToExpenses = () => {
-    window.location.href = "/expenses";
+    navigate("/expenses");
   };
 
   const goToBudgets = () => {
-    window.location.href = "/budgets";
+    navigate("/budgets");
   };
 
   const goToSavingsGoals = () => {
-    window.location.href = "/savings-goals";
+    navigate("/savings-goals");
   };
 
   // =====================================================
