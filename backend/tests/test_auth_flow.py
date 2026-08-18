@@ -37,3 +37,28 @@ class AuthFlowTests(APITestCase):
         profile_response = self.client.get(profile_url)
         self.assertEqual(profile_response.status_code, status.HTTP_200_OK)
         self.assertEqual(profile_response.data['username'], 'student1')
+
+    def test_user_can_login_with_case_insensitive_username_or_email(self):
+        user = User.objects.create_user(
+            username='varshini',
+            email='varshini@gmail.com',
+            password='Password123!',
+            role='student',
+        )
+        login_url = reverse('login')
+
+        for identifier in ('Varshini', 'VARSHINI@GMAIL.COM'):
+            with self.subTest(identifier=identifier):
+                response = self.client.post(
+                    login_url,
+                    {'username': identifier, 'password': 'Password123!'},
+                    format='json',
+                )
+
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                self.assertEqual(response.data['user'], {
+                    'id': user.id,
+                    'username': 'varshini',
+                    'email': 'varshini@gmail.com',
+                    'role': 'student',
+                })

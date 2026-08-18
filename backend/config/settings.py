@@ -7,6 +7,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 import dj_database_url
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security Settings (Environment driven)
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-oe(zj&%ob0a6=)qg+$6^)xsr@!d2!qlv88p=rdt80zv)3i^ml9')
 
-DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
+DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,.onrender.com').split(',')
 
@@ -39,10 +40,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -127,6 +128,8 @@ CORS_ALLOWED_ORIGINS = [
         FRONTEND_URL,
         'http://localhost:5173',
         'http://127.0.0.1:5173',
+        'http://localhost:5174',
+        'http://127.0.0.1:5174',
     ] if url.strip()
 ]
 CORS_ALLOW_CREDENTIALS = True
@@ -134,6 +137,13 @@ CORS_ALLOW_CREDENTIALS = True
 
 # Custom User Model
 AUTH_USER_MODEL = 'users.User'
+
+# Enables username-or-email authentication for SimpleJWT and any code that
+# calls Django's authenticate() directly.
+AUTHENTICATION_BACKENDS = [
+    'users.authentication.UsernameOrEmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 
 # REST Framework & JWT Configuration
@@ -167,3 +177,5 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = f"BudgetBuddy <{EMAIL_HOST_USER}>" if EMAIL_HOST_USER else 'webmaster@localhost'
 SERVER_EMAIL = EMAIL_HOST_USER or 'webmaster@localhost'
+
+GROQ_API_KEY = os.getenv('GROQ_API_KEY', '')

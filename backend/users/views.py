@@ -12,7 +12,14 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from budgets.models import Budget
 from notifications.utils import check_and_send_budget_alert
 from .models import Expense, Income
-from .serializers import ExpenseSerializer, IncomeSerializer, UserRegistrationSerializer, UserTokenObtainPairSerializer
+from .serializers import (
+    ChangePasswordSerializer,
+    ExpenseSerializer,
+    IncomeSerializer,
+    UserProfileSerializer,
+    UserRegistrationSerializer,
+    UserTokenObtainPairSerializer,
+)
 
 User = get_user_model()
 
@@ -64,23 +71,30 @@ class TokenRefreshView(SimpleJWTTokenRefreshView):
     pass
 
 
-class UserProfileView(generics.RetrieveAPIView):
+class UserProfileView(generics.RetrieveUpdateAPIView):
+    """Allows users to retrieve and update their personal profile info."""
+    serializer_class = UserProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
-    serializer_class = UserRegistrationSerializer
 
     def get_object(self):
         return self.request.user
 
-    def get(self, request, *args, **kwargs):
-        return Response(
-            {
-                'id': request.user.id,
-                'username': request.user.username,
-                'email': request.user.email,
-                'role': getattr(request.user, 'role', 'user'),
-            },
-            status=status.HTTP_200_OK,
-        )
+
+class ChangePasswordView(generics.UpdateAPIView):
+    """Allows users to update their password securely."""
+    serializer_class = ChangePasswordSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = self.get_object()
+        user.set_password(serializer.validated_data['new_password'])
+        user.save()
+        return Response({'detail': 'Password updated successfully.'}, status=status.HTTP_200_OK)
 
 
 class ExpenseViewSet(viewsets.ModelViewSet):

@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Sidebar from './components/Sidebar';
+import LandingPage from './Pages/LandingPage';
 import Login from './Pages/Login';
 import Register from './Pages/Register';
 import Dashboard from './Pages/Dashboard';
@@ -11,11 +13,17 @@ import BudgetTracker from './Pages/BudgetTracker';
 import NotificationsPage from './Pages/NotificationsPage';
 import Reports from './Pages/Reports';
 import SavingsGoals from './Pages/SavingsGoals';
+import AIChatWidget from './components/AIChatWidget';
 
 // Public Route helper: redirects to dashboard if already authenticated
 function PublicRoute({ children }) {
-  const token = localStorage.getItem('access_token') || localStorage.getItem('budgetbuddy_token');
-  return token ? <Navigate to="/dashboard" replace /> : children;
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return <div className="min-h-screen bg-[#0b1120]" aria-label="Loading session" />;
+  }
+
+  return isAuthenticated ? <Navigate to="/dashboard" replace /> : children;
 }
 
 // Layout shell containing the fixed Sidebar navigation and main content area
@@ -27,6 +35,8 @@ function AppLayout({ children }) {
       <main className="flex-1 min-h-screen w-full overflow-y-auto pl-64">
         {children}
       </main>
+      {/* Floating AI Financial Advisor Widget */}
+      <AIChatWidget />
     </div>
   );
 }
@@ -36,20 +46,25 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Default Root Route */}
+          {/* Public Landing / Home Page */}
           <Route
             path="/"
+            element={
+              <PublicRoute>
+                <LandingPage />
+              </PublicRoute>
+            }
+          />
+
+          {/* Public Authentication */}
+          <Route
+            path="/login"
             element={
               <PublicRoute>
                 <Login />
               </PublicRoute>
             }
           />
-
-          {/* Fallback redirect */}
-          <Route path="/login" element={<Navigate to="/" replace />} />
-
-          {/* Public Registration */}
           <Route
             path="/register"
             element={
@@ -124,7 +139,9 @@ export default function App() {
             path="/notifications"
             element={
               <ProtectedRoute>
-                <NotificationsPage />
+                <AppLayout>
+                  <NotificationsPage />
+                </AppLayout>
               </ProtectedRoute>
             }
           />

@@ -1,4 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -39,10 +41,35 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('password_confirm', None)
         password = validated_data.pop('password')
-        user = User.objects.create_user(**validated_data)
-        user.set_password(password)
-        user.save()
+        user = User.objects.create_user(password=password, **validated_data)
         return user
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    """Handles viewing and updating user profile details."""
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'role', 'date_joined')
+        read_only_fields = ('id', 'username', 'role', 'date_joined')
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    """Handles updating the user's password securely."""
+    old_password = serializers.CharField(required=True, write_only=True)
+    new_password = serializers.CharField(required=True, write_only=True, min_length=8)
+    confirm_new_password = serializers.CharField(required=True, write_only=True, min_length=8)
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError('Current password is not correct.')
+        return value
+
+    def validate(self, data):
+        if data['new_password'] != data['confirm_new_password']:
+            raise serializers.ValidationError({'confirm_new_password': 'New passwords do not match.'})
+        validate_password(data['new_password'])
+        return data
 
 
 class UserTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -54,6 +81,22 @@ class UserTokenObtainPairSerializer(TokenObtainPairSerializer):
         return token
 
     def validate(self, attrs):
+        # The public API retains SimpleJWT's conventional `username` key.
+        # Its value may be a username or an email address.
+        identifier = attrs.get(self.username_field, '').strip()
+        user = User.objects.filter(username__iexact=identifier).first()
+        if user is None:
+            user = User.objects.filter(email__iexact=identifier).first()
+
+        if user is None:
+            raise AuthenticationFailed(
+                self.error_messages['no_active_account'],
+                'no_active_account',
+            )
+
+        # Map an email identifier to the canonical username before SimpleJWT
+        # calls Django's authentication backend and checks the password.
+        attrs[self.username_field] = user.get_username()
         data = super().validate(attrs)
         data['user'] = {
             'id': self.user.id,

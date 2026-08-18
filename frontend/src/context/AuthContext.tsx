@@ -26,7 +26,7 @@ interface AuthContextValue {
   user: User | null;
   loading: boolean;
   isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<void>;
+  login: (identifier: string, password: string) => Promise<void>;
   register: (userData: RegisterData) => Promise<void>;
   logout: () => void;
 }
@@ -36,13 +36,13 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const isAuthenticated = Boolean(user);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const restoreSession = async () => {
       const accessToken = localStorage.getItem('access_token');
       if (!accessToken) {
+        setIsAuthenticated(false);
         setLoading(false);
         return;
       }
@@ -50,9 +50,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         const response = await api.get('/api/auth/profile/');
         setUser(response.data as User);
+        setIsAuthenticated(true);
       } catch {
         localStorage.removeItem('access_token');
+        localStorage.removeItem('budgetbuddy_token');
         localStorage.removeItem('refresh_token');
+        localStorage.removeItem('budgetbuddy_username');
+        setUser(null);
+        setIsAuthenticated(false);
       } finally {
         setLoading(false);
       }
@@ -61,12 +66,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     void restoreSession();
   }, []);
 
-  const login = async (username: string, password: string) => {
-    const response = await api.post<AuthResponse>('/api/auth/login/', { username, password });
+  const login = async (identifier: string, password: string) => {
+    const response = await api.post<AuthResponse>('/api/auth/login/', {
+      // The backend intentionally accepts this conventional SimpleJWT key
+      // as either a username or an email address.
+      username: identifier.trim(),
+      password,
+    });
     const { access, refresh, user: userData } = response.data;
     localStorage.setItem('access_token', access);
+    localStorage.setItem('budgetbuddy_token', access);
     localStorage.setItem('refresh_token', refresh);
+    localStorage.setItem('budgetbuddy_username', userData.username);
     setUser(userData);
+    setIsAuthenticated(true);
   };
 
   const register = async (userData: RegisterData) => {
@@ -76,8 +89,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = () => {
     localStorage.removeItem('access_token');
+    localStorage.removeItem('budgetbuddy_token');
     localStorage.removeItem('refresh_token');
+    localStorage.removeItem('budgetbuddy_username');
     setUser(null);
+    setIsAuthenticated(false);
   };
 
   const value = useMemo(

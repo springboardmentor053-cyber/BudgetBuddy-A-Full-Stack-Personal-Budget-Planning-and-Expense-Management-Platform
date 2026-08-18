@@ -1,6 +1,7 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 
 const navItems = [
   { label: 'Dashboard Overview', path: '/dashboard', color: 'bg-sky-400' },
@@ -10,11 +11,13 @@ const navItems = [
   { label: 'Savings Goals', path: '/savings-goals', color: 'bg-amber-400' },
   { label: 'Financial Reports', path: '/reports', color: 'bg-purple-400' },
   { label: 'Notifications', path: '/notifications', color: 'bg-cyan-400' },
+  { label: 'Account Settings', path: '/settings', color: 'bg-indigo-400' },
 ];
 
 export default function Sidebar({ onLogout, notifications: sharedNotifications }) {
-  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [notifications, setNotifications] = useState([]);
+  const username = user?.username || localStorage.getItem('budgetbuddy_username') || '';
 
   useEffect(() => {
     const loadUnreadCount = async () => {
@@ -34,14 +37,10 @@ export default function Sidebar({ onLogout, notifications: sharedNotifications }
   const unreadCount = (sharedNotifications ?? notifications).filter((notification) => !notification.is_read).length;
 
   const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('budgetbuddy_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('budgetbuddy_username');
+    logout();
     if (onLogout) {
       onLogout();
     }
-    navigate('/login');
   };
 
   return (
@@ -60,7 +59,7 @@ export default function Sidebar({ onLogout, notifications: sharedNotifications }
       </div>
 
       {/* Navigation items */}
-      <nav className="flex-1 space-y-1 px-4 py-6">
+      <nav className="flex-1 space-y-1 px-4 py-6 overflow-y-auto">
         {navItems.map((item) => (
           <NavLink
             key={item.path}
@@ -94,20 +93,23 @@ export default function Sidebar({ onLogout, notifications: sharedNotifications }
 
       {/* Profile and logout section */}
       <div className="p-4 border-t border-slate-900 space-y-4">
-        {/* User Card */}
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/40 border border-slate-900">
+        {/* Clickable User Card navigating to /settings */}
+        <NavLink
+          to="/settings"
+          className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/40 border border-slate-900 hover:border-slate-700 transition-colors cursor-pointer"
+        >
           <div className="h-9 w-9 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 flex-shrink-0">
             <span className="text-sm font-semibold text-emerald-400">
-              {localStorage.getItem('budgetbuddy_username')?.charAt(0).toUpperCase() || 'U'}
+              {username.charAt(0).toUpperCase() || 'U'}
             </span>
           </div>
           <div className="truncate">
-            <p className="text-xs font-semibold text-slate-350 truncate">
-              {localStorage.getItem('budgetbuddy_username') || 'User'}
+            <p className="text-xs font-semibold text-slate-300 truncate">
+              {username}
             </p>
-            <p className="text-[10px] text-slate-500">Premium Plan</p>
+            <p className="text-[10px] text-slate-500">Edit Settings</p>
           </div>
-        </div>
+        </NavLink>
 
         {/* Separated Logout Button */}
         <button
