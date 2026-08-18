@@ -37,7 +37,7 @@
 
 .layout-sidebar {
   width: 260px;
-  background-color: var(--text-primary); /* Slate-900 look from style spec */
+  background-color: #111827; /* Constant dark slate styling */
   color: var(--bg-secondary);
   padding: var(--space-6);
   display: flex;
@@ -312,7 +312,7 @@
   justify-content: flex-end;
   align-items: center;
   padding: 14px 32px;
-  background-color: #ffffff;
+  background-color: var(--bg-primary);
   border-bottom: 1px solid var(--border-color, #e2e8f0);
   position: sticky;
   top: 0;
@@ -334,7 +334,7 @@
 }
 
 .bell-notification-btn:hover {
-  background-color: var(--bg-hover, #f1f5f9);
+  background-color: var(--bg-tertiary);
   color: var(--primary, #2563eb);
 }
 

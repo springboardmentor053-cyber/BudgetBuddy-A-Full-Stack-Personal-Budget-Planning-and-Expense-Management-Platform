@@ -57,6 +57,16 @@ def register_user(request):
     }, status=status.HTTP_201_CREATED)
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_profile_view(request):
+    return Response({
+        "id": request.user.id,
+        "username": request.user.username,
+        "email": request.user.email,
+    }, status=status.HTTP_200_OK)
+
+
 # ==========================================
 # Expense CRUD Views
 # ==========================================

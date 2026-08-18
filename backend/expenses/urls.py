@@ -8,9 +8,13 @@ from .views import (
     BudgetListCreateView,
     BudgetRetrieveUpdateDestroyView,
     DashboardAPIView,
+    user_profile_view,
 )
 
 urlpatterns = [
+    # User Profile Endpoint
+    path('user/profile/', user_profile_view, name='user-profile'),
+
     # Expense Endpoints
     path('expenses/total/', TotalExpenseAPIView.as_view(), name='expense-total'),
     path('expenses/', ExpenseListCreateView.as_view(), name='expense-list-create'),
