@@ -1,4 +1,7 @@
+import json
 import logging
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -9,6 +12,65 @@ from django.utils.html import escape
 
 
 logger = logging.getLogger(__name__)
+
+RESEND_EMAILS_URL = "https://api.resend.com/emails"
+
+
+def _send_resend_email(*, user, recipient, title, plain_message, html_message):
+    """Send an email with Resend's HTTPS API without logging API credentials."""
+
+    payload = {
+        "from": settings.RESEND_FROM_EMAIL,
+        "to": [recipient],
+        "subject": title,
+        "text": plain_message,
+        "html": html_message,
+    }
+    request = Request(
+        RESEND_EMAILS_URL,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {settings.RESEND_API_KEY}",
+            "Content-Type": "application/json",
+            "User-Agent": "BudgetBuddy/1.0",
+        },
+        method="POST",
+    )
+
+    try:
+        with urlopen(request, timeout=10) as response:
+            if not 200 <= response.status < 300:
+                logger.error(
+                    "Resend email request failed for user %s with HTTP status %s.",
+                    user.pk,
+                    response.status,
+                )
+                return False
+
+        logger.info("Resend notification email sent for user %s.", user.pk)
+        return True
+    except HTTPError as exc:
+        logger.error(
+            "Resend email request failed for user %s with HTTP status %s.",
+            user.pk,
+            exc.code,
+        )
+    except URLError as exc:
+        logger.error(
+            "Resend email connection failed for user %s: %s.",
+            user.pk,
+            exc.reason,
+        )
+    except Exception as exc:
+        logger.error(
+            "Resend email request failed for user %s: %s: %s",
+            user.pk,
+            type(exc).__name__,
+            str(exc),
+            exc_info=True,
+        )
+
+    return False
 
 
 def send_notification_email(user, title, message):
@@ -48,6 +110,15 @@ def send_notification_email(user, title, message):
         "<p><small>This is an automated BudgetBuddy notification.</small></p>"
         "</body></html>"
     )
+
+    if settings.RESEND_API_KEY:
+        return _send_resend_email(
+            user=user,
+            recipient=recipient,
+            title=title,
+            plain_message=plain_message,
+            html_message=html_message,
+        )
 
     try:
         email = EmailMultiAlternatives(

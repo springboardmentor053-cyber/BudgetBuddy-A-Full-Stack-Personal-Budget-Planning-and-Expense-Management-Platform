@@ -1,6 +1,8 @@
+import json
 from datetime import date
 from decimal import Decimal
 from unittest.mock import patch
+from urllib.error import URLError
 
 from django.contrib.auth.models import User
 from django.core import mail
@@ -110,6 +112,51 @@ class NotificationEmailTests(TestCase):
 
         self.assertFalse(sent)
         self.assertIn("RuntimeError: SMTP unavailable", logs.output[0])
+
+    @override_settings(RESEND_API_KEY="test-resend-api-key")
+    @patch("notifications.email_utils.urlopen")
+    def test_resend_sends_existing_notification_content(self, mock_urlopen):
+        response = mock_urlopen.return_value.__enter__.return_value
+        response.status = 200
+
+        create_notification_and_email(
+            user=self.user,
+            notification_type="BUDGET_CREATED",
+            title="Budget Created - Food",
+            message="Your Food budget was created.",
+            priority="MEDIUM",
+        )
+
+        request = mock_urlopen.call_args.args[0]
+        payload = json.loads(request.data.decode("utf-8"))
+        self.assertEqual(request.full_url, "https://api.resend.com/emails")
+        self.assertEqual(request.get_header("Authorization"), "Bearer test-resend-api-key")
+        self.assertEqual(
+            payload["from"],
+            "BudgetBuddy <onboarding@resend.dev>",
+        )
+        self.assertEqual(payload["to"], ["user@example.com"])
+        self.assertEqual(payload["subject"], "Budget Created - Food")
+        self.assertIn("Your Food budget was created.", payload["text"])
+        self.assertIn("Your Food budget was created.", payload["html"])
+
+    @override_settings(RESEND_API_KEY="test-resend-api-key")
+    @patch(
+        "notifications.email_utils.urlopen",
+        side_effect=URLError("connection unavailable"),
+    )
+    def test_resend_failure_does_not_prevent_notification_creation(self, _):
+        with self.assertLogs("notifications.email_utils", level="ERROR") as logs:
+            notification = create_notification_and_email(
+                user=self.user,
+                notification_type="BUDGET_CREATED",
+                title="Budget Created - Food",
+                message="Your Food budget was created.",
+                priority="MEDIUM",
+            )
+
+        self.assertTrue(Notification.objects.filter(pk=notification.pk).exists())
+        self.assertIn("Resend email connection failed", logs.output[0])
 
     def test_budget_alert_creates_in_app_notification_and_email(self):
         Budget.objects.create(
