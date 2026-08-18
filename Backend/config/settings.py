@@ -32,9 +32,8 @@ DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = os.getenv(
     "ALLOWED_HOSTS",
-    "localhost,127.0.0.1"
+    "localhost,127.0.0.1,budgetbuddy-backend-xtl4.onrender.com"
 ).split(",")
-
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
@@ -87,6 +86,7 @@ CORS_EXPOSE_HEADERS = ['Content-Type', 'Content-Disposition']
 ROOT_URLCONF = 'config.urls'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://budgetbuddy-frontend-9v5r.onrender.com"
 ]
 CORS_ALLOW_HEADERS = [
     "accept",
