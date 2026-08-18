@@ -37,7 +37,10 @@ function LoginForm() {
         "access",
         response.data.access
       );
-
+      localStorage.setItem(
+      "username",
+      username
+      );
       localStorage.setItem(
         "refresh",
         response.data.refresh

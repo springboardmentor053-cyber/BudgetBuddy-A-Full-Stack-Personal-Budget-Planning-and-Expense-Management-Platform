@@ -74,9 +74,9 @@ function AddExpense({
   }
 
   return (
-    <div className="bg-white shadow-lg rounded-xl p-6 mt-8">
+    <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 mt-8 border border-gray-200 dark:border-gray-700 transition-colors duration-300">
 
-      <h2 className="text-2xl font-bold mb-6">
+      <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
         {selectedExpense ? "Edit Expense" : "Add Expense"}
       </h2>
 
@@ -85,7 +85,7 @@ function AddExpense({
         <input
           type="text"
           placeholder="Expense Title"
-          className="w-full border rounded-lg p-3"
+          className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-300 rounded-lg p-3"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
@@ -94,14 +94,14 @@ function AddExpense({
         <input
           type="number"
           placeholder="Amount"
-          className="w-full border rounded-lg p-3"
+          className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-300 rounded-lg p-3"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           required
         />
 
         <select
-          className="w-full border rounded-lg p-3"
+          className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-300 rounded-lg p-3"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         >
@@ -117,7 +117,7 @@ function AddExpense({
 
         <input
           type="date"
-          className="w-full border rounded-lg p-3"
+          className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-300 rounded-lg p-3"
           value={date}
           onChange={(e) => setDate(e.target.value)}
           required

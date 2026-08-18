@@ -77,7 +77,7 @@ function AddBudget({
 
   return (
 
-    <div className="bg-white shadow-lg rounded-xl p-6 mt-8">
+    <div className="bg-white dark:bg-gray-800 text-gray-800 dark:text-white shadow-lg rounded-xl p-6 mt-8">
 
       <h2 className="text-2xl font-bold mb-6">
         {selectedBudget ? "Edit Budget" : "Add Budget"}
@@ -89,7 +89,7 @@ function AddBudget({
       >
 
         <select
-          className="w-full border rounded-lg p-3"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         >
@@ -106,7 +106,7 @@ function AddBudget({
         <input
           type="number"
           placeholder="Budget Amount"
-          className="w-full border rounded-lg p-3"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
           value={budgetAmount}
           onChange={(e) => setBudgetAmount(e.target.value)}
           required
@@ -115,7 +115,7 @@ function AddBudget({
         <input
           type="text"
           placeholder="Month (Example: July)"
-          className="w-full border rounded-lg p-3"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
           value={month}
           onChange={(e) => setMonth(e.target.value)}
           required
@@ -124,7 +124,7 @@ function AddBudget({
         <input
           type="number"
           placeholder="Year"
-          className="w-full border rounded-lg p-3"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
           value={year}
           onChange={(e) => setYear(Number(e.target.value))}
           required

@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Sum
-
+from datetime import date
 from .models import Budget
 from .serializers import BudgetSerializer
 from expenses.models import Expense
@@ -92,3 +92,70 @@ class BudgetSummaryView(APIView):
             "overspent_amount": overspent_amount
 
         })
+class BudgetAlertAPIView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        budgets = Budget.objects.filter(user=request.user)
+
+        result = []
+
+        for budget in budgets:
+
+            total_expense = (
+                Expense.objects.filter(
+                    user=request.user,
+                    category=budget.category,
+                    expense_date__month=1 if False else None
+                )
+            )
+
+            total_expense = (
+                Expense.objects.filter(
+                    user=request.user,
+                    category=budget.category,
+                    expense_date__month=date.today().month,
+                    expense_date__year=date.today().year,
+                ).aggregate(total=Sum("amount"))["total"]
+                or 0
+            )
+
+            utilization = (
+                total_expense / budget.budget_amount
+            ) * 100 if budget.budget_amount else 0
+
+            if utilization >= 100:
+                level = "Exceeded"
+                message = f"Your {budget.category.title()} Budget has been exceeded."
+
+            elif utilization >= 90:
+                level = "High Warning"
+                message = f"You have used 90% of your {budget.category.title()} Budget."
+
+            elif utilization >= 80:
+                level = "Warning"
+                message = f"You have used 80% of your {budget.category.title()} Budget."
+
+            else:
+                level = "Safe"
+                message = "Budget is within limit."
+
+            result.append({
+
+                "category": budget.category,
+
+                "budget_amount": budget.budget_amount,
+
+                "total_expense": total_expense,
+
+                "budget_utilization": round(utilization, 2),
+
+                "alert_level": level,
+
+                "alert_message": message,
+
+            })
+
+        return Response(result)

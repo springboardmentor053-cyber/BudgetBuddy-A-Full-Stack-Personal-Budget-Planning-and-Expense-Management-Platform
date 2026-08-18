@@ -14,3 +14,8 @@ __pycache__/
 
 # Environment variables
 .env
+# Django
+db.sqlite3
+
+# User uploaded media
+media/

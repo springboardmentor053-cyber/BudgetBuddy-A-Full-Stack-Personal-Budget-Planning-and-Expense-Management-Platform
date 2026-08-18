@@ -43,6 +43,11 @@ class Budget(models.Model):
     updated_at = models.DateTimeField(
         auto_now=True
     )
+    alert_80_sent = models.BooleanField(default=False)
+
+    alert_90_sent = models.BooleanField(default=False)
+
+    alert_100_sent = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.category} - {self.month} {self.year}"

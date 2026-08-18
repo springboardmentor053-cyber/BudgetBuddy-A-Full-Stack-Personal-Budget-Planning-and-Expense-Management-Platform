@@ -8,6 +8,7 @@ from .serializers import IncomeSerializer
 from expenses.models import Expense
 from budgets.models import Budget
 from expenses.models import Expense
+from django.db.models.functions import TruncMonth
 
 class IncomeListCreateView(generics.ListCreateAPIView):
 
@@ -90,7 +91,10 @@ class TransactionDashboardView(APIView):
 
         current_balance = total_income - total_expense
 
-        remaining_budget = total_budget - total_expense
+        remaining_budget = max(
+    Decimal("0"),
+    total_budget - total_expense
+)
 
         income_transactions = Income.objects.filter(
             user=request.user
@@ -142,8 +146,51 @@ class TransactionDashboardView(APIView):
 
             "total_budget": total_budget,
 
-            "remaining_budget": remaining_budget,
+            "remaining_budget": float(remaining_budget),
 
             "recent_transactions": recent_transactions[:10]
 
         })
+class MonthlyComparisonAPIView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        income = (
+            Income.objects.filter(user=request.user)
+            .annotate(month=TruncMonth("income_date"))
+            .values("month")
+            .annotate(total=Sum("amount"))
+        )
+
+        expense = (
+            Expense.objects.filter(user=request.user)
+            .annotate(month=TruncMonth("expense_date"))
+            .values("month")
+            .annotate(total=Sum("amount"))
+        )
+
+        data = {}
+
+        for item in income:
+            month = item["month"].strftime("%b")
+            data[month] = {
+                "month": month,
+                "income": float(item["total"]),
+                "expense": 0,
+            }
+
+        for item in expense:
+            month = item["month"].strftime("%b")
+
+            if month not in data:
+                data[month] = {
+                    "month": month,
+                    "income": 0,
+                    "expense": float(item["total"]),
+                }
+            else:
+                data[month]["expense"] = float(item["total"])
+
+        return Response(list(data.values()))

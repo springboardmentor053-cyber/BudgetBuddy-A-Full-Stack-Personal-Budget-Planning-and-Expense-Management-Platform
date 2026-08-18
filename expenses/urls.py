@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    ExpenseChartView,
     ExpenseListCreateView,
     ExpenseRetrieveUpdateDestroyView,
     TotalExpenseView,
@@ -24,5 +25,9 @@ urlpatterns = [
         "total/",
         TotalExpenseView.as_view(),
         name="total-expense",
+    ),
+    path(
+    "chart/",
+    ExpenseChartView.as_view(),
     ),
 ]

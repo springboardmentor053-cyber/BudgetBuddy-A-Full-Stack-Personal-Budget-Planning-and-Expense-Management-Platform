@@ -73,7 +73,7 @@ function AddIncome({
   
 
   return (
-    <div className="bg-white shadow-lg rounded-xl p-6 mt-8">
+    <div className="bg-white dark:bg-gray-800 text-gray-800 dark:text-white shadow-lg rounded-xl p-6 mt-8">
 
       <h2 className="text-2xl font-bold mb-6">
         {selectedIncome ? "Edit Income" : "Add Income"}
@@ -87,7 +87,7 @@ function AddIncome({
         <input
           type="text"
           placeholder="Income Title"
-          className="w-full border rounded-lg p-3"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
@@ -96,14 +96,14 @@ function AddIncome({
         <input
           type="number"
           placeholder="Amount"
-          className="w-full border rounded-lg p-3"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           required
         />
 
         <select
-          className="w-full border rounded-lg p-3"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         >
@@ -117,7 +117,7 @@ function AddIncome({
 
         <input
           type="date"
-          className="w-full border rounded-lg p-3"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
           value={date}
           onChange={(e) => setDate(e.target.value)}
           required

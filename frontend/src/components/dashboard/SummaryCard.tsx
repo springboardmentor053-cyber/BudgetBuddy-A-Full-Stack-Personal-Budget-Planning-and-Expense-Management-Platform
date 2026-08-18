@@ -18,29 +18,29 @@ function SummaryCard({ title, amount, color }: Props) {
     switch (title) {
 
       case "Income":
-        return <FaArrowTrendUp className="text-green-600 text-2xl" />;
+        return <FaArrowTrendUp className="text-green-600 dark:text-green-400text-2xl" />;
 
       case "Expenses":
-        return <FaArrowTrendDown className="text-red-600 text-2xl" />;
+        return <FaArrowTrendDown className="text-red-600 dark:text-red-400 text-2xl" />;
 
       case "Current Balance":
-        return <FaWallet className="text-blue-600 text-2xl" />;
+        return <FaWallet className="text-blue-600 dark:text-blue-400 text-2xl" />;
 
       default:
-        return <FaPiggyBank className="text-purple-600 text-2xl" />;
+        return <FaPiggyBank className="text-purple-600 dark:text-purple-400 text-2xl" />;
     }
 
   }
 
   return (
 
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition duration-300">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition duration-300">
 
       <div className="flex justify-between items-center">
 
         <div>
 
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
 
             {title}
 
@@ -54,7 +54,7 @@ function SummaryCard({ title, amount, color }: Props) {
 
         </div>
 
-        <div className="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center">
+        <div className="w-14 h-14 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
 
           {getIcon()}
 

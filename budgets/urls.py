@@ -4,6 +4,7 @@ from .views import (
     BudgetListCreateView,
     BudgetRetrieveUpdateDestroyView,
     BudgetSummaryView,
+    BudgetAlertAPIView,
 )
 
 urlpatterns = [
@@ -24,6 +25,10 @@ urlpatterns = [
         "<int:pk>/",
         BudgetRetrieveUpdateDestroyView.as_view(),
         name="budget-detail",
+    ),
+    path(
+    "alerts/",
+    BudgetAlertAPIView.as_view(),
     ),
 
 ]

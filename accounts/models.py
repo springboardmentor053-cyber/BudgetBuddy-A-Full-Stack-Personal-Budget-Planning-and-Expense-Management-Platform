@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.conf import settings
 
 class Profile(models.Model):
     user = models.OneToOneField(
@@ -8,7 +8,10 @@ class Profile(models.Model):
         on_delete=models.CASCADE,
         related_name="profile"
     )
-
+    accent_color = models.CharField(
+    max_length=20,
+    default="indigo"
+    )
     monthly_income = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -23,6 +26,10 @@ class Profile(models.Model):
     phone_number = models.CharField(
         max_length=15,
         blank=True
+    )
+    bio = models.TextField(
+    blank=True,
+    default=""
     )
 
     profile_picture = models.ImageField(

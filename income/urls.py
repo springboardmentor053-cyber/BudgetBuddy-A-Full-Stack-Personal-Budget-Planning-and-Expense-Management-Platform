@@ -3,6 +3,7 @@ from django.urls import path
 from .views import (
     IncomeListCreateView,
     IncomeRetrieveUpdateDestroyView,
+    MonthlyComparisonAPIView,
     TotalIncomeView,
     FinancialSummaryView,
     TransactionDashboardView,
@@ -22,5 +23,9 @@ path(
     "dashboard/",
     TransactionDashboardView.as_view(),
     name="transaction-dashboard",
+),
+path(
+    "monthly-comparison/",
+    MonthlyComparisonAPIView.as_view(),
 ),
 ]

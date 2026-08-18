@@ -36,7 +36,7 @@ function BudgetTable({ onEdit }: Props) {
   }
 
   return (
-    <div className="bg-white shadow-lg rounded-xl p-6 mt-8">
+    <div className="bg-white dark:bg-gray-800 text-gray-800 dark:text-white shadow-lg rounded-xl p-6 mt-8">
 
       <h2 className="text-2xl font-bold mb-6">
         Budget History
@@ -46,13 +46,13 @@ function BudgetTable({ onEdit }: Props) {
 
         <thead>
 
-          <tr className="bg-gray-100">
+          <tr className="bg-gray-100 dark:bg-gray-700">
 
-            <th className="border p-3">Category</th>
-            <th className="border p-3">Budget</th>
-            <th className="border p-3">Month</th>
-            <th className="border p-3">Year</th>
-            <th className="border p-3">Actions</th>
+            <th className="border border-gray-300 dark:border-gray-600 p-3">Category</th>
+            <th className="border border-gray-300 dark:border-gray-600 p-3">Budget</th>
+            <th className="border border-gray-300 dark:border-gray-600 p-3">Month</th>
+            <th className="border border-gray-300 dark:border-gray-600 p-3">Year</th>
+            <th className="border border-gray-300 dark:border-gray-600 p-3">Actions</th>
 
           </tr>
 
@@ -64,23 +64,23 @@ function BudgetTable({ onEdit }: Props) {
 
             <tr key={budget.id}>
 
-              <td className="border p-3">
+              <td className="border border-gray-300 dark:border-gray-600 p-3 p-3">
                 {budget.category}
               </td>
 
-              <td className="border p-3">
+              <td className="border border-gray-300 dark:border-gray-600 p-3">
                 ₹{budget.budget_amount}
               </td>
 
-              <td className="border p-3">
+              <td className="border border-gray-300 dark:border-gray-600 p-3">
                 {budget.month}
               </td>
 
-              <td className="border p-3">
+              <td className="border border-gray-300 dark:border-gray-600 p-3">
                 {budget.year}
               </td>
 
-              <td className="border p-3">
+              <td className="border border-gray-300 dark:border-gray-600 p-3">
 
                 <button
                   onClick={() => onEdit(budget)}

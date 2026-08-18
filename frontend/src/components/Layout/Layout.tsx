@@ -1,24 +1,28 @@
 import Sidebar from "../Sidebar/Sidebar";
 import Navbar from "../Navbar/Navbar";
 import { Outlet } from "react-router-dom";
-
+import { useState } from "react";
 function Layout() {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   return (
+    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-950">
 
-    <div className="flex">
+      <Sidebar sidebarOpen={sidebarOpen} />
 
-      <Sidebar />
-
-      <div className="ml-64 flex-1 bg-gray-100 min-h-screen">
-
-        <Navbar />
+      <div
+  className={`flex-1 transition-all duration-300 ${
+    sidebarOpen ? "ml-64" : "ml-0"
+  }`}
+>
+        <Navbar 
+         sidebarOpen={sidebarOpen}
+         setSidebarOpen={setSidebarOpen} />
 
         <Outlet />
 
       </div>
 
     </div>
-
   );
 }
 

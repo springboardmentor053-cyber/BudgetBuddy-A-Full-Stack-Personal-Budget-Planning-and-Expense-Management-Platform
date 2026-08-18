@@ -9,13 +9,13 @@ function ExpensePage() {
 
   return (
 
-    <div className="p-8">
+    <div className="p-8 text-gray-800 dark:text-white transition-colors duration-300">
 
       <h1 className="text-4xl font-bold">
         Expense
       </h1>
 
-      <p className="text-gray-500 mt-2">
+      <p className="text-gray-500 dark:text-gray-400 mt-2">
         Track all your expenses.
       </p>
 
