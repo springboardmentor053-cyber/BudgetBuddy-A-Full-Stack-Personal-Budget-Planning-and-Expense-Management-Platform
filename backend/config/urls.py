@@ -7,6 +7,9 @@ from users.views import ExpenseViewSet, IncomeViewSet
 from notifications.views import NotificationViewSet
 from users.ai_views import AIChatPortalView
 
+def health_check(request):
+    return JsonResponse({"status": "healthy", "message": "BudgetBuddy Backend is Running Successfully 🚀"})
+
 # 1. Register router without 'api/' inside the strings
 router = DefaultRouter()
 router.register(r'expenses/tracking', ExpenseViewSet, basename='expense')
