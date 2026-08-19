@@ -148,8 +148,9 @@ REST_FRAMEWORK = {
 }
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "http://127.0.0.1:5173",
+    "https://budgetbuddy-2-3k0o.onrender.com",  # You will update this with your actual Vercel URL in Step 4
 ]
+CORS_ALLOW_CREDENTIALS = True
 
 
 SIMPLE_JWT = {
