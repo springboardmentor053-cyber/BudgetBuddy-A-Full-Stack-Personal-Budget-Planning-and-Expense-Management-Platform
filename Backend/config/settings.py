@@ -130,7 +130,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Stable Vercel production domain
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "https://budget-buddy-a-full-stack-personal.vercel.app",
+    "https://budgetbuddy-frontend-flax.vercel.app",
 ]
 
 
@@ -180,7 +180,7 @@ CORS_EXPOSE_HEADERS = [
 # ---------------------------------------------------------
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://budget-buddy-a-full-stack-personal.vercel.app",
+    "https://budgetbuddy-frontend-flax.vercel.app",
 ]
 
 
