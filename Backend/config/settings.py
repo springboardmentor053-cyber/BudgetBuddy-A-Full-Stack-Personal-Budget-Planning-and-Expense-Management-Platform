@@ -82,21 +82,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-CORS_EXPOSE_HEADERS = [
-    'Content-Type', 'Content-Disposition']
+
 ROOT_URLCONF = 'config.urls'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://budget-buddy-a-full-stack-personal.vercel.app",
-    "https://budgetbuddy-backend-h7j9.onrender.com"
+    "https://budget-buddy-a-full-stack-personal-budget-planning-ebvhb5l8f.vercel.app",
 ]
-CORS_ALLOW_HEADERS = [
-    "accept",
-    "authorization",
-    "content-type",
-    "origin",
-    "x-csrftoken",
-]
+
 CORS_ALLOW_METHODS = [
     "DELETE",
     "GET",
@@ -105,8 +98,23 @@ CORS_ALLOW_METHODS = [
     "POST",
     "PUT",
 ]
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "authorization",
+    "content-type",
+    "origin",
+    "x-csrftoken",
+]
+
+CORS_EXPOSE_HEADERS = [
+    "Content-Type",
+    "Content-Disposition",
+]
+
 CSRF_TRUSTED_ORIGINS = [
     "https://budget-buddy-a-full-stack-personal.vercel.app",
+    "https://budget-buddy-a-full-stack-personal-budget-planning-ebvhb5l8f.vercel.app",
 ]
 TEMPLATES = [
     {
