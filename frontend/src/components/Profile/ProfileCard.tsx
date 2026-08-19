@@ -95,7 +95,7 @@ function ProfileCard() {
           {profile.profile_picture ? (
 
             <img
-              src={`http://127.0.0.1:8000${profile.profile_picture}`}
+              src={`https://budgetbuddy-a-full-stack-personal-budget-1hdo.onrender.com${profile.profile_picture}`}
               alt="Profile"
               className="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover"
             />
