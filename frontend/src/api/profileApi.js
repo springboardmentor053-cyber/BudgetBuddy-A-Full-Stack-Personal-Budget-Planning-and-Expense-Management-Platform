@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
-  "https://budgetbuddy-backend-h7j9.onrender.com/api/";
+  "https://budgetbuddy-backend-h7j9.onrender.com/api";
 
 const getAuthHeader = () => {
   const token =
@@ -15,7 +15,7 @@ const getAuthHeader = () => {
 
 export const getProfile = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}users/profiles/`, {
+    const response = await axios.get(`${API_BASE_URL}/users/profiles/`, {
       headers: getAuthHeader(),
     });
 
@@ -59,7 +59,7 @@ export const getProfile = async () => {
 
 export const updateProfile = async (profileData) => {
   try {
-    const listRes = await axios.get(`${API_BASE_URL}users/profiles/`, {
+    const listRes = await axios.get(`${API_BASE_URL}/users/profiles/`, {
       headers: getAuthHeader(),
     });
     
@@ -79,7 +79,7 @@ export const updateProfile = async (profileData) => {
       financial_goal: profileData.financial_goal,
     };
 
-    const response = await axios.patch(`${API_BASE_URL}users/profiles/${profileId}/`, payload, {
+    const response = await axios.patch(`${API_BASE_URL}/users/profiles/${profileId}/`, payload, {
       headers: getAuthHeader(),
     });
     
