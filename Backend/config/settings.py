@@ -97,6 +97,14 @@ CORS_ALLOW_HEADERS = [
     "origin",
     "x-csrftoken",
 ]
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
