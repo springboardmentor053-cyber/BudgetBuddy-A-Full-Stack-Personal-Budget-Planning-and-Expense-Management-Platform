@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { FiBell, FiCheck, FiFilter, FiTrash2 } from 'react-icons/fi';
 import api from '../api/axios';
-import Sidebar from '../components/Sidebar';
 
 const FILTERS = ['ALL', 'UNREAD', 'BUDGET ALERTS', 'SAVINGS GOALS'];
 const filterMap = {
@@ -71,10 +70,7 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-slate-100">
-      <Sidebar notifications={notifications} />
-      <main className="ml-64 flex-1 px-6 py-8 lg:px-10">
-        <div className="mx-auto max-w-7xl space-y-6">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 space-y-6 overflow-x-hidden">
           <header className="rounded-[1.5rem] border border-slate-800/80 bg-[#131b2e] p-6 shadow-lg shadow-black/40">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
@@ -200,8 +196,6 @@ export default function NotificationsPage() {
               ))
             )}
           </section>
-        </div>
-      </main>
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import json
 import logging
 import os
+import re
+from datetime import date
 from django.conf import settings
 from django.db.models import Sum
 from rest_framework.views import APIView
@@ -15,13 +17,16 @@ logger = logging.getLogger(__name__)
 
 class AIChatPortalView(APIView):
     """
-    BudgetBuddy AI Advisor View using dynamic Groq model discovery and prioritized fallback.
+    BudgetBuddy AI Advisor View with strict conversational model selection,
+    robust reasoning tag stripping, date-awareness, and zero-hallucination guardrails.
     """
 
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         user_message = str(request.data.get("message", "")).strip()
+        history = request.data.get("history", [])
+
         if not user_message:
             return Response({"error": "Message is required."}, status=400)
         if len(user_message) > 2_000:
@@ -54,10 +59,10 @@ class AIChatPortalView(APIView):
             for item in raw_categories
         ]
 
-        # Recent expenses by date
+        # Recent expenses (fetch up to 40 records to cover date queries accurately)
         raw_recent = list(
             Expense.objects.filter(user=request.user)
-            .order_by('-expense_date')[:6]
+            .order_by('-expense_date')[:40]
             .values('title', 'amount', 'category', 'expense_date')
         )
         recent_expenses = [
@@ -70,7 +75,7 @@ class AIChatPortalView(APIView):
             for r in raw_recent
         ]
 
-        # Single biggest individual expenses by amount
+        # Top single expenses
         raw_biggest = list(
             Expense.objects.filter(user=request.user)
             .order_by('-amount')[:5]
@@ -87,53 +92,67 @@ class AIChatPortalView(APIView):
         ]
 
         has_recorded_data = bool(total_income > 0 or total_expense > 0 or recent_expenses)
+        current_date_str = str(date.today())
 
-        # 2. System Instructions
+        # 2. Strict, Grounded System Instructions
         system_instruction = f"""
-You are BudgetBuddy AI: an encouraging, highly practical, and analytical personal finance advisor.
+You are BudgetBuddy AI: a strict, data-grounded personal finance assistant.
 
-CORE RULES:
-- ONLY answer questions regarding personal finance, budgeting, saving money, expense tracking, and user account metrics.
-- Politely decline any non-finance queries in one short sentence.
+CRITICAL ACCURACY & GROUNDING RULES:
+1. Use ONLY the data provided below. NEVER invent, hallucinate, or assume transactions (e.g., do not make up "mess", "hostel fee", or placeholder figures).
+2. Today's Date is: {current_date_str}. Use this to accurately resolve relative terms like "today", "yesterday", or specific dates.
+3. For date-specific queries or follow-up elaboration:
+   - Filter the RECENT_TRANSACTIONS list for the requested date.
+   - List each actual transaction as: • [Title] ([Category]): ₹[Amount]
+   - State the exact total sum for that day.
+4. For general overview queries, provide a direct 1-2 sentence summary with exact ₹ amounts.
+5. DO NOT output any <think> tags, analysis scratchpads, or checklists. Output only the final response.
+6. Only answer personal finance queries.
 
 USER FINANCIAL DATA:
 - Has Logged Data: {has_recorded_data}
 - Total Income: ₹{total_income:,.2f}
 - Total Expense: ₹{total_expense:,.2f}
 - Net Balance: ₹{net_balance:,.2f}
-- Spending Breakdown by Category: {json.dumps(category_breakdown)}
-- Recent Expenses (Chronological): {json.dumps(recent_expenses)}
-- Top Biggest Single Expenses: {json.dumps(biggest_expenses)}
-
-RESPONSE FORMATTING:
-1. Answer the user's question directly in the first sentence using their exact data figures.
-2. Provide 2-3 concise bullet points with actionable context or saving advice.
-3. Keep the response complete, clean, and well-structured.
+- Category Breakdown: {json.dumps(category_breakdown)}
+- RECENT_TRANSACTIONS: {json.dumps(recent_expenses)}
+- TOP_EXPENSES: {json.dumps(biggest_expenses)}
 """.strip()
 
-        # 3. Call Groq with dynamic discovery and fallback
+        # Build message history
+        messages_payload = [{"role": "system", "content": system_instruction}]
+
+        if isinstance(history, list):
+            for h in history[-4:]:
+                if isinstance(h, dict) and h.get("role") in ("user", "assistant") and h.get("content"):
+                    clean_content = re.sub(r'<think>.*?(?:</think>|$)', '', str(h["content"]), flags=re.DOTALL).strip()
+                    if clean_content:
+                        messages_payload.append({
+                            "role": h["role"],
+                            "content": clean_content
+                        })
+
+        messages_payload.append({"role": "user", "content": user_message})
+
+        # 3. Dynamic Groq Model Selection with Fallback
         try:
             client = Groq(api_key=api_key)
 
-            # Preferred production models in order
             preferred_models = [
+                "llama-3.3-70b-versatile",
+                "llama-3.1-8b-instant",
                 "mixtral-8x7b-32768",
                 "gemma2-9b-it",
-                "llama-3.1-70b-versatile",
-                "llama-3.1-8b-instant",
             ]
 
-            # Fetch all models currently accessible to your key
             live_models = [m.id for m in client.models.list().data]
-
-            # Exclude speech, vision, guard, and proprietary third-party models
-            excluded = ("whisper", "tts", "guard", "vision", "canopylabs", "orpheus")
+            
+            excluded = ("whisper", "tts", "guard", "vision", "canopylabs", "orpheus", "r1", "deepseek", "distill", "reasoner")
             eligible_models = [
                 m for m in live_models 
                 if not any(ex in m.lower() for ex in excluded)
             ]
 
-            # Prioritize preferred models first, then fall back to any eligible chat model
             candidates = [m for m in preferred_models if m in eligible_models]
             for m in eligible_models:
                 if m not in candidates:
@@ -147,17 +166,12 @@ RESPONSE FORMATTING:
 
             for model_id in candidates:
                 try:
-                    logger.info("Attempting Groq model: %s", model_id)
                     completion = client.chat.completions.create(
                         model=model_id,
-                        messages=[
-                            {"role": "system", "content": system_instruction},
-                            {"role": "user", "content": user_message},
-                        ],
-                        temperature=0.6,
-                        max_tokens=1024,
+                        messages=messages_payload,
+                        temperature=0.1,  # Low temperature strictly enforces factual grounding
+                        max_tokens=600,
                     )
-                    logger.info("Successfully generated reply with model: %s", model_id)
                     break
                 except Exception as err:
                     logger.warning("Failed with model %s: %s", model_id, err)
@@ -167,8 +181,15 @@ RESPONSE FORMATTING:
             if not completion:
                 raise last_error or RuntimeError("All candidate Groq models failed.")
 
-            reply = completion.choices[0].message.content.strip()
-            return Response({"reply": reply})
+            raw_reply = completion.choices[0].message.content or ""
+
+            # Ensure all internal thinking tokens are stripped even on incomplete outputs
+            clean_reply = re.sub(r'<think>.*?(?:</think>|$)', '', raw_reply, flags=re.DOTALL).strip()
+
+            if not clean_reply:
+                clean_reply = raw_reply.strip()
+
+            return Response({"reply": clean_reply})
 
         except Exception as exc:
             logger.exception("Groq API failure for user_id=%s: %s", request.user.id, exc)

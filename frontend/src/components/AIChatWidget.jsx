@@ -24,12 +24,27 @@ export default function AIChatWidget() {
     if (!input.trim() || loading) return;
 
     const userText = input.trim();
+    const updatedMessages = [...messages, { sender: 'user', text: userText }];
+    
     setInput('');
-    setMessages((prev) => [...prev, { sender: 'user', text: userText }]);
+    setMessages(updatedMessages);
     setLoading(true);
 
     try {
-      const res = await api.post('/api/ai-chat/', { message: userText });
+      // Format the last 4 messages as chat history for multi-turn context
+      const historyPayload = messages
+        .filter((m) => m.text && !m.text.startsWith('Hi! I am your BudgetBuddy'))
+        .slice(-4)
+        .map((m) => ({
+          role: m.sender === 'user' ? 'user' : 'assistant',
+          content: m.text,
+        }));
+
+      const res = await api.post('/api/ai-chat/', {
+        message: userText,
+        history: historyPayload,
+      });
+
       setMessages((prev) => [...prev, { sender: 'ai', text: res.data.reply }]);
     } catch {
       setMessages((prev) => [
@@ -76,7 +91,7 @@ export default function AIChatWidget() {
                 <div
                   className={`max-w-[85%] p-3.5 rounded-2xl text-sm leading-relaxed ${
                     m.sender === 'user'
-                      ? 'bg-emerald-500 text-slate-950 font-medium rounded-br-none'
+                      ? 'bg-emerald-500 text-slate-950 font-semibold rounded-br-none'
                       : 'bg-slate-900 text-slate-200 border border-slate-800 rounded-bl-none whitespace-pre-wrap'
                   }`}
                 >
@@ -99,7 +114,7 @@ export default function AIChatWidget() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask: 'Where am I overspending this month?'"
+              placeholder="Ask: 'Where am I spending most?' or 'Explain today\'s spend'"
               className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
             />
             <button

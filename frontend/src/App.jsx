@@ -13,6 +13,7 @@ import BudgetTracker from './Pages/BudgetTracker';
 import NotificationsPage from './Pages/NotificationsPage';
 import Reports from './Pages/Reports';
 import SavingsGoals from './Pages/SavingsGoals';
+import Settings from './Pages/Settings';
 import AIChatWidget from './components/AIChatWidget';
 
 // Public Route helper: redirects to dashboard if already authenticated
@@ -141,6 +142,16 @@ export default function App() {
               <ProtectedRoute>
                 <AppLayout>
                   <NotificationsPage />
+                </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <AppLayout>
+                  <Settings />
                 </AppLayout>
               </ProtectedRoute>
             }

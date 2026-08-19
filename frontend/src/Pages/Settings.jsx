@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { changePassword, getUserProfile, updateUserProfile } from '../services/userService';
+import { useAuth } from '../context/AuthContext';
 
 function PasswordVisibilityIcon({ visible }) {
   return visible ? (
@@ -15,9 +16,10 @@ function PasswordVisibilityIcon({ visible }) {
 }
 
 export default function Settings() {
+  const { user } = useAuth();
   const [profile, setProfile] = useState({
-    username: '',
-    email: '',
+    username: user?.username || localStorage.getItem('budgetbuddy_username') || '',
+    email: user?.email || '',
     first_name: '',
     last_name: '',
     role: '',
@@ -36,11 +38,24 @@ export default function Settings() {
   const [showOldPass, setShowOldPass] = useState(false);
   const [showNewPass, setShowNewPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
+  const [preferences, setPreferences] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('budgetbuddy_settings') || '') || {
+        emailAlerts: true,
+        pushAlerts: true,
+        warningThreshold: '80',
+        currency: 'INR',
+      };
+    } catch {
+      return { emailAlerts: true, pushAlerts: true, warningThreshold: '80', currency: 'INR' };
+    }
+  });
+  const [preferencesStatus, setPreferencesStatus] = useState('');
 
   useEffect(() => {
     getUserProfile()
       .then((data) => {
-        setProfile(data);
+        setProfile((current) => ({ ...current, ...data }));
         localStorage.setItem('budgetbuddy_username', data.username);
         setLoading(false);
       })
@@ -91,6 +106,18 @@ export default function Settings() {
     }
   };
 
+  const handlePreferenceChange = (event) => {
+    const { name, value, type, checked } = event.target;
+    setPreferences((current) => ({ ...current, [name]: type === 'checkbox' ? checked : value }));
+    setPreferencesStatus('');
+  };
+
+  const handlePreferencesSubmit = (event) => {
+    event.preventDefault();
+    localStorage.setItem('budgetbuddy_settings', JSON.stringify(preferences));
+    setPreferencesStatus('Settings saved. Your display and alert preferences are updated.');
+  };
+
   if (loading) {
     return <div className="p-8 text-center text-slate-400 font-medium">Loading user settings...</div>;
   }
@@ -109,6 +136,35 @@ export default function Settings() {
       </header>
 
       <div className="grid gap-6 lg:grid-cols-2">
+      <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-5 shadow-xl shadow-black/10 backdrop-blur sm:p-6">
+        <h2 className="mb-1 text-lg font-semibold text-white">Alert Preferences</h2>
+        <p className="mb-5 text-sm text-slate-400">Choose how BudgetBuddy should warn you before you overspend.</p>
+        <form onSubmit={handlePreferencesSubmit} className="space-y-5">
+          <label className="flex items-center justify-between gap-4 rounded-xl border border-slate-800 bg-slate-950 p-4">
+            <span><span className="block text-sm font-medium text-slate-100">Overspending email alerts</span><span className="mt-1 block text-xs text-slate-500">Receive an email when a budget is nearing its limit.</span></span>
+            <input type="checkbox" name="emailAlerts" checked={preferences.emailAlerts} onChange={handlePreferenceChange} className="h-4 w-4 accent-emerald-500" />
+          </label>
+          <label className="flex items-center justify-between gap-4 rounded-xl border border-slate-800 bg-slate-950 p-4">
+            <span><span className="block text-sm font-medium text-slate-100">Push alerts</span><span className="mt-1 block text-xs text-slate-500">Show alerts in your notification centre.</span></span>
+            <input type="checkbox" name="pushAlerts" checked={preferences.pushAlerts} onChange={handlePreferenceChange} className="h-4 w-4 accent-emerald-500" />
+          </label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">Budget warning threshold
+              <select name="warningThreshold" value={preferences.warningThreshold} onChange={handlePreferenceChange} className="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2.5 text-sm normal-case tracking-normal text-slate-100 focus:border-emerald-500 focus:outline-none">
+                <option value="75">75%</option><option value="80">80%</option><option value="90">90%</option>
+              </select>
+            </label>
+            <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">Currency / display format
+              <select name="currency" value={preferences.currency} onChange={handlePreferenceChange} className="mt-2 w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2.5 text-sm normal-case tracking-normal text-slate-100 focus:border-emerald-500 focus:outline-none">
+                <option value="INR">INR (₹)</option>
+              </select>
+            </label>
+          </div>
+          {preferencesStatus && <p role="status" className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-300">{preferencesStatus}</p>}
+          <button type="submit" className="rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400">Save Preferences</button>
+        </form>
+      </section>
+
       <section className="rounded-2xl border border-slate-800 bg-slate-900/50 p-5 shadow-xl shadow-black/10 backdrop-blur sm:p-6">
         <h2 className="mb-1 text-lg font-semibold text-white">Personal Details</h2>
         <p className="mb-5 text-sm text-slate-400">Keep your account information current.</p>
