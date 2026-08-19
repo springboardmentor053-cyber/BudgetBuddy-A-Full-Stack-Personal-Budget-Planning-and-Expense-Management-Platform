@@ -90,6 +90,14 @@ CORS_ALLOWED_ORIGINS = [
     "https://budgetbuddy-backend-h7j9.onrender.com"
     
 ]
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
 CORS_ALLOW_HEADERS = [
     "accept",
     "authorization",
