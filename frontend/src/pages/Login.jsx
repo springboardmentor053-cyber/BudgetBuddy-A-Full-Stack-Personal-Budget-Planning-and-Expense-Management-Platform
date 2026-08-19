@@ -1,21 +1,32 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
+import "../styles/login.css";
 
 function Login() {
+
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+
+  // =====================================================
+  // LOGIN
+  // =====================================================
 
   const handleLogin = async (e) => {
+
     e.preventDefault();
 
     setErrorMessage("");
+    setLoading(true);
 
     try {
+
       const response = await axios.post(
         "http://127.0.0.1:8000/api/login/",
         {
@@ -23,6 +34,9 @@ function Login() {
           password,
         }
       );
+
+
+      // Store authentication tokens
 
       localStorage.setItem(
         "access",
@@ -34,118 +48,248 @@ function Login() {
         response.data.refresh
       );
 
-      // Navigate directly after successful login
+
+      // Go to dashboard
+
       navigate("/dashboard");
 
     } catch (error) {
+
       console.error(error);
 
       setErrorMessage(
         "Invalid username or password."
       );
+
+    } finally {
+
+      setLoading(false);
+
     }
   };
 
+
   return (
-    <div
-      className="container mt-5"
-      style={{ maxWidth: "500px" }}
-    >
 
-      <div className="card shadow p-4">
+    <div className="login-page">
 
-        <h2 className="text-center text-primary mb-4">
-          Login
-        </h2>
+      <div className="login-wrapper">
 
-        {/* Error Message */}
 
-        {errorMessage && (
-          <div
-            className="alert alert-danger alert-dismissible fade show"
-            role="alert"
-          >
-            <strong>❌ Login Failed:</strong>{" "}
-            {errorMessage}
+        {/* =================================================
+            BRAND PANEL
+        ================================================= */}
+
+        <div className="login-brand-panel">
+
+          <div className="login-brand-content">
+
+            <div className="login-logo">
+              💰
+            </div>
+
+            <h1>
+              Welcome to
+              <span>BudgetBuddy</span>
+            </h1>
+
+            <p className="login-brand-description">
+              Your personal finance companion for
+              smarter budgeting, spending, and saving.
+            </p>
+
+
+            <div className="login-benefits">
+
+              <div className="login-benefit">
+
+                <i className="bi bi-bar-chart-fill"></i>
+
+                Track your financial progress
+
+              </div>
+
+
+              <div className="login-benefit">
+
+                <i className="bi bi-wallet2"></i>
+
+                Manage income and expenses
+
+              </div>
+
+
+              <div className="login-benefit">
+
+                <i className="bi bi-piggy-bank-fill"></i>
+
+                Build better savings habits
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div className="login-panel-footer">
+            Personal Budget Planning & Expense Management
+          </div>
+
+        </div>
+
+
+        {/* =================================================
+            LOGIN FORM
+        ================================================= */}
+
+        <div className="login-form-panel">
+
+          <div className="login-form-header">
+
+            <span>
+              ACCOUNT ACCESS
+            </span>
+
+            <h2>
+              Sign in to your account
+            </h2>
+
+            <p>
+              Enter your credentials to continue to BudgetBuddy.
+            </p>
+
+          </div>
+
+
+          {/* ERROR */}
+
+          {errorMessage && (
+
+            <div className="login-error">
+
+              <i className="bi bi-exclamation-circle-fill"></i>
+
+              <span>
+                {errorMessage}
+              </span>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setErrorMessage("")
+                }
+              >
+                <i className="bi bi-x-lg"></i>
+              </button>
+
+            </div>
+
+          )}
+
+
+          <form onSubmit={handleLogin}>
+
+
+            {/* USERNAME */}
+
+            <div className="login-field">
+
+              <label>
+                Username
+              </label>
+
+              <div className="login-input-wrapper">
+
+                <i className="bi bi-person login-input-icon"></i>
+
+                <input
+                  type="text"
+                  className="login-input"
+                  placeholder="Enter your username"
+                  value={username}
+                  onChange={(e) =>
+                    setUsername(e.target.value)
+                  }
+                  required
+                />
+
+              </div>
+
+            </div>
+
+
+            {/* PASSWORD */}
+
+            <div className="login-field">
+
+              <label>
+                Password
+              </label>
+
+              <div className="login-input-wrapper">
+
+                <i className="bi bi-lock login-input-icon"></i>
+
+                <input
+                  type="password"
+                  className="login-input"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) =>
+                    setPassword(e.target.value)
+                  }
+                  required
+                />
+
+              </div>
+
+            </div>
+
+
+            {/* LOGIN */}
 
             <button
-              type="button"
-              className="btn-close"
-              onClick={() =>
-                setErrorMessage("")
-              }
-            ></button>
-          </div>
-        )}
+              type="submit"
+              className="login-submit"
+              disabled={loading}
+            >
 
-        <form onSubmit={handleLogin}>
+              {loading ? (
+                <>
+                  <i className="bi bi-arrow-repeat"></i>
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  Sign In
+                  <i className="bi bi-arrow-right"></i>
+                </>
+              )}
 
-          {/* Username */}
+            </button>
 
-          <div className="mb-3">
+          </form>
 
-            <label className="form-label">
-              Username
-            </label>
 
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Enter your username"
-              value={username}
-              onChange={(e) =>
-                setUsername(e.target.value)
-              }
-              required
-            />
+          {/* REGISTER */}
 
-          </div>
+          <p className="login-register">
 
-          {/* Password */}
+            Don't have an account?{" "}
 
-          <div className="mb-3">
+            <Link to="/register">
+              Create an account
+            </Link>
 
-            <label className="form-label">
-              Password
-            </label>
+          </p>
 
-            <input
-              type="password"
-              className="form-control"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) =>
-                setPassword(e.target.value)
-              }
-              required
-            />
-
-          </div>
-
-          {/* Login Button */}
-
-          <button
-            type="submit"
-            className="btn btn-primary w-100"
-          >
-            Login
-          </button>
-
-        </form>
-
-        <p className="text-center mt-3">
-
-          Don't have an account?{" "}
-
-          <Link to="/register">
-            Register
-          </Link>
-
-        </p>
+        </div>
 
       </div>
 
     </div>
+
   );
 }
 

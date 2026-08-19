@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import "../styles/notifications.css";
 
 function Notifications() {
+
   const [notifications, setNotifications] = useState([]);
 
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Delete confirmation
   const [deleteId, setDeleteId] = useState(null);
   const [deleteTitle, setDeleteTitle] = useState("");
 
@@ -19,12 +20,15 @@ function Notifications() {
     },
   };
 
-  // -----------------------------
-  // Fetch Notifications
-  // -----------------------------
+
+  // =====================================================
+  // FETCH NOTIFICATIONS
+  // =====================================================
 
   const fetchNotifications = async () => {
+
     try {
+
       const response = await axios.get(
         "http://127.0.0.1:8000/api/notifications/",
         config
@@ -33,12 +37,14 @@ function Notifications() {
       setNotifications(response.data);
 
     } catch (error) {
+
       console.error(
         "Error fetching notifications:",
         error
       );
 
       if (error.response?.status === 401) {
+
         setErrorMessage(
           "Session expired. Please login again."
         );
@@ -51,22 +57,27 @@ function Notifications() {
         }, 2000);
 
       } else {
+
         setErrorMessage(
           "Unable to load notifications."
         );
+
       }
     }
   };
+
 
   useEffect(() => {
     fetchNotifications();
   }, []);
 
-  // -----------------------------
-  // Open Delete Confirmation
-  // -----------------------------
+
+  // =====================================================
+  // DELETE CONFIRMATION
+  // =====================================================
 
   const openDeleteConfirmation = (notification) => {
+
     setDeleteId(notification.id);
     setDeleteTitle(notification.title);
 
@@ -74,272 +85,488 @@ function Notifications() {
     setErrorMessage("");
   };
 
-  // -----------------------------
-  // Remove Notification
-  // -----------------------------
+
+  const closeDeleteConfirmation = () => {
+
+    setDeleteId(null);
+    setDeleteTitle("");
+  };
+
+
+  // =====================================================
+  // DELETE NOTIFICATION
+  // =====================================================
 
   const removeNotification = async () => {
+
     if (!deleteId) return;
 
     setMessage("");
     setErrorMessage("");
 
     try {
+
       await axios.delete(
         `http://127.0.0.1:8000/api/notifications/${deleteId}/`,
         config
       );
 
-      // Remove immediately from UI
-      setNotifications((previousNotifications) =>
-        previousNotifications.filter(
-          (notification) =>
-            notification.id !== deleteId
-        )
+
+      setNotifications(
+        (previousNotifications) =>
+          previousNotifications.filter(
+            (notification) =>
+              notification.id !== deleteId
+          )
       );
 
-      setDeleteId(null);
-      setDeleteTitle("");
+
+      closeDeleteConfirmation();
+
 
       setMessage(
         "Notification removed successfully."
       );
 
+
       setTimeout(() => {
         setMessage("");
       }, 4000);
 
+
     } catch (error) {
+
       console.error(
         "Error deleting notification:",
         error
       );
 
-      setDeleteId(null);
-      setDeleteTitle("");
+      closeDeleteConfirmation();
+
 
       if (error.response?.data) {
+
         setErrorMessage(
-          JSON.stringify(error.response.data)
+          JSON.stringify(
+            error.response.data
+          )
         );
+
       } else {
+
         setErrorMessage(
           "Unable to remove notification."
         );
+
       }
     }
   };
 
+
+  // =====================================================
+  // FORMAT DATE
+  // =====================================================
+
+  const formatDate = (date) => {
+
+    return new Date(date).toLocaleString(
+      undefined,
+      {
+        dateStyle: "medium",
+        timeStyle: "short",
+      }
+    );
+
+  };
+
+
   return (
-    <div className="container mt-5 mb-5">
 
-      {/* ============================= */}
-      {/* Success Message */}
-      {/* ============================= */}
+    <div className="notifications-page">
 
-      {message && (
-        <div
-          className="alert alert-success alert-dismissible fade show shadow-sm"
-          role="alert"
-        >
-          <strong>✅ Success:</strong> {message}
 
-          <button
-            type="button"
-            className="btn-close"
-            onClick={() => setMessage("")}
-          ></button>
-        </div>
-      )}
+      {/* =================================================
+          HEADER
+      ================================================= */}
 
-      {/* ============================= */}
-      {/* Error Message */}
-      {/* ============================= */}
+      <div className="notifications-header">
 
-      {errorMessage && (
-        <div
-          className="alert alert-danger alert-dismissible fade show shadow-sm"
-          role="alert"
-        >
-          <strong>❌ Error:</strong> {errorMessage}
+        <div>
 
-          <button
-            type="button"
-            className="btn-close"
-            onClick={() =>
-              setErrorMessage("")
-            }
-          ></button>
-        </div>
-      )}
+          <div className="notifications-eyebrow">
+            ACCOUNT
+          </div>
 
-      {/* ============================= */}
-      {/* Page Header */}
-      {/* ============================= */}
+          <h1>
+            Notifications
+          </h1>
 
-      <div className="card shadow-lg border-0 bg-primary text-white mb-4">
-
-        <div className="card-body">
-
-          <h2 className="mb-2">
-            🔔 Notifications
-          </h2>
-
-          <p className="mb-0">
-            View and manage your latest financial
-            notifications and alerts.
+          <p>
+            Stay updated with important financial
+            alerts and account activity.
           </p>
+
+        </div>
+
+
+        <div className="notifications-header-icon">
+
+          <i className="bi bi-bell-fill"></i>
 
         </div>
 
       </div>
 
-      {/* ============================= */}
-      {/* Notifications */}
-      {/* ============================= */}
 
-      {notifications.length === 0 ? (
+      {/* =================================================
+          SUCCESS ALERT
+      ================================================= */}
 
-        <div className="alert alert-success shadow-sm">
-          <strong>✅ All caught up!</strong>
-          <br />
-          You have no notifications.
-        </div>
+      {message && (
 
-      ) : (
+        <div className="notification-alert success">
 
-        notifications.map((notification) => (
+          <div className="notification-alert-icon">
+            <i className="bi bi-check-circle-fill"></i>
+          </div>
 
-          <div
-            key={notification.id}
-            className="card shadow mb-3 border-0"
-          >
+          <div>
 
-            <div className="card-body">
+            <strong>
+              Success
+            </strong>
 
-              <div className="d-flex justify-content-between align-items-start gap-3">
-
-                <div className="flex-grow-1">
-
-                  <h5 className="mb-2">
-                    🔔 {notification.title}
-                  </h5>
-
-                  <p className="mb-2">
-                    {notification.message}
-                  </p>
-
-                  <small className="text-muted">
-                    📅{" "}
-                    {new Date(
-                      notification.created_at
-                    ).toLocaleString()}
-                  </small>
-
-                </div>
-
-                <button
-                  className="btn btn-danger btn-sm"
-                  onClick={() =>
-                    openDeleteConfirmation(
-                      notification
-                    )
-                  }
-                >
-                  🗑️ Remove
-                </button>
-
-              </div>
-
-            </div>
+            <p>
+              {message}
+            </p>
 
           </div>
 
-        ))
+          <button
+            type="button"
+            onClick={() => setMessage("")}
+          >
+            <i className="bi bi-x-lg"></i>
+          </button>
+
+        </div>
 
       )}
 
-      {/* ============================= */}
-      {/* Delete Confirmation Modal */}
-      {/* ============================= */}
+
+      {/* =================================================
+          ERROR ALERT
+      ================================================= */}
+
+      {errorMessage && (
+
+        <div className="notification-alert error">
+
+          <div className="notification-alert-icon">
+            <i className="bi bi-exclamation-circle-fill"></i>
+          </div>
+
+          <div>
+
+            <strong>
+              Error
+            </strong>
+
+            <p>
+              {errorMessage}
+            </p>
+
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setErrorMessage("")}
+          >
+            <i className="bi bi-x-lg"></i>
+          </button>
+
+        </div>
+
+      )}
+
+
+      {/* =================================================
+          SUMMARY
+      ================================================= */}
+
+      <div className="notifications-summary">
+
+        <div className="notifications-summary-card">
+
+          <div className="notifications-summary-icon">
+
+            <i className="bi bi-bell-fill"></i>
+
+          </div>
+
+          <div>
+
+            <span>
+              TOTAL NOTIFICATIONS
+            </span>
+
+            <strong>
+              {notifications.length}
+            </strong>
+
+            <small>
+              Notifications available
+            </small>
+
+          </div>
+
+        </div>
+
+
+        <div className="notifications-summary-card">
+
+          <div className="notifications-summary-icon blue">
+
+            <i className="bi bi-check2-circle"></i>
+
+          </div>
+
+          <div>
+
+            <span>
+              ACCOUNT STATUS
+            </span>
+
+            <strong>
+              Active
+            </strong>
+
+            <small>
+              Your account is up to date
+            </small>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      {/* =================================================
+          MAIN CARD
+      ================================================= */}
+
+      <div className="notifications-card">
+
+
+        {/* CARD HEADER */}
+
+        <div className="notifications-card-header">
+
+          <div>
+
+            <h2>
+              Recent Notifications
+            </h2>
+
+            <p>
+              Your latest financial alerts and updates.
+            </p>
+
+          </div>
+
+
+          <div className="notifications-count">
+
+            {notifications.length}
+
+          </div>
+
+        </div>
+
+
+        {/* =================================================
+            EMPTY STATE
+        ================================================= */}
+
+        {notifications.length === 0 ? (
+
+          <div className="notifications-empty">
+
+            <div className="notifications-empty-icon">
+
+              <i className="bi bi-check2-circle"></i>
+
+            </div>
+
+            <h3>
+              You're all caught up!
+            </h3>
+
+            <p>
+              You don't have any notifications right now.
+            </p>
+
+          </div>
+
+        ) : (
+
+
+          /* =================================================
+             NOTIFICATION LIST
+          ================================================= */
+
+          <div className="notifications-list">
+
+            {notifications.map(
+              (notification) => (
+
+                <div
+                  key={notification.id}
+                  className="notification-item"
+                >
+
+
+                  {/* ICON */}
+
+                  <div className="notification-item-icon">
+
+                    <i className="bi bi-bell-fill"></i>
+
+                  </div>
+
+
+                  {/* CONTENT */}
+
+                  <div className="notification-item-content">
+
+                    <div className="notification-item-top">
+
+                      <h3>
+                        {notification.title}
+                      </h3>
+
+                      <span className="notification-badge">
+                        ALERT
+                      </span>
+
+                    </div>
+
+
+                    <p>
+                      {notification.message}
+                    </p>
+
+
+                    <div className="notification-date">
+
+                      <i className="bi bi-clock"></i>
+
+                      {formatDate(
+                        notification.created_at
+                      )}
+
+                    </div>
+
+                  </div>
+
+
+                  {/* DELETE */}
+
+                  <button
+                    type="button"
+                    className="notification-remove-btn"
+                    title="Remove notification"
+                    onClick={() =>
+                      openDeleteConfirmation(
+                        notification
+                      )
+                    }
+                  >
+
+                    <i className="bi bi-trash3"></i>
+
+                  </button>
+
+                </div>
+
+              )
+            )}
+
+          </div>
+
+        )}
+
+      </div>
+
+
+      {/* =================================================
+          DELETE MODAL
+      ================================================= */}
 
       {deleteId && (
 
         <div
-          className="modal fade show"
-          style={{
-            display: "block",
-            backgroundColor:
-              "rgba(0,0,0,0.5)",
-          }}
-          tabIndex="-1"
+          className="notification-modal-overlay"
+          onClick={closeDeleteConfirmation}
         >
 
-          <div className="modal-dialog modal-dialog-centered">
+          <div
+            className="notification-modal"
+            onClick={(e) =>
+              e.stopPropagation()
+            }
+          >
 
-            <div className="modal-content">
+            <div className="notification-modal-icon">
 
-              <div className="modal-header">
+              <i className="bi bi-trash3-fill"></i>
 
-                <h5 className="modal-title">
-                  🗑️ Remove Notification
-                </h5>
+            </div>
 
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => {
-                    setDeleteId(null);
-                    setDeleteTitle("");
-                  }}
-                ></button>
 
-              </div>
+            <h2>
+              Remove Notification?
+            </h2>
 
-              <div className="modal-body">
 
-                <p>
-                  Are you sure you want to remove
-                  this notification?
-                </p>
+            <p>
+              Are you sure you want to remove
+              this notification? This action
+              cannot be undone.
+            </p>
 
-                <div className="alert alert-warning mb-0">
 
-                  <strong>
-                    🔔 {deleteTitle}
-                  </strong>
+            <div className="notification-modal-preview">
 
-                  <br />
+              <i className="bi bi-bell-fill"></i>
 
-                  This notification will be permanently
-                  removed.
+              <span>
+                {deleteTitle}
+              </span>
 
-                </div>
+            </div>
 
-              </div>
 
-              <div className="modal-footer">
+            <div className="notification-modal-actions">
 
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => {
-                    setDeleteId(null);
-                    setDeleteTitle("");
-                  }}
-                >
-                  Cancel
-                </button>
+              <button
+                type="button"
+                className="notification-cancel-btn"
+                onClick={closeDeleteConfirmation}
+              >
+                Cancel
+              </button>
 
-                <button
-                  type="button"
-                  className="btn btn-danger"
-                  onClick={removeNotification}
-                >
-                  🗑️ Yes, Remove
-                </button>
 
-              </div>
+              <button
+                type="button"
+                className="notification-confirm-btn"
+                onClick={removeNotification}
+              >
+                <i className="bi bi-trash3"></i>{" "}
+                Remove
+              </button>
 
             </div>
 
@@ -350,6 +577,7 @@ function Notifications() {
       )}
 
     </div>
+
   );
 }
 

@@ -45,3 +45,8 @@ frontend/dist/
 
 .DS_Store
 Thumbs.db
+# ==============================
+# User Uploads
+# ==============================
+
+media/

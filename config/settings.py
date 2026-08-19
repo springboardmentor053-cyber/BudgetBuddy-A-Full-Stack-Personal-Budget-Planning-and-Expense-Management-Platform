@@ -319,3 +319,5 @@ EMAIL_HOST_PASSWORD = os.getenv(
 DEFAULT_FROM_EMAIL = os.getenv(
     "DEFAULT_FROM_EMAIL"
 )
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

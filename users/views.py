@@ -8,6 +8,7 @@ from rest_framework import status
 
 from .serializers import RegisterSerializer, ProfileSerializer
 from .models import Profile
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 class RegisterView(generics.CreateAPIView):
@@ -19,6 +20,8 @@ class RegisterView(generics.CreateAPIView):
 class ProfileView(APIView):
 
     permission_classes = [IsAuthenticated]
+
+    parser_classes = [MultiPartParser, FormParser]
 
     def get(self, request):
 
@@ -38,7 +41,8 @@ class ProfileView(APIView):
 
         serializer = ProfileSerializer(
             profile,
-            data=request.data
+            data=request.data,
+            partial=True
         )
 
         if serializer.is_valid():
@@ -51,7 +55,7 @@ class ProfileView(APIView):
 
         return Response(
             serializer.errors,
-            status=400
+            status=status.HTTP_400_BAD_REQUEST
         )
 class ChangePasswordView(APIView):
 

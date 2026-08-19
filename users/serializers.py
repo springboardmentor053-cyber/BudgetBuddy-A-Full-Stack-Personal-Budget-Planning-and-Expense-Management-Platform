@@ -65,7 +65,9 @@ class ProfileSerializer(serializers.ModelSerializer):
             "last_name",
             "phone",
             "address",
+            "profile_picture",
         ]
+        read_only_fields = []
 
     def update(self, instance, validated_data):
 
@@ -103,6 +105,11 @@ class ProfileSerializer(serializers.ModelSerializer):
         instance.address = validated_data.get(
             "address",
             instance.address
+        )
+
+        instance.profile_picture = validated_data.get(
+            "profile_picture",
+            instance.profile_picture
         )
 
         instance.save()

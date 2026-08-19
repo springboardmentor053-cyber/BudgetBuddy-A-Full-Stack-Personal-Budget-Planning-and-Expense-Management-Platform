@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 function Sidebar() {
-
     const navigate = useNavigate();
 
     const [profile, setProfile] = useState({
-        username: "",
-        email: "",
-    });
+    username: "",
+    email: "",
+    profile_picture: "",
+});
 
     const token = localStorage.getItem("access");
 
@@ -19,332 +19,312 @@ function Sidebar() {
         },
     };
 
-    // =============================
-    // Fetch Logged-in User
-    // =============================
+    // =====================================================
+    // FETCH LOGGED-IN USER
+    // =====================================================
 
     useEffect(() => {
-
         const fetchProfile = async () => {
-
             try {
-
                 const response = await axios.get(
                     "http://127.0.0.1:8000/api/profile/",
                     config
                 );
 
                 setProfile({
-                    username: response.data.username,
-                    email: response.data.email,
-                });
-
+    username: response.data.username,
+    email: response.data.email,
+    profile_picture: response.data.profile_picture || "",
+});
             } catch (error) {
-
                 console.error(
                     "Error fetching profile:",
                     error
                 );
 
-                if (
-                    error.response?.status === 401
-                ) {
-
-                    localStorage.removeItem(
-                        "access"
-                    );
-
-                    localStorage.removeItem(
-                        "refresh"
-                    );
+                if (error.response?.status === 401) {
+                    localStorage.removeItem("access");
+                    localStorage.removeItem("refresh");
 
                     navigate("/login");
-
                 }
-
             }
-
         };
 
         if (token) {
             fetchProfile();
         }
-
     }, [token, navigate]);
 
-
-    // =============================
-    // Logout
-    // =============================
+    // =====================================================
+    // LOGOUT
+    // =====================================================
 
     const logout = () => {
-
         localStorage.removeItem("access");
-
         localStorage.removeItem("refresh");
 
         navigate("/login");
-
     };
 
+    // =====================================================
+    // AVATAR
+    // =====================================================
 
-    // =============================
-    // Avatar Letter
-    // =============================
+    const avatarLetter = profile.username
+        ? profile.username.charAt(0).toUpperCase()
+        : "U";
+    const profilePictureUrl = profile.profile_picture
+    ? profile.profile_picture.startsWith("http")
+        ? profile.profile_picture
+        : `http://127.0.0.1:8000${profile.profile_picture}`
+    : "";
 
-    const avatarLetter =
-        profile.username
-            ? profile.username
-                .charAt(0)
-                .toUpperCase()
-            : "U";
+    // =====================================================
+    // NAVIGATION ITEM
+    // =====================================================
 
+    const navClass = ({ isActive }) =>
+        `sidebar-link ${isActive ? "active" : ""}`;
 
     return (
+        <aside className="sidebar">
 
-        <div className="sidebar">
+            {/* =================================================
+                BRAND
+            ================================================= */}
 
+            <div className="sidebar-brand">
 
-            {/* ============================= */}
-            {/* Logo */}
-            {/* ============================= */}
-
-            <div className="sidebar-logo">
-
-                <div className="logo-icon">
+                <div className="sidebar-brand-icon">
                     💰
                 </div>
 
-                <div>
-
-                    <h4>
-                        BudgetBuddy
-                    </h4>
-
-                    <p>
-                        Personal Finance
-                    </p>
-
+                <div className="sidebar-brand-text">
+                    <h2>BudgetBuddy</h2>
+                    <span>Personal Finance</span>
                 </div>
 
             </div>
 
 
-            {/* ============================= */}
-            {/* Main */}
-            {/* ============================= */}
+            {/* =================================================
+                NAVIGATION
+            ================================================= */}
 
-            <div className="sidebar-section">
+            <nav className="sidebar-navigation">
 
-                <p className="sidebar-heading">
-                    MAIN
-                </p>
+                {/* MAIN */}
 
-                <NavLink
-                    to="/dashboard"
-                    className="sidebar-link"
-                >
+                <div className="sidebar-section">
 
-                    <i className="bi bi-speedometer2"></i>
+                    <div className="sidebar-heading">
+                        MAIN
+                    </div>
 
-                    <span>
-                        Dashboard
-                    </span>
+                    <NavLink
+                        to="/dashboard"
+                        className={navClass}
+                    >
+                        <span className="sidebar-link-icon">
+                            <i className="bi bi-grid-1x2-fill"></i>
+                        </span>
 
-                </NavLink>
+                        <span className="sidebar-link-text">
+                            Dashboard
+                        </span>
+                    </NavLink>
 
-            </div>
-
-
-            {/* ============================= */}
-            {/* Finance */}
-            {/* ============================= */}
-
-            <div className="sidebar-section">
-
-                <p className="sidebar-heading">
-                    FINANCE
-                </p>
+                </div>
 
 
-                <NavLink
-                    to="/income"
-                    className="sidebar-link"
-                >
+                {/* FINANCE */}
 
-                    <i className="bi bi-cash-stack"></i>
+                <div className="sidebar-section">
 
-                    <span>
-                        Income
-                    </span>
+                    <div className="sidebar-heading">
+                        FINANCE
+                    </div>
 
-                </NavLink>
+                    <NavLink
+                        to="/income"
+                        className={navClass}
+                    >
+                        <span className="sidebar-link-icon">
+                            <i className="bi bi-wallet2"></i>
+                        </span>
 
-
-                <NavLink
-                    to="/expenses"
-                    className="sidebar-link"
-                >
-
-                    <i className="bi bi-credit-card"></i>
-
-                    <span>
-                        Expenses
-                    </span>
-
-                </NavLink>
+                        <span className="sidebar-link-text">
+                            Income
+                        </span>
+                    </NavLink>
 
 
-                <NavLink
-                    to="/budget"
-                    className="sidebar-link"
-                >
+                    <NavLink
+                        to="/expenses"
+                        className={navClass}
+                    >
+                        <span className="sidebar-link-icon">
+                            <i className="bi bi-receipt"></i>
+                        </span>
 
-                    <i className="bi bi-pie-chart"></i>
-
-                    <span>
-                        Budget
-                    </span>
-
-                </NavLink>
-
-
-                <NavLink
-                    to="/savings"
-                    className="sidebar-link"
-                >
-
-                    <i className="bi bi-piggy-bank"></i>
-
-                    <span>
-                        Savings
-                    </span>
-
-                </NavLink>
-
-            </div>
+                        <span className="sidebar-link-text">
+                            Expenses
+                        </span>
+                    </NavLink>
 
 
-            {/* ============================= */}
-            {/* Insights */}
-            {/* ============================= */}
+                    <NavLink
+                        to="/budget"
+                        className={navClass}
+                    >
+                        <span className="sidebar-link-icon">
+                            <i className="bi bi-pie-chart-fill"></i>
+                        </span>
 
-            <div className="sidebar-section">
-
-                <p className="sidebar-heading">
-                    INSIGHTS
-                </p>
-
-
-                <NavLink
-                    to="/reports"
-                    className="sidebar-link"
-                >
-
-                    <i className="bi bi-bar-chart"></i>
-
-                    <span>
-                        Reports
-                    </span>
-
-                </NavLink>
-
-            </div>
+                        <span className="sidebar-link-text">
+                            Budget
+                        </span>
+                    </NavLink>
 
 
-            {/* ============================= */}
-            {/* Account */}
-            {/* ============================= */}
+                    <NavLink
+                        to="/savings"
+                        className={navClass}
+                    >
+                        <span className="sidebar-link-icon">
+                            <i className="bi bi-piggy-bank-fill"></i>
+                        </span>
 
-            <div className="sidebar-section">
+                        <span className="sidebar-link-text">
+                            Savings
+                        </span>
+                    </NavLink>
 
-                <p className="sidebar-heading">
-                    ACCOUNT
-                </p>
-
-
-                <NavLink
-                    to="/notifications"
-                    className="sidebar-link"
-                >
-
-                    <i className="bi bi-bell"></i>
-
-                    <span>
-                        Notifications
-                    </span>
-
-                </NavLink>
+                </div>
 
 
-                <NavLink
-                    to="/profile"
-                    className="sidebar-link"
-                >
+                {/* INSIGHTS */}
 
-                    <i className="bi bi-person-circle"></i>
+                <div className="sidebar-section">
 
-                    <span>
-                        Profile
-                    </span>
+                    <div className="sidebar-heading">
+                        INSIGHTS
+                    </div>
 
-                </NavLink>
+                    <NavLink
+                        to="/reports"
+                        className={navClass}
+                    >
+                        <span className="sidebar-link-icon">
+                            <i className="bi bi-bar-chart-line-fill"></i>
+                        </span>
 
-            </div>
+                        <span className="sidebar-link-text">
+                            Reports
+                        </span>
+                    </NavLink>
+
+                </div>
 
 
-            {/* ============================= */}
-            {/* User Footer */}
-            {/* ============================= */}
+                {/* ACCOUNT */}
 
-            <div className="sidebar-footer">
+                <div className="sidebar-section">
 
-                <div className="user-card">
+                    <div className="sidebar-heading">
+                        ACCOUNT
+                    </div>
+
+                    <NavLink
+                        to="/notifications"
+                        className={navClass}
+                    >
+                        <span className="sidebar-link-icon">
+                            <i className="bi bi-bell-fill"></i>
+                        </span>
+
+                        <span className="sidebar-link-text">
+                            Notifications
+                        </span>
+                    </NavLink>
+
+
+                    <NavLink
+                        to="/profile"
+                        className={navClass}
+                    >
+                        <span className="sidebar-link-icon">
+                            <i className="bi bi-person-fill"></i>
+                        </span>
+
+                        <span className="sidebar-link-text">
+                            Profile
+                        </span>
+                    </NavLink>
+
+                </div>
+
+            </nav>
+
+
+            {/* =================================================
+                USER AREA
+            ================================================= */}
+
+            <div className="sidebar-bottom">
+
+                <div className="sidebar-user-card">
 
                     <div className="avatar">
 
-                        {avatarLetter}
+    {profilePictureUrl ? (
+        <img
+            src={profilePictureUrl}
+            alt="Profile"
+            className="sidebar-profile-image"
+        />
+    ) : (
+        avatarLetter
+    )}
 
-                    </div>
+</div>
 
-
-                    <div>
+                    <div className="sidebar-user-info">
 
                         <strong>
                             {profile.username || "User"}
                         </strong>
 
-                        <p>
-                            {profile.email || "Student"}
-                        </p>
+                        <span>
+                            {profile.email || "Personal account"}
+                        </span>
 
                     </div>
 
                 </div>
 
 
-                {/* ============================= */}
-                {/* Logout */}
-                {/* ============================= */}
+                {/* LOGOUT */}
 
                 <button
                     type="button"
-                    className="logout-btn"
+                    className="sidebar-logout"
                     onClick={logout}
                 >
+                    <span className="sidebar-logout-icon">
+                        <i className="bi bi-box-arrow-right"></i>
+                    </span>
 
-                    <i className="bi bi-box-arrow-right"></i>
-
-                    Logout
-
+                    <span>
+                        Logout
+                    </span>
                 </button>
 
             </div>
 
-        </div>
-
+        </aside>
     );
-
 }
 
 export default Sidebar;
