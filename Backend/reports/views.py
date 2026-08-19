@@ -1,6 +1,6 @@
 # Added ParagraphStyle import
 from notifications_app.utils import send_notification
-from reportlab.platypus import HRFlowable
+# from reportlab.platypus import HRFlowable
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import (
@@ -24,12 +24,12 @@ from rest_framework.views import APIView
 from django.db.models.functions import ExtractMonth, Coalesce
 from django.db.models import Sum, FloatField
 from django.http import HttpResponse
-import matplotlib.pyplot as plt
 import csv
 import io
-import pandas as pd
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import pandas as pd
 # ==========================================================
 # TASK 2 - FINANCIAL SUMMARY API
 # ==========================================================
@@ -393,6 +393,7 @@ class DashboardAPIView(APIView):
             "active_budgets": active_budgets,
         })
 
+
 # ==========================================================
 # TASK 7 - EXPORT REPORT API (PDF, Excel, CSV Downloads)
 # ==========================================================
@@ -671,7 +672,7 @@ class ExportReportView(APIView):
                         total_expense], color=["#10B981", "#EF4444"])
                 ax1.set_title("Income vs Expense",
                               fontsize=10, fontweight="bold")
-                ax1.set_ylabel("Amount ($)", fontsize=8)
+                ax1.set_ylabel("Amount (₹)", fontsize=8)
                 ax1.tick_params(axis='both', labelsize=8)
 
                 labels = [str(item["category"]) for item in category_data]
@@ -798,21 +799,42 @@ class ExportReportView(APIView):
             ]))
             elements.append(svg_t)
 
-            doc.build(elements)
+            try:
+                doc.build(elements)
+            except Exception as e:
+                print("========== PDF GENERATION FAILED ==========")
+                print("PDF Error:", str(e))
+                import traceback
+                traceback.print_exc()
+
+                return Response(
+                    {"error": "Failed to generate PDF report", "details": str(e)},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
 
             buffer.seek(0)
-            print("Sending report notification...")
-            send_notification(
-                user=user,
-                title="Financial Report Generated",
-                message=f"Your financial report for {period_str} has been generated and is ready for download.",
-                notification_type="GENERAL",
-                priority="MEDIUM"
-            )
+
             response = HttpResponse(
-                buffer.getvalue(), content_type="application/pdf")
+                buffer.getvalue(),
+                content_type="application/pdf"
+            )
+
             response[
-                "Content-Disposition"] = f'attachment; filename="financial_report_{raw_month}_{year}.pdf"'
+                "Content-Disposition"
+            ] = f'attachment; filename="financial_report_{raw_month}_{year}.pdf"'
+
+            # Notification should not break report download
+            try:
+                send_notification(
+                    user=user,
+                    title="Financial Report Generated",
+                    message=f"Your financial report for {period_str} has been generated and is ready for download.",
+                    notification_type="GENERAL",
+                    priority="MEDIUM"
+                )
+            except Exception as e:
+                print("Notification failed:", str(e))
+
             return response
 
         return Response({"error": "Invalid format requested"}, status=status.HTTP_400_BAD_REQUEST)
