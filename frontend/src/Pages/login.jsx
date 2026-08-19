@@ -63,6 +63,9 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
       <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-xl p-8 shadow-2xl">
         <div className="text-center mb-8">
+          <Link to="/" className="mb-5 inline-flex items-center text-sm font-medium text-slate-400 transition hover:text-emerald-400">
+            ← Back to Home
+          </Link>
           <h1 className="text-3xl font-bold text-white tracking-tight">BudgetBuddy</h1>
           <p className="text-slate-400 text-sm mt-2">Sign in to manage your financial dashboard</p>
         </div>

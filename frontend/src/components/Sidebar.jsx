@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
@@ -16,6 +16,7 @@ const navItems = [
 
 export default function Sidebar({ onLogout, notifications: sharedNotifications }) {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const username = user?.username || localStorage.getItem('budgetbuddy_username') || '';
 
@@ -41,6 +42,7 @@ export default function Sidebar({ onLogout, notifications: sharedNotifications }
     if (onLogout) {
       onLogout();
     }
+    navigate('/', { replace: true });
   };
 
   return (
