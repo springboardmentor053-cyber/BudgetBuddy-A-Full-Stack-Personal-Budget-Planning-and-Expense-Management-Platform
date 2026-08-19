@@ -146,13 +146,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "https://budgetbuddy-2-3k0o.onrender.com", 
-    '.onrender.com',
-    'localhost',
-    '127.0.0.1',
-]
+CORS_ALLOWED_ORIGINS = [*]
 CORS_ALLOW_CREDENTIALS = True
 
 
