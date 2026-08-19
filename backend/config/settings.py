@@ -1,5 +1,5 @@
 """
-Django settings for config project.
+Django settings for BudgetBuddy config project.
 Configured for local development & Render production deployment.
 """
 
@@ -15,18 +15,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load local environment variables if present
 load_dotenv(BASE_DIR / '.env')
 
-# Security Settings (Environment driven)
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-oe(zj&%ob0a6=)qg+$6^)xsr@!d2!qlv88p=rdt80zv)3i^ml9')
-
+# Security Settings
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-oe(zj&%ob0a6=)qg+^)xsr@!d2!qlv88p=rdt80zv)3i^ml9')
 DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
-# Allow Render domains, local testing, and custom hosts safely
 raw_hosts = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,.onrender.com')
 ALLOWED_HOSTS = [h.strip() for h in raw_hosts.split(',') if h.strip()]
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -46,9 +42,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # Must be first
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise for static files
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -76,7 +72,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # Database Configuration
 DATABASE_URL = os.getenv('DATABASE_URL')
 
@@ -85,7 +80,7 @@ if DATABASE_URL:
         'default': dj_database_url.config(
             default=DATABASE_URL,
             conn_max_age=600,
-            ssl_require=False  # Render Internal Database connections handle SSL automatically
+            ssl_require=False
         )
     }
 else:
@@ -96,7 +91,6 @@ else:
         }
     }
 
-
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -105,17 +99,15 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
 # Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = str(BASE_DIR / 'staticfiles')
 
 STORAGES = {
     "default": {
@@ -126,24 +118,16 @@ STORAGES = {
     },
 }
 
-
 # CORS Configuration
-FRONTEND_URL = os.getenv('FRONTEND_URL', '')
-
-# Allow all origins in production or during deployment to prevent CORS blockage
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
-
-# Custom User Model
+# Custom User Model & Backends
 AUTH_USER_MODEL = 'users.User'
-
-# Enables username-or-email authentication for SimpleJWT
 AUTHENTICATION_BACKENDS = [
     'users.authentication.UsernameOrEmailBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
-
 
 # REST Framework & JWT Configuration
 REST_FRAMEWORK = {
@@ -164,7 +148,6 @@ SIMPLE_JWT = {
     'SIGNING_KEY': SECRET_KEY,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
-
 
 # Email Settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
