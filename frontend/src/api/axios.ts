@@ -1,6 +1,11 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
-const API_BASE_URL = 'http://127.0.0.1:8000';
+// Bypass TS type checking for Vite's import.meta.env
+const env = (import.meta as any).env;
+
+const API_BASE_URL =
+  (env?.VITE_API_URL ? env.VITE_API_URL.replace(/\/api\/?$/, '') : '') ||
+  'https://budgetbuddy-a-full-stack-personal-budget-d2lr.onrender.com';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -8,7 +13,6 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
-
 const getStoredTokens = () => ({
   access: localStorage.getItem('access_token') || localStorage.getItem('budgetbuddy_token'),
   refresh: localStorage.getItem('refresh_token'),

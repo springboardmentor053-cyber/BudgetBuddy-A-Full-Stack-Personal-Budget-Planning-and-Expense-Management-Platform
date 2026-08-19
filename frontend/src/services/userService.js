@@ -35,3 +35,27 @@ export async function changePassword(passwordData) {
     throw new Error(getErrorMessage(error, 'Password change failed.'));
   }
 }
+export async function loginUser(credentials) {
+  try {
+    const response = await api.post('/api/auth/login/', credentials);
+    if (response.data.access) {
+      localStorage.setItem('access_token', response.data.access);
+      localStorage.setItem('budgetbuddy_token', response.data.access);
+    }
+    if (response.data.refresh) {
+      localStorage.setItem('refresh_token', response.data.refresh);
+    }
+    return response.data;
+  } catch (error) {
+    throw new Error(getErrorMessage(error, 'Invalid username or password.'));
+  }
+}
+
+export async function registerUser(userData) {
+  try {
+    const response = await api.post('/api/auth/register/', userData);
+    return response.data;
+  } catch (error) {
+    throw new Error(getErrorMessage(error, 'Registration failed. Please check your details.'));
+  }
+}
