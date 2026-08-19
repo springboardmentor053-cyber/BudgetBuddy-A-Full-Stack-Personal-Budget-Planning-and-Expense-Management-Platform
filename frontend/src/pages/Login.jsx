@@ -31,7 +31,11 @@ function Login() {
       localStorage.setItem('username', response.data.username || cleanUsername);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Cannot connect to backend server.');
+      if (err.response) {
+        setError(err.response.data?.detail || 'Login failed. Please check your username and password.');
+      } else {
+        setError(`Cannot connect to backend server. API: ${api.defaults.baseURL}`);
+      }
     }
   };
 
