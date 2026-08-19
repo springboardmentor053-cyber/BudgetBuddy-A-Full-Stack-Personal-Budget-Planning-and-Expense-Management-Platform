@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.http import JsonResponse
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
@@ -19,6 +20,7 @@ router.register(r'budgets', BudgetViewSet, basename='budget')
 router.register(r'notifications', NotificationViewSet, basename='notification')
 
 urlpatterns = [
+    path('', health_check, name='health-check'),
     path('admin/', admin.site.urls),
     path('api/auth/', include('users.urls')),
     path('api/ai-chat/', AIChatPortalView.as_view(), name='ai-chat'),

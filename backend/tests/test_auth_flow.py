@@ -12,6 +12,9 @@ class AuthFlowTests(APITestCase):
         login_url = reverse('login')
         profile_url = reverse('profile')
 
+        self.assertEqual(register_url, '/api/auth/register/')
+        self.assertEqual(login_url, '/api/auth/login/')
+
         payload = {
             'username': 'student1',
             'email': 'student1@example.com',
