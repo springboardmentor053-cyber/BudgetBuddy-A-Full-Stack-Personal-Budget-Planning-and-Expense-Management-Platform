@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-+g@kfmx@4t$4i9lqwh7mnhfqx1ub+vb)mfe@4w=am^9pm7e1zr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["budgetbuddy-a-full-stack-personal-budget-1hdo.onrender.com",]
+ALLOWED_HOSTS = ["budgetbuddy-a-full-stack-personal-budget-gtd5.onrender.com",]
 
 
 # Application definition
@@ -134,7 +134,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "https://YOUR-PROJECT.vercel.app",
+    "budget-buddy-a-full-stack-personal-chi.vercel.app",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
