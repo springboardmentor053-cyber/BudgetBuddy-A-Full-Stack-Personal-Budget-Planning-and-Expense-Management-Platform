@@ -105,6 +105,9 @@ CORS_ALLOW_HEADERS = [
     "origin",
     "x-csrftoken",
 ]
+CSRF_TRUSTED_ORIGINS = [
+    "https://budget-buddy-a-full-stack-personal.vercel.app",
+]
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
