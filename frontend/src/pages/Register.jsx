@@ -10,8 +10,6 @@ function Register() {
   const navigate = useNavigate();
 
   const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
-  const isStrongPassword = (value) =>
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(value);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -36,8 +34,8 @@ function Register() {
       return;
     }
 
-    if (!isStrongPassword(password)) {
-      setError('Password must be 8+ characters and include uppercase, lowercase, a number, and a symbol.');
+    if (!password) {
+      setError('Please enter a password.');
       return;
     }
 
@@ -202,13 +200,10 @@ function Register() {
             </label>
             <input
               type="password"
-              placeholder="Enter a strong password"
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              minLength={8}
-              pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$"
-              title="Use 8+ characters with uppercase, lowercase, a number, and a symbol."
               style={{
                 width: '100%',
                 padding: '12px',

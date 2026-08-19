@@ -18,8 +18,8 @@ function Login() {
       return;
     }
 
-    if (!password || password.length < 8) {
-      setError('Password must be at least 8 characters long.');
+    if (!password) {
+      setError('Please enter your password.');
       return;
     }
 
@@ -148,7 +148,6 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              minLength={8}
               style={{
                 width: '100%',
                 padding: '12px',
