@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import "./Budgets.css";
 
 function Budgets() {
-  const API = "http://127.0.0.1:8000/api/budgets/";
-  const SUMMARY_API =
-    "http://127.0.0.1:8000/api/budgets/summary/";
+  const API = "budgets/";
+  const SUMMARY_API = "budgets/summary/";
 
   const [budgets, setBudgets] = useState([]);
   const [summary, setSummary] = useState({});
@@ -52,11 +51,7 @@ function Budgets() {
         return;
       }
 
-      const response = await axios.get(API, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get(API);
 
       if (Array.isArray(response.data)) {
         setBudgets(response.data);
@@ -65,6 +60,7 @@ function Budgets() {
       } else {
         setBudgets([]);
       }
+
     } catch (error) {
       console.error("Budget Fetch Error:", error);
 
@@ -75,6 +71,7 @@ function Budgets() {
       } else {
         setError("Unable to load your budgets.");
       }
+
     } finally {
       setLoading(false);
     }
@@ -88,15 +85,15 @@ function Budgets() {
         return;
       }
 
-      const response = await axios.get(SUMMARY_API, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get(SUMMARY_API);
 
       setSummary(response.data);
+
     } catch (error) {
-      console.error("Budget Summary Error:", error);
+      console.error(
+        "Budget Summary Error:",
+        error
+      );
     }
   };
 
@@ -117,6 +114,7 @@ function Budgets() {
   // =====================================================
 
   const validateBudget = () => {
+
     if (!category) {
       return "Please select a budget category.";
     }
@@ -139,7 +137,10 @@ function Budgets() {
 
     const numericYear = Number(year);
 
-    if (numericYear < 2020 || numericYear > 2100) {
+    if (
+      numericYear < 2020 ||
+      numericYear > 2100
+    ) {
       return "Please enter a valid year.";
     }
 
@@ -151,12 +152,14 @@ function Budgets() {
   // =====================================================
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
 
     setError("");
     setSuccess("");
 
-    const validationError = validateBudget();
+    const validationError =
+      validateBudget();
 
     if (validationError) {
       setError(validationError);
@@ -182,15 +185,12 @@ function Budgets() {
     };
 
     try {
+
       if (editingBudget) {
-        const response = await axios.put(
+
+        const response = await api.put(
           `${API}${editingBudget.id}/`,
-          budgetData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          budgetData
         );
 
         setBudgets((currentBudgets) =>
@@ -201,69 +201,100 @@ function Budgets() {
           )
         );
 
-        setSuccess("Budget updated successfully!");
+        setSuccess(
+          "Budget updated successfully!"
+        );
 
         resetForm();
 
         await fetchBudgets();
         await fetchSummary();
+
       } else {
-        await axios.post(
+
+        await api.post(
           API,
-          budgetData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          budgetData
         );
 
-        setSuccess("Budget created successfully!");
+        setSuccess(
+          "Budget created successfully!"
+        );
 
         resetForm();
 
         await fetchBudgets();
         await fetchSummary();
       }
+
     } catch (error) {
-      console.error("Budget Save Error:", error);
+
+      console.error(
+        "Budget Save Error:",
+        error
+      );
+
       console.error(
         "Backend Response:",
         error.response?.data
       );
 
       if (error.response?.status === 400) {
-        const backendData = error.response.data;
 
-        if (typeof backendData === "object") {
-          const messages = Object.values(backendData)
-            .flat()
-            .join(" ");
+        const backendData =
+          error.response.data;
+
+        if (
+          typeof backendData ===
+          "object"
+        ) {
+
+          const messages =
+            Object.values(backendData)
+              .flat()
+              .join(" ");
 
           setError(
             messages ||
-              "Please check your budget details."
+            "Please check your budget details."
           );
+
         } else {
+
           setError(
             "Please check your budget details."
           );
         }
-      } else if (error.response?.status === 401) {
+
+      } else if (
+        error.response?.status === 401
+      ) {
+
         setError(
           "Your session has expired. Please login again."
         );
-      } else if (error.response?.status === 404) {
-        setError("Budget could not be found.");
+
+      } else if (
+        error.response?.status === 404
+      ) {
+
+        setError(
+          "Budget could not be found."
+        );
+
       } else {
+
         setError(
           editingBudget
             ? "Unable to update budget."
             : "Unable to create budget."
         );
       }
+
     } finally {
+
       setSubmitting(false);
+
     }
   };
 
@@ -272,12 +303,24 @@ function Budgets() {
   // =====================================================
 
   const handleEdit = (budget) => {
+
     setEditingBudget(budget);
 
-    setCategory(budget.category || "");
-    setBudgetAmount(budget.budget_amount || "");
-    setMonth(budget.month || "");
-    setYear(budget.year || "");
+    setCategory(
+      budget.category || ""
+    );
+
+    setBudgetAmount(
+      budget.budget_amount || ""
+    );
+
+    setMonth(
+      budget.month || ""
+    );
+
+    setYear(
+      budget.year || ""
+    );
 
     setError("");
     setSuccess("");
@@ -293,9 +336,11 @@ function Budgets() {
   // =====================================================
 
   const handleCancelEdit = () => {
+
     resetForm();
     setError("");
     setSuccess("");
+
   };
 
   // =====================================================
@@ -303,11 +348,13 @@ function Budgets() {
   // =====================================================
 
   const handleDelete = async (budget) => {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete the ${getCategoryName(
-        budget.category
-      )} budget for ${budget.month} ${budget.year}?`
-    );
+
+    const confirmed =
+      window.confirm(
+        `Are you sure you want to delete the ${getCategoryName(
+          budget.category
+        )} budget for ${budget.month} ${budget.year}?`
+      );
 
     if (!confirmed) {
       return;
@@ -323,22 +370,20 @@ function Budgets() {
     }
 
     try {
+
       setError("");
       setSuccess("");
 
-      await axios.delete(
-        `${API}${budget.id}/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      await api.delete(
+        `${API}${budget.id}/`
       );
 
-      setBudgets((currentBudgets) =>
-        currentBudgets.filter(
-          (item) => item.id !== budget.id
-        )
+      setBudgets(
+        (currentBudgets) =>
+          currentBudgets.filter(
+            (item) =>
+              item.id !== budget.id
+          )
       );
 
       if (
@@ -353,20 +398,35 @@ function Budgets() {
       );
 
       await fetchSummary();
+
     } catch (error) {
+
       console.error(
         "Budget Delete Error:",
         error
       );
 
-      if (error.response?.status === 401) {
+      if (
+        error.response?.status === 401
+      ) {
+
         setError(
           "Your session has expired. Please login again."
         );
-      } else if (error.response?.status === 404) {
-        setError("Budget could not be found.");
+
+      } else if (
+        error.response?.status === 404
+      ) {
+
+        setError(
+          "Budget could not be found."
+        );
+
       } else {
-        setError("Unable to delete budget.");
+
+        setError(
+          "Unable to delete budget."
+        );
       }
     }
   };
@@ -375,7 +435,10 @@ function Budgets() {
   // CATEGORY ICON
   // =====================================================
 
-  const getCategoryIcon = (categoryName) => {
+  const getCategoryIcon = (
+    categoryName
+  ) => {
+
     const icons = {
       FOOD: "🍔",
       TRANSPORT: "🚗",
@@ -389,7 +452,9 @@ function Budgets() {
     };
 
     return (
-      icons[categoryName?.toUpperCase()] || "📊"
+      icons[
+        categoryName?.toUpperCase()
+      ] || "📊"
     );
   };
 
@@ -397,7 +462,10 @@ function Budgets() {
   // CATEGORY NAME
   // =====================================================
 
-  const getCategoryName = (categoryName) => {
+  const getCategoryName = (
+    categoryName
+  ) => {
+
     if (!categoryName) {
       return "Other";
     }
@@ -407,7 +475,8 @@ function Budgets() {
       .replace(/_/g, " ")
       .replace(
         /\b\w/g,
-        (letter) => letter.toUpperCase()
+        (letter) =>
+          letter.toUpperCase()
       );
   };
 
@@ -416,7 +485,10 @@ function Budgets() {
   // =====================================================
 
   const formatMoney = (value) => {
-    return Number(value || 0).toLocaleString(
+
+    return Number(
+      value || 0
+    ).toLocaleString(
       "en-IN",
       {
         minimumFractionDigits: 2,
@@ -429,7 +501,10 @@ function Budgets() {
   // BUDGET STATUS
   // =====================================================
 
-  const getBudgetStatus = (budget) => {
+  const getBudgetStatus = (
+    budget
+  ) => {
+
     const amount = Number(
       budget.budget_amount || 0
     );
@@ -439,6 +514,7 @@ function Budgets() {
     );
 
     if (amount <= 0) {
+
       return {
         text: "No Budget",
         className: "status-neutral",
@@ -446,12 +522,14 @@ function Budgets() {
       };
     }
 
-    const percentage = Number(
-      budget.utilization_percentage ??
+    const percentage =
+      Number(
+        budget.utilization_percentage ??
         ((spent / amount) * 100)
-    );
+      );
 
     if (percentage >= 100) {
+
       return {
         text: "Budget Exceeded",
         className: "status-exceeded",
@@ -460,6 +538,7 @@ function Budgets() {
     }
 
     if (percentage >= 90) {
+
       return {
         text: "High Warning",
         className: "status-high",
@@ -468,6 +547,7 @@ function Budgets() {
     }
 
     if (percentage >= 80) {
+
       return {
         text: "Warning",
         className: "status-warning",
@@ -486,7 +566,10 @@ function Budgets() {
   // BUDGET ALERT MESSAGE
   // =====================================================
 
-  const getBudgetAlert = (budget) => {
+  const getBudgetAlert = (
+    budget
+  ) => {
+
     const amount = Number(
       budget.budget_amount || 0
     );
@@ -496,6 +579,7 @@ function Budgets() {
     );
 
     if (amount <= 0) {
+
       return {
         type: "neutral",
         icon: "ℹ️",
@@ -505,43 +589,51 @@ function Budgets() {
       };
     }
 
-    const percentage = Number(
-      budget.utilization_percentage ??
+    const percentage =
+      Number(
+        budget.utilization_percentage ??
         ((spent / amount) * 100)
-    );
+      );
 
-    const categoryName = getCategoryName(
-      budget.category
-    );
+    const categoryName =
+      getCategoryName(
+        budget.category
+      );
 
     if (percentage >= 100) {
+
       return {
         type: "exceeded",
         icon: "🚨",
         title: "Budget Exceeded",
-        message: `Your ${categoryName} budget has been exceeded.`,
+        message:
+          `Your ${categoryName} budget has been exceeded.`,
       };
     }
 
     if (percentage >= 90) {
+
       return {
         type: "high",
         icon: "🔶",
         title: "High Warning",
-        message: `You have used ${percentage.toFixed(
-          0
-        )}% of your ${categoryName} budget.`,
+        message:
+          `You have used ${percentage.toFixed(
+            0
+          )}% of your ${categoryName} budget.`,
       };
     }
 
     if (percentage >= 80) {
+
       return {
         type: "warning",
         icon: "⚠️",
         title: "Budget Warning",
-        message: `You have used ${percentage.toFixed(
-          0
-        )}% of your monthly ${categoryName} budget.`,
+        message:
+          `You have used ${percentage.toFixed(
+            0
+          )}% of your monthly ${categoryName} budget.`,
       };
     }
 
@@ -564,33 +656,46 @@ function Budgets() {
       {/* HEADER */}
 
       <div className="budget-header">
+
         <div>
+
           <span className="budget-eyebrow">
             📊 BUDGET PLANNER
           </span>
 
-          <h1>Budget Management</h1>
+          <h1>
+            Budget Management
+          </h1>
 
           <p>
             Plan your spending, monitor your limits,
             and stay in control of your finances.
           </p>
+
         </div>
+
       </div>
 
       {/* SUCCESS */}
 
       {success && (
+
         <div className="budget-alert success-alert">
+
           <span>✅</span>
+
           <p>{success}</p>
+
         </div>
+
       )}
 
       {/* ERROR */}
 
       {error && (
+
         <div className="budget-alert error-alert">
+
           <span>⚠️</span>
 
           <p>{error}</p>
@@ -604,7 +709,9 @@ function Budgets() {
           >
             Try Again
           </button>
+
         </div>
+
       )}
 
       {/* SUMMARY */}
@@ -612,12 +719,16 @@ function Budgets() {
       <div className="budget-summary">
 
         <div className="budget-summary-card total-budget-card">
+
           <div className="budget-summary-icon">
             📊
           </div>
 
           <div>
-            <span>Total Budget</span>
+
+            <span>
+              Total Budget
+            </span>
 
             <h2>
               ₹
@@ -629,16 +740,22 @@ function Budgets() {
             <small>
               Your planned spending
             </small>
+
           </div>
+
         </div>
 
         <div className="budget-summary-card expense-budget-card">
+
           <div className="budget-summary-icon">
             💸
           </div>
 
           <div>
-            <span>Total Expense</span>
+
+            <span>
+              Total Expense
+            </span>
 
             <h2>
               ₹
@@ -650,16 +767,22 @@ function Budgets() {
             <small>
               Total spending
             </small>
+
           </div>
+
         </div>
 
         <div className="budget-summary-card remaining-budget-card">
+
           <div className="budget-summary-icon">
             💰
           </div>
 
           <div>
-            <span>Remaining Budget</span>
+
+            <span>
+              Remaining Budget
+            </span>
 
             <h2
               className={
@@ -679,16 +802,22 @@ function Budgets() {
             <small>
               Available to spend
             </small>
+
           </div>
+
         </div>
 
         <div className="budget-summary-card overspent-budget-card">
+
           <div className="budget-summary-icon">
             ⚠️
           </div>
 
           <div>
-            <span>Overspent</span>
+
+            <span>
+              Overspent
+            </span>
 
             <h2>
               ₹
@@ -700,7 +829,9 @@ function Budgets() {
             <small>
               Amount over budget
             </small>
+
           </div>
+
         </div>
 
       </div>
@@ -712,27 +843,39 @@ function Budgets() {
         <div className="budget-form-header">
 
           <div>
+
             <span className="section-label">
+
               {editingBudget
                 ? "EDIT BUDGET"
                 : "NEW BUDGET"}
+
             </span>
 
             <h2>
+
               {editingBudget
                 ? "Update Budget"
                 : "Create Monthly Budget"}
+
             </h2>
 
             <p>
+
               {editingBudget
                 ? "Update your budget details below."
                 : "Set a spending limit for a category and keep your expenses under control."}
+
             </p>
+
           </div>
 
           <div className="form-header-icon">
-            {editingBudget ? "✏️" : "🎯"}
+
+            {editingBudget
+              ? "✏️"
+              : "🎯"}
+
           </div>
 
         </div>
@@ -745,7 +888,10 @@ function Budgets() {
           {/* CATEGORY */}
 
           <div className="budget-form-group">
-            <label>Budget Category</label>
+
+            <label>
+              Budget Category
+            </label>
 
             <div className="budget-input-wrapper">
 
@@ -756,10 +902,13 @@ function Budgets() {
               <select
                 value={category}
                 onChange={(e) =>
-                  setCategory(e.target.value)
+                  setCategory(
+                    e.target.value
+                  )
                 }
                 required
               >
+
                 <option value="">
                   Select category
                 </option>
@@ -799,15 +948,20 @@ function Budgets() {
                 <option value="OTHER">
                   📦 Other
                 </option>
+
               </select>
 
             </div>
+
           </div>
 
           {/* AMOUNT */}
 
           <div className="budget-form-group">
-            <label>Budget Amount</label>
+
+            <label>
+              Budget Amount
+            </label>
 
             <div className="money-input">
 
@@ -828,20 +982,27 @@ function Budgets() {
               />
 
             </div>
+
           </div>
 
           {/* MONTH */}
 
           <div className="budget-form-group">
-            <label>Month</label>
+
+            <label>
+              Month
+            </label>
 
             <select
               value={month}
               onChange={(e) =>
-                setMonth(e.target.value)
+                setMonth(
+                  e.target.value
+                )
               }
               required
             >
+
               <option value="">
                 Select month
               </option>
@@ -859,21 +1020,30 @@ function Budgets() {
                 "October",
                 "November",
                 "December",
-              ].map((monthName) => (
-                <option
-                  key={monthName}
-                  value={monthName}
-                >
-                  {monthName}
-                </option>
-              ))}
+              ].map(
+                (monthName) => (
+
+                  <option
+                    key={monthName}
+                    value={monthName}
+                  >
+                    {monthName}
+                  </option>
+
+                )
+              )}
+
             </select>
+
           </div>
 
           {/* YEAR */}
 
           <div className="budget-form-group">
-            <label>Year</label>
+
+            <label>
+              Year
+            </label>
 
             <input
               type="number"
@@ -882,10 +1052,13 @@ function Budgets() {
               placeholder="2026"
               value={year}
               onChange={(e) =>
-                setYear(e.target.value)
+                setYear(
+                  e.target.value
+                )
               }
               required
             />
+
           </div>
 
           {/* BUTTONS */}
@@ -897,14 +1070,17 @@ function Budgets() {
               className="create-budget-button"
               disabled={submitting}
             >
+
               {submitting
                 ? "Saving..."
                 : editingBudget
                 ? "✏️ Update Budget"
                 : "＋ Create Budget"}
+
             </button>
 
             {editingBudget && (
+
               <button
                 type="button"
                 className="cancel-budget-button"
@@ -912,11 +1088,13 @@ function Budgets() {
               >
                 Cancel
               </button>
+
             )}
 
           </div>
 
         </form>
+
       </div>
 
       {/* BUDGET OVERVIEW */}
@@ -926,26 +1104,36 @@ function Budgets() {
         <div className="budgets-list-header">
 
           <div>
+
             <span className="section-label">
               BUDGET OVERVIEW
             </span>
 
-            <h2>Your Budgets</h2>
+            <h2>
+              Your Budgets
+            </h2>
 
             <p>
               Monitor how you're using each
               spending limit.
             </p>
+
           </div>
 
           <div className="budget-count">
-            <strong>{budgets.length}</strong>
+
+            <strong>
+              {budgets.length}
+            </strong>
 
             <span>
+
               {budgets.length === 1
                 ? "Budget"
                 : "Budgets"}
+
             </span>
+
           </div>
 
         </div>
@@ -953,6 +1141,7 @@ function Budgets() {
         {/* LOADING */}
 
         {loading && (
+
           <div className="budget-empty-state">
 
             <div className="budget-loading-spinner"></div>
@@ -966,6 +1155,7 @@ function Budgets() {
             </p>
 
           </div>
+
         )}
 
         {/* EMPTY */}
@@ -973,6 +1163,7 @@ function Budgets() {
         {!loading &&
           !error &&
           budgets.length === 0 && (
+
             <div className="budget-empty-state">
 
               <div className="budget-empty-icon">
@@ -989,6 +1180,7 @@ function Budgets() {
               </p>
 
             </div>
+
           )}
 
         {/* LIST */}
@@ -998,212 +1190,260 @@ function Budgets() {
 
             <div className="budget-list">
 
-              {budgets.map((budget) => {
+              {budgets.map(
+                (budget) => {
 
-                const budgetValue = Number(
-                  budget.budget_amount || 0
-                );
+                  const budgetValue =
+                    Number(
+                      budget.budget_amount ||
+                      0
+                    );
 
-                const spent = Number(
-                  budget.spent || 0
-                );
+                  const spent =
+                    Number(
+                      budget.spent || 0
+                    );
 
-                const remaining = Number(
-                  budget.remaining ??
-                    budgetValue - spent
-                );
+                  const remaining =
+                    Number(
+                      budget.remaining ??
+                      budgetValue -
+                      spent
+                    );
 
-                const utilization = Number(
-                  budget.utilization_percentage ??
-                    (
-                      budgetValue > 0
-                        ? (spent / budgetValue) * 100
-                        : 0
-                    )
-                );
+                  const utilization =
+                    Number(
+                      budget.utilization_percentage ??
+                      (
+                        budgetValue > 0
+                          ? (
+                            spent /
+                            budgetValue
+                          ) * 100
+                          : 0
+                      )
+                    );
 
-                const status =
-                  getBudgetStatus(budget);
+                  const status =
+                    getBudgetStatus(
+                      budget
+                    );
 
-                const alert =
-                  getBudgetAlert(budget);
+                  const alert =
+                    getBudgetAlert(
+                      budget
+                    );
 
-                return (
-                  <div
-                    className="budget-item"
-                    key={budget.id}
-                  >
+                  return (
 
-                    {/* TOP */}
+                    <div
+                      className="budget-item"
+                      key={budget.id}
+                    >
 
-                    <div className="budget-item-top">
+                      {/* TOP */}
 
-                      <div className="budget-title">
+                      <div className="budget-item-top">
 
-                        <div className="budget-category-icon">
-                          {getCategoryIcon(
-                            budget.category
-                          )}
+                        <div className="budget-title">
+
+                          <div className="budget-category-icon">
+
+                            {getCategoryIcon(
+                              budget.category
+                            )}
+
+                          </div>
+
+                          <div>
+
+                            <h3>
+
+                              {getCategoryName(
+                                budget.category
+                              )}
+
+                            </h3>
+
+                            <p>
+
+                              {budget.month}{" "}
+                              {budget.year}
+
+                            </p>
+
+                          </div>
+
+                        </div>
+
+                        {/* STATUS + ACTIONS */}
+
+                        <div className="budget-item-actions">
+
+                          <span
+                            className={`budget-status ${status.className}`}
+                          >
+
+                            {status.icon}{" "}
+                            {status.text}
+
+                          </span>
+
+                          <button
+                            type="button"
+                            className="budget-edit-button"
+                            onClick={() =>
+                              handleEdit(
+                                budget
+                              )
+                            }
+                            title="Edit Budget"
+                          >
+                            ✏️
+                          </button>
+
+                          <button
+                            type="button"
+                            className="budget-delete-button"
+                            onClick={() =>
+                              handleDelete(
+                                budget
+                              )
+                            }
+                            title="Delete Budget"
+                          >
+                            🗑️
+                          </button>
+
+                        </div>
+
+                      </div>
+
+                      {/* AMOUNTS */}
+
+                      <div className="budget-amount-row">
+
+                        <div>
+
+                          <span>
+                            Budget
+                          </span>
+
+                          <strong>
+
+                            ₹
+                            {formatMoney(
+                              budgetValue
+                            )}
+
+                          </strong>
+
                         </div>
 
                         <div>
 
-                          <h3>
-                            {getCategoryName(
-                              budget.category
+                          <span>
+                            Spent
+                          </span>
+
+                          <strong className="spent-value">
+
+                            ₹
+                            {formatMoney(
+                              spent
                             )}
-                          </h3>
+
+                          </strong>
+
+                        </div>
+
+                        <div>
+
+                          <span>
+                            Remaining
+                          </span>
+
+                          <strong
+                            className={
+                              remaining < 0
+                                ? "negative-value"
+                                : "remaining-value"
+                            }
+                          >
+
+                            ₹
+                            {formatMoney(
+                              remaining
+                            )}
+
+                          </strong>
+
+                        </div>
+
+                      </div>
+
+                      {/* PROGRESS */}
+
+                      <div className="budget-progress-section">
+
+                        <div className="budget-progress-header">
+
+                          <span>
+                            Budget utilization
+                          </span>
+
+                          <strong>
+                            {utilization.toFixed(
+                              0
+                            )}%
+                          </strong>
+
+                        </div>
+
+                        <div className="budget-progress">
+
+                          <div
+                            className={`budget-progress-fill ${status.className}`}
+                            style={{
+                              width: `${Math.min(
+                                utilization,
+                                100
+                              )}%`,
+                            }}
+                          ></div>
+
+                        </div>
+
+                      </div>
+
+                      {/* BUDGET ALERT */}
+
+                      <div
+                        className={`budget-alert-box ${alert.type}`}
+                      >
+
+                        <div className="budget-alert-icon">
+                          {alert.icon}
+                        </div>
+
+                        <div className="budget-alert-content">
+
+                          <strong>
+                            {alert.title}
+                          </strong>
 
                           <p>
-                            {budget.month}{" "}
-                            {budget.year}
+                            {alert.message}
                           </p>
 
                         </div>
 
                       </div>
 
-                      {/* STATUS + ACTIONS */}
-
-                      <div className="budget-item-actions">
-
-                        <span
-                          className={`budget-status ${status.className}`}
-                        >
-                          {status.icon}{" "}
-                          {status.text}
-                        </span>
-
-                        <button
-                          type="button"
-                          className="budget-edit-button"
-                          onClick={() =>
-                            handleEdit(budget)
-                          }
-                          title="Edit Budget"
-                        >
-                          ✏️
-                        </button>
-
-                        <button
-                          type="button"
-                          className="budget-delete-button"
-                          onClick={() =>
-                            handleDelete(budget)
-                          }
-                          title="Delete Budget"
-                        >
-                          🗑️
-                        </button>
-
-                      </div>
-
                     </div>
-
-                    {/* AMOUNTS */}
-
-                    <div className="budget-amount-row">
-
-                      <div>
-                        <span>Budget</span>
-
-                        <strong>
-                          ₹
-                          {formatMoney(
-                            budgetValue
-                          )}
-                        </strong>
-                      </div>
-
-                      <div>
-                        <span>Spent</span>
-
-                        <strong className="spent-value">
-                          ₹
-                          {formatMoney(
-                            spent
-                          )}
-                        </strong>
-                      </div>
-
-                      <div>
-                        <span>Remaining</span>
-
-                        <strong
-                          className={
-                            remaining < 0
-                              ? "negative-value"
-                              : "remaining-value"
-                          }
-                        >
-                          ₹
-                          {formatMoney(
-                            remaining
-                          )}
-                        </strong>
-                      </div>
-
-                    </div>
-
-                    {/* PROGRESS */}
-
-                    <div className="budget-progress-section">
-
-                      <div className="budget-progress-header">
-
-                        <span>
-                          Budget utilization
-                        </span>
-
-                        <strong>
-                          {utilization.toFixed(0)}%
-                        </strong>
-
-                      </div>
-
-                      <div className="budget-progress">
-
-                        <div
-                          className={`budget-progress-fill ${status.className}`}
-                          style={{
-                            width: `${Math.min(
-                              utilization,
-                              100
-                            )}%`,
-                          }}
-                        ></div>
-
-                      </div>
-
-                    </div>
-
-                    {/* BUDGET ALERT */}
-
-                    <div
-                      className={`budget-alert-box ${alert.type}`}
-                    >
-
-                      <div className="budget-alert-icon">
-                        {alert.icon}
-                      </div>
-
-                      <div className="budget-alert-content">
-
-                        <strong>
-                          {alert.title}
-                        </strong>
-
-                        <p>
-                          {alert.message}
-                        </p>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-                );
-              })}
+                  );
+                }
+              )}
 
             </div>
           )}

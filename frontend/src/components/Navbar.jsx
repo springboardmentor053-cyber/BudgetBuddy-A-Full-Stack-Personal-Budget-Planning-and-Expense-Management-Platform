@@ -12,8 +12,7 @@ function Navbar() {
 
   const token = localStorage.getItem("access");
 
-  const API = "http://127.0.0.1:8000/api/notifications/";
-
+ const API = "https://budgetbuddy-backend-l9tv.onrender.com/api/notifications/";
   // =========================================================
   // FETCH NOTIFICATIONS
   // =========================================================

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import "./Income.css";
 
 function Income() {
@@ -25,7 +25,7 @@ function Income() {
 
   // ================= API =================
 
-  const API_URL = "http://127.0.0.1:8000/api/income/";
+  const API_URL = "income/";
 
   // ================= FETCH INCOME =================
 
@@ -45,11 +45,7 @@ function Income() {
         return;
       }
 
-      const response = await axios.get(API_URL, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await api.get(API_URL);
 
       if (Array.isArray(response.data)) {
         setIncomes(response.data);
@@ -110,19 +106,16 @@ function Income() {
       // ================= UPDATE =================
 
       if (editingIncome) {
-        const response = await axios.put(
+        const response = await api.put(
           `${API_URL}${editingIncome.id}/`,
-          incomeData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          incomeData
         );
 
         setIncomes(
           incomes.map((income) =>
-            income.id === editingIncome.id ? response.data : income
+            income.id === editingIncome.id
+              ? response.data
+              : income
           )
         );
 
@@ -132,13 +125,15 @@ function Income() {
       // ================= ADD =================
 
       else {
-        const response = await axios.post(API_URL, incomeData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await api.post(
+          API_URL,
+          incomeData
+        );
 
-        setIncomes([response.data, ...incomes]);
+        setIncomes([
+          response.data,
+          ...incomes,
+        ]);
 
         setSuccess("Income added successfully!");
       }
@@ -149,11 +144,15 @@ function Income() {
         top: 0,
         behavior: "smooth",
       });
+
     } catch (error) {
       console.error("Income Submit Error:", error);
 
       if (error.response?.data) {
-        console.error("Backend Error:", error.response.data);
+        console.error(
+          "Backend Error:",
+          error.response.data
+        );
       }
 
       setError(
@@ -161,6 +160,7 @@ function Income() {
           ? "Unable to update income. Please check your details."
           : "Unable to add income. Please check your details."
       );
+
     } finally {
       setSubmitting(false);
     }
@@ -200,14 +200,19 @@ function Income() {
     try {
       const token = localStorage.getItem("access");
 
-      await axios.delete(`${API_URL}${incomeId}/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      if (!token) {
+        setError("Please login before deleting income.");
+        return;
+      }
+
+      await api.delete(
+        `${API_URL}${incomeId}/`
+      );
 
       setIncomes(
-        incomes.filter((income) => income.id !== incomeId)
+        incomes.filter(
+          (income) => income.id !== incomeId
+        )
       );
 
       if (
@@ -217,12 +222,20 @@ function Income() {
         clearForm();
       }
 
-      setSuccess("Income deleted successfully!");
+      setSuccess(
+        "Income deleted successfully!"
+      );
       setError("");
-    } catch (error) {
-      console.error("Delete Income Error:", error);
 
-      setError("Unable to delete income.");
+    } catch (error) {
+      console.error(
+        "Delete Income Error:",
+        error
+      );
+
+      setError(
+        "Unable to delete income."
+      );
       setSuccess("");
     }
   };
@@ -238,12 +251,15 @@ function Income() {
   // ================= CALCULATIONS =================
 
   const totalIncome = incomes.reduce(
-    (total, income) => total + Number(income.amount || 0),
+    (total, income) =>
+      total + Number(income.amount || 0),
     0
   );
 
   const averageIncome =
-    incomes.length > 0 ? totalIncome / incomes.length : 0;
+    incomes.length > 0
+      ? totalIncome / incomes.length
+      : 0;
 
   // ================= SOURCE ICON =================
 
@@ -299,26 +315,31 @@ function Income() {
       <div className="income-header">
 
         <div>
+
           <span className="income-eyebrow">
             💰 INCOME TRACKER
           </span>
 
-          <h1>Income Management</h1>
+          <h1>
+            Income Management
+          </h1>
 
           <p>
-            Track, organize, and manage all your income sources
-            in one place.
+            Track, organize, and manage all
+            your income sources in one place.
           </p>
+
         </div>
 
       </div>
-
 
       {/* ================= SUCCESS ================= */}
 
       {success && (
         <div className="income-alert success-alert">
+
           <span>✅</span>
+
           <p>{success}</p>
 
           <button
@@ -326,15 +347,17 @@ function Income() {
           >
             ×
           </button>
+
         </div>
       )}
-
 
       {/* ================= ERROR ================= */}
 
       {error && (
         <div className="income-alert error-alert">
+
           <span>⚠️</span>
+
           <p>{error}</p>
 
           <button
@@ -342,9 +365,9 @@ function Income() {
           >
             ×
           </button>
+
         </div>
       )}
-
 
       {/* ================= SUMMARY ================= */}
 
@@ -357,22 +380,29 @@ function Income() {
           </div>
 
           <div className="income-summary-content">
-            <span>Total Income</span>
+
+            <span>
+              Total Income
+            </span>
 
             <h2>
-              ₹{totalIncome.toLocaleString("en-IN", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
+              ₹
+              {totalIncome.toLocaleString(
+                "en-IN",
+                {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }
+              )}
             </h2>
 
             <small>
               Across all income records
             </small>
+
           </div>
 
         </div>
-
 
         <div className="income-summary-card records-card">
 
@@ -381,17 +411,22 @@ function Income() {
           </div>
 
           <div className="income-summary-content">
-            <span>Income Records</span>
 
-            <h2>{incomes.length}</h2>
+            <span>
+              Income Records
+            </span>
+
+            <h2>
+              {incomes.length}
+            </h2>
 
             <small>
               Total transactions
             </small>
+
           </div>
 
         </div>
-
 
         <div className="income-summary-card average-card">
 
@@ -400,24 +435,31 @@ function Income() {
           </div>
 
           <div className="income-summary-content">
-            <span>Average Income</span>
+
+            <span>
+              Average Income
+            </span>
 
             <h2>
-              ₹{averageIncome.toLocaleString("en-IN", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
+              ₹
+              {averageIncome.toLocaleString(
+                "en-IN",
+                {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }
+              )}
             </h2>
 
             <small>
               Per income record
             </small>
+
           </div>
 
         </div>
 
       </div>
-
 
       {/* ================= FORM ================= */}
 
@@ -430,6 +472,7 @@ function Income() {
           </div>
 
           <div>
+
             <span className="section-label">
               {editingIncome
                 ? "EDIT TRANSACTION"
@@ -447,10 +490,10 @@ function Income() {
                 ? "Update the details of your income below."
                 : "Record a new source of income to keep your finances organized."}
             </p>
+
           </div>
 
         </div>
-
 
         <form
           onSubmit={handleSubmit}
@@ -484,7 +527,6 @@ function Income() {
             </div>
 
           </div>
-
 
           {/* SOURCE */}
 
@@ -538,7 +580,6 @@ function Income() {
 
           </div>
 
-
           {/* AMOUNT */}
 
           <div className="income-form-group">
@@ -567,7 +608,6 @@ function Income() {
 
           </div>
 
-
           {/* DATE */}
 
           <div className="income-form-group">
@@ -588,7 +628,6 @@ function Income() {
 
           </div>
 
-
           {/* DESCRIPTION */}
 
           <div className="income-form-group income-full-width">
@@ -608,7 +647,6 @@ function Income() {
 
           </div>
 
-
           {/* BUTTONS */}
 
           <div className="income-form-actions">
@@ -627,8 +665,8 @@ function Income() {
 
             </button>
 
-
             {editingIncome && (
+
               <button
                 type="button"
                 className="income-cancel-button"
@@ -636,6 +674,7 @@ function Income() {
               >
                 Cancel Edit
               </button>
+
             )}
 
           </div>
@@ -643,7 +682,6 @@ function Income() {
         </form>
 
       </div>
-
 
       {/* ================= INCOME LIST ================= */}
 
@@ -667,7 +705,6 @@ function Income() {
 
           </div>
 
-
           <div className="income-count">
 
             <strong>
@@ -682,7 +719,6 @@ function Income() {
 
         </div>
 
-
         {/* ================= LOADING ================= */}
 
         {loading && (
@@ -696,13 +732,13 @@ function Income() {
             </h3>
 
             <p>
-              Please wait while we fetch your income records.
+              Please wait while we fetch
+              your income records.
             </p>
 
           </div>
 
         )}
-
 
         {/* ================= ERROR ================= */}
 
@@ -719,7 +755,8 @@ function Income() {
             </h3>
 
             <p>
-              Something went wrong while loading your income.
+              Something went wrong while
+              loading your income.
             </p>
 
             <button
@@ -732,7 +769,6 @@ function Income() {
           </div>
 
         )}
-
 
         {/* ================= EMPTY ================= */}
 
@@ -751,14 +787,13 @@ function Income() {
               </h3>
 
               <p>
-                Start tracking your finances by adding
-                your first income above.
+                Start tracking your finances
+                by adding your first income above.
               </p>
 
             </div>
 
           )}
-
 
         {/* ================= INCOME LIST ================= */}
 
@@ -778,9 +813,10 @@ function Income() {
                   {/* ICON */}
 
                   <div className="income-item-icon">
-                    {getSourceIcon(income.source)}
+                    {getSourceIcon(
+                      income.source
+                    )}
                   </div>
-
 
                   {/* DETAILS */}
 
@@ -791,7 +827,9 @@ function Income() {
                     </h3>
 
                     <span className="income-source-badge">
-                      {getSourceName(income.source)}
+                      {getSourceName(
+                        income.source
+                      )}
                     </span>
 
                     {income.description && (
@@ -802,7 +840,6 @@ function Income() {
 
                   </div>
 
-
                   {/* DATE */}
 
                   <div className="income-item-date">
@@ -812,11 +849,12 @@ function Income() {
                     </span>
 
                     <strong>
-                      {formatDate(income.income_date)}
+                      {formatDate(
+                        income.income_date
+                      )}
                     </strong>
 
                   </div>
-
 
                   {/* AMOUNT */}
 
@@ -827,16 +865,19 @@ function Income() {
                     </span>
 
                     <strong>
-                      +₹{Number(
+                      +₹
+                      {Number(
                         income.amount
-                      ).toLocaleString("en-IN", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      ).toLocaleString(
+                        "en-IN",
+                        {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }
+                      )}
                     </strong>
 
                   </div>
-
 
                   {/* ACTIONS */}
 

@@ -9,7 +9,7 @@ function Notifications() {
   // =====================================================
 
   const API =
-    "http://127.0.0.1:8000/api/notifications/";
+    "https://budgetbuddy-backend-l9tv.onrender.com/api/notifications/";
 
   // =====================================================
   // STATE

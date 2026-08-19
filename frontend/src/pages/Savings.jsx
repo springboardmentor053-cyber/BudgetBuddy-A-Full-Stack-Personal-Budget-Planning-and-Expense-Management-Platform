@@ -8,7 +8,7 @@ function Savings() {
   // API
   // =====================================================
 
-  const API = "http://127.0.0.1:8000/api/savings/";
+  const API = "https://budgetbuddy-backend-l9tv.onrender.com/api/savings/";
 
   // =====================================================
   // STATE

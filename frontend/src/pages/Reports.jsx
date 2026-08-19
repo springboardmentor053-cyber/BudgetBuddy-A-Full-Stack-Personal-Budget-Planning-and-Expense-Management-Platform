@@ -63,33 +63,33 @@ function Reports() {
       ] = await Promise.all([
 
         axios.get(
-          "http://127.0.0.1:8000/api/reports/monthly-report/?month=8&year=2026",
+          "https://budgetbuddy-backend-l9tv.onrender.com/api/reports/monthly-report/?month=8&year=2026",
           { headers }
         ),
 
         axios.get(
-          "http://127.0.0.1:8000/api/reports/expense-report/?filter=current_month",
+          "https://budgetbuddy-backend-l9tv.onrender.com/api/reports/expense-report/?filter=current_month",
           { headers }
         ),
 
         axios.get(
-          "http://127.0.0.1:8000/api/reports/savings-report/",
+          "https://budgetbuddy-backend-l9tv.onrender.com/api/reports/savings-report/",
           { headers }
         ),
 
         axios.get(
-          "http://127.0.0.1:8000/api/reports/financial-summary-report/",
+          "https://budgetbuddy-backend-l9tv.onrender.com/api/reports/financial-summary-report/",
           { headers }
         ),
 
         axios.get(
-          "http://127.0.0.1:8000/api/analytics/dashboard/",
+          "https://budgetbuddy-backend-l9tv.onrender.com/api/analytics/dashboard/",
           { headers }
         ),
 
         // NEW: Get ALL expenses
         axios.get(
-          "http://127.0.0.1:8000/api/expenses/",
+          "https://budgetbuddy-backend-l9tv.onrender.com/api/expenses/",
           { headers }
         ),
 

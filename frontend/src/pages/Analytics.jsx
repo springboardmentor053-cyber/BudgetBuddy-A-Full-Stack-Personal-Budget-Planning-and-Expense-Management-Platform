@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+  import { useEffect, useState } from "react";
 import axios from "axios";
 
 import {
@@ -22,9 +22,8 @@ import "./Analytics.css";
 
 function Analytics() {
 
-  const API =
-    "http://127.0.0.1:8000/api/analytics/dashboard/";
-
+ const API =
+  "https://budgetbuddy-backend-l9tv.onrender.com/api/analytics/dashboard/";
 
   // =====================================================
   // STATE
@@ -398,7 +397,7 @@ function Analytics() {
     {
       name: "Income",
 
-      amount:
+    amount:
         Number(
           summary.total_income || 0
         ),

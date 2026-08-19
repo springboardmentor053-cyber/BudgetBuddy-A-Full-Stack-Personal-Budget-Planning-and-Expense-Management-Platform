@@ -1,6 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import api from "../services/api";
 import "./Register.css";
 
 function Register() {
@@ -48,8 +48,8 @@ function Register() {
 
       setLoading(true);
 
-      await axios.post(
-        "http://127.0.0.1:8000/api/users/register/",
+      await api.post(
+        "users/register/",
         {
           username: formData.username,
           email: formData.email,

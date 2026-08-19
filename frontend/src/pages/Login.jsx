@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../services/api";
 import "./Login.css";
 
 function Login() {
@@ -24,8 +24,8 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/token/",
+      const response = await api.post(
+        "token/",
         {
           username,
           password,
@@ -84,7 +84,6 @@ function Login() {
           💰
         </div>
 
-
         {/* =================================================
             HEADING
         ================================================= */}
@@ -96,7 +95,6 @@ function Login() {
         <p className="login-subtitle">
           Login to manage your finances with BudgetBuddy.
         </p>
-
 
         {/* =================================================
             LOGIN FORM
@@ -125,7 +123,6 @@ function Login() {
             />
 
           </div>
-
 
           {/* =================================================
               PASSWORD
@@ -171,7 +168,6 @@ function Login() {
 
           </div>
 
-
           {/* =================================================
               ERROR MESSAGE
           ================================================= */}
@@ -181,7 +177,6 @@ function Login() {
               ⚠️ {error}
             </p>
           )}
-
 
           {/* =================================================
               LOGIN BUTTON
@@ -198,7 +193,6 @@ function Login() {
           </button>
 
         </form>
-
 
         {/* =================================================
             REGISTER LINK
@@ -234,7 +228,6 @@ function Login() {
           </button>
 
         </div>
-
 
         {/* =================================================
             SECURITY
