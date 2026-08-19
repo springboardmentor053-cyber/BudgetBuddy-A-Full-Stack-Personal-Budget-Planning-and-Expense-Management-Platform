@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api/axios';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -46,13 +46,13 @@ export default function Register() {
     setLoading(true);
 
     try {
-      await axios.post('http://localhost:8000/api/auth/register/', {
+      await api.post('/api/auth/register/', {
         username: formData.username,
         email: formData.email,
         password: formData.password,
         password_confirm: formData.confirmPassword,
       });
-      navigate('/');
+      navigate('/login');
     } catch (err) {
       setError(getValidationError(err.response?.data));
     } finally {
@@ -149,7 +149,7 @@ export default function Register() {
 
         <div className="mt-6 text-center text-sm text-slate-400">
           Already have an account?{' '}
-          <Link to="/" className="text-emerald-400 hover:underline font-medium">
+          <Link to="/login" className="text-emerald-400 hover:underline font-medium">
             Sign In
           </Link>
         </div>
