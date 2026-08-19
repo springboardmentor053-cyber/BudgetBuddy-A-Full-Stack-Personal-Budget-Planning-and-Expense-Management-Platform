@@ -16,7 +16,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
 
 # Security Settings
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-oe(zj&%ob0a6=)qg+^)xsr@!d2!qlv88p=rdt80zv)3i^ml9')
+# ``os.getenv(..., default)`` does not use the default when the environment
+# variable is present but empty. Keep a non-empty signing key for local and
+# misconfigured deployments; production should still provide its own secret.
+SECRET_KEY = os.getenv('SECRET_KEY') or 'django-insecure-oe(zj&%ob0a6=)qg+^)xsr@!d2!qlv88p=rdt80zv)3i^ml9'
 DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
 raw_hosts = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,.onrender.com')

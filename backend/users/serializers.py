@@ -26,20 +26,24 @@ class IncomeSerializer(serializers.ModelSerializer):
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, min_length=8)
-    password_confirm = serializers.CharField(write_only=True, min_length=8)
+    password = serializers.CharField(write_only=True, required=True, min_length=8)
+    password_confirm = serializers.CharField(write_only=True, required=False, min_length=8)
+    confirmPassword = serializers.CharField(write_only=True, required=False, min_length=8)
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'password_confirm', 'role')
+        fields = ('id', 'username', 'email', 'password', 'password_confirm', 'confirmPassword', 'role')
+        read_only_fields = ('id',)
 
     def validate(self, attrs):
-        if attrs['password'] != attrs['password_confirm']:
+        password_confirmation = attrs.pop('confirmPassword', None) or attrs.get('password_confirm')
+        if password_confirmation and attrs.get('password') != password_confirmation:
             raise serializers.ValidationError({'password_confirm': 'Passwords do not match.'})
         return attrs
 
     def create(self, validated_data):
         validated_data.pop('password_confirm', None)
+        validated_data.pop('confirmPassword', None)
         password = validated_data.pop('password')
         user = User.objects.create_user(password=password, **validated_data)
         return user
@@ -76,14 +80,24 @@ class UserTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        token['role'] = user.role
-        token['username'] = user.username
+        # These claims are optional metadata. Never let an absent custom
+        # attribute prevent SimpleJWT from issuing an otherwise valid token.
+        try:
+            token['role'] = getattr(user, 'role', None) or ''
+            token['username'] = getattr(user, 'username', None) or ''
+        except (AttributeError, TypeError, ValueError):
+            pass
         return token
 
     def validate(self, attrs):
         # The public API retains SimpleJWT's conventional `username` key.
         # Its value may be a username or an email address.
-        identifier = attrs.get(self.username_field, '').strip()
+        identifier = attrs.get(self.username_field)
+        if not isinstance(identifier, str) or not identifier.strip():
+            # Preserve SimpleJWT's standard invalid-credentials response.
+            return super().validate(attrs)
+
+        identifier = identifier.strip()
         user = User.objects.filter(username__iexact=identifier).first()
         if user is None:
             user = User.objects.filter(email__iexact=identifier).first()
@@ -96,12 +110,13 @@ class UserTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         # Map an email identifier to the canonical username before SimpleJWT
         # calls Django's authentication backend and checks the password.
-        attrs[self.username_field] = user.get_username()
+        attrs[self.username_field] = user.get_username() or identifier
         data = super().validate(attrs)
+        authenticated_user = getattr(self, 'user', None)
         data['user'] = {
-            'id': self.user.id,
-            'username': self.user.username,
-            'email': self.user.email,
-            'role': self.user.role,
+            'id': getattr(authenticated_user, 'id', None),
+            'username': getattr(authenticated_user, 'username', None) or '',
+            'email': getattr(authenticated_user, 'email', None) or '',
+            'role': getattr(authenticated_user, 'role', None) or '',
         }
         return data

@@ -2,7 +2,6 @@ import threading
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.mail import send_mail
 from django.db.models import Sum
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.permissions import IsAuthenticated
@@ -25,12 +24,14 @@ User = get_user_model()
 
 
 def send_welcome_email(user):
-    """Sends a welcome email asynchronously to the registered user's email address."""
-    if not user.email:
+    """Queue welcome email delivery without ever affecting registration."""
+    if not getattr(user, 'email', None):
         return
 
     def _send():
         try:
+            from django.core.mail import send_mail
+
             subject = "Welcome to BudgetBuddy!"
             message = (
                 f"Hi {user.username},\n\n"
@@ -42,21 +43,24 @@ def send_welcome_email(user):
             send_mail(
                 subject=subject,
                 message=message,
-                from_email=settings.EMAIL_HOST_USER,
+                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', None),
                 recipient_list=[user.email],
-                fail_silently=False,
+                fail_silently=True,
             )
-            print(f"[EMAIL] Welcome email successfully sent to {user.email}")
-        except Exception as e:
-            print(f"[EMAIL ERROR] Failed to send welcome email to {user.email}: {str(e)}")
+        except Exception as exc:
+            print(f"[EMAIL ERROR] Failed to send welcome email: {exc}")
 
-    threading.Thread(target=_send).start()
+    try:
+        threading.Thread(target=_send, daemon=True).start()
+    except Exception as exc:
+        print(f"[EMAIL ERROR] Failed to queue welcome email: {exc}")
 
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserRegistrationSerializer
     permission_classes = [permissions.AllowAny]
+    authentication_classes = []
 
     def perform_create(self, serializer):
         user = serializer.save()
@@ -65,6 +69,8 @@ class RegisterView(generics.CreateAPIView):
 
 class LoginView(TokenObtainPairView):
     serializer_class = UserTokenObtainPairSerializer
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []
 
 
 class TokenRefreshView(SimpleJWTTokenRefreshView):

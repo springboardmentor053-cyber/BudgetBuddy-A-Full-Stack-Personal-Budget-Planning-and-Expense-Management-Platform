@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.test import RequestFactory
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -7,6 +8,16 @@ User = get_user_model()
 
 
 class AuthFlowTests(APITestCase):
+    def test_username_or_email_backend_handles_missing_credentials(self):
+        from users.authentication import UsernameOrEmailBackend
+
+        backend = UsernameOrEmailBackend()
+        request = RequestFactory().post('/api/auth/login/')
+
+        self.assertIsNone(backend.authenticate(request))
+        self.assertIsNone(backend.authenticate(request, username='student1'))
+        self.assertIsNone(backend.authenticate(request, password='StrongPass123'))
+
     def test_user_can_register_and_login(self):
         register_url = reverse('register')
         login_url = reverse('login')
@@ -65,3 +76,50 @@ class AuthFlowTests(APITestCase):
                     'email': 'varshini@gmail.com',
                     'role': 'student',
                 })
+
+    def test_invalid_login_returns_unauthorized_not_server_error(self):
+        User.objects.create_user(
+            username='invalid-login-user',
+            email='invalid-login@example.com',
+            password='StrongPass123',
+            role='student',
+        )
+
+        response = self.client.post(
+            reverse('login'),
+            {'username': 'invalid-login-user', 'password': 'wrong-password'},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertNotEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def test_invalid_registration_returns_bad_request_not_server_error(self):
+        response = self.client.post(
+            reverse('register'),
+            {
+                'username': 'mismatch-user',
+                'email': 'mismatch@example.com',
+                'password': 'StrongPass123',
+                'confirmPassword': 'DifferentPass123',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertNotEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def test_registration_accepts_camel_case_confirmation(self):
+        response = self.client.post(
+            reverse('register'),
+            {
+                'username': 'camel-case-user',
+                'email': 'camel@example.com',
+                'password': 'StrongPass123',
+                'confirmPassword': 'StrongPass123',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(User.objects.filter(username='camel-case-user').exists())
