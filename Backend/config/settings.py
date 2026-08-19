@@ -143,7 +143,7 @@ CORS_ALLOWED_ORIGINS = [
 #
 # You do NOT need to add every new Vercel deployment URL manually.
 CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://budget-buddy-a-full-stack-personal-budget-planning-[a-z0-9-]+\.vercel\.app$",
+    r"^https://budgetbuddy-frontend-[a-z0-9-]+\.vercel\.app$",
 ]
 
 
