@@ -31,9 +31,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    'budgetbuddy-2-3k0o.onrender.com',
+]
+
+render_external_hostname = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if render_external_hostname:
+    ALLOWED_HOSTS.append(render_external_hostname)
 
 
 # Application definition
@@ -146,7 +154,14 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
-CORS_ALLOWED_ORIGINS = [*]
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'https://budgetbuddy-2-3k0o.onrender.com',
+]
+CSRF_TRUSTED_ORIGINS = [
+    'https://budgetbuddy-2-3k0o.onrender.com',
+]
 CORS_ALLOW_CREDENTIALS = True
 
 
