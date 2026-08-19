@@ -159,6 +159,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5173',
     'https://budgetbuddy-2-3k0o.onrender.com',
     'budgetbuddy-2-3k0o.onrender.com'
+    'budget-buddy-three-opal.vercel.app'
 ]
 CSRF_TRUSTED_ORIGINS = [
     'https://budgetbuddy-2-3k0o.onrender.com',
