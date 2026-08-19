@@ -8,6 +8,8 @@ import {
   FaPiggyBank,
   FaFileAlt,
   FaMoneyBillWave,
+  FaBullseye,
+  FaChartLine,
 } from "react-icons/fa";
 
 import {
@@ -19,6 +21,8 @@ import {
   Legend,
   BarChart,
   Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -35,75 +39,52 @@ function Reports() {
   // STATE
   // =========================================================
 
-  const [report, setReport] =
-    useState(null);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [error, setError] =
-    useState("");
-
+  const [report, setReport] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [generatingReport, setGeneratingReport] =
     useState(false);
-
-  const [reportMessage, setReportMessage] =
-    useState("");
+  const [reportMessage, setReportMessage] = useState("");
 
 
   // =========================================================
-  // FETCH ANALYTICS
+  // FETCH REAL ANALYTICS DATA
   // =========================================================
 
   const fetchReport = async () => {
-
     try {
-
       setLoading(true);
-
       setError("");
 
-      const token =
-        localStorage.getItem("access");
+      const token = localStorage.getItem("access");
 
+      if (!token) {
+        setError("Please login again to view your analytics.");
+        return;
+      }
 
-      const response =
-        await api.get(
-          "reports/",
-          {
-            headers: {
-              Authorization:
-                `Bearer ${token}`,
-            },
-          }
-        );
-
-
-      setReport(
-        response.data
+      const response = await api.get(
+        "analytics/dashboard/",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
+      setReport(response.data);
 
     } catch (err) {
-
-      console.error(
-        "Reports error:",
-        err
-      );
-
+      console.error("Analytics dashboard error:", err);
 
       setError(
         err.response?.data?.detail ||
-        "Unable to load financial report."
+        "Unable to load financial analytics."
       );
 
-
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
 
@@ -112,78 +93,59 @@ function Reports() {
   // =========================================================
 
   const generateReport = async () => {
-
     try {
-
-      setGeneratingReport(
-        true
-      );
-
+      setGeneratingReport(true);
       setReportMessage("");
-
       setError("");
 
+      const token = localStorage.getItem("access");
 
-      const token =
-        localStorage.getItem("access");
+      if (!token) {
+        setError("Please login again to generate a report.");
+        return;
+      }
 
-
-      const response =
-        await api.post(
-          "reports/generate/",
-          {},
-          {
-            headers: {
-              Authorization:
-                `Bearer ${token}`,
-            },
-          }
-        );
-
-
-      setReportMessage(
-        response.data.message
+      const response = await api.post(
+        "reports/generate/",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
+      setReportMessage(
+        response.data?.message ||
+        "Monthly report generated successfully."
+      );
 
-      // Refresh analytics
-
+      // Refresh real analytics after report generation.
       await fetchReport();
 
-
     } catch (err) {
-
       console.error(
         "Report generation error:",
         err
       );
-
 
       setError(
         err.response?.data?.detail ||
         "Unable to generate report."
       );
 
-
     } finally {
-
-      setGeneratingReport(
-        false
-      );
-
+      setGeneratingReport(false);
     }
-
   };
 
 
   // =========================================================
-  // LOAD REPORT
+  // LOAD ANALYTICS
   // =========================================================
 
   useEffect(() => {
-
     fetchReport();
-
   }, []);
 
 
@@ -191,13 +153,8 @@ function Reports() {
   // HELPERS
   // =========================================================
 
-  const formatCurrency = (
-    value
-  ) => {
-
-    const amount =
-      Number(value) || 0;
-
+  const formatCurrency = (value) => {
+    const amount = Number(value) || 0;
 
     return amount.toLocaleString(
       "en-IN",
@@ -207,20 +164,20 @@ function Reports() {
         maximumFractionDigits: 2,
       }
     );
-
   };
 
 
-  const formatNumber = (
-    value
-  ) => {
-
+  const formatNumber = (value) => {
     return (
       Number(value) || 0
-    ).toLocaleString(
-      "en-IN"
-    );
+    ).toLocaleString("en-IN");
+  };
 
+
+  const formatPercentage = (value) => {
+    const percentage = Number(value) || 0;
+
+    return `${percentage.toFixed(2)}%`;
   };
 
 
@@ -229,9 +186,7 @@ function Reports() {
   // =========================================================
 
   if (loading) {
-
     return (
-
       <div
         className="
           min-h-screen
@@ -240,9 +195,6 @@ function Reports() {
           overflow-x-hidden
         "
       >
-
-        {/* SIDEBAR */}
-
         <div
           className="
             w-0
@@ -250,13 +202,8 @@ function Reports() {
             flex-shrink-0
           "
         >
-
           <Sidebar />
-
         </div>
-
-
-        {/* MAIN */}
 
         <div
           className="
@@ -265,9 +212,7 @@ function Reports() {
             w-full
           "
         >
-
           <Topbar />
-
 
           <div
             className="
@@ -279,7 +224,6 @@ function Reports() {
               p-6
             "
           >
-
             <div
               className="
                 w-12
@@ -292,7 +236,6 @@ function Reports() {
               "
             />
 
-
             <p
               className="
                 text-[#6F665B]
@@ -300,17 +243,12 @@ function Reports() {
                 text-center
               "
             >
-              Preparing your financial report...
+              Preparing your financial analytics...
             </p>
-
           </div>
-
         </div>
-
       </div>
-
     );
-
   }
 
 
@@ -319,9 +257,7 @@ function Reports() {
   // =========================================================
 
   if (error || !report) {
-
     return (
-
       <div
         className="
           min-h-screen
@@ -330,9 +266,6 @@ function Reports() {
           overflow-x-hidden
         "
       >
-
-        {/* SIDEBAR */}
-
         <div
           className="
             w-0
@@ -340,13 +273,8 @@ function Reports() {
             flex-shrink-0
           "
         >
-
           <Sidebar />
-
         </div>
-
-
-        {/* MAIN */}
 
         <div
           className="
@@ -355,9 +283,7 @@ function Reports() {
             w-full
           "
         >
-
           <Topbar />
-
 
           <div
             className="
@@ -366,7 +292,6 @@ function Reports() {
               md:p-8
             "
           >
-
             <div
               className="
                 bg-white
@@ -379,7 +304,6 @@ function Reports() {
                 shadow-[0_8px_24px_rgba(16,28,46,0.08)]
               "
             >
-
               <div
                 className="
                   w-16
@@ -393,16 +317,13 @@ function Reports() {
                   mb-5
                 "
               >
-
                 <FaChartBar
                   className="
                     text-[#56061D]
                     text-2xl
                   "
                 />
-
               </div>
-
 
               <h2
                 className="
@@ -411,9 +332,8 @@ function Reports() {
                   text-[#101C2E]
                 "
               >
-                Unable to Load Report
+                Unable to Load Analytics
               </h2>
-
 
               <p
                 className="
@@ -422,14 +342,11 @@ function Reports() {
                 "
               >
                 {error ||
-                  "No report data available."}
+                  "No analytics data available."}
               </p>
 
-
               <button
-                onClick={
-                  fetchReport
-                }
+                onClick={fetchReport}
                 className="
                   cursor-pointer
                   mt-6
@@ -445,58 +362,87 @@ function Reports() {
               >
                 Try Again
               </button>
-
             </div>
-
           </div>
-
         </div>
-
       </div>
-
     );
-
   }
 
 
   // =========================================================
-  // CHART DATA
+  // REAL BACKEND DATA
+  // =========================================================
+
+  const summary =
+    report.summary || {};
+
+  const categoryExpenses =
+    report.category_expenses || [];
+
+  const monthlyExpenses =
+    report.monthly_expenses || [];
+
+  const incomeVsExpense =
+    report.income_vs_expense || [];
+
+  const budgetUtilization =
+    report.budget_utilization || [];
+
+  const savingsGoals =
+    report.savings_goals || [];
+
+  const recentTransactions =
+    report.recent_transactions || [];
+
+
+  // =========================================================
+  // CATEGORY CHART DATA
   // =========================================================
 
   const expenseData =
-    report.expense_by_category?.map(
-      (item) => ({
-
-        name:
-          item.category,
-
-        value:
-          Number(item.total),
-
-      })
-    ) || [];
-
-
-  const incomeExpenseData =
-    report.income_vs_expense?.map(
-      (item) => ({
-
-        name:
-          item.name,
-
-        amount:
-          Number(item.amount),
-
-      })
-    ) || [];
+    categoryExpenses.map((item) => ({
+      name: item.category,
+      value: Number(
+        item.total_expense
+      ) || 0,
+    }));
 
 
   // =========================================================
-  // CHART COLORS
+  // MONTHLY EXPENSE CHART DATA
+  // =========================================================
+
+  const monthlyExpenseData =
+    monthlyExpenses.map((item) => ({
+      month: item.month,
+      amount: Number(
+        item.amount
+      ) || 0,
+    }));
+
+
+  // =========================================================
+  // INCOME VS EXPENSE CHART DATA
+  // =========================================================
+
+  const incomeExpenseData =
+    incomeVsExpense.map((item) => ({
+      month: item.month,
+      income: Number(
+        item.income
+      ) || 0,
+      expense: Number(
+        item.expense
+      ) || 0,
+    }));
+
+
+  // =========================================================
+  // COLORS
   // =========================================================
 
   const COLORS = [
-
     "#56061D",
     "#92643E",
     "#7A263D",
@@ -507,7 +453,6 @@ function Reports() {
     "#934B5F",
     "#C49A6C",
     "#101C2E",
-
   ];
 
 
@@ -516,7 +461,6 @@ function Reports() {
   // =========================================================
 
   return (
-
     <div
       className="
         min-h-screen
@@ -537,9 +481,7 @@ function Reports() {
           flex-shrink-0
         "
       >
-
         <Sidebar />
-
       </div>
 
 
@@ -606,14 +548,12 @@ function Reports() {
                   shadow-sm
                 "
               >
-
                 <FaChartBar
                   className="
                     text-[#F3EBDD]
                     text-2xl
                   "
                 />
-
               </div>
 
 
@@ -631,9 +571,8 @@ function Reports() {
                     text-[#101C2E]
                   "
                 >
-                  Financial Reports
+                  Financial Analytics
                 </h1>
-
 
                 <p
                   className="
@@ -642,7 +581,7 @@ function Reports() {
                   "
                 >
                   Understand your income,
-                  expenses and savings.
+                  expenses, budgets and savings.
                 </p>
 
               </div>
@@ -656,12 +595,8 @@ function Reports() {
 
             <button
               type="button"
-              onClick={
-                generateReport
-              }
-              disabled={
-                generatingReport
-              }
+              onClick={generateReport}
+              disabled={generatingReport}
               className="
                 cursor-pointer
                 inline-flex
@@ -683,13 +618,11 @@ function Reports() {
                 md:w-auto
               "
             >
-
               <FaFileAlt />
 
               {generatingReport
                 ? "Generating..."
                 : "Generate Report"}
-
             </button>
 
           </div>
@@ -700,7 +633,6 @@ function Reports() {
           ================================================== */}
 
           {reportMessage && (
-
             <div
               className="
                 mb-6
@@ -716,7 +648,6 @@ function Reports() {
             >
               {reportMessage}
             </div>
-
           )}
 
 
@@ -725,7 +656,6 @@ function Reports() {
           ================================================== */}
 
           {error && (
-
             <div
               className="
                 mb-6
@@ -741,7 +671,6 @@ function Reports() {
             >
               {error}
             </div>
-
           )}
 
 
@@ -772,7 +701,6 @@ function Reports() {
                 shadow-[0_8px_24px_rgba(16,28,46,0.08)]
               "
             >
-
               <div
                 className="
                   flex
@@ -782,11 +710,7 @@ function Reports() {
                 "
               >
 
-                <div
-                  className="
-                    min-w-0
-                  "
-                >
+                <div className="min-w-0">
 
                   <p
                     className="
@@ -798,7 +722,6 @@ function Reports() {
                     Total Income
                   </p>
 
-
                   <h2
                     className="
                       text-2xl
@@ -809,12 +732,11 @@ function Reports() {
                     "
                   >
                     {formatCurrency(
-                      report.total_income
+                      summary.total_income
                     )}
                   </h2>
 
                 </div>
-
 
                 <div
                   className="
@@ -828,31 +750,14 @@ function Reports() {
                     shrink-0
                   "
                 >
-
                   <FaArrowUp
                     className="
                       text-[#92643E]
                     "
                   />
-
                 </div>
 
               </div>
-
-
-              <p
-                className="
-                  text-xs
-                  text-[#9A9085]
-                  mt-4
-                "
-              >
-                {formatNumber(
-                  report.income_transactions
-                )}{" "}
-                income transactions
-              </p>
-
             </div>
 
 
@@ -868,7 +773,6 @@ function Reports() {
                 shadow-[0_8px_24px_rgba(16,28,46,0.08)]
               "
             >
-
               <div
                 className="
                   flex
@@ -878,11 +782,7 @@ function Reports() {
                 "
               >
 
-                <div
-                  className="
-                    min-w-0
-                  "
-                >
+                <div className="min-w-0">
 
                   <p
                     className="
@@ -894,7 +794,6 @@ function Reports() {
                     Total Expenses
                   </p>
 
-
                   <h2
                     className="
                       text-2xl
@@ -905,12 +804,11 @@ function Reports() {
                     "
                   >
                     {formatCurrency(
-                      report.total_expense
+                      summary.total_expense
                     )}
                   </h2>
 
                 </div>
-
 
                 <div
                   className="
@@ -924,31 +822,14 @@ function Reports() {
                     shrink-0
                   "
                 >
-
                   <FaArrowDown
                     className="
                       text-[#7A263D]
                     "
                   />
-
                 </div>
 
               </div>
-
-
-              <p
-                className="
-                  text-xs
-                  text-[#9A9085]
-                  mt-4
-                "
-              >
-                {formatNumber(
-                  report.expense_transactions
-                )}{" "}
-                expense transactions
-              </p>
-
             </div>
 
 
@@ -964,7 +845,6 @@ function Reports() {
                 shadow-[0_8px_24px_rgba(16,28,46,0.08)]
               "
             >
-
               <div
                 className="
                   flex
@@ -974,11 +854,7 @@ function Reports() {
                 "
               >
 
-                <div
-                  className="
-                    min-w-0
-                  "
-                >
+                <div className="min-w-0">
 
                   <p
                     className="
@@ -990,7 +866,6 @@ function Reports() {
                     Total Savings
                   </p>
 
-
                   <h2
                     className="
                       text-2xl
@@ -1001,12 +876,11 @@ function Reports() {
                     "
                   >
                     {formatCurrency(
-                      report.total_savings
+                      summary.total_savings
                     )}
                   </h2>
 
                 </div>
-
 
                 <div
                   className="
@@ -1020,28 +894,14 @@ function Reports() {
                     shrink-0
                   "
                 >
-
                   <FaPiggyBank
                     className="
                       text-[#5F8069]
                     "
                   />
-
                 </div>
 
               </div>
-
-
-              <p
-                className="
-                  text-xs
-                  text-[#9A9085]
-                  mt-4
-                "
-              >
-                Income minus expenses
-              </p>
-
             </div>
 
 
@@ -1057,7 +917,6 @@ function Reports() {
                 shadow-[0_8px_24px_rgba(16,28,46,0.08)]
               "
             >
-
               <div
                 className="
                   flex
@@ -1067,11 +926,7 @@ function Reports() {
                 "
               >
 
-                <div
-                  className="
-                    min-w-0
-                  "
-                >
+                <div className="min-w-0">
 
                   <p
                     className="
@@ -1083,7 +938,6 @@ function Reports() {
                     Current Balance
                   </p>
 
-
                   <h2
                     className="
                       text-2xl
@@ -1094,12 +948,11 @@ function Reports() {
                     "
                   >
                     {formatCurrency(
-                      report.total_savings
+                      summary.current_balance
                     )}
                   </h2>
 
                 </div>
-
 
                 <div
                   className="
@@ -1113,35 +966,106 @@ function Reports() {
                     shrink-0
                   "
                 >
-
                   <FaWallet
                     className="
                       text-[#92643E]
                     "
                   />
-
                 </div>
 
               </div>
-
-
-              <p
-                className="
-                  text-xs
-                  text-[#9A9085]
-                  mt-4
-                "
-              >
-                Available after expenses
-              </p>
-
             </div>
 
           </div>
 
 
           {/* =================================================
-              CHARTS
+              EXTRA FINANCIAL SUMMARY
+          ================================================== */}
+
+          <div
+            className="
+              grid
+              grid-cols-1
+              sm:grid-cols-2
+              gap-6
+              mb-8
+            "
+          >
+
+            <div
+              className="
+                bg-white
+                rounded-2xl
+                p-5
+                border
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
+              "
+            >
+              <p
+                className="
+                  text-sm
+                  font-medium
+                  text-[#6F665B]
+                "
+              >
+                Total Budget
+              </p>
+
+              <p
+                className="
+                  text-2xl
+                  font-bold
+                  text-[#101C2E]
+                  mt-2
+                "
+              >
+                {formatCurrency(
+                  summary.total_budget
+                )}
+              </p>
+            </div>
+
+            <div
+              className="
+                bg-white
+                rounded-2xl
+                p-5
+                border
+                border-[#E5DDD2]
+                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
+              "
+            >
+              <p
+                className="
+                  text-sm
+                  font-medium
+                  text-[#6F665B]
+                "
+              >
+                Remaining Budget
+              </p>
+
+              <p
+                className="
+                  text-2xl
+                  font-bold
+                  text-[#101C2E]
+                  mt-2
+                "
+              >
+                {formatCurrency(
+                  summary.remaining_budget
+                )}
+              </p>
+            </div>
+
+          </div>
+
+
+          {/* =================================================
+              CHARTS ROW 1
           ================================================== */}
 
           <div
@@ -1154,9 +1078,7 @@ function Reports() {
             "
           >
 
-            {/* =================================================
-                EXPENSE CATEGORY
-            ================================================== */}
+            {/* EXPENSE CATEGORY */}
 
             <div
               className="
@@ -1182,7 +1104,6 @@ function Reports() {
                 Expense by Category
               </h2>
 
-
               <p
                 className="
                   text-[#6F665B]
@@ -1193,7 +1114,6 @@ function Reports() {
               >
                 Where your money is being spent.
               </p>
-
 
               {expenseData.length === 0 ? (
 
@@ -1207,14 +1127,12 @@ function Reports() {
                     text-center
                   "
                 >
-
                   <FaMoneyBillWave
                     className="
                       text-4xl
                       text-[#D8C8B4]
                     "
                   />
-
 
                   <p
                     className="
@@ -1224,7 +1142,6 @@ function Reports() {
                   >
                     No expense data available.
                   </p>
-
                 </div>
 
               ) : (
@@ -1233,13 +1150,10 @@ function Reports() {
                   width="100%"
                   height={340}
                 >
-
                   <PieChart>
 
                     <Pie
-                      data={
-                        expenseData
-                      }
+                      data={expenseData}
                       dataKey="value"
                       nameKey="name"
                       cx="50%"
@@ -1248,13 +1162,8 @@ function Reports() {
                       innerRadius={55}
                       paddingAngle={3}
                     >
-
                       {expenseData.map(
-                        (
-                          entry,
-                          index
-                        ) => (
-
+                        (entry, index) => (
                           <Cell
                             key={
                               `${entry.name}-${index}`
@@ -1266,30 +1175,21 @@ function Reports() {
                               ]
                             }
                           />
-
                         )
                       )}
-
                     </Pie>
 
-
                     <Tooltip
-                      formatter={(
-                        value
-                      ) =>
-                        formatCurrency(
-                          value
-                        )
+                      formatter={(value) =>
+                        formatCurrency(value)
                       }
                     />
-
 
                     <Legend
                       verticalAlign="bottom"
                     />
 
                   </PieChart>
-
                 </ResponsiveContainer>
 
               )}
@@ -1297,9 +1197,7 @@ function Reports() {
             </div>
 
 
-            {/* =================================================
-                INCOME VS EXPENSE
-            ================================================== */}
+            {/* MONTHLY EXPENSE TREND */}
 
             <div
               className="
@@ -1322,9 +1220,8 @@ function Reports() {
                   text-[#101C2E]
                 "
               >
-                Income vs Expense
+                Monthly Expense Trend
               </h2>
-
 
               <p
                 className="
@@ -1334,26 +1231,31 @@ function Reports() {
                   mb-5
                 "
               >
-                Compare your financial inflow and outflow.
+                Track how your spending changes over time.
               </p>
 
+              {monthlyExpenseData.length === 0 ? (
 
-              <div
-                className="
-                  w-full
-                  overflow-hidden
-                "
-              >
+                <div
+                  className="
+                    h-[320px]
+                    flex
+                    items-center
+                    justify-center
+                    text-[#6F665B]
+                  "
+                >
+                  No monthly expense data available.
+                </div>
+
+              ) : (
 
                 <ResponsiveContainer
                   width="100%"
                   height={340}
                 >
-
-                  <BarChart
-                    data={
-                      incomeExpenseData
-                    }
+                  <LineChart
+                    data={monthlyExpenseData}
                     margin={{
                       top: 10,
                       right: 10,
@@ -1361,21 +1263,18 @@ function Reports() {
                       bottom: 10,
                     }}
                   >
-
                     <CartesianGrid
                       strokeDasharray="3 3"
                       stroke="#E5DDD2"
                     />
 
-
                     <XAxis
-                      dataKey="name"
+                      dataKey="month"
                       tick={{
                         fill: "#6F665B",
                         fontSize: 12,
                       }}
                     />
-
 
                     <YAxis
                       tick={{
@@ -1384,34 +1283,29 @@ function Reports() {
                       }}
                     />
 
-
                     <Tooltip
-                      formatter={(
-                        value
-                      ) =>
-                        formatCurrency(
-                          value
-                        )
+                      formatter={(value) =>
+                        formatCurrency(value)
                       }
                     />
 
-
-                    <Bar
+                    <Line
+                      type="monotone"
                       dataKey="amount"
-                      fill="#56061D"
-                      radius={[
-                        10,
-                        10,
-                        0,
-                        0,
-                      ]}
+                      stroke="#56061D"
+                      strokeWidth={3}
+                      dot={{
+                        r: 4,
+                      }}
+                      activeDot={{
+                        r: 6,
+                      }}
                     />
 
-                  </BarChart>
-
+                  </LineChart>
                 </ResponsiveContainer>
 
-              </div>
+              )}
 
             </div>
 
@@ -1419,409 +1313,878 @@ function Reports() {
 
 
           {/* =================================================
-              TRANSACTION SUMMARY
+              INCOME VS EXPENSE
           ================================================== */}
 
           <div
             className="
-              grid
-              grid-cols-1
-              xl:grid-cols-2
-              gap-6
+              bg-white
+              rounded-3xl
+              border
+              border-[#E5DDD2]
+              shadow-[0_8px_24px_rgba(16,28,46,0.08)]
+              p-5
+              sm:p-6
+              min-w-0
+              mb-8
             "
           >
 
-            {/* =================================================
-                RECENT INCOME
-            ================================================== */}
-
-            <div
+            <h2
               className="
-                bg-white
-                rounded-3xl
-                border
-                border-[#E5DDD2]
-                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
-                overflow-hidden
-                min-w-0
+                text-xl
+                sm:text-2xl
+                font-bold
+                text-[#101C2E]
               "
             >
+              Income vs Expense
+            </h2>
+
+            <p
+              className="
+                text-[#6F665B]
+                text-sm
+                mt-1
+                mb-5
+              "
+            >
+              Compare your financial inflow and outflow by month.
+            </p>
+
+            {incomeExpenseData.length === 0 ? (
 
               <div
                 className="
-                  p-5
-                  sm:p-6
-                  border-b
-                  border-[#E5DDD2]
+                  h-[340px]
+                  flex
+                  items-center
+                  justify-center
+                  text-[#6F665B]
                 "
               >
-
-                <div
-                  className="
-                    flex
-                    items-center
-                    gap-3
-                  "
-                >
-
-                  <div
-                    className="
-                      w-10
-                      h-10
-                      rounded-xl
-                      bg-[#92643E]/10
-                      flex
-                      items-center
-                      justify-center
-                      shrink-0
-                    "
-                  >
-
-                    <FaArrowUp
-                      className="
-                        text-[#92643E]
-                      "
-                    />
-
-                  </div>
-
-
-                  <div
-                    className="
-                      min-w-0
-                    "
-                  >
-
-                    <h2
-                      className="
-                        text-xl
-                        font-bold
-                        text-[#101C2E]
-                      "
-                    >
-                      Recent Income
-                    </h2>
-
-
-                    <p
-                      className="
-                        text-sm
-                        text-[#6F665B]
-                      "
-                    >
-                      Your latest income entries.
-                    </p>
-
-                  </div>
-
-                </div>
-
+                No income or expense trend data available.
               </div>
 
+            ) : (
 
-              {report.recent_income?.length === 0 ? (
-
-                <div
-                  className="
-                    p-8
-                    text-center
-                    text-[#6F665B]
-                  "
-                >
-                  No income transactions found.
-                </div>
-
-              ) : (
-
-                <div
-                  className="
-                    divide-y
-                    divide-[#E5DDD2]
-                  "
-                >
-
-                  {report.recent_income.map(
-                    (income) => (
-
-                      <div
-                        key={
-                          income.id
-                        }
-                        className="
-                          p-5
-                          flex
-                          flex-col
-                          sm:flex-row
-                          sm:items-center
-                          sm:justify-between
-                          gap-3
-                          hover:bg-[#FAF8F4]
-                          transition
-                        "
-                      >
-
-                        <div
-                          className="
-                            min-w-0
-                          "
-                        >
-
-                          <h3
-                            className="
-                              font-semibold
-                              text-[#101C2E]
-                              break-words
-                            "
-                          >
-                            {income.title}
-                          </h3>
-
-
-                          <p
-                            className="
-                              text-xs
-                              text-[#9A9085]
-                              mt-1
-                            "
-                          >
-                            {income.source}
-                            {" • "}
-                            {income.income_date}
-                          </p>
-
-                        </div>
-
-
-                        <span
-                          className="
-                            font-bold
-                            text-[#92643E]
-                            whitespace-nowrap
-                            self-start
-                            sm:self-auto
-                          "
-                        >
-
-                          +
-                          {" "}
-                          {formatCurrency(
-                            income.amount
-                          )}
-
-                        </span>
-
-                      </div>
-
-                    )
-                  )}
-
-                </div>
-
-              )}
-
-            </div>
-
-
-            {/* =================================================
-                RECENT EXPENSES
-            ================================================== */}
-
-            <div
-              className="
-                bg-white
-                rounded-3xl
-                border
-                border-[#E5DDD2]
-                shadow-[0_8px_24px_rgba(16,28,46,0.08)]
-                overflow-hidden
-                min-w-0
-              "
-            >
-
-              <div
-                className="
-                  p-5
-                  sm:p-6
-                  border-b
-                  border-[#E5DDD2]
-                "
+              <ResponsiveContainer
+                width="100%"
+                height={360}
               >
-
-                <div
-                  className="
-                    flex
-                    items-center
-                    gap-3
-                  "
+                <BarChart
+                  data={incomeExpenseData}
+                  margin={{
+                    top: 10,
+                    right: 10,
+                    left: 0,
+                    bottom: 10,
+                  }}
                 >
 
-                  <div
-                    className="
-                      w-10
-                      h-10
-                      rounded-xl
-                      bg-[#56061D]/10
-                      flex
-                      items-center
-                      justify-center
-                      shrink-0
-                    "
-                  >
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="#E5DDD2"
+                  />
 
-                    <FaArrowDown
-                      className="
-                        text-[#7A263D]
-                      "
-                    />
+                  <XAxis
+                    dataKey="month"
+                    tick={{
+                      fill: "#6F665B",
+                      fontSize: 12,
+                    }}
+                  />
 
-                  </div>
+                  <YAxis
+                    tick={{
+                      fill: "#6F665B",
+                      fontSize: 12,
+                    }}
+                  />
 
+                  <Tooltip
+                    formatter={(value) =>
+                      formatCurrency(value)
+                    }
+                  />
 
-                  <div
-                    className="
-                      min-w-0
-                    "
-                  >
+                  <Legend />
 
-                    <h2
-                      className="
-                        text-xl
-                        font-bold
-                        text-[#101C2E]
-                      "
-                    >
-                      Recent Expenses
-                    </h2>
+                  <Bar
+                    dataKey="income"
+                    name="Income"
+                    fill="#92643E"
+                    radius={[
+                      8,
+                      8,
+                      0,
+                      0,
+                    ]}
+                  />
 
+                  <Bar
+                    dataKey="expense"
+                    name="Expense"
+                    fill="#56061D"
+                    radius={[
+                      8,
+                      8,
+                      0,
+                      0,
+                    ]}
+                  />
 
-                    <p
-                      className="
-                        text-sm
-                        text-[#6F665B]
-                      "
-                    >
-                      Your latest spending activity.
-                    </p>
+                </BarChart>
+              </ResponsiveContainer>
 
-                  </div>
-
-                </div>
-
-              </div>
-
-
-              {report.recent_expenses?.length === 0 ? (
-
-                <div
-                  className="
-                    p-8
-                    text-center
-                    text-[#6F665B]
-                  "
-                >
-                  No expense transactions found.
-                </div>
-
-              ) : (
-
-                <div
-                  className="
-                    divide-y
-                    divide-[#E5DDD2]
-                  "
-                >
-
-                  {report.recent_expenses.map(
-                    (expense) => (
-
-                      <div
-                        key={
-                          expense.id
-                        }
-                        className="
-                          p-5
-                          flex
-                          flex-col
-                          sm:flex-row
-                          sm:items-center
-                          sm:justify-between
-                          gap-3
-                          hover:bg-[#FAF8F4]
-                          transition
-                        "
-                      >
-
-                        <div
-                          className="
-                            min-w-0
-                          "
-                        >
-
-                          <h3
-                            className="
-                              font-semibold
-                              text-[#101C2E]
-                              break-words
-                            "
-                          >
-                            {expense.title}
-                          </h3>
-
-
-                          <p
-                            className="
-                              text-xs
-                              text-[#9A9085]
-                              mt-1
-                            "
-                          >
-                            {expense.category}
-                            {" • "}
-                            {expense.expense_date}
-                          </p>
-
-                        </div>
-
-
-                        <span
-                          className="
-                            font-bold
-                            text-[#7A263D]
-                            whitespace-nowrap
-                            self-start
-                            sm:self-auto
-                          "
-                        >
-
-                          -
-                          {" "}
-                          {formatCurrency(
-                            expense.amount
-                          )}
-
-                        </span>
-
-                      </div>
-
-                    )
-                  )}
-
-                </div>
-
-              )}
-
-            </div>
+            )}
 
           </div>
+
+
+          {/* =================================================
+              BUDGET UTILIZATION
+          ================================================== */}
+
+          <div
+            className="
+              bg-white
+              rounded-3xl
+              border
+              border-[#E5DDD2]
+              shadow-[0_8px_24px_rgba(16,28,46,0.08)]
+              p-5
+              sm:p-6
+              mb-8
+            "
+          >
+
+            <div
+              className="
+                flex
+                flex-col
+                sm:flex-row
+                sm:items-center
+                sm:justify-between
+                gap-3
+                mb-6
+              "
+            >
+
+              <div>
+
+                <h2
+                  className="
+                    text-xl
+                    sm:text-2xl
+                    font-bold
+                    text-[#101C2E]
+                  "
+                >
+                  Budget Utilization
+                </h2>
+
+                <p
+                  className="
+                    text-[#6F665B]
+                    text-sm
+                    mt-1
+                  "
+                >
+                  See the actual percentage of each budget that has been used.
+                </p>
+
+              </div>
+
+              <FaChartLine
+                className="
+                  text-[#56061D]
+                  text-2xl
+                "
+              />
+
+            </div>
+
+
+            {budgetUtilization.length === 0 ? (
+
+              <div
+                className="
+                  py-12
+                  text-center
+                  text-[#6F665B]
+                "
+              >
+                No budget data available.
+              </div>
+
+            ) : (
+
+              <div className="space-y-5">
+
+                {budgetUtilization.map(
+                  (budget) => {
+
+                    const percentage =
+                      Math.min(
+                        Number(
+                          budget.utilization_percentage
+                        ) || 0,
+                        100
+                      );
+
+                    return (
+                      <div
+                        key={budget.id}
+                        className="
+                          border-b
+                          border-[#E5DDD2]
+                          pb-5
+                          last:border-b-0
+                          last:pb-0
+                        "
+                      >
+
+                        <div
+                          className="
+                            flex
+                            flex-col
+                            sm:flex-row
+                            sm:items-center
+                            sm:justify-between
+                            gap-2
+                            mb-2
+                          "
+                        >
+
+                          <div>
+
+                            <p
+                              className="
+                                font-semibold
+                                text-[#101C2E]
+                              "
+                            >
+                              {budget.category}
+                            </p>
+
+                            <p
+                              className="
+                                text-xs
+                                text-[#9A9085]
+                                mt-1
+                              "
+                            >
+                              {budget.month} {budget.year}
+                            </p>
+
+                          </div>
+
+                          <div
+                            className="
+                              text-sm
+                              font-semibold
+                              text-[#56061D]
+                            "
+                          >
+                            {formatPercentage(
+                              budget.utilization_percentage
+                            )}
+                          </div>
+
+                        </div>
+
+
+                        <div
+                          className="
+                            h-3
+                            w-full
+                            rounded-full
+                            bg-[#EDE6DD]
+                            overflow-hidden
+                          "
+                        >
+                          <div
+                            className="
+                              h-full
+                              rounded-full
+                              bg-[#56061D]
+                              transition-all
+                            "
+                            style={{
+                              width:
+                                `${percentage}%`,
+                            }}
+                          />
+                        </div>
+
+
+                        <div
+                          className="
+                            flex
+                            flex-col
+                            sm:flex-row
+                            sm:justify-between
+                            gap-1
+                            mt-2
+                            text-xs
+                            text-[#6F665B]
+                          "
+                        >
+                          <span>
+                            Spent:{" "}
+                            {formatCurrency(
+                              budget.spent_amount
+                            )}
+                          </span>
+
+                          <span>
+                            Budget:{" "}
+                            {formatCurrency(
+                              budget.budget_amount
+                            )}
+                          </span>
+
+                          <span>
+                            Remaining:{" "}
+                            {formatCurrency(
+                              budget.remaining_amount
+                            )}
+                          </span>
+                        </div>
+
+                      </div>
+                    );
+                  }
+                )}
+
+              </div>
+
+            )}
+
+          </div>
+
+
+          {/* =================================================
+              SAVINGS GOAL PROGRESS
+          ================================================== */}
+
+          <div
+            className="
+              bg-white
+              rounded-3xl
+              border
+              border-[#E5DDD2]
+              shadow-[0_8px_24px_rgba(16,28,46,0.08)]
+              p-5
+              sm:p-6
+              mb-8
+            "
+          >
+
+            <div
+              className="
+                flex
+                items-center
+                gap-3
+                mb-6
+              "
+            >
+
+              <div
+                className="
+                  w-10
+                  h-10
+                  rounded-xl
+                  bg-[#8FB39B]/20
+                  flex
+                  items-center
+                  justify-center
+                "
+              >
+                <FaBullseye
+                  className="
+                    text-[#5F8069]
+                  "
+                />
+              </div>
+
+              <div>
+
+                <h2
+                  className="
+                    text-xl
+                    sm:text-2xl
+                    font-bold
+                    text-[#101C2E]
+                  "
+                >
+                  Savings Goal Progress
+                </h2>
+
+                <p
+                  className="
+                    text-[#6F665B]
+                    text-sm
+                    mt-1
+                  "
+                >
+                  Track your real progress toward every savings target.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            {savingsGoals.length === 0 ? (
+
+              <div
+                className="
+                  py-12
+                  text-center
+                  text-[#6F665B]
+                "
+              >
+                No savings goals available.
+              </div>
+
+            ) : (
+
+              <div
+                className="
+                  grid
+                  grid-cols-1
+                  lg:grid-cols-2
+                  gap-5
+                "
+              >
+
+                {savingsGoals.map(
+                  (goal) => {
+
+                    const percentage =
+                      Math.min(
+                        Number(
+                          goal.progress_percentage
+                        ) || 0,
+                        100
+                      );
+
+                    const completed =
+                      goal.status === "COMPLETED";
+
+                    return (
+                      <div
+                        key={goal.id}
+                        className="
+                          rounded-2xl
+                          border
+                          border-[#E5DDD2]
+                          p-5
+                          bg-[#FAF8F4]
+                        "
+                      >
+
+                        <div
+                          className="
+                            flex
+                            items-start
+                            justify-between
+                            gap-4
+                          "
+                        >
+
+                          <div className="min-w-0">
+
+                            <h3
+                              className="
+                                font-bold
+                                text-[#101C2E]
+                                break-words
+                              "
+                            >
+                              {goal.goal_name}
+                            </h3>
+
+                            <p
+                              className="
+                                text-xs
+                                text-[#9A9085]
+                                mt-1
+                              "
+                            >
+                              {goal.deadline
+                                ? `Deadline: ${goal.deadline}`
+                                : "No deadline"}
+                            </p>
+
+                          </div>
+
+                          <span
+                            className={`
+                              shrink-0
+                              px-3
+                              py-1
+                              rounded-full
+                              text-xs
+                              font-semibold
+                              ${
+                                completed
+                                  ? "bg-[#8FB39B]/20 text-[#5F8069]"
+                                  : "bg-[#92643E]/10 text-[#92643E]"
+                              }
+                            `}
+                          >
+                            {completed
+                              ? "Completed"
+                              : "In Progress"}
+                          </span>
+
+                        </div>
+
+
+                        <div className="mt-5">
+
+                          <div
+                            className="
+                              flex
+                              items-center
+                              justify-between
+                              text-sm
+                              mb-2
+                            "
+                          >
+
+                            <span
+                              className="
+                                text-[#6F665B]
+                              "
+                            >
+                              Progress
+                            </span>
+
+                            <span
+                              className="
+                                font-bold
+                                text-[#56061D]
+                              "
+                            >
+                              {formatPercentage(
+                                goal.progress_percentage
+                              )}
+                            </span>
+
+                          </div>
+
+
+                          <div
+                            className="
+                              h-3
+                              w-full
+                              rounded-full
+                              bg-[#E5DDD2]
+                              overflow-hidden
+                            "
+                          >
+                            <div
+                              className="
+                                h-full
+                                rounded-full
+                                bg-[#56061D]
+                                transition-all
+                              "
+                              style={{
+                                width:
+                                  `${percentage}%`,
+                              }}
+                            />
+                          </div>
+
+                        </div>
+
+
+                        <div
+                          className="
+                            grid
+                            grid-cols-1
+                            sm:grid-cols-3
+                            gap-3
+                            mt-5
+                          "
+                        >
+
+                          <div>
+
+                            <p
+                              className="
+                                text-xs
+                                text-[#9A9085]
+                              "
+                            >
+                              Saved
+                            </p>
+
+                            <p
+                              className="
+                                text-sm
+                                font-semibold
+                                text-[#101C2E]
+                                mt-1
+                              "
+                            >
+                              {formatCurrency(
+                                goal.saved_amount
+                              )}
+                            </p>
+
+                          </div>
+
+
+                          <div>
+
+                            <p
+                              className="
+                                text-xs
+                                text-[#9A9085]
+                              "
+                            >
+                              Target
+                            </p>
+
+                            <p
+                              className="
+                                text-sm
+                                font-semibold
+                                text-[#101C2E]
+                                mt-1
+                              "
+                            >
+                              {formatCurrency(
+                                goal.target_amount
+                              )}
+                            </p>
+
+                          </div>
+
+
+                          <div>
+
+                            <p
+                              className="
+                                text-xs
+                                text-[#9A9085]
+                              "
+                            >
+                              Remaining
+                            </p>
+
+                            <p
+                              className="
+                                text-sm
+                                font-semibold
+                                text-[#101C2E]
+                                mt-1
+                              "
+                            >
+                              {formatCurrency(
+                                goal.remaining_amount
+                              )}
+                            </p>
+
+                          </div>
+
+                        </div>
+
+                      </div>
+                    );
+                  }
+                )}
+
+              </div>
+
+            )}
+
+          </div>
+
+
+          {/* =================================================
+              RECENT TRANSACTIONS
+          ================================================== */}
+
+          <div
+            className="
+              bg-white
+              rounded-3xl
+              border
+              border-[#E5DDD2]
+              shadow-[0_8px_24px_rgba(16,28,46,0.08)]
+              overflow-hidden
+            "
+          >
+
+            <div
+              className="
+                p-5
+                sm:p-6
+                border-b
+                border-[#E5DDD2]
+              "
+            >
+
+              <div
+                className="
+                  flex
+                  items-center
+                  gap-3
+                "
+              >
+
+                <div
+                  className="
+                    w-10
+                    h-10
+                    rounded-xl
+                    bg-[#56061D]/10
+                    flex
+                    items-center
+                    justify-center
+                  "
+                >
+                  <FaArrowDown
+                    className="
+                      text-[#7A263D]
+                    "
+                  />
+                </div>
+
+                <div>
+
+                  <h2
+                    className="
+                      text-xl
+                      font-bold
+                      text-[#101C2E]
+                    "
+                  >
+                    Recent Transactions
+                  </h2>
+
+                  <p
+                    className="
+                      text-sm
+                      text-[#6F665B]
+                    "
+                  >
+                    Your latest expense activity.
+                  </p>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            {recentTransactions.length === 0 ? (
+
+              <div
+                className="
+                  p-8
+                  text-center
+                  text-[#6F665B]
+                "
+              >
+                No recent transactions found.
+              </div>
+
+            ) : (
+
+              <div
+                className="
+                  divide-y
+                  divide-[#E5DDD2]
+                "
+              >
+
+                {recentTransactions.map(
+                  (expense) => (
+
+                    <div
+                      key={expense.id}
+                      className="
+                        p-5
+                        flex
+                        flex-col
+                        sm:flex-row
+                        sm:items-center
+                        sm:justify-between
+                        gap-3
+                        hover:bg-[#FAF8F4]
+                        transition
+                      "
+                    >
+
+                      <div className="min-w-0">
+
+                        <h3
+                          className="
+                            font-semibold
+                            text-[#101C2E]
+                            break-words
+                          "
+                        >
+                          {expense.title}
+                        </h3>
+
+                        <p
+                          className="
+                            text-xs
+                            text-[#9A9085]
+                            mt-1
+                          "
+                        >
+                          {expense.category}
+                          {" • "}
+                          {expense.expense_date}
+                        </p>
+
+                      </div>
+
+                      <span
+                        className="
+                          font-bold
+                          text-[#7A263D]
+                          whitespace-nowrap
+                          self-start
+                          sm:self-auto
+                        "
+                      >
+                        -
+                        {" "}
+                        {formatCurrency(
+                          expense.amount
+                        )}
+                      </span>
+
+                    </div>
+
+                  )
+                )}
+
+              </div>
+
+            )}
+
+          </div>
+
 
         </main>
 
       </div>
 
     </div>
-
   );
-
 }
 
 

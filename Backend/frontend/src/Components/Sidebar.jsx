@@ -507,6 +507,7 @@ function Sidebar() {
 
           <button
             type="button"
+            onClick={() => navigate("/settings")}
             className="
               w-full
               flex

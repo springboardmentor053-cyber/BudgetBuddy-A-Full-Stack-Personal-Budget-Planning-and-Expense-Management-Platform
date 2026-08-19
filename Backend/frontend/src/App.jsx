@@ -11,6 +11,7 @@ import Savings from "./Pages/Savings";
 import Notifications from "./Pages/Notifications";
 import Reports from "./Pages/Reports";
 import NotFound from "./Pages/NotFound";
+import Settings from "./Pages/Settings";
 
 
 function App() {
@@ -90,6 +91,10 @@ function App() {
           element={<Reports />}
         />
 
+        <Route
+          path="/settings"
+          element={<Settings />}
+        />
 
         {/* =================================================
             404
