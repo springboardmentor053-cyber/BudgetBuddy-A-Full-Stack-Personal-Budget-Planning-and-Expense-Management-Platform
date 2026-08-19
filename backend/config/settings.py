@@ -12,12 +12,17 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load local environment variables if present
+load_dotenv(BASE_DIR / '.env')
+
 # Security Settings (Environment driven)
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-oe(zj&%ob0a6=)qg+$6^)xsr@!d2!qlv88p=rdt80zv)3i^ml9')
 
 DEBUG = os.getenv('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,.onrender.com').split(',')
+# Allow Render domains, local testing, and custom hosts safely
+raw_hosts = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,.onrender.com')
+ALLOWED_HOSTS = [h.strip() for h in raw_hosts.split(',') if h.strip()]
 
 
 # Application definition
@@ -28,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
@@ -40,9 +46,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # Must be first
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -79,7 +85,7 @@ if DATABASE_URL:
         'default': dj_database_url.config(
             default=DATABASE_URL,
             conn_max_age=600,
-            ssl_require=True
+            ssl_require=False  # Render Internal Database connections handle SSL automatically
         )
     }
 else:
@@ -93,18 +99,10 @@ else:
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 
@@ -122,24 +120,17 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # CORS Configuration
-FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5173')
-CORS_ALLOWED_ORIGINS = [
-    url.strip() for url in [
-        FRONTEND_URL,
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-        'http://localhost:5174',
-        'http://127.0.0.1:5174',
-    ] if url.strip()
-]
+FRONTEND_URL = os.getenv('FRONTEND_URL', '')
+
+# Allow all origins in production or during deployment to prevent CORS blockage
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 
 # Custom User Model
 AUTH_USER_MODEL = 'users.User'
 
-# Enables username-or-email authentication for SimpleJWT and any code that
-# calls Django's authenticate() directly.
+# Enables username-or-email authentication for SimpleJWT
 AUTHENTICATION_BACKENDS = [
     'users.authentication.UsernameOrEmailBackend',
     'django.contrib.auth.backends.ModelBackend',
@@ -178,4 +169,5 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = f"BudgetBuddy <{EMAIL_HOST_USER}>" if EMAIL_HOST_USER else 'webmaster@localhost'
 SERVER_EMAIL = EMAIL_HOST_USER or 'webmaster@localhost'
 
+# Groq AI Key
 GROQ_API_KEY = os.getenv('GROQ_API_KEY', '')
