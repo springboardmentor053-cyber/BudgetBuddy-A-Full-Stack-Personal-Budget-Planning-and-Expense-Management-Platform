@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import api from '../services/api';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -24,26 +25,13 @@ function Login() {
     }
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/auth/login/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: cleanUsername, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('token', data.access);
-        localStorage.setItem('refresh_token', data.refresh);
-        localStorage.setItem('username', data.username || cleanUsername);
-        navigate('/dashboard');
-      } else {
-        setError(data.detail || 'Invalid username or password');
-      }
+      const response = await api.post('auth/login/', { username: cleanUsername, password });
+      localStorage.setItem('token', response.data.access);
+      localStorage.setItem('refresh_token', response.data.refresh);
+      localStorage.setItem('username', response.data.username || cleanUsername);
+      navigate('/dashboard');
     } catch (err) {
-      setError('Cannot connect to backend server.');
+      setError(err.response?.data?.detail || 'Cannot connect to backend server.');
     }
   };
 

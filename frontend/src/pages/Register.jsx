@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import api from '../services/api';
 
 function Register() {
   const [username, setUsername] = useState('');
@@ -40,26 +41,14 @@ function Register() {
     }
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/auth/register/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: cleanUsername, email: cleanEmail, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccess(true);
-        setTimeout(() => {
-          navigate('/login');
-        }, 2000);
-      } else {
-        setError(data.username?.[0] || data.email?.[0] || data.password?.[0] || 'Registration failed.');
-      }
+      await api.post('auth/register/', { username: cleanUsername, email: cleanEmail, password });
+      setSuccess(true);
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
     } catch (err) {
-      setError('Cannot connect to backend server.');
+      const data = err.response?.data || {};
+      setError(data.username?.[0] || data.email?.[0] || data.password?.[0] || 'Cannot connect to backend server.');
     }
   };
 

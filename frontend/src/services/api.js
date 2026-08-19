@@ -1,8 +1,10 @@
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://budgetbuddy-2-3k0o.onrender.com/api/';
+
 // Create an axios instance pointing to your Django backend
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api/', // Adjust if your backend port is different
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -36,7 +38,7 @@ api.interceptors.response.use(
         const refreshToken = localStorage.getItem('refresh_token');
         
         // Attempt to get a fresh access token using the refresh token
-        const res = await axios.post('http://127.0.0.1:8000/api/auth/login/refresh/', {
+        const res = await axios.post(`${API_BASE_URL}auth/login/refresh/`, {
           refresh: refreshToken,
         });
 
