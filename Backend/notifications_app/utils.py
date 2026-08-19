@@ -1,10 +1,8 @@
-import email
 import traceback
-from unittest import result
 from django.utils import timezone
-from .models import Notification
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
+from .models import Notification
 
 
 def send_notification(user, title, message, notification_type="GENERAL", priority="LOW", event_date=None):
@@ -46,7 +44,8 @@ def send_notification(user, title, message, notification_type="GENERAL", priorit
 
 def send_notification_email(user, title, message):
     if not user.email:
-        return
+        print("❌ User has no email address")
+        return 0
 
     subject = f"BudgetBuddy | {title}"
     from_email = settings.DEFAULT_FROM_EMAIL
@@ -164,13 +163,13 @@ def send_notification_email(user, title, message):
                 </div>
 
                 <p class="meta-info">
-    Timestamp: {timezone.localtime().strftime('%B %d, %Y - %I:%M %p')}
-</p>
+                    Timestamp: {timezone.localtime().strftime('%B %d, %Y - %I:%M %p')}
+                </p>
 
                 <div class="btn-container">
                     <a href="https://budget-buddy-a-full-stack-personal.vercel.app/dashboard" class="btn">
-    Open BudgetBuddy
-</a>
+                        Open BudgetBuddy
+                    </a>
                 </div>
             </div>
             <div class="email-footer">
@@ -181,16 +180,16 @@ def send_notification_email(user, title, message):
     </html>
     """
 
-    # Correct initialization of EmailMultiAlternatives
-    email = EmailMultiAlternatives(
+    email_message = EmailMultiAlternatives(
         subject=subject,
         body=text_content,
         from_email=from_email,
         to=recipient_list
     )
-    email.attach_alternative(html_content, "text/html")
-    email.send(fail_silently=False)
-
-    result = email.send(fail_silently=False)
-    print("Email send result:", result)
+    email_message.attach_alternative(html_content, "text/html")
+    
+    # SEND EMAIL ONLY ONCE
+    result = email_message.send(fail_silently=False)
+    print("📧 Email send result:", result)
+    
     return result
