@@ -21,7 +21,8 @@ function Register() {
       return;
     }
     try {
-      await axios.post('http://127.0.0.1:8000/api/register/', form);
+      const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+await axios.post(`${API_URL}/register/`, form);
       setMessage('Account created! Redirecting to login...');
       setTimeout(() => navigate('/'), 1500);
     } catch (err) {

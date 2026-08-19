@@ -16,7 +16,8 @@ function Login() {
       return;
     }
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/token/', { username, password });
+      const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+const response = await axios.post(`${API_URL}/token/`, { username, password });
       localStorage.setItem('access_token', response.data.access);
       localStorage.setItem('refresh_token', response.data.refresh);
       navigate('/dashboard');
