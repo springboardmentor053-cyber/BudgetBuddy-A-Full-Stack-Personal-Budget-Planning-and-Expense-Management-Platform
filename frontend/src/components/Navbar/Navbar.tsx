@@ -301,7 +301,7 @@ function Navbar({
                   </p>
 
                   <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-
+                    {formatTime(item.created_at)}
                     {new Date(item.created_at).toLocaleString("en-IN")}
 
                   </p>

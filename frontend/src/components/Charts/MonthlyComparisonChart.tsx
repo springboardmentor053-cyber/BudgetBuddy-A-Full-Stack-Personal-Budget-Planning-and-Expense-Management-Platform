@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
-  BarChart,
-  Bar,
+  // BarChart,
+  // Bar,
   XAxis,
   YAxis,
   Tooltip,
