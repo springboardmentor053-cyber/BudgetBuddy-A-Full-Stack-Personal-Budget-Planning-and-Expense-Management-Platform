@@ -86,6 +86,8 @@ CORS_EXPOSE_HEADERS = ['Content-Type', 'Content-Disposition']
 ROOT_URLCONF = 'config.urls'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://budget-buddy-a-full-stack-personal.vercel.app",
+    "https://budgetbuddy-backend-h7j9.onrender.com"
     
 ]
 CORS_ALLOW_HEADERS = [
