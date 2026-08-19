@@ -1,19 +1,18 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { useAuth } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Sidebar from './components/Sidebar';
-import LandingPage from './Pages/LandingPage';
-import Login from './Pages/Login';
-import Register from './Pages/Register';
-import Dashboard from './Pages/Dashboard';
-import IncomeDashboard from './Pages/IncomeDashboard';
-import ExpenseDashboard from './Pages/ExpenseDashboard';
-import BudgetTracker from './Pages/BudgetTracker';
-import NotificationsPage from './Pages/NotificationsPage';
-import Reports from './Pages/Reports';
-import SavingsGoals from './Pages/SavingsGoals';
-import Settings from './Pages/Settings';
+import LandingPage from './pages/LandingPage';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import IncomeDashboard from './pages/IncomeDashboard';
+import ExpenseDashboard from './pages/ExpenseDashboard';
+import BudgetTracker from './pages/BudgetTracker';
+import NotificationsPage from './pages/NotificationsPage';
+import Reports from './pages/Reports';
+import SavingsGoals from './pages/SavingsGoals';
+import Settings from './pages/Settings';
 import AIChatWidget from './components/AIChatWidget';
 
 // Public Route helper: redirects to dashboard if already authenticated
