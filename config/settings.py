@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 from decouple import config
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -139,6 +139,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://budget-buddy-a-full-stack-personal-chi.vercel.app",
 ]
+CSRF_TRUSTED_ORIGINS = [
+    "https://budget-buddy-a-full-stack-personal-chi.vercel.app",
+]
 
 CORS_ALLOW_CREDENTIALS = True
 from datetime import timedelta
@@ -159,6 +162,6 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = config("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

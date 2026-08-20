@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://budgetbuddy-a-full-stack-personal-budget-1hdo.onrender.com/api",
+  baseURL: `${import.meta.env.VITE_API_URL}/api`,
 });
 
 API.interceptors.request.use((config) => {
