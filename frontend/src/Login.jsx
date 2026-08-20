@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://budgetbuddy-backend-c8uv.onrender.com';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -18,7 +18,10 @@ function Login() {
       return;
     }
     try {
-      const response = await axios.post(`${API_URL}/token/`, { username, password });
+      const response = await axios.post(`${API_URL}/api/token/`, { 
+      username, 
+      password 
+      });
       localStorage.setItem('access_token', response.data.access);
       localStorage.setItem('refresh_token', response.data.refresh);
       navigate('/dashboard');
