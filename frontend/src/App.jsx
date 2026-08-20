@@ -15,7 +15,7 @@ import Expenses from './components/Expenses';
 import Income from './components/Income';
 import Dashboard from './components/Dashboard';
 import Analytics from './components/Analytics';
-import Login from './components/login';
+import Login from './components/Login';
 import BudgetLimits from './components/BudgetLimits';
 import SavingsGoals from './components/SavingsGoals';
 import Savings from './components/Savings';
