@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: BUDGET_BUDDY
+    env: python
+    buildCommand: "pip install -r backend/requirements.txt"
+    startCommand: "cd backend && gunicorn core.wsgi:application"
+    envVars:
+      - key: PYTHONPATH
+        value: backend
+      - key: DJANGO_SETTINGS_MODULE
+        value: core.settings
