@@ -8,6 +8,7 @@ from rest_framework import permissions, status
 from django.db.models import Sum
 from django.core.mail import EmailMessage
 from django.http import HttpResponse
+from django.conf import settings
 
 # ReportLab imports for PDF generation
 from reportlab.lib.pagesizes import letter
@@ -255,19 +256,36 @@ class EmailPDFReportView(APIView):
     def post(self, request):
         user = request.user
         if not user.email:
-            return Response({"error": "User does not have an email address associated with their account."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "User does not have an email address associated with their account."}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         start_date, end_date = get_date_range(request)
-        pdf_bytes = generate_pdf_bytes(user, start_date, end_date)
 
-        # Create Email Notification with PDF Attachment
-        email = EmailMessage(
-            subject="Your Financial Summary Report (PDF)",
-            body=f"Hello {user.username},\n\nPlease find attached your requested PDF Financial Report for the period {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}.\n\nBest regards,\nSmart Finance Team",
-            from_email=None,
-            to=[user.email]
-        )
-        email.attach(f"Financial_Report_{user.username}.pdf", pdf_bytes, 'application/pdf')
-        email.send(fail_silently=False)
+        try:
+            pdf_bytes = generate_pdf_bytes(user, start_date, end_date)
 
-        return Response({"message": f"PDF report emailed successfully to {user.email}"}, status=status.HTTP_200_OK)
+            # Create Email Notification with PDF Attachment
+            email = EmailMessage(
+                subject="Your Financial Summary Report (PDF)",
+                body=f"Hello {user.username},\n\nPlease find attached your requested PDF Financial Report for the period {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}.\n\nBest regards,\nBudgetBuddy Team",
+                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', user.email),
+                to=[user.email]
+            )
+            email.attach(f"Financial_Report_{user.username}.pdf", pdf_bytes, 'application/pdf')
+            
+            # Using fail_silently=True prevents SMTP blocks/timeouts from crashing Render workers
+            email.send(fail_silently=True)
+
+            return Response(
+                {"message": f"PDF report dispatch initiated for {user.email}"}, 
+                status=status.HTTP_200_OK
+            )
+
+        except Exception as e:
+            print(f"Error handling PDF report email dispatch: {e}")
+            return Response(
+                {"error": "Failed to generate or send PDF report email."}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
