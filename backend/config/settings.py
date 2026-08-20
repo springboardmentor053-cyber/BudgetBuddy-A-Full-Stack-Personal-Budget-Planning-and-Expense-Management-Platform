@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv(BASE_DIR / ".env")
+load_dotenv(BASE_DIR.parent / ".env")
 
 
 # =====================================================
@@ -24,7 +24,7 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.getenv(
     "DJANGO_SECRET_KEY",
-    "django-insecure-local-development-key",
+    "django-insecure-budgetbuddy-super-secret-key-development-2026-production-ready",
 )
 
 DEBUG = os.getenv(
@@ -45,6 +45,10 @@ ALLOWED_HOSTS = [
     ).split(",")
     if host.strip()
 ]
+
+RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+if RENDER_EXTERNAL_HOSTNAME and RENDER_EXTERNAL_HOSTNAME not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 
 # =====================================================
@@ -74,13 +78,20 @@ INSTALLED_APPS = [
 ]
 
 
+try:
+    import whitenoise  # noqa: F401
+    HAS_WHITENOISE = True
+except ImportError:
+    HAS_WHITENOISE = False
+
+
 # =====================================================
 # MIDDLEWARE
 # =====================================================
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-
+    *(["whitenoise.middleware.WhiteNoiseMiddleware"] if HAS_WHITENOISE else []),
     "corsheaders.middleware.CorsMiddleware",
 
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -298,12 +309,13 @@ CSRF_TRUSTED_ORIGINS = [
     if origin.strip()
 ]
 
-
 # =====================================================
 # PRODUCTION SECURITY
 # =====================================================
 
 if not DEBUG:
+
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
     SECURE_SSL_REDIRECT = True
 
@@ -316,6 +328,19 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
 
     X_FRAME_OPTIONS = "DENY"
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": (
+                "whitenoise.storage.CompressedManifestStaticFilesStorage"
+                if HAS_WHITENOISE
+                else "django.contrib.staticfiles.storage.StaticFilesStorage"
+            ),
+        },
+    }
 
 
 # =====================================================
@@ -342,6 +367,30 @@ SPECTACULAR_SETTINGS = {
         "filter": True,
     },
 }
+# =====================================================
+# EMAIL
+# =====================================================
+
+EMAIL_BACKEND = os.getenv(
+    "EMAIL_BACKEND",
+    "django.core.mail.backends.smtp.EmailBackend",
+)
+
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+
+EMAIL_USE_TLS = (
+    os.getenv("EMAIL_USE_TLS", "True").lower() == "true"
+)
+
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+
+DEFAULT_FROM_EMAIL = os.getenv(
+    "DEFAULT_FROM_EMAIL",
+    EMAIL_HOST_USER,
+)
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 RESEND_FROM_EMAIL = os.getenv(

@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: budgetbuddy-api
+    runtime: python
+    buildCommand: bash build.sh
+    startCommand: gunicorn config.wsgi:application --chdir backend --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.0
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_ALLOWED_HOSTS
+        value: ".onrender.com,localhost,127.0.0.1"
+      - key: CORS_ALLOWED_ORIGINS
+        value: "https://budgetbuddy-frontend.vercel.app,http://localhost:5173"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://budgetbuddy-frontend.vercel.app,https://budgetbuddy-api.onrender.com"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: budgetbuddy-db
+          property: connectionString
+
+databases:
+  - name: budgetbuddy-db
+    databaseName: budgetbuddy
+    user: budgetbuddy_user
