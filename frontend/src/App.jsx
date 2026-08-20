@@ -5,7 +5,7 @@ import Sidebar from './components/Sidebar';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import DashboardPage from './pages/Dashboard';
+import Dashboard from './pages/Dashboard.jsx';
 import IncomeDashboard from './pages/IncomeDashboard';
 import ExpenseDashboard from './pages/ExpenseDashboard';
 import BudgetTracker from './pages/BudgetTracker';
@@ -80,7 +80,7 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <AppLayout>
-                  <DashboardPage />
+                  <Dashboard />
                 </AppLayout>
               </ProtectedRoute>
             }
