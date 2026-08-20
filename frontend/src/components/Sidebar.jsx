@@ -50,15 +50,19 @@ export default function Sidebar({ onLogout, notifications: sharedNotifications }
     <>
       <button
         type="button"
-        onClick={() => setIsOpen(true)}
-        className="fixed left-4 top-4 z-20 grid h-11 w-11 place-items-center rounded-xl border border-slate-800 bg-slate-950 text-slate-200 shadow-lg lg:hidden"
-        aria-label="Open navigation menu"
+        onClick={() => setIsOpen((open) => !open)}
+        className="fixed left-4 top-4 z-40 grid h-11 w-11 place-items-center rounded-xl border border-slate-800 bg-slate-950 text-slate-200 shadow-lg lg:hidden"
+        aria-controls="primary-navigation"
+        aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
         aria-expanded={isOpen}
       >
         <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
       </button>
       {isOpen && <button type="button" className="fixed inset-0 z-20 bg-slate-950/70 lg:hidden" onClick={() => setIsOpen(false)} aria-label="Close navigation menu" />}
-      <aside className={`fixed left-0 top-0 z-30 flex h-screen w-64 flex-col justify-between border-r border-slate-900 bg-slate-950 transition-transform duration-200 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside
+        id="primary-navigation"
+        className={`fixed inset-y-0 left-0 z-30 flex w-64 flex-col justify-between border-r border-slate-900 bg-slate-950 shadow-2xl transition-transform duration-200 lg:translate-x-0 lg:shadow-none ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      >
       {/* Brand logo section */}
       <div className="p-6 border-b border-slate-900">
         <div className="flex items-center gap-3">
