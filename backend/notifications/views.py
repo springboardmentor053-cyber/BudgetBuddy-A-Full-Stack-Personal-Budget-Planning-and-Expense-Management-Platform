@@ -22,7 +22,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         # Strict user isolation: return notifications belonging only to the logged-in user
-        return Notification.objects.filter(user=self.request.user)
+        return Notification.objects.filter(user=self.request.user).order_by('-created_at', '-id')
 
     def perform_create(self, serializer):
         # Auto-associate notification with current user

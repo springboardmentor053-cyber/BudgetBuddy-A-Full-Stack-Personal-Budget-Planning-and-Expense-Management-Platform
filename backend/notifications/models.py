@@ -8,6 +8,7 @@ class Notification(models.Model):
     NOTIFICATION_TYPES = [
         ('BUDGET_ALERT', 'Budget Alert'),
         ('SAVINGS_GOAL', 'Savings Goal'),
+        ('TRANSACTION', 'Transaction Activity'),
         ('GENERAL', 'General System'),
     ]
 

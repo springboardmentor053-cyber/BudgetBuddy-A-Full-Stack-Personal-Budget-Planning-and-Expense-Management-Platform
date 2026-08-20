@@ -2,10 +2,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-from django.db.models import Sum
+from django.db.models import Q, Sum
 from django.apps import apps
 from datetime import datetime, date, timedelta
 import calendar
+
+from budgets.models import Budget
+from income.models import Income
+from savings.models import SavingsGoal
+from users.models import Expense
 
 
 def get_model_safely(model_name):
@@ -67,66 +72,57 @@ def resolve_date_range(request):
     return start_date, end_date
 
 
+def budget_period_filter(start_date, end_date):
+    """Return a query covering every budget month touched by a date range."""
+    month_cursor = date(start_date.year, start_date.month, 1)
+    last_month = date(end_date.year, end_date.month, 1)
+    query = Q()
+    while month_cursor <= last_month:
+        query |= Q(month=month_cursor.month, year=month_cursor.year)
+        month_cursor = (
+            date(month_cursor.year + 1, 1, 1)
+            if month_cursor.month == 12
+            else date(month_cursor.year, month_cursor.month + 1, 1)
+        )
+    return query
+
+
 # --- TASK 2: Monthly Financial Report API ---
 class MonthlyFinancialReportView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        Income = get_model_safely('Income')
-        Expense = get_model_safely('Expense')
-        Budget = get_model_safely('Budget')
-
         now = datetime.now()
-        year = int(request.query_params.get('year', now.year))
-        month = int(request.query_params.get('month', now.month))
+        try:
+            year = int(request.query_params.get('year', now.year))
+            month = int(request.query_params.get('month', now.month))
+            date(year, month, 1)
+        except (TypeError, ValueError):
+            return Response({"error": "year and month must identify a valid month."}, status=status.HTTP_400_BAD_REQUEST)
         user = request.user
 
         # 1. Total Income
-        inc_date = get_date_field_name(Income)
-        inc_amt = get_amount_field_name(Income)
-        inc_filter = {'user': user, f'{inc_date}__year': year, f'{inc_date}__month': month} if inc_date else {'user': user}
-        res_income = Income.objects.filter(**inc_filter).aggregate(total=Sum(inc_amt))['total'] if Income else None
+        res_income = Income.objects.filter(user=user, income_date__year=year, income_date__month=month).aggregate(total=Sum('amount'))['total']
         total_income = float(res_income) if res_income is not None else 0.0
 
         # 2. Total Expense
-        exp_date = get_date_field_name(Expense)
-        exp_amt = get_amount_field_name(Expense)
-        exp_filter = {'user': user, f'{exp_date}__year': year, f'{exp_date}__month': month} if exp_date else {'user': user}
-        res_expense = Expense.objects.filter(**exp_filter).aggregate(total=Sum(exp_amt))['total'] if Expense else None
+        res_expense = Expense.objects.filter(user=user, expense_date__year=year, expense_date__month=month).aggregate(total=Sum('amount'))['total']
         total_expense = float(res_expense) if res_expense is not None else 0.0
 
         # 3. Current Balance
         current_balance = total_income - total_expense
 
         # 4. Total Savings
-        res_all_inc = Income.objects.filter(user=user).aggregate(total=Sum(inc_amt))['total'] if Income else None
-        res_all_exp = Expense.objects.filter(user=user).aggregate(total=Sum(exp_amt))['total'] if Expense else None
+        res_all_inc = Income.objects.filter(user=user).aggregate(total=Sum('amount'))['total']
+        res_all_exp = Expense.objects.filter(user=user).aggregate(total=Sum('amount'))['total']
         all_time_income = float(res_all_inc) if res_all_inc is not None else 0.0
         all_time_expense = float(res_all_exp) if res_all_exp is not None else 0.0
         total_savings = all_time_income - all_time_expense
 
         # 5. Remaining Budget
         total_budget_limit = 0.0
-        if Budget:
-            budget_fields = [f.name for f in Budget._meta.get_fields()]
-            budget_amt = get_amount_field_name(Budget)
-            budget_filter = {'user': user}
-
-            if 'month' in budget_fields and 'year' in budget_fields:
-                budget_filter['month'] = month
-                budget_filter['year'] = year
-            elif 'start_date' in budget_fields and 'end_date' in budget_fields:
-                last_day = calendar.monthrange(year, month)[1]
-                budget_filter['start_date__lte'] = f"{year}-{month:02d}-{last_day}"
-                budget_filter['end_date__gte'] = f"{year}-{month:02d}-01"
-            else:
-                b_date = get_date_field_name(Budget)
-                if b_date:
-                    budget_filter[f'{b_date}__year'] = year
-                    budget_filter[f'{b_date}__month'] = month
-
-            res_budget = Budget.objects.filter(**budget_filter).aggregate(total=Sum(budget_amt))['total']
-            total_budget_limit = float(res_budget) if res_budget is not None else 0.0
+        res_budget = Budget.objects.filter(user=user, month=month, year=year).aggregate(total=Sum('budget_amount'))['total']
+        total_budget_limit = float(res_budget) if res_budget is not None else 0.0
 
         remaining_budget = total_budget_limit - total_expense
 
@@ -238,92 +234,76 @@ class FinancialSummaryReportView(APIView):
 
     def get(self, request):
         user = request.user
-        start_date, end_date = resolve_date_range(request)
+        try:
+            start_date, end_date = resolve_date_range(request)
+        except ValueError:
+            return Response(
+                {"error": "Dates must use YYYY-MM-DD and form a valid range."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if start_date > end_date:
+            return Response(
+                {"error": "start_date must be on or before end_date."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        Income = get_model_safely('Income')
-        Expense = get_model_safely('Expense')
-        Budget = get_model_safely('Budget')
-        SavingsGoal = get_model_safely('SavingsGoal') or get_model_safely('Savings')
-        Notification = get_model_safely('Notification') or get_model_safely('UserNotification')
+        from notifications.models import Notification
 
         # 1. Income Summary
         income_list = []
         total_income = 0.0
-        if Income:
-            inc_date = get_date_field_name(Income)
-            inc_amt = get_amount_field_name(Income)
-            inc_qs = Income.objects.filter(user=user, **{f'{inc_date}__range': [start_date, end_date]})
-            res_inc = inc_qs.aggregate(total=Sum(inc_amt))['total']
-            total_income = float(res_inc) if res_inc is not None else 0.0
-
-            for inc in inc_qs[:10]:
-                income_list.append({
-                    "id": inc.id,
-                    "title": getattr(inc, 'source', getattr(inc, 'title', getattr(inc, 'name', 'Income'))),
-                    "amount": float(getattr(inc, inc_amt, 0.0)),
-                    "date": str(getattr(inc, inc_date, ''))
-                })
+        inc_qs = Income.objects.filter(user=user, income_date__range=[start_date, end_date])
+        total_income = float(inc_qs.aggregate(total=Sum('amount'))['total'] or 0)
+        for inc in inc_qs.order_by('-income_date', '-created_at', '-id')[:10]:
+            income_list.append({
+                "id": inc.id,
+                "title": inc.title,
+                "amount": float(inc.amount),
+                "date": str(inc.income_date),
+            })
 
         # 2. Expense Summary
         expense_list = []
         total_expense = 0.0
-        if Expense:
-            exp_date = get_date_field_name(Expense)
-            exp_amt = get_amount_field_name(Expense)
-            exp_qs = Expense.objects.filter(user=user, **{f'{exp_date}__range': [start_date, end_date]})
-            res_exp = exp_qs.aggregate(total=Sum(exp_amt))['total']
-            total_expense = float(res_exp) if res_exp is not None else 0.0
-
-            for exp in exp_qs[:10]:
-                cat = getattr(exp, 'category', '')
-                expense_list.append({
-                    "id": exp.id,
-                    "title": getattr(exp, 'title', getattr(exp, 'name', 'Expense')),
-                    "category": cat.name if hasattr(cat, 'name') else str(cat),
-                    "amount": float(getattr(exp, exp_amt, 0.0)),
-                    "date": str(getattr(exp, exp_date, ''))
-                })
+        exp_qs = Expense.objects.filter(user=user, expense_date__range=[start_date, end_date])
+        total_expense = float(exp_qs.aggregate(total=Sum('amount'))['total'] or 0)
+        for exp in exp_qs.order_by('-expense_date', '-created_at', '-id')[:10]:
+            expense_list.append({
+                "id": exp.id,
+                "title": exp.title,
+                "category": exp.category,
+                "amount": float(exp.amount),
+                "date": str(exp.expense_date),
+            })
 
         # 3. Overall Financial Summary
         current_balance = total_income - total_expense
-        all_inc = float(Income.objects.filter(user=user).aggregate(total=Sum(get_amount_field_name(Income)))['total'] or 0.0) if Income else 0.0
-        all_exp = float(Expense.objects.filter(user=user).aggregate(total=Sum(get_amount_field_name(Expense)))['total'] or 0.0) if Expense else 0.0
+        all_inc = float(Income.objects.filter(user=user).aggregate(total=Sum('amount'))['total'] or 0)
+        all_exp = float(Expense.objects.filter(user=user).aggregate(total=Sum('amount'))['total'] or 0)
         total_savings_val = all_inc - all_exp
 
         # 4. Budget Summary
         total_budget = 0.0
-        if Budget:
-            b_amt = get_amount_field_name(Budget)
-            b_fields = [f.name for f in Budget._meta.get_fields()]
-            b_filter = {'user': user}
-            if 'month' in b_fields and 'year' in b_fields:
-                b_filter['month'] = start_date.month
-                b_filter['year'] = start_date.year
-            elif 'start_date' in b_fields:
-                b_filter['start_date__lte'] = end_date
-                b_filter['end_date__gte'] = start_date
-
-            res_b = Budget.objects.filter(**b_filter).aggregate(total=Sum(b_amt))['total']
-            total_budget = float(res_b) if res_b is not None else 0.0
+        total_budget = float(
+            Budget.objects.filter(user=user).filter(budget_period_filter(start_date, end_date))
+            .aggregate(total=Sum('budget_amount'))['total'] or 0
+        )
 
         remaining_budget = total_budget - total_expense
 
         # 5. Savings Summary
         savings_list = []
-        if SavingsGoal:
-            goals = SavingsGoal.objects.filter(user=user)
-            for g in goals:
-                t_amt = float(getattr(g, 'target_amount', getattr(g, 'target', 0.0)))
-                s_amt = float(getattr(g, 'saved_amount', getattr(g, 'current_amount', 0.0)))
-                pct = round((s_amt / t_amt * 100), 2) if t_amt > 0 else 0.0
-                savings_list.append({
-                    "id": g.id,
-                    "goal_name": getattr(g, 'name', getattr(g, 'title', 'Savings Goal')),
-                    "target_amount": t_amt,
-                    "saved_amount": s_amt,
-                    "remaining_amount": max(0.0, t_amt - s_amt),
-                    "progress_percentage": pct
-                })
+        for g in SavingsGoal.objects.filter(user=user):
+            target = float(g.target_amount)
+            saved = float(g.saved_amount)
+            savings_list.append({
+                "id": g.id,
+                "goal_name": g.title,
+                "target_amount": target,
+                "saved_amount": saved,
+                "remaining_amount": max(0.0, target - saved),
+                "progress_percentage": round((saved / target * 100), 2) if target > 0 else 0.0,
+            })
 
         # 6. Latest Notifications
         notifications_list = []

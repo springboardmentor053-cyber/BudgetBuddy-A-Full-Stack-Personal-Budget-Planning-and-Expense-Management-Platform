@@ -1,5 +1,6 @@
 """Utilities for delivering budget-spending notifications."""
 
+import logging
 import threading
 
 from django.conf import settings
@@ -8,6 +9,9 @@ from django.core.mail import send_mail
 from django.core.validators import validate_email
 
 from .models import Notification
+
+
+logger = logging.getLogger(__name__)
 
 
 def _send_email_thread(subject, message, recipient_list):
@@ -75,9 +79,9 @@ def check_and_send_budget_alert(user, category, total_spent, budget_limit):
         priority=priority,
     )
 
-    print(
-        f'[BUDGET ALERT] Triggered for user {user.email} - Category: {category}, '
-        f'Spent: ₹{total_spent}, Limit: ₹{budget_limit}, Utilized: {percentage:.1f}%'
+    logger.info(
+        'Budget alert triggered for user=%s category=%s spent=%s limit=%s utilized=%.1f%%',
+        user.pk, category, total_spent, budget_limit, percentage,
     )
     try:
         validate_email(user.email)

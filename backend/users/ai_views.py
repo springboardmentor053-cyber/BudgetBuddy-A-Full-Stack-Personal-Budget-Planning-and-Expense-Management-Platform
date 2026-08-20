@@ -10,9 +10,79 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from groq import Groq
 
-from .models import Expense, Income
+from budgets.models import Budget
+from income.models import Income
+from .models import Expense
 
 logger = logging.getLogger(__name__)
+
+
+def _as_float(value):
+    return float(value or 0)
+
+
+def build_financial_context(user):
+    """Return the current user's live tracker data for grounded AI replies."""
+    total_income = _as_float(Income.objects.filter(user=user).aggregate(total=Sum('amount'))['total'])
+    total_expenses = _as_float(Expense.objects.filter(user=user).aggregate(total=Sum('amount'))['total'])
+
+    category_breakdown = [
+        {'category': item['category'], 'total': _as_float(item['total'])}
+        for item in Expense.objects.filter(user=user)
+        .values('category')
+        .annotate(total=Sum('amount'))
+        .order_by('-total')
+    ]
+
+    recent_incomes = [
+        {
+            'type': 'income', 'title': income.title, 'amount': _as_float(income.amount),
+            'category': income.category, 'date': str(income.income_date),
+        }
+        for income in Income.objects.filter(user=user).order_by('-income_date', '-created_at', '-id')[:10]
+    ]
+    recent_expenses = [
+        {
+            'type': 'expense', 'title': expense.title, 'amount': _as_float(expense.amount),
+            'category': expense.category, 'date': str(expense.expense_date),
+        }
+        for expense in Expense.objects.filter(user=user).order_by('-expense_date', '-created_at', '-id')[:10]
+    ]
+    recent_transactions = sorted(
+        recent_incomes + recent_expenses,
+        key=lambda transaction: (transaction['date'], transaction['title']),
+        reverse=True,
+    )[:10]
+
+    budgets = []
+    for budget in Budget.objects.filter(user=user).order_by('-year', '-month', 'category'):
+        spent = _as_float(
+            Expense.objects.filter(
+                user=user,
+                category__iexact=budget.category.strip(),
+                expense_date__year=int(budget.year),
+                expense_date__month=int(budget.month),
+            ).aggregate(total=Sum('amount'))['total']
+        )
+        amount = _as_float(budget.budget_amount)
+        budgets.append({
+            'category': budget.category,
+            'month': budget.month,
+            'year': budget.year,
+            'amount': amount,
+            'spent': spent,
+            'remaining': max(0.0, amount - spent),
+            'percentage_used': (spent / amount) * 100 if amount > 0 else 0.0,
+        })
+
+    return {
+        'total_income': total_income,
+        'total_expenses': total_expenses,
+        'net_balance': total_income - total_expenses,
+        'category_breakdown': category_breakdown,
+        'recent_transactions': recent_transactions,
+        'budgets': budgets,
+    }
 
 
 class AIChatPortalView(APIView):
@@ -40,58 +110,13 @@ class AIChatPortalView(APIView):
                 status=503,
             )
 
-        # 1. Aggregate user financial data
-        raw_income = Income.objects.filter(user=request.user).aggregate(total=Sum('amount'))['total'] or 0
-        raw_expense = Expense.objects.filter(user=request.user).aggregate(total=Sum('amount'))['total'] or 0
-        total_income = float(raw_income)
-        total_expense = float(raw_expense)
-        net_balance = total_income - total_expense
-
-        # Spending breakdown by category
-        raw_categories = list(
-            Expense.objects.filter(user=request.user)
-            .values('category')
-            .annotate(total=Sum('amount'))
-            .order_by('-total')
-        )
-        category_breakdown = [
-            {"category": item['category'], "total": float(item['total'] or 0)}
-            for item in raw_categories
-        ]
-
-        # Recent expenses (fetch up to 40 records to cover date queries accurately)
-        raw_recent = list(
-            Expense.objects.filter(user=request.user)
-            .order_by('-expense_date')[:40]
-            .values('title', 'amount', 'category', 'expense_date')
-        )
-        recent_expenses = [
-            {
-                "title": r['title'],
-                "amount": float(r['amount'] or 0),
-                "category": r['category'],
-                "date": str(r['expense_date']),
-            }
-            for r in raw_recent
-        ]
-
-        # Top single expenses
-        raw_biggest = list(
-            Expense.objects.filter(user=request.user)
-            .order_by('-amount')[:5]
-            .values('title', 'amount', 'category', 'expense_date')
-        )
-        biggest_expenses = [
-            {
-                "title": b['title'],
-                "amount": float(b['amount'] or 0),
-                "category": b['category'],
-                "date": str(b['expense_date']),
-            }
-            for b in raw_biggest
-        ]
-
-        has_recorded_data = bool(total_income > 0 or total_expense > 0 or recent_expenses)
+        # Build context immediately before the LLM call, using the same live
+        # transaction and budget tables used by the dashboard.
+        financial_context = build_financial_context(request.user)
+        total_income = financial_context['total_income']
+        total_expense = financial_context['total_expenses']
+        net_balance = financial_context['net_balance']
+        has_recorded_data = bool(total_income > 0 or total_expense > 0 or financial_context['recent_transactions'])
         current_date_str = str(date.today())
 
         # 2. Strict, Grounded System Instructions
@@ -114,9 +139,9 @@ USER FINANCIAL DATA:
 - Total Income: ₹{total_income:,.2f}
 - Total Expense: ₹{total_expense:,.2f}
 - Net Balance: ₹{net_balance:,.2f}
-- Category Breakdown: {json.dumps(category_breakdown)}
-- RECENT_TRANSACTIONS: {json.dumps(recent_expenses)}
-- TOP_EXPENSES: {json.dumps(biggest_expenses)}
+- Category Breakdown: {json.dumps(financial_context['category_breakdown'])}
+- RECENT_TRANSACTIONS: {json.dumps(financial_context['recent_transactions'])}
+- BUDGETS: {json.dumps(financial_context['budgets'])}
 """.strip()
 
         # Build message history

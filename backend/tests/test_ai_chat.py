@@ -9,7 +9,7 @@ from rest_framework.test import APITestCase
 User = get_user_model()
 
 
-@override_settings(GEMINI_API_KEY='test-key')
+@override_settings(GROQ_API_KEY='test-key')
 class AIChatPortalViewTests(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
@@ -17,29 +17,24 @@ class AIChatPortalViewTests(APITestCase):
         )
         self.client.force_authenticate(self.user)
 
-    def test_generates_advice_with_chats_api_and_800_max_tokens(self):
-        mock_response = MagicMock(text='- Keep your food budget under review.\n- Save 20% consistently.')
-        mock_chat = MagicMock()
-        mock_chat.send_message.return_value = mock_response
+    def test_generates_advice_with_live_financial_context(self):
+        mock_completion = MagicMock()
+        mock_completion.choices[0].message.content = 'Keep your food budget under review.'
+        mock_client = MagicMock()
+        mock_client.models.list.return_value.data = [MagicMock(id='llama-3.3-70b-versatile')]
+        mock_client.chat.completions.create.return_value = mock_completion
 
-        with patch('users.ai_views.genai.Client') as client_class:
-            client_class.return_value.chats.create.return_value = mock_chat
+        with patch('users.ai_views.Groq', return_value=mock_client):
             result = self.client.post('/api/ai-chat/', {'message': 'How can I save money?'}, format='json')
 
         self.assertEqual(result.status_code, status.HTTP_200_OK)
-        self.assertEqual(result.data['reply'], mock_response.text)
+        self.assertEqual(result.data['reply'], mock_completion.choices[0].message.content)
 
-        # Validate client.chats.create call
-        chats_create_kwargs = client_class.return_value.chats.create.call_args.kwargs
-        self.assertEqual(chats_create_kwargs['model'], 'gemini-3.6-flash')
-        config = chats_create_kwargs['config']
-        self.assertEqual(config.max_output_tokens, 800)
-        self.assertEqual(config.temperature, 0.7)
-        self.assertIn('Has recorded financial data: False', config.system_instruction)
-        self.assertIn('50/30/20', config.system_instruction)
-
-        # Validate chat.send_message call
-        mock_chat.send_message.assert_called_once_with('How can I save money?')
+        completion_kwargs = mock_client.chat.completions.create.call_args.kwargs
+        self.assertEqual(completion_kwargs['model'], 'llama-3.3-70b-versatile')
+        self.assertEqual(completion_kwargs['temperature'], 0.1)
+        self.assertEqual(completion_kwargs['max_tokens'], 600)
+        self.assertIn('Has Logged Data: False', completion_kwargs['messages'][0]['content'])
 
     def test_rejects_missing_message(self):
         result = self.client.post('/api/ai-chat/', {'message': '  '}, format='json')

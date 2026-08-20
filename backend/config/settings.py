@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'income',
     'budgets',
     'savings',
-    'notifications',
+    'notifications.apps.NotificationsConfig',
 ]
 
 MIDDLEWARE = [
