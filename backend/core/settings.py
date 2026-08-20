@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-vvc*)s9oa^w$1vrl-_81ss!m#)^-35h6ki)5i4nx#a4g7prgsl
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG','False') == 'True'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['budget-buddy-v02g.onrender.com','localhost','127.0.0.1','*']
 
 
 # Application definition
