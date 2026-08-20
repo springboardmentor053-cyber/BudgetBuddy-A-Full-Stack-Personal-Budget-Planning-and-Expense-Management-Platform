@@ -36,3 +36,5 @@ Thumbs.db
 # Local backup / secret-related files
 *.bundle
 secret-replacements.txt
+.vercel
+.env*
