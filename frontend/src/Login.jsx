@@ -26,6 +26,7 @@ function Login() {
       localStorage.setItem('refresh_token', response.data.refresh);
       navigate('/dashboard');
     } catch (error) {
+      console.error('Login error:', error);
       if (!error.response) {
         setMessage('Cannot connect to server. Please check your internet connection.');
       } else if (error.response.status === 401) {
