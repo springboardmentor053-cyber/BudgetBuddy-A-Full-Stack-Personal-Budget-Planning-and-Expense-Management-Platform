@@ -72,8 +72,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'core.urls'
 
-CORS_ALLOW_ALL_ORIGINS=[
-    "https://your-app.vercel.app"
+CORS_ALLOWED_ORIGINS=[
+    "https://your-app.vercel.app",
 ]
 TEMPLATES = [
     {
