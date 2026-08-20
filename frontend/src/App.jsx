@@ -31,8 +31,8 @@ function AppLayout({ children }) {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex relative overflow-x-hidden">
       <Sidebar />
-      {/* pl-64 offsets main content past the fixed w-64 sidebar */}
-      <main className="flex-1 min-h-screen w-full overflow-y-auto pl-64">
+      {/* The sidebar is fixed, so reserve its width without constraining children. */}
+      <main className="ml-64 min-h-screen min-w-0 flex-1 overflow-x-hidden">
         {children}
       </main>
       {/* Floating AI Financial Advisor Widget */}
@@ -82,6 +82,14 @@ export default function App() {
                 <AppLayout>
                   <Dashboard />
                 </AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard-overview"
+            element={
+              <ProtectedRoute>
+                <Navigate to="/dashboard" replace />
               </ProtectedRoute>
             }
           />
