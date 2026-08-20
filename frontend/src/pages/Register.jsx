@@ -18,20 +18,39 @@ export default function Register() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const getValidationError = (data) => {
-    if (!data) return 'Registration failed. Please try again.';
+  const getValidationError = (err) => {
+    if (!err.response) {
+      return 'Unable to reach backend server. Please verify the backend is running.';
+    }
 
-    if (typeof data === 'string') return data;
-    if (data.detail || data.message) return data.detail || data.message;
+    const data = err.response.data;
 
-    const messages = Object.entries(data).flatMap(([field, errors]) => {
-      const fieldErrors = Array.isArray(errors) ? errors : [errors];
-      const label = field === 'non_field_errors' ? '' : `${field}: `;
+    if (!data) {
+      return `Server returned error status ${err.response.status}. Please try again.`;
+    }
 
-      return fieldErrors.map((message) => `${label}${message}`);
-    });
+    if (typeof data === 'string') {
+      // Return raw string or fallback if HTML 404/500 page was returned
+      return data.startsWith('<!DOCTYPE') || data.startsWith('<html')
+        ? `Request failed (${err.response.status}): Endpoint not found or server error.`
+        : data;
+    }
 
-    return messages.join(' ') || 'Registration failed. Please try again.';
+    if (data.detail || data.message || data.error) {
+      return data.detail || data.message || data.error;
+    }
+
+    if (typeof data === 'object') {
+      const messages = Object.entries(data).flatMap(([field, errors]) => {
+        const fieldErrors = Array.isArray(errors) ? errors : [errors];
+        const label = field === 'non_field_errors' ? '' : `${field}: `;
+        return fieldErrors.map((message) => `${label}${message}`);
+      });
+
+      if (messages.length > 0) return messages.join(' | ');
+    }
+
+    return `Registration failed (${err.response.status}). Please check your inputs.`;
   };
 
   const handleSubmit = async (e) => {
@@ -45,16 +64,29 @@ export default function Register() {
 
     setLoading(true);
 
+    const payload = {
+      username: formData.username.trim(),
+      email: formData.email.trim(),
+      password: formData.password,
+      password_confirm: formData.confirmPassword,
+      confirm_password: formData.confirmPassword, // Compatibility for both naming schemes
+    };
+
     try {
-      await api.post('/api/auth/register/', {
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-        password_confirm: formData.confirmPassword,
-      });
+      // Primary route attempt
+      try {
+        await api.post('/api/auth/register/', payload);
+      } catch (authErr) {
+        // Fallback to /api/users/register/ if 404
+        if (authErr.response?.status === 404) {
+          await api.post('/api/users/register/', payload);
+        } else {
+          throw authErr;
+        }
+      }
       navigate('/login');
     } catch (err) {
-      setError(getValidationError(err.response?.data));
+      setError(getValidationError(err));
     } finally {
       setLoading(false);
     }

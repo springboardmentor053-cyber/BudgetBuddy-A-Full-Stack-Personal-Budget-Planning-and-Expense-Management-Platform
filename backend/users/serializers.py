@@ -34,20 +34,42 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'username', 'email', 'password', 'password_confirm', 'confirmPassword', 'role')
         read_only_fields = ('id',)
+        extra_kwargs = {
+            'email': {'required': True, 'allow_blank': False},
+            'role': {'required': False},
+        }
+
+    def validate_email(self, value):
+        if not value:
+            raise serializers.ValidationError("Email is required.")
+        if User.objects.filter(email__iexact=value.strip()).exists():
+            raise serializers.ValidationError("A user with this email already exists.")
+        return value.lower().strip()
+
+    def validate_username(self, value):
+        if not value:
+            raise serializers.ValidationError("Username is required.")
+        if User.objects.filter(username__iexact=value.strip()).exists():
+            raise serializers.ValidationError("A user with this username already exists.")
+        return value.strip()
 
     def validate(self, attrs):
-        password_confirmation = attrs.pop('confirmPassword', None) or attrs.get('password_confirm')
-        if password_confirmation and attrs.get('password') != password_confirmation:
-            raise serializers.ValidationError({'password_confirm': 'Passwords do not match.'})
+        password = attrs.get('password')
+        password_confirm = attrs.get('password_confirm') or attrs.get('confirmPassword')
+
+        if password_confirm is not None and password != password_confirm:
+            raise serializers.ValidationError({'password': 'Passwords do not match.'})
+
+        # Run Django's standard password validators (length, common passwords, numeric)
+        validate_password(password)
+
         return attrs
 
     def create(self, validated_data):
         validated_data.pop('password_confirm', None)
         validated_data.pop('confirmPassword', None)
         password = validated_data.pop('password')
-        user = User.objects.create_user(password=password, **validated_data)
-        return user
-
+        return User.objects.create_user(password=password, **validated_data)
 
 class UserProfileSerializer(serializers.ModelSerializer):
     """Handles viewing and updating user profile details."""

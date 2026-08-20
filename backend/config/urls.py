@@ -4,33 +4,39 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from budgets.views import BudgetViewSet
-from users.views import ExpenseViewSet, IncomeViewSet
 from notifications.views import NotificationViewSet
 from users.ai_views import AIChatPortalView
+from users.views import ExpenseViewSet, IncomeViewSet
+
 
 def health_check(request):
     return JsonResponse({"status": "healthy", "message": "BudgetBuddy Backend is Running Successfully 🚀"})
 
-# 1. Register router without 'api/' inside the strings
+
+# Core API Router for ViewSets
 router = DefaultRouter()
-router.register(r'expenses/tracking', ExpenseViewSet, basename='expense')
+router.register(r'expenses/tracking', ExpenseViewSet, basename='expense-tracking')
 router.register(r'expenses', ExpenseViewSet, basename='expense-api')
-router.register(r'incomes/management', IncomeViewSet, basename='income')
+router.register(r'incomes/management', IncomeViewSet, basename='income-management')
+router.register(r'income', IncomeViewSet, basename='income-api')
 router.register(r'budgets', BudgetViewSet, basename='budget')
 router.register(r'notifications', NotificationViewSet, basename='notification')
 
 urlpatterns = [
+    # Health Check
     path('', health_check, name='health-check'),
     path('admin/', admin.site.urls),
+
+    # Authentication & User Management (Mapped to both /api/auth/ and /api/users/ for seamless compatibility)
     path('api/auth/', include('users.urls')),
+    path('api/users/', include('users.urls')),
+
+    # AI Chat & Analytics
     path('api/ai-chat/', AIChatPortalView.as_view(), name='ai-chat'),
-    path('api/', include('income.urls')),
     path('api/reports/', include('reports.urls')),
     path('api/savings/', include('savings.urls')),
+    path('api/', include('income.urls')),
 
-    # 2. Namespace the router under 'api/' so it stops hijacking '/'
+    # Router Viewsets (expenses, income, budgets, notifications)
     path('api/', include(router.urls)),
-
-    # 3. Add your home / dashboard template view here (if Django serves it)
-    # path('', HomeView.as_view(), name='home'),
 ]
