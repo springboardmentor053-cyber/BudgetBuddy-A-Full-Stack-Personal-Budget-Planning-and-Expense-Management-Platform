@@ -1,4 +1,3 @@
-import Navbar from "../components/Navbar/Navbar";
 import ProfileCard from "../components/Profile/ProfileCard";
 
 function ProfilePage() {

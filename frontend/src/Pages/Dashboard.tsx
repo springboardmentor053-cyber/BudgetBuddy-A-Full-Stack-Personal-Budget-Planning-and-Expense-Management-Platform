@@ -26,6 +26,9 @@ function Dashboard() {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [recentTransactions, setRecentTransactions] = useState<any[]>([]);
   const [activeSavings, setActiveSavings] = useState<any[]>([]);
+  const unreadNotifications = notifications.filter(
+  (n) => !n.is_read
+).length;
   async function loadAnalytics() {
     try {
       const response = await getDashboardAnalytics();
@@ -68,7 +71,11 @@ function Dashboard() {
     : 0;
 
   return (
-    <div className="text-gray-800 dark:text-gray-100 transition-colors duration-300">
+  <div className="text-gray-800 dark:text-gray-100 transition-colors duration-300">
+
+    <p className="text-gray-500 dark:text-gray-400 mb-6">
+      {unreadNotifications} unread notifications
+    </p>
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-7">
 
