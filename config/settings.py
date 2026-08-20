@@ -29,6 +29,8 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "budgetbuddy-a-full-stack-personal-budget-1hdo.onrender.com",
     "budgetbuddy-a-full-stack-personal-budget-gtd5.onrender.com",
+    "localhost",
+    "127.0.0.1",
 ]
 
 
@@ -59,8 +61,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -139,6 +141,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://budget-buddy-a-full-stack-personal-chi.vercel.app",
 ]
+CORS_ALLOW_CREDENTIALS = True
+
 CSRF_TRUSTED_ORIGINS = [
     "https://budget-buddy-a-full-stack-personal-chi.vercel.app",
 ]
