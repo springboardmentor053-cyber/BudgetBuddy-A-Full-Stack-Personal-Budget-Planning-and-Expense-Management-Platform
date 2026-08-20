@@ -10,6 +10,12 @@ const filterMap = {
   'SAVINGS GOALS': (item) => item.notification_type === 'SAVINGS_GOAL',
 };
 
+const notificationLabel = (type) => ({
+  BUDGET_ALERT: 'Budget Alert',
+  SAVINGS_GOAL: 'Savings Goal',
+  TRANSACTION: 'Transaction',
+}[type] || 'Activity');
+
 const formatTimeAgo = (value) => {
   if (!value) return 'Just now';
 
@@ -33,7 +39,7 @@ export default function NotificationsPage() {
     try {
       setLoading(true);
       const response = await api.get('/api/notifications/');
-      setNotifications(Array.isArray(response.data) ? response.data : []);
+      setNotifications(Array.isArray(response.data) ? response.data : response.data?.results || []);
     } catch (error) {
       console.error('Unable to load notifications', error);
     } finally {
@@ -140,7 +146,7 @@ export default function NotificationsPage() {
                     <div className="space-y-3">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="rounded-full border border-slate-700/80 bg-[#0f172a] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-emerald-400">
-                          {item.notification_type === 'BUDGET_ALERT' ? 'Budget Alert' : 'Savings Goal'}
+                          {notificationLabel(item.notification_type)}
                         </span>
                         {!item.is_read && (
                           <span className="rounded-full border border-[#00f5a0]/30 bg-[#00f5a0]/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-emerald-300">

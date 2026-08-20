@@ -42,7 +42,7 @@ export default function NotificationDropdown() {
     try {
       setLoading(true);
       const response = await api.get('/api/notifications/');
-      setNotifications(Array.isArray(response.data) ? response.data : []);
+      setNotifications(Array.isArray(response.data) ? response.data : response.data?.results || []);
     } catch (error) {
       console.error('Unable to load notifications', error);
     } finally {
@@ -147,7 +147,7 @@ export default function NotificationDropdown() {
 
                   <div className="mt-3 flex items-center justify-between">
                     <span className="rounded-full border border-slate-700/80 bg-slate-900/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-slate-300">
-                      {item.notification_type.replace('_', ' ')}
+                      {(item.notification_type || 'GENERAL').replace('_', ' ')}
                     </span>
                     <div className="flex items-center gap-2">
                       {!item.is_read && (

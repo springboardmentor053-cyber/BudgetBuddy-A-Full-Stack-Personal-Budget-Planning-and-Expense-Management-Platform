@@ -18,7 +18,14 @@ export default function AIPortal() {
     setLoading(true);
 
     try {
-      const res = await api.post('/api/ai-chat/', { message: userText });
+      const history = messages
+        .filter((message) => message.sender === 'user' || message.sender === 'ai')
+        .slice(-8)
+        .map((message) => ({
+          role: message.sender === 'ai' ? 'assistant' : 'user',
+          content: message.text,
+        }));
+      const res = await api.post('/api/ai-chat/', { message: userText, history });
       setMessages((prev) => [...prev, { sender: 'ai', text: res.data.reply }]);
     } catch {
       setMessages((prev) => [...prev, { sender: 'ai', text: "Sorry, I couldn't process that right now. Check your API key connection." }]);
