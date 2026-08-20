@@ -118,9 +118,16 @@ class TransactionDashboardView(APIView):
             reverse=True,
         )[:5]
 
+        # Aggregates and querysets above intentionally collapse to zero/empty
+        # values, so a newly registered user always receives a renderable 200
+        # payload instead of a missing-resource response.
         return Response({
             'total_income': float(total_income),
             'total_expense': float(total_expense),
+            # Compatibility aliases keep dashboard consumers that use the
+            # shorter field names safe as well.
+            'income': float(total_income),
+            'expenses': float(total_expense),
             'current_balance': current_balance,
             'total_budget': float(total_budget),
             'remaining_budget': remaining_budget,

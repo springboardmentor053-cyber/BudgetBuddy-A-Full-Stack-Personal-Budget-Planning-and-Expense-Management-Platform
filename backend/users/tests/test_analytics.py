@@ -19,8 +19,12 @@ class AnalyticsAPITestCase(APITestCase):
         response = self.client.get('/api/auth/dashboard/')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # Check that response contains core summary metrics
-        self.assertTrue(any(key in response.data for key in ['total_income', 'total_expenses', 'current_balance', 'summary']))
+        self.assertEqual(response.data['total_income'], 0.0)
+        self.assertEqual(response.data['total_expense'], 0.0)
+        self.assertEqual(response.data['income'], 0.0)
+        self.assertEqual(response.data['expenses'], 0.0)
+        self.assertEqual(response.data['current_balance'], 0.0)
+        self.assertEqual(response.data['recent_transactions'], [])
 
     def test_budgets_summary_endpoint(self):
         """Test GET /api/budgets/ endpoint status for budget utilization analytics"""
