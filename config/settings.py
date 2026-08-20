@@ -9,6 +9,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 
+
 # =====================================================
 # BASE DIRECTORY
 # =====================================================
@@ -321,3 +322,10 @@ DEFAULT_FROM_EMAIL = os.getenv(
 )
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+from datetime import timedelta
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": False,
+}

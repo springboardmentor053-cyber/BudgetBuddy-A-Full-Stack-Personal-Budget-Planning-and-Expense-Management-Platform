@@ -1,17 +1,12 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/",
+  baseURL: "http://127.0.0.1:8000/api/",
 });
 
-
-// ======================================
-// Add JWT Token to Every Request
-// ======================================
-
+// Add access token to requests
 api.interceptors.request.use(
   (config) => {
-
     const token = localStorage.getItem("access");
 
     if (token) {
@@ -20,40 +15,60 @@ api.interceptors.request.use(
 
     return config;
   },
-
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-
-// ======================================
-// Handle Expired / Invalid Token
-// ======================================
-
+// Handle expired access token
 api.interceptors.response.use(
+  (response) => response,
 
-  (response) => {
-    return response;
-  },
+  async (error) => {
+    const originalRequest = error.config;
 
-  (error) => {
+    // Access token expired
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
 
-    if (error.response?.status === 401) {
+      const refreshToken = localStorage.getItem("refresh");
 
-      localStorage.removeItem("access");
-      localStorage.removeItem("refresh");
+      if (refreshToken) {
+        try {
+          const response = await axios.post(
+            "http://127.0.0.1:8000/api/token/refresh/",
+            {
+              refresh: refreshToken,
+            }
+          );
 
-      // Prevent redirect loop if already on login
-      if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
+          const newAccessToken = response.data.access;
+
+          localStorage.setItem("access", newAccessToken);
+
+          originalRequest.headers.Authorization =
+            `Bearer ${newAccessToken}`;
+
+          // Retry the original request
+          return api(originalRequest);
+
+        } catch (refreshError) {
+          // Refresh token is also expired
+          localStorage.removeItem("access");
+          localStorage.removeItem("refresh");
+
+          if (window.location.pathname !== "/login") {
+            window.location.href = "/login";
+          }
+
+          return Promise.reject(refreshError);
+        }
       }
     }
 
     return Promise.reject(error);
   }
-
 );
-
 
 export default api;
