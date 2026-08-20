@@ -1,12 +1,12 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Landing from './pages/Landing/Landing';
 import Login from './Login';
+import Register from './pages/Auth/Register';
 import Dashboard from './pages/Dashboard/Dashboard';
 import AddExpense from './pages/Expenses/AddExpense';
 import AddIncome from './pages/Income/AddIncome';
 import AddBudget from './pages/Budgets/AddBudget';
 import SavingsGoals from './pages/Savings/SavingsGoals';
-import Register from './pages/Auth/Register';
 import Notifications from './pages/Notifications/Notifications';
 import Reports from './pages/Reports/Reports';
 import Analytics from './pages/Analytics/Analytics';

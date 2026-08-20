@@ -32,7 +32,6 @@ function Landing() {
             ● Live budget tracking, built for students
           </div>
           
-          {/* Main Title - Pure White & Emerald Accent */}
           <h1 style={{ fontSize: '46px', fontWeight: '800', lineHeight: '1.2', margin: '0 0 18px', color: '#ffffff' }}>
             Take control of<br /><span style={{ color: '#34d399' }}>your money story.</span>
           </h1>
@@ -55,7 +54,7 @@ function Landing() {
           </div>
         </div>
 
-        {/* Dashboard Preview Card */}
+        {/* Dashboard Preview */}
         <div style={{ flex: '1 1 380px', background: '#1e293b', padding: '24px', borderRadius: '14px', border: '1px solid #334155', boxShadow: '0 10px 30px rgba(0,0,0,0.3)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
             <strong style={{ fontSize: '15px', color: '#ffffff' }}>This Month Overview</strong>

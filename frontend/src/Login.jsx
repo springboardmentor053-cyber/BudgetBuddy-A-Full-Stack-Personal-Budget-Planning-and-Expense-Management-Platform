@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -16,8 +18,7 @@ function Login() {
       return;
     }
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
-const response = await axios.post(`${API_URL}/token/`, { username, password });
+      const response = await axios.post(`${API_URL}/token/`, { username, password });
       localStorage.setItem('access_token', response.data.access);
       localStorage.setItem('refresh_token', response.data.refresh);
       navigate('/dashboard');
@@ -63,19 +64,6 @@ const response = await axios.post(`${API_URL}/token/`, { username, password });
             fontWeight: '600', cursor: 'pointer', marginBottom: '16px'
           }}>Sign In</button>
         </form>
-
-        <div style={{ display: 'flex', alignItems: 'center', margin: '16px 0', color: '#8892a6', fontSize: '12px' }}>
-          <div style={{ flex: 1, height: '1px', background: '#232b3d' }} />
-          <span style={{ margin: '0 10px' }}>OR</span>
-          <div style={{ flex: 1, height: '1px', background: '#232b3d' }} />
-        </div>
-
-        <button type="button" disabled style={{
-          width: '100%', padding: '10px', border: '1px solid #2a3346', borderRadius: '8px',
-          background: '#0f1420', color: '#8892a6', cursor: 'not-allowed', marginBottom: '16px'
-        }}>
-          Continue with Google (coming soon)
-        </button>
 
         {message && <p style={{ color: '#e74c3c', fontSize: '13px' }}>{message}</p>}
 

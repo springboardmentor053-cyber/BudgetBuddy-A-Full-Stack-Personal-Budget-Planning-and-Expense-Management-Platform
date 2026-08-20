@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+
 function Register() {
   const [form, setForm] = useState({ username: '', email: '', password: '' });
   const [message, setMessage] = useState('');
@@ -21,10 +23,9 @@ function Register() {
       return;
     }
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
-await axios.post(`${API_URL}/register/`, form);
+      await axios.post(`${API_URL}/register/`, form);
       setMessage('Account created! Redirecting to login...');
-      setTimeout(() => navigate('/'), 1500);
+      setTimeout(() => navigate('/login'), 1500);
     } catch (err) {
       if (!err.response) {
         setMessage('Cannot connect to server. Please try again.');
@@ -45,7 +46,7 @@ await axios.post(`${API_URL}/register/`, form);
         background: '#171d2d', border: '1px solid #232b3d', borderRadius: '16px',
         padding: '40px', width: '360px', textAlign: 'center'
       }}>
-        <h1 style={{ color: '#8e6ff7', marginBottom: '5px' }}>💰 BudgetBuddy</h1>
+        <h1 style={{ color: '#8e6ff7', marginBottom: '5px' }}>BudgetBuddy</h1>
         <p style={{ color: '#8892a6', marginBottom: '25px', fontSize: '14px' }}>Create your account</p>
 
         <form onSubmit={handleSubmit}>
@@ -65,10 +66,10 @@ await axios.post(`${API_URL}/register/`, form);
           }}>Create Account</button>
         </form>
 
-        {message && <p style={{ color: message.includes('failed') ? '#e74c3c' : '#28a745', fontSize: '13px' }}>{message}</p>}
+        {message && <p style={{ color: message.includes('failed') || message.includes('taken') ? '#e74c3c' : '#28a745', fontSize: '13px' }}>{message}</p>}
 
         <p style={{ color: '#8892a6', fontSize: '13px', marginTop: '10px' }}>
-          Already have an account? <Link to="/" style={{ color: '#8e6ff7' }}>Sign in</Link>
+          Already have an account? <Link to="/login" style={{ color: '#8e6ff7' }}>Sign in</Link>
         </p>
       </div>
     </div>

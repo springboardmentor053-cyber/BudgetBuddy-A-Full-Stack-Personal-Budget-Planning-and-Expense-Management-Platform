@@ -7,7 +7,6 @@ const api = axios.create({
   baseURL: API_BASE,
 });
 
-// Automatically attach the token to every request
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('access_token');
   if (token) {
@@ -16,7 +15,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Global error handling
 api.interceptors.response.use(
   (response) => response,
   (error) => {
