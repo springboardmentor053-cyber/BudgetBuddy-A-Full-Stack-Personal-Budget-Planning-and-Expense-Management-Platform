@@ -3,9 +3,12 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 // Bypass TS type checking for Vite's import.meta.env
 const env = (import.meta as any).env;
 
-const API_BASE_URL =
-  (env?.VITE_API_URL ? env.VITE_API_URL.replace(/\/api\/?$/, '') : '') ||
-  'https://budgetbuddy-a-full-stack-personal-budget-d2lr.onrender.com';
+const DEFAULT_PRODUCTION_API_URL =
+  'https://budgetbuddy-a-full-stack-personal-budget-planning-and-expense-management-platform-3.onrender.com';
+
+const API_BASE_URL = (env?.VITE_API_URL ||
+  (env?.DEV ? 'http://127.0.0.1:8000' : DEFAULT_PRODUCTION_API_URL))
+  .replace(/\/api\/?$/, '');
 
 const api = axios.create({
   baseURL: API_BASE_URL,

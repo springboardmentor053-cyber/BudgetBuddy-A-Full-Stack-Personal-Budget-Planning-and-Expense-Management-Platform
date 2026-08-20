@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
+import api from '../api/axios';
 
-const BUDGETS_URL = 'http://127.0.0.1:8000/api/budgets/';
+const BUDGETS_URL = '/api/budgets/';
 
 const categories = [
   'FOOD',
@@ -68,24 +69,20 @@ export default function BudgetTracker() {
   const [budgetToast, setBudgetToast] = useState(null);
 
   const request = useCallback(async (url = BUDGETS_URL, options = {}) => {
-    const token = localStorage.getItem('access_token') || localStorage.getItem('budgetbuddy_token');
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-        ...options.headers,
-      },
-    });
-
-    if (response.status === 204) return null;
-    const data = await response.json().catch(() => null);
-    if (!response.ok) {
-      const error = new Error(getErrorMessage(data));
-      error.response = { data };
+    try {
+      const response = await api.request({
+        url,
+        method: options.method || 'GET',
+        data: options.body ? JSON.parse(options.body) : undefined,
+        headers: options.headers,
+      });
+      return response.status === 204 ? null : response.data;
+    } catch (requestError) {
+      const data = requestError.response?.data;
+      const error = new Error(getErrorMessage(data) || requestError.message);
+      error.response = requestError.response;
       throw error;
     }
-    return data;
   }, []);
 
   const loadBudgets = useCallback(async () => {
