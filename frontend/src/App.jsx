@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Landing from './pages/Landing/Landing';
 import Login from './Login';
 import Dashboard from './pages/Dashboard/Dashboard';
 import AddExpense from './pages/Expenses/AddExpense';
@@ -17,13 +18,14 @@ function App() {
     <BrowserRouter>
       <ToastContainer position="top-right" theme="dark" autoClose={4000} />
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/add-expense" element={<AddExpense />} />
         <Route path="/add-income" element={<AddIncome />} />
         <Route path="/add-budget" element={<AddBudget />} />
         <Route path="/savings-goals" element={<SavingsGoals />} />
-        <Route path="/register" element={<Register />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/analytics" element={<Analytics />} />
