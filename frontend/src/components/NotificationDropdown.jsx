@@ -98,7 +98,7 @@ export default function NotificationDropdown() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-14 z-40 w-96 overflow-hidden rounded-2xl border border-slate-800/80 bg-[#131b2e] shadow-2xl shadow-black/50">
+        <div className="absolute right-0 top-14 z-40 w-[min(24rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-slate-800/80 bg-[#131b2e] shadow-2xl shadow-black/50">
           <div className="border-b border-slate-800/80 bg-[#0f172a] px-4 py-3">
             <div className="flex items-center justify-between">
               <div>

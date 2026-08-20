@@ -79,7 +79,7 @@ export default function SavingsGoals() {
     }
   };
 
-  return <div className="min-h-screen p-8 text-slate-100 w-full max-w-7xl mx-auto">
+  return <div className="min-h-screen w-full max-w-7xl mx-auto p-4 pt-20 text-slate-100 sm:p-8">
     <div className="mb-8">
       <p className="text-xs font-bold uppercase tracking-widest text-emerald-400 mb-1">Savings planner</p>
       <h1 className="text-3xl font-extrabold text-white">Build Your Financial Future</h1>
@@ -90,7 +90,7 @@ export default function SavingsGoals() {
       <form onSubmit={submitGoal} className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 shadow-xl shadow-slate-950/20 space-y-4">
         <div className="flex items-center justify-between"><h2 className="text-lg font-bold text-white">{editingId ? 'Edit Savings Goal' : 'Create Savings Goal'}</h2>{editingId && <button type="button" onClick={resetForm} className="text-xs font-semibold text-slate-400 hover:text-white">Cancel</button>}</div>
         <Field label="Goal Title"><input required name="title" value={form.title} onChange={updateField} placeholder="e.g. Dream vacation" className="field" /></Field>
-        <div className="grid grid-cols-2 gap-3"><Field label="Target Amount"><input required min="0.01" step="0.01" type="number" name="target_amount" value={form.target_amount} onChange={updateField} placeholder="0.00" className="field" /></Field><Field label="Amount Saved"><input min="0" step="0.01" type="number" name="saved_amount" value={form.saved_amount} onChange={updateField} placeholder="0.00" className="field" /></Field></div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2"><Field label="Target Amount"><input required min="0.01" step="0.01" type="number" name="target_amount" value={form.target_amount} onChange={updateField} placeholder="0.00" className="field" /></Field><Field label="Amount Saved"><input min="0" step="0.01" type="number" name="saved_amount" value={form.saved_amount} onChange={updateField} placeholder="0.00" className="field" /></Field></div>
         <Field label="Target Date"><input required type="date" name="target_date" value={form.target_date} onChange={updateField} className="field" /></Field>
         <Field label="Description (optional)"><textarea name="description" value={form.description} onChange={updateField} rows="4" placeholder="What is this goal for?" className="field resize-none" /></Field>
         <button disabled={submitting} className="w-full rounded-xl bg-emerald-500 px-4 py-3 text-sm font-extrabold text-slate-950 transition hover:bg-emerald-400 disabled:opacity-60">{submitting ? 'Saving...' : editingId ? 'Update Goal' : 'Create Goal'}</button>

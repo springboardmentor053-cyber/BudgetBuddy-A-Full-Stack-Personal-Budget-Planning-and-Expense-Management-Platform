@@ -76,7 +76,7 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 space-y-6 overflow-x-hidden">
+    <div className="w-full max-w-7xl mx-auto px-4 pt-20 pb-6 sm:px-6 sm:py-6 md:px-8 space-y-6 overflow-x-hidden">
           <header className="rounded-[1.5rem] border border-slate-800/80 bg-[#131b2e] p-6 shadow-lg shadow-black/40">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>

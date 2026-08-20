@@ -57,10 +57,10 @@ export default function AIChatWidget() {
   };
 
   return (
-    <div className="fixed bottom-6 right-8 z-50 flex flex-col items-end">
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end sm:bottom-6 sm:right-8">
       {/* Expanded Chat Window Popup */}
       {isOpen && (
-        <div className="mb-4 w-[92vw] sm:w-[460px] md:w-[480px] h-[620px] max-h-[82vh] rounded-2xl border border-slate-800 bg-slate-950/95 backdrop-blur-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
+        <div className="mb-4 h-[min(620px,82vh)] w-[calc(100vw-2rem)] sm:w-[460px] md:w-[480px] rounded-2xl border border-slate-800 bg-slate-950/95 backdrop-blur-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
           
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800 bg-slate-900/70">

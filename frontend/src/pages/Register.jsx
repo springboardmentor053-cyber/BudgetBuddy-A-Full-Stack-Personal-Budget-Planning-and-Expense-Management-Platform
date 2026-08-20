@@ -94,7 +94,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
-      <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-xl p-8 shadow-2xl">
+      <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-xl p-5 sm:p-8 shadow-2xl">
         <div className="text-center mb-8">
           <Link to="/" className="mb-5 inline-flex items-center text-sm font-medium text-slate-400 transition hover:text-emerald-400">
             ← Back to Home

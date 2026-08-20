@@ -110,8 +110,8 @@ export default function IncomeDashboard() {
   }, [incomes, timeframe, selectedFilterCategory]);
 
   return (
-    <div className="p-8 space-y-8 w-full max-w-7xl mx-auto text-slate-100">
-      <header className="rounded-3xl border border-slate-800/80 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/40 backdrop-blur">
+    <div className="p-4 pt-20 space-y-6 sm:p-8 sm:space-y-8 w-full max-w-7xl mx-auto text-slate-100">
+      <header className="rounded-3xl border border-slate-800/80 bg-slate-900/80 p-5 sm:p-8 shadow-2xl shadow-slate-950/40 backdrop-blur">
         <p className="text-sm font-semibold uppercase tracking-[0.35em] text-emerald-400">Income Tracker</p>
         <h1 className="mt-3 text-3xl font-semibold text-white sm:text-4xl">Manage Your Earnings</h1>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
@@ -185,7 +185,7 @@ export default function IncomeDashboard() {
                 />
               </div>
 
-              <div className="grid gap-4 grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-sm font-medium text-slate-300">Amount (₹)</label>
                   <input

@@ -263,8 +263,8 @@ export default function Reports() {
   const monthlyTrendData = buildMonthlyTrendData(expenses);
 
   return (
-    <div className="p-8 space-y-6 w-full max-w-7xl mx-auto text-slate-100">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 bg-slate-900/60 border border-slate-800/80 rounded-2xl backdrop-blur-md">
+    <div className="p-4 pt-20 space-y-6 sm:p-8 w-full max-w-7xl mx-auto text-slate-100">
+      <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-6 bg-slate-900/60 border border-slate-800/80 rounded-2xl backdrop-blur-md">
         <div>
           <h1 className="text-2xl font-bold text-white tracking-tight">Financial Reports</h1>
           <p className="text-xs text-slate-400 mt-1">Real-time breakdown of your income, expenses, budget limits, and savings.</p>
@@ -309,8 +309,8 @@ export default function Reports() {
           <MetricCard label="Remaining Budget" value={summary?.remaining_budget} color={toNumber(summary?.remaining_budget) >= 0 ? 'text-amber-400' : 'text-rose-400'} />
         </div>
 
-        <div className="flex items-center justify-between p-2 bg-slate-900/40 border border-slate-800 rounded-2xl">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-2 p-2 sm:flex-row sm:items-center sm:justify-between bg-slate-900/40 border border-slate-800 rounded-2xl">
+          <div className="flex flex-wrap items-center gap-2">
             {['Expense Records', 'Savings & Analytics'].map((label, index) => <button key={label} onClick={() => setActiveSlide(index)} className={`px-4 py-2 text-xs font-bold rounded-xl transition-all duration-300 ${activeSlide === index ? 'bg-slate-800 text-emerald-400 border border-emerald-500/30 shadow-md' : 'text-slate-400 hover:text-white'}`}>{label}</button>)}
           </div>
           <div className="flex items-center gap-2 px-3">{[0, 1].map((index) => <button key={index} onClick={() => setActiveSlide(index)} aria-label={`Show ${index === 0 ? 'expenses' : 'savings'}`} className={`h-2.5 rounded-full transition-all duration-300 ${activeSlide === index ? 'w-6 bg-emerald-500' : 'w-2.5 bg-slate-700'}`} />)}</div>

@@ -180,10 +180,10 @@ export default function BudgetTracker() {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 p-8 text-slate-100">
+    <div className="w-full max-w-7xl mx-auto space-y-6 p-4 pt-20 text-slate-100 sm:space-y-8 sm:p-8">
       {budgetToast && (
         <div
-          className="fixed right-4 top-4 z-50 flex max-w-md items-start gap-3 rounded-xl border border-emerald-500/40 bg-slate-900 p-4 text-emerald-200 shadow-2xl shadow-slate-950/60"
+          className="fixed right-4 top-4 z-50 flex w-[calc(100vw-2rem)] max-w-md items-start gap-3 rounded-xl border border-emerald-500/40 bg-slate-900 p-4 text-emerald-200 shadow-2xl shadow-slate-950/60"
           role="status"
         >
           <span className="text-xl leading-5" aria-hidden="true">✓</span>
@@ -200,7 +200,7 @@ export default function BudgetTracker() {
         </div>
       )}
 
-      <header className="rounded-3xl border border-slate-800/80 bg-slate-900/80 p-8 shadow-2xl shadow-slate-950/40 backdrop-blur">
+      <header className="rounded-3xl border border-slate-800/80 bg-slate-900/80 p-5 sm:p-8 shadow-2xl shadow-slate-950/40 backdrop-blur">
         <p className="text-sm font-semibold uppercase tracking-[0.35em] text-emerald-400">Budget Tracker</p>
         <h1 className="mt-3 text-3xl font-semibold text-white sm:text-4xl">Plan every month with confidence</h1>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">Set category limits, then keep a clear view of the budgets guiding your spending.</p>
@@ -224,7 +224,7 @@ export default function BudgetTracker() {
             <label className="mb-2 block text-sm font-medium text-slate-300">Budget amount</label>
             <input type="number" min="0.01" step="0.01" required value={form.budget_amount} onChange={(event) => setForm((current) => ({ ...current, budget_amount: event.target.value }))} placeholder="0.00" className="w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div><label className="mb-2 block text-sm font-medium text-slate-300">Month</label><input type="number" min="1" max="12" required value={form.month} onChange={(event) => setForm((current) => ({ ...current, month: event.target.value }))} className="w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm outline-none transition focus:border-emerald-500" /></div>
             <div><label className="mb-2 block text-sm font-medium text-slate-300">Year</label><input type="number" min="2020" required value={form.year} onChange={(event) => setForm((current) => ({ ...current, year: event.target.value }))} className="w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm outline-none transition focus:border-emerald-500" /></div>
           </div>

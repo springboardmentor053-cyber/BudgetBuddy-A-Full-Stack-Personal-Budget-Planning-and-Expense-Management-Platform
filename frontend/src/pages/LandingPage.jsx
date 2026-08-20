@@ -64,7 +64,7 @@ function DashboardPreview() {
           <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold text-emerald-300">Live</span>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 sm:gap-3">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3">
           <Metric label="Total Balance" value="₹65,000" tone="text-emerald-300" />
           <Metric label="Monthly Income" value="₹80,000" />
           <Metric label="Expenses" value="₹15,000" tone="text-rose-300" />

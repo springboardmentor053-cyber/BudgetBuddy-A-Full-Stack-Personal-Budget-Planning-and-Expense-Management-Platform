@@ -18,6 +18,7 @@ export default function Sidebar({ onLogout, notifications: sharedNotifications }
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
   const username = user?.username || localStorage.getItem('budgetbuddy_username') || '';
 
   useEffect(() => {
@@ -46,7 +47,18 @@ export default function Sidebar({ onLogout, notifications: sharedNotifications }
   };
 
   return (
-    <aside className="fixed left-0 top-0 z-30 flex h-screen w-64 flex-col justify-between border-r border-slate-900 bg-slate-950">
+    <>
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        className="fixed left-4 top-4 z-20 grid h-11 w-11 place-items-center rounded-xl border border-slate-800 bg-slate-950 text-slate-200 shadow-lg lg:hidden"
+        aria-label="Open navigation menu"
+        aria-expanded={isOpen}
+      >
+        <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+      </button>
+      {isOpen && <button type="button" className="fixed inset-0 z-20 bg-slate-950/70 lg:hidden" onClick={() => setIsOpen(false)} aria-label="Close navigation menu" />}
+      <aside className={`fixed left-0 top-0 z-30 flex h-screen w-64 flex-col justify-between border-r border-slate-900 bg-slate-950 transition-transform duration-200 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
       {/* Brand logo section */}
       <div className="p-6 border-b border-slate-900">
         <div className="flex items-center gap-3">
@@ -57,6 +69,7 @@ export default function Sidebar({ onLogout, notifications: sharedNotifications }
             <h2 className="text-lg font-bold text-white tracking-wide">BudgetBuddy</h2>
             <p className="text-xs text-slate-500">Personal Finance OS</p>
           </div>
+          <button type="button" onClick={() => setIsOpen(false)} className="ml-auto grid h-9 w-9 place-items-center rounded-lg text-slate-400 hover:bg-slate-900 hover:text-white lg:hidden" aria-label="Close navigation menu">×</button>
         </div>
       </div>
 
@@ -66,6 +79,7 @@ export default function Sidebar({ onLogout, notifications: sharedNotifications }
           <NavLink
             key={item.path}
             to={item.path}
+            onClick={() => setIsOpen(false)}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 mb-2 border-l-4 ${
                 isActive
@@ -98,6 +112,7 @@ export default function Sidebar({ onLogout, notifications: sharedNotifications }
         {/* Clickable User Card navigating to /settings */}
         <NavLink
           to="/settings"
+          onClick={() => setIsOpen(false)}
           className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/40 border border-slate-900 hover:border-slate-700 transition-colors cursor-pointer"
         >
           <div className="h-9 w-9 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 flex-shrink-0">
@@ -122,6 +137,7 @@ export default function Sidebar({ onLogout, notifications: sharedNotifications }
           Logout
         </button>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

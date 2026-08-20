@@ -32,7 +32,7 @@ function AppLayout({ children }) {
     <div className="min-h-screen bg-slate-950 text-slate-100 flex relative overflow-x-hidden">
       <Sidebar />
       {/* The sidebar is fixed, so reserve its width without constraining children. */}
-      <main className="ml-64 min-h-screen min-w-0 flex-1 overflow-x-hidden">
+      <main className="min-h-screen min-w-0 flex-1 overflow-x-hidden lg:ml-64">
         {children}
       </main>
       {/* Floating AI Financial Advisor Widget */}
