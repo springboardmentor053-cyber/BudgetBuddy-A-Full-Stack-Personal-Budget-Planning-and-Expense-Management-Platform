@@ -72,11 +72,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'core.urls'
 
-CORS_ALLOWED_ORIGINS = [
-    "https://budget-buddy-frontend.vercel.app",  # Change to your actual Vercel project URL
-    "http://localhost:5173",                     # For local testing in Vite
-    "http://localhost:3000",
-]
+CORS_ALLOW_ALL_ORIGINS = True
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -114,7 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', 
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
