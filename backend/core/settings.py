@@ -72,8 +72,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'core.urls'
 
-CORS_ALLOWED_ORIGINS=[
-    "https://your-app.vercel.app",
+CORS_ALLOWED_ORIGINS = [
+    "https://budget-buddy-frontend.vercel.app",  # Change to your actual Vercel project URL
+    "http://localhost:5173",                     # For local testing in Vite
+    "http://localhost:3000",
 ]
 TEMPLATES = [
     {
