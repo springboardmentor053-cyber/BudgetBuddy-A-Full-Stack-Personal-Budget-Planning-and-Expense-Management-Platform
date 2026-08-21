@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECURITY
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-h45i+ax2)@g1et__0569kxcwd0mdcu3bs&j*zz=-^^key*_#1y')
+SECRET_KEY = config('SECRET_KEY')
 
 DEBUG = config('DEBUG', default=True, cast=bool)
 
@@ -185,4 +185,4 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='BudgetBuddy <noreply@
 # AI Chatbot Groq Key
 GROQ_API_KEY = config('GROQ_API_KEY', default='')
 
-
+
