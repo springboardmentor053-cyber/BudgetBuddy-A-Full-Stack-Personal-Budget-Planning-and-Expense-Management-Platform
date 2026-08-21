@@ -1,15 +1,15 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Landing from './pages/Landing/Landing';
+import Landing from './Pages/Landing/Landing';
 import Login from './Login';
-import Register from './pages/Auth/Register';
-import Dashboard from './pages/Dashboard/Dashboard';
-import AddExpense from './pages/Expenses/AddExpense';
-import AddIncome from './pages/Income/AddIncome';
-import AddBudget from './pages/Budgets/AddBudget';
-import SavingsGoals from './pages/Savings/SavingsGoals';
-import Notifications from './pages/Notifications/Notifications';
-import Reports from './pages/Reports/Reports';
-import Analytics from './pages/Analytics/Analytics';
+import Register from './Pages/Auth/Register';
+import Dashboard from './Pages/Dashboard/Dashboard';
+import AddExpense from './Pages/Expenses/AddExpense';
+import AddIncome from './Pages/Income/AddIncome';
+import AddBudget from './Pages/Budgets/AddBudget';
+import SavingsGoals from './Pages/Savings/SavingsGoals';
+import Notifications from './Pages/Notifications/Notifications';
+import Reports from './Pages/Reports/Reports';
+import Analytics from './Pages/Analytics/Analytics';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
