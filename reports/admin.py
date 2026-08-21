@@ -1,5 +1,4 @@
 from django.contrib import admin
-from .models import Notification, Report
+from .models import Report
 
-admin.site.register(Notification)
 admin.site.register(Report)

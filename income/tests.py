@@ -44,6 +44,28 @@ class IncomeAPITests(APITestCase):
         response = self.client.post('/api/income/', data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_create_income_invalid_amount(self):
+        data = {
+            'title': 'Tutoring',
+            'amount': '-150.00',
+            'source': 'FREELANCING',
+            'income_date': '2026-07-15'
+        }
+        response = self.client.post('/api/income/', data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("amount", response.data)
+
+    def test_create_income_normalized_source(self):
+        data = {
+            'title': 'Tutoring',
+            'amount': '150.00',
+            'source': 'freelancing',
+            'income_date': '2026-07-15'
+        }
+        response = self.client.post('/api/income/', data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['source'], 'FREELANCING')
+
     def test_get_all_income(self):
         response = self.client.get('/api/income/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)

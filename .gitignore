@@ -14,3 +14,10 @@ __pycache__/
 
 # Environment variables
 .env
+
+# Collected static files
+staticfiles/db.sqlite3
+scratch/
+db.sqlite3
+staticfiles/
+scratch/

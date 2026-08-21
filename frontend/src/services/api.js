@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -82,6 +82,7 @@ export const authService = {
     return !!localStorage.getItem('access_token');
   },
   getProfile: () => api.get('/api/users/profile/').then((res) => res.data),
+  updateProfile: (data) => api.put('/api/users/profile/', data).then((res) => res.data),
 };
 
 // Expenses services
@@ -119,13 +120,30 @@ export const savingsService = {
 // Notifications services
 export const notificationService = {
   getAll: () => api.get('/api/notifications/').then((res) => res.data),
-  markAsRead: (id) => api.patch(`/api/notifications/${id}/`, { is_read: true }).then((res) => res.data),
+  markAsRead: (id) => api.patch(`/api/notifications/${id}/read/`).then((res) => res.data),
+  delete: (id) => api.delete(`/api/notifications/${id}/`).then((res) => res.data),
 };
 
 // Reports and Dashboard services
 export const reportService = {
   getDashboardData: () => api.get('/api/reports/dashboard/').then((res) => res.data),
   getHistory: () => api.get('/api/reports/history/').then((res) => res.data),
+  exportReport: (format, filterType, startDate, endDate) => {
+    return api.get('/api/reports/export/', {
+      params: { export: format, filter_type: filterType, start_date: startDate, end_date: endDate },
+      responseType: format === 'csv' ? 'blob' : 'json'
+    }).then((res) => res.data);
+  },
+  getCombinedReport: (filterType, startDate, endDate) => {
+    return api.get('/api/reports/financial-summary-report/', {
+      params: { filter_type: filterType, start_date: startDate, end_date: endDate }
+    }).then((res) => res.data);
+  }
+};
+
+// AI Chatbot services
+export const aiService = {
+  chat: (message) => api.post('/api/ai/chat/', { message }).then((res) => res.data),
 };
 
 export default api;

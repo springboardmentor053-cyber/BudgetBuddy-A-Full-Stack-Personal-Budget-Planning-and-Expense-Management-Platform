@@ -64,6 +64,16 @@ class ExpenseAPITests(APITestCase):
         response = self.client.post('/api/expenses/', data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_create_expense_invalid_amount(self):
+        data = {
+            'category': 'SHOPPING',
+            'amount': '-10.00',
+            'date': '2026-07-15'
+        }
+        response = self.client.post('/api/expenses/', data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("amount", response.data)
+
     def test_view_expenses_list(self):
         response = self.client.get('/api/expenses/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)

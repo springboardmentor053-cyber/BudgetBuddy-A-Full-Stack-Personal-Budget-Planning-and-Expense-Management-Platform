@@ -1,9 +1,24 @@
 import { useState } from 'react';
 
 function AnalyticsCharts({ incomes, expenses, budgets, savings, theme, CATEGORIES }) {
+  const getStartOfCurrentMonth = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    return `${yyyy}-${mm}-01`;
+  };
+
+  const getTodayDateString = () => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
   const [filterType, setFilterType] = useState('month'); // 'week', 'month', 'year', 'custom'
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState(getStartOfCurrentMonth());
+  const [endDate, setEndDate] = useState(getTodayDateString());
   const [hoveredCategory, setHoveredCategory] = useState(null);
   const [hoveredPoint, setHoveredPoint] = useState(null);
   const [hoveredBar, setHoveredBar] = useState(null); // 'income' or 'expense'
@@ -256,6 +271,7 @@ function AnalyticsCharts({ incomes, expenses, budgets, savings, theme, CATEGORIE
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
+              onClick={(e) => e.target.showPicker && e.target.showPicker()}
               className={`w-full px-4 py-2 rounded-xl text-sm border outline-none transition-all ${inputBg}`}
             />
           </div>
@@ -265,6 +281,7 @@ function AnalyticsCharts({ incomes, expenses, budgets, savings, theme, CATEGORIE
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
+              onClick={(e) => e.target.showPicker && e.target.showPicker()}
               className={`w-full px-4 py-2 rounded-xl text-sm border outline-none transition-all ${inputBg}`}
             />
           </div>
@@ -645,7 +662,7 @@ function AnalyticsCharts({ incomes, expenses, budgets, savings, theme, CATEGORIE
                 >
                   <div className="space-y-1.5 flex-1 min-w-0">
                     <h4 className="text-sm font-extrabold truncate">{goal.goal_name}</h4>
-                    <p className={`text-[10px] ${secondaryText}`}>Target Date: {goal.deadline}</p>
+                    <p className={`text-[10px] ${secondaryText}`}>Target Date: {goal.target_date}</p>
                     <div className="text-xs">
                       <span className="font-extrabold text-emerald-500">₹{saved.toFixed(0)}</span>
                       <span className={`text-[10px] ${secondaryText}`}> of ₹{target.toFixed(0)}</span>

@@ -11,6 +11,7 @@ CATEGORY_MAP = {
     'HEALTHCARE': 'HEALTHCARE',
     'HEALTH': 'HEALTHCARE',
     'BILLS': 'BILLS',
+    'SAVINGS': 'SAVINGS',
     'MISCELLANEOUS': 'MISCELLANEOUS',
     'OTHER': 'MISCELLANEOUS',
 }
@@ -35,5 +36,11 @@ class ExpenseSerializer(serializers.ModelSerializer):
         raise serializers.ValidationError(
             f"'{value}' is not a valid category. Valid choices are: {', '.join(valid_keys)}."
         )
+
+    def validate_amount(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Amount must be greater than zero.")
+        return value
+
 
         

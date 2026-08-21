@@ -33,37 +33,7 @@ class ExpenseListCreateView(generics.ListCreateAPIView):
         return queryset
 
     def perform_create(self, serializer):
-        expense = serializer.save(user=self.request.user)
-        from budgets.models import Budget
-        from reports.models import Notification
-        from django.db.models import Sum
-        import datetime
-
-        # Get budget for this category for the current month
-        current_date = expense.date or datetime.date.today()
-        # Ensure month matches title-case standard like "July"
-        month_str = current_date.strftime("%B")
-        
-        budget = Budget.objects.filter(user=self.request.user, category=expense.category, month=month_str).first()
-        if budget:
-            start_of_month = datetime.date(current_date.year, current_date.month, 1)
-            if current_date.month == 12:
-                end_of_month = datetime.date(current_date.year + 1, 1, 1)
-            else:
-                end_of_month = datetime.date(current_date.year, current_date.month + 1, 1)
-            
-            total_spent = Expense.objects.filter(
-                user=self.request.user,
-                category=expense.category,
-                date__gte=start_of_month,
-                date__lt=end_of_month
-            ).aggregate(total=Sum('amount'))['total'] or 0
-
-            if total_spent > budget.limit_amount:
-                Notification.objects.create(
-                    user=self.request.user,
-                    message=f"Budget limit exceeded! You have spent ${total_spent:.2f} of your ${budget.limit_amount:.2f} limit on {expense.category} in {month_str}."
-                )
+        serializer.save(user=self.request.user)
 
 
 class ExpenseRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):

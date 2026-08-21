@@ -17,7 +17,11 @@ function Login() {
       await authService.login(username, password);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Invalid username or password. Please try again.');
+      if (!err.response) {
+        setError('Network Error: The budget API server is currently unavailable. Please check your connection and try again.');
+      } else {
+        setError(err.response?.data?.detail || 'Invalid username or password. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

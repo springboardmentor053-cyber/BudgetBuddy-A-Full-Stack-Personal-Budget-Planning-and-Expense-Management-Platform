@@ -29,11 +29,25 @@ function Register() {
         navigate('/login');
       }, 1500);
     } catch (err) {
-      setError(
-        err.response?.data?.username?.[0] ||
-        err.response?.data?.email?.[0] ||
-        'Registration failed. Please check the details and try again.'
-      );
+      if (!err.response) {
+        setError('Network Error: The budget API server is currently unavailable. Please check your connection and try again.');
+      } else {
+        const data = err.response.data;
+        if (data && typeof data === 'object') {
+          const messages = [];
+          for (const key in data) {
+            const fieldName = key.charAt(0).toUpperCase() + key.slice(1);
+            if (Array.isArray(data[key])) {
+              messages.push(`${fieldName}: ${data[key].join(', ')}`);
+            } else if (typeof data[key] === 'string') {
+              messages.push(`${fieldName}: ${data[key]}`);
+            }
+          }
+          setError(messages.join(' | ') || 'Registration failed. Please check the details and try again.');
+        } else {
+          setError('Registration failed. Please check the details and try again.');
+        }
+      }
     } finally {
       setLoading(false);
     }
