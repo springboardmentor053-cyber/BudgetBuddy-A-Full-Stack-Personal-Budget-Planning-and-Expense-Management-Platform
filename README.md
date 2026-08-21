@@ -86,7 +86,7 @@ BudgetBuddy combines financial dashboards, analytics and charts, PDF reports, no
 
 ## 📸 Screenshots
 
-Milestone screenshots and evidence are available in [screenshots/milestone4](screenshots/milestone4/).
+Project screenshots and milestone evidence are available in the [`screenshots/`](screenshots/).
 
 ## 👩‍💻 Author
 
