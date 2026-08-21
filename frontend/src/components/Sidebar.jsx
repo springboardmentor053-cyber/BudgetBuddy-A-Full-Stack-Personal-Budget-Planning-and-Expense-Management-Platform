@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api";
 
 function Sidebar() {
 
@@ -13,11 +13,7 @@ function Sidebar() {
 
     const token = localStorage.getItem("access");
 
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    };
+    
 
     // =============================
     // Fetch Logged-in User
@@ -25,52 +21,51 @@ function Sidebar() {
 
     useEffect(() => {
 
-        const fetchProfile = async () => {
+    const fetchProfile = async () => {
 
-            try {
+        try {
 
-                const response = await axios.get(
-                    "http://127.0.0.1:8000/api/profile/",
-                    config
+            const response = await api.get(
+                "/profile/"
+            );
+
+            setProfile({
+                username: response.data.username,
+                email: response.data.email,
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Error fetching profile:",
+                error
+            );
+
+            if (
+                error.response?.status === 401
+            ) {
+
+                localStorage.removeItem(
+                    "access"
                 );
 
-                setProfile({
-                    username: response.data.username,
-                    email: response.data.email,
-                });
-
-            } catch (error) {
-
-                console.error(
-                    "Error fetching profile:",
-                    error
+                localStorage.removeItem(
+                    "refresh"
                 );
 
-                if (
-                    error.response?.status === 401
-                ) {
-
-                    localStorage.removeItem(
-                        "access"
-                    );
-
-                    localStorage.removeItem(
-                        "refresh"
-                    );
-
-                    navigate("/login");
-
-                }
+                navigate("/login");
 
             }
 
-        };
-
-        if (token) {
-            fetchProfile();
         }
 
-    }, [token, navigate]);
+    };
+
+    if (token) {
+        fetchProfile();
+    }
+
+}, [token, navigate]);
 
 
     // =============================

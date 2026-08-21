@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
+import api from "../api";
 
 function Register() {
   const navigate = useNavigate();
@@ -36,14 +36,14 @@ function Register() {
     }
 
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/register/",
-        {
-          username: formData.username,
-          email: formData.email,
-          password: formData.password,
-        }
-      );
+      const response = await api.post(
+  "register/",
+  {
+    username: formData.username,
+    email: formData.email,
+    password: formData.password,
+  }
+);
 
       console.log(response.data);
 

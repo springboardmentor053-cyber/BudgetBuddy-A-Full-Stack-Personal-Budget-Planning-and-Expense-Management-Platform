@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api";
 
 function Profile() {
   const [profile, setProfile] = useState({
@@ -24,13 +24,7 @@ function Profile() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  const token = localStorage.getItem("access");
-
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
+  
 
   // -----------------------------
   // Fetch Profile
@@ -38,11 +32,7 @@ function Profile() {
 
   const fetchProfile = async () => {
     try {
-      const response = await axios.get(
-        "http://127.0.0.1:8000/api/profile/",
-        config
-      );
-
+      const response = await api.get("profile/");
       setProfile(response.data);
       setError("");
     } catch (error) {
@@ -94,11 +84,10 @@ function Profile() {
     setError("");
 
     try {
-      const response = await axios.put(
-        "http://127.0.0.1:8000/api/profile/",
-        profile,
-        config
-      );
+      const response = await api.put(
+  "profile/",
+  profile
+);
 
       setProfile(response.data);
 
@@ -156,11 +145,10 @@ function Profile() {
     }
 
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/profile/change-password/",
-        password,
-        config
-      );
+      const response = await api.post(
+  "profile/change-password/",
+  password
+);
 
       setMessage(response.data.message);
 

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
+import api from "../api";
 
 function Login() {
   const navigate = useNavigate();
@@ -16,13 +16,13 @@ function Login() {
     setErrorMessage("");
 
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/login/",
-        {
-          username,
-          password,
-        }
-      );
+      const response = await api.post(
+  "login/",
+  {
+    username,
+    password,
+  }
+);
 
       localStorage.setItem(
         "access",

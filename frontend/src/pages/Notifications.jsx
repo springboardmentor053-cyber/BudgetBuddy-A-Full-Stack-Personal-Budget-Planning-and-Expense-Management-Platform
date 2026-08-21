@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api";
 
 function Notifications() {
   const [notifications, setNotifications] = useState([]);
@@ -11,24 +11,18 @@ function Notifications() {
   const [deleteId, setDeleteId] = useState(null);
   const [deleteTitle, setDeleteTitle] = useState("");
 
-  const token = localStorage.getItem("access");
 
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
 
+  
   // -----------------------------
   // Fetch Notifications
   // -----------------------------
 
   const fetchNotifications = async () => {
     try {
-      const response = await axios.get(
-        "http://127.0.0.1:8000/api/notifications/",
-        config
-      );
+      const response = await api.get(
+  "/notifications/"
+);
 
       setNotifications(response.data);
 
@@ -85,10 +79,9 @@ function Notifications() {
     setErrorMessage("");
 
     try {
-      await axios.delete(
-        `http://127.0.0.1:8000/api/notifications/${deleteId}/`,
-        config
-      );
+      await api.delete(
+  `/notifications/${deleteId}/`
+);
 
       // Remove immediately from UI
       setNotifications((previousNotifications) =>
