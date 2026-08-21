@@ -93,3 +93,7 @@ Project screenshots and milestone evidence are available in the [`screenshots/`]
 **Nallagatla Saiharshitha**
 
 - GitHub: [@Saiharshitha9](https://github.com/Saiharshitha9)
+
+## 📄 License
+
+This project is licensed under the MIT License.
