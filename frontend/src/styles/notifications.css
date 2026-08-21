@@ -1,0 +1,530 @@
+/* =====================================================
+   BUDGETBUDDY - NOTIFICATIONS
+   ===================================================== */
+
+.notifications-page {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 34px 38px 50px;
+    color: #0f172a;
+}
+
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
+.notifications-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+
+.notifications-eyebrow {
+    margin-bottom: 8px;
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 0.14em;
+}
+
+.notifications-header h1 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 30px;
+    font-weight: 750;
+    letter-spacing: -0.03em;
+}
+
+.notifications-header p {
+    margin: 7px 0 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.notifications-header-icon {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 21px;
+}
+
+
+/* =====================================================
+   ALERTS
+   ===================================================== */
+
+.notification-alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding: 13px 15px;
+    border-radius: 11px;
+    border: 1px solid;
+}
+
+.notification-alert.success {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    color: #15803d;
+}
+
+.notification-alert.error {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #b91c1c;
+}
+
+.notification-alert-icon {
+    font-size: 17px;
+}
+
+.notification-alert > div:nth-child(2) {
+    flex: 1;
+}
+
+.notification-alert strong {
+    display: block;
+    font-size: 11px;
+}
+
+.notification-alert p {
+    margin: 2px 0 0;
+    font-size: 10px;
+}
+
+.notification-alert button {
+    width: 26px;
+    height: 26px;
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+
+
+/* =====================================================
+   SUMMARY
+   ===================================================== */
+
+.notifications-summary {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 17px;
+    margin-bottom: 24px;
+}
+
+.notifications-summary-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-height: 105px;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 5px 18px rgba(15, 23, 42, 0.035);
+}
+
+.notifications-summary-icon {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: #f5f3ff;
+    color: #7c3aed;
+    font-size: 17px;
+}
+
+.notifications-summary-icon.blue {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.notifications-summary-card span {
+    display: block;
+    margin-bottom: 4px;
+    color: #64748b;
+    font-size: 9px;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+}
+
+.notifications-summary-card strong {
+    display: block;
+    color: #0f172a;
+    font-size: 19px;
+    font-weight: 750;
+}
+
+.notifications-summary-card small {
+    display: block;
+    margin-top: 3px;
+    color: #94a3b8;
+    font-size: 9px;
+}
+
+
+/* =====================================================
+   MAIN CARD
+   ===================================================== */
+
+.notifications-card {
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 17px;
+    box-shadow: 0 5px 20px rgba(15, 23, 42, 0.035);
+}
+
+.notifications-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 21px 22px;
+    border-bottom: 1px solid #eef2f7;
+}
+
+.notifications-card-header h2 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.notifications-card-header p {
+    margin: 5px 0 0;
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+.notifications-count {
+    min-width: 29px;
+    height: 29px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    border-radius: 8px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 10px;
+    font-weight: 750;
+}
+
+
+/* =====================================================
+   NOTIFICATION LIST
+   ===================================================== */
+
+.notifications-list {
+    width: 100%;
+}
+
+.notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 19px 22px;
+    border-bottom: 1px solid #eef2f7;
+    transition: background 0.18s ease;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-item:hover {
+    background: #fbfdff;
+}
+
+.notification-item-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 11px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 14px;
+}
+
+.notification-item-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-item-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+
+.notification-item-top h3 {
+    margin: 0;
+    color: #1e293b;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.notification-badge {
+    padding: 4px 7px;
+    border-radius: 5px;
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.notification-item-content > p {
+    margin: 0;
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.notification-date {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 8px;
+    color: #94a3b8;
+    font-size: 9px;
+}
+
+.notification-remove-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    background: #fef2f2;
+    color: #dc2626;
+    cursor: pointer;
+    transition:
+        background 0.18s ease,
+        transform 0.18s ease;
+}
+
+.notification-remove-btn:hover {
+    background: #fee2e2;
+    transform: translateY(-1px);
+}
+
+
+/* =====================================================
+   EMPTY STATE
+   ===================================================== */
+
+.notifications-empty {
+    padding: 70px 25px;
+    text-align: center;
+}
+
+.notifications-empty-icon {
+    width: 58px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+    border-radius: 16px;
+    background: #ecfdf5;
+    color: #16a34a;
+    font-size: 23px;
+}
+
+.notifications-empty h3 {
+    margin: 0;
+    color: #334155;
+    font-size: 15px;
+}
+
+.notifications-empty p {
+    margin: 6px 0 0;
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+
+/* =====================================================
+   DELETE MODAL
+   ===================================================== */
+
+.notification-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.52);
+    backdrop-filter: blur(3px);
+}
+
+.notification-modal {
+    width: 100%;
+    max-width: 420px;
+    padding: 27px;
+    border-radius: 17px;
+    background: #ffffff;
+    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.2);
+    text-align: center;
+}
+
+.notification-modal-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    border-radius: 13px;
+    background: #fef2f2;
+    color: #dc2626;
+    font-size: 18px;
+}
+
+.notification-modal h2 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 17px;
+    font-weight: 750;
+}
+
+.notification-modal > p {
+    margin: 8px 0 18px;
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.notification-modal-preview {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 9px;
+    background: #f8fafc;
+    color: #334155;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 650;
+}
+
+.notification-modal-preview i {
+    color: #2563eb;
+}
+
+.notification-modal-preview span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.notification-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 9px;
+}
+
+.notification-cancel-btn,
+.notification-confirm-btn {
+    height: 39px;
+    padding: 0 15px;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.notification-cancel-btn {
+    border: 1px solid #dbe3ed;
+    background: #ffffff;
+    color: #64748b;
+}
+
+.notification-cancel-btn:hover {
+    background: #f8fafc;
+}
+
+.notification-confirm-btn {
+    border: none;
+    background: #dc2626;
+    color: #ffffff;
+}
+
+.notification-confirm-btn:hover {
+    background: #b91c1c;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 800px) {
+
+    .notifications-page {
+        padding: 25px 20px 40px;
+    }
+
+    .notifications-header-icon {
+        display: none;
+    }
+
+    .notifications-summary {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 500px) {
+
+    .notifications-page {
+        padding: 20px 14px 35px;
+    }
+
+    .notifications-header h1 {
+        font-size: 25px;
+    }
+
+    .notification-item {
+        padding: 16px;
+    }
+
+    .notification-item-top {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .notification-remove-btn {
+        width: 30px;
+        height: 30px;
+    }
+
+    .notification-modal {
+        padding: 22px;
+    }
+}
