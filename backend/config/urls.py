@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from users.views import RegisterView, LogoutView, ProtectedView
+from users.views import RegisterView, LogoutView, ProtectedView, MyProfileView
 from expenses.views import ExpenseViewSet, IncomeViewSet as OldIncomeViewSet, TotalExpensesView
 from budgets.views import BudgetViewSet, SavingsGoalViewSet as OldSavingsGoalViewSet, BudgetSummaryView, BudgetAlertView
 from income.views import IncomeViewSet, FinancialSummaryView
@@ -13,7 +13,7 @@ from savings.views import SavingsGoalViewSet, SavingsGoalProgressView
 from notifications.views import NotificationViewSet, MarkNotificationReadView
 from analytics.views import FinancialSummaryAnalyticsView, CategoryAnalysisView, MonthlyTrendView, HighestLowestExpenseView, DashboardView
 from reports.views import MonthlyFinancialReportView, ExpenseReportView, SavingsReportView, FinancialSummaryReportView
-
+from users.views import MyProfileView, ChangePasswordView
 router = DefaultRouter()
 router.register(r'expenses', ExpenseViewSet, basename='expense')
 router.register(r'income', IncomeViewSet, basename='income')
@@ -44,4 +44,6 @@ urlpatterns = [
     path('api/reports/expenses/', ExpenseReportView.as_view(), name='report-expenses'),
     path('api/reports/savings/', SavingsReportView.as_view(), name='report-savings'),
     path('api/reports/summary/', FinancialSummaryReportView.as_view(), name='report-summary'),
+    path('api/profile/', MyProfileView.as_view(), name='my-profile'),
+    path('api/profile/change-password/', ChangePasswordView.as_view(), name='change-password'),
 ]

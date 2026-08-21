@@ -129,7 +129,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='http://localhost:5173').split(',')
+CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='https://budget-buddy-a-full-stack-personal-budg-git-9ad294-project-8d46.vercel.app').split(',')
 
 # Email settings - real Gmail SMTP
 EMAIL_BACKEND = 'config.email_backend.EmailBackend'
