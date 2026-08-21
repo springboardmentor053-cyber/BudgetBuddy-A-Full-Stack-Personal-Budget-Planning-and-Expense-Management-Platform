@@ -5,14 +5,15 @@ venv/
 __pycache__/
 *.py[cod]
 
-# SQLite database (optional)
-# Uncomment the next line if your team doesn't want to track the database
-# db.sqlite3
+# SQLite database
+db.sqlite3
+db_backup_before_render_migration.sqlite3
+
+# Personal data export
+peehal_data_backup.json
 
 # VS Code settings
 .vscode/
 
 # Environment variables
 .env
-
-db.sqlite3

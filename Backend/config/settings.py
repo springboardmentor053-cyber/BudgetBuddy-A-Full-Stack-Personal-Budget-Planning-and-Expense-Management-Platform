@@ -29,8 +29,6 @@ IS_PRODUCTION = os.getenv("RENDER", "").lower() == "true"
 # SECURITY
 # =========================================================
 
-# IMPORTANT:
-# Never store the production secret key directly in this file.
 SECRET_KEY = os.getenv(
     "SECRET_KEY",
     "django-insecure-local-development-only-change-this"
@@ -49,6 +47,7 @@ ALLOWED_HOSTS = [
 ]
 
 if IS_PRODUCTION:
+
     render_hostname = os.getenv(
         "RENDER_EXTERNAL_HOSTNAME"
     )
@@ -290,40 +289,46 @@ DEFAULT_AUTO_FIELD = (
 # CORS
 # =========================================================
 
-if IS_PRODUCTION:
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
 
-    cors_origins = os.getenv(
-        "CORS_ALLOWED_ORIGINS",
-        ""
-    )
+# Add additional origins from Render environment variable
+cors_origins = os.getenv(
+    "CORS_ALLOWED_ORIGINS",
+    ""
+)
 
-    CORS_ALLOWED_ORIGINS = [
-        origin.strip()
+if cors_origins:
+
+    CORS_ALLOWED_ORIGINS.extend(
+        origin.strip().rstrip("/")
         for origin in cors_origins.split(",")
         if origin.strip()
-    ]
-
-else:
-
-    CORS_ALLOW_ALL_ORIGINS = True
+    )
 
 
 # =========================================================
 # CSRF TRUSTED ORIGINS
 # =========================================================
 
-if IS_PRODUCTION:
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+]
 
-    csrf_origins = os.getenv(
-        "CSRF_TRUSTED_ORIGINS",
-        ""
-    )
+# Add additional origins from Render environment variable
+csrf_origins = os.getenv(
+    "CSRF_TRUSTED_ORIGINS",
+    ""
+)
 
-    CSRF_TRUSTED_ORIGINS = [
-        origin.strip()
+if csrf_origins:
+
+    CSRF_TRUSTED_ORIGINS.extend(
+        origin.strip().rstrip("/")
         for origin in csrf_origins.split(",")
         if origin.strip()
-    ]
+    )
 
 
 # =========================================================

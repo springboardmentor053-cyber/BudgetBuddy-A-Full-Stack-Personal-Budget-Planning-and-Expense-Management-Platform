@@ -6,7 +6,6 @@ function Login() {
 
   const navigate = useNavigate();
 
-
   // =========================================================
   // FORM STATE
   // =========================================================
@@ -16,11 +15,9 @@ function Login() {
     password: "",
   });
 
-
   const [error, setError] = useState("");
 
   const [loading, setLoading] = useState(false);
-
 
   // =========================================================
   // HANDLE INPUT CHANGE
@@ -37,7 +34,6 @@ function Login() {
 
   };
 
-
   // =========================================================
   // HANDLE LOGIN
   // =========================================================
@@ -50,17 +46,15 @@ function Login() {
 
     setLoading(true);
 
-
     try {
 
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/token/",
+        "https://budgetbuddy-backend-itvi.onrender.com/api/token/",
         {
           username: formData.username,
           password: formData.password,
         }
       );
-
 
       // Save JWT tokens
 
@@ -75,15 +69,13 @@ function Login() {
       );
 
       localStorage.setItem(
-  "username",
-  formData.username.trim()
-);
-
+        "username",
+        formData.username.trim()
+      );
 
       // Go to dashboard
 
       navigate("/dashboard");
-
 
     } catch (err) {
 
@@ -91,7 +83,6 @@ function Login() {
         "Login error:",
         err
       );
-
 
       if (err.response) {
 
@@ -107,7 +98,6 @@ function Login() {
 
       }
 
-
     } finally {
 
       setLoading(false);
@@ -115,7 +105,6 @@ function Login() {
     }
 
   };
-
 
   // =========================================================
   // UI
@@ -131,7 +120,6 @@ function Login() {
         overflow-x-hidden
       "
     >
-
 
       {/* =====================================================
           LEFT BRANDING SECTION
@@ -171,7 +159,6 @@ function Login() {
           "
         />
 
-
         <div
           className="
             absolute
@@ -183,7 +170,6 @@ function Login() {
             bg-[#101C2E]/15
           "
         />
-
 
         {/* =================================================
             BRANDING CONTENT
@@ -236,7 +222,6 @@ function Login() {
 
             </div>
 
-
             <div className="text-left">
 
               <h2
@@ -248,7 +233,6 @@ function Login() {
               >
                 BudgetBuddy
               </h2>
-
 
               <p
                 className="
@@ -262,7 +246,6 @@ function Login() {
             </div>
 
           </div>
-
 
           {/* HEADING */}
 
@@ -284,7 +267,6 @@ function Login() {
 
           </h1>
 
-
           {/* DESCRIPTION */}
 
           <p
@@ -302,7 +284,6 @@ function Login() {
             plan budgets, and work towards your
             financial goals with BudgetBuddy.
           </p>
-
 
           {/* =================================================
               DASHBOARD PREVIEW
@@ -363,7 +344,6 @@ function Login() {
 
                 </div>
 
-
                 <div className="text-left">
 
                   <p
@@ -375,7 +355,6 @@ function Login() {
                   >
                     Financial Dashboard
                   </p>
-
 
                   <p
                     className="
@@ -390,7 +369,6 @@ function Login() {
 
               </div>
 
-
               <div
                 className="
                   w-8
@@ -401,7 +379,6 @@ function Login() {
               />
 
             </div>
-
 
             {/* PREVIEW CARDS */}
 
@@ -433,7 +410,6 @@ function Login() {
                   Balance
                 </p>
 
-
                 <p
                   className="
                     text-sm
@@ -446,7 +422,6 @@ function Login() {
                 </p>
 
               </div>
-
 
               {/* INCOME */}
 
@@ -468,7 +443,6 @@ function Login() {
                   Income
                 </p>
 
-
                 <p
                   className="
                     text-sm
@@ -481,7 +455,6 @@ function Login() {
                 </p>
 
               </div>
-
 
               {/* EXPENSES */}
 
@@ -503,7 +476,6 @@ function Login() {
                   Expenses
                 </p>
 
-
                 <p
                   className="
                     text-sm
@@ -518,7 +490,6 @@ function Login() {
               </div>
 
             </div>
-
 
             {/* PREVIEW CHART */}
 
@@ -593,7 +564,6 @@ function Login() {
 
           </div>
 
-
           {/* FOOTER TEXT */}
 
           <p
@@ -609,7 +579,6 @@ function Login() {
         </div>
 
       </div>
-
 
       {/* =====================================================
           RIGHT LOGIN SECTION
@@ -638,7 +607,6 @@ function Login() {
             max-w-md
           "
         >
-
 
           {/* =================================================
               MOBILE LOGO
@@ -680,7 +648,6 @@ function Login() {
 
             </div>
 
-
             <div>
 
               <h2
@@ -692,7 +659,6 @@ function Login() {
               >
                 BudgetBuddy
               </h2>
-
 
               <p
                 className="
@@ -706,7 +672,6 @@ function Login() {
             </div>
 
           </div>
-
 
           {/* =================================================
               LOGIN HEADING
@@ -730,7 +695,6 @@ function Login() {
               Welcome Back
             </h1>
 
-
             <p
               className="
                 mt-2
@@ -742,7 +706,6 @@ function Login() {
             </p>
 
           </div>
-
 
           {/* =================================================
               LOGIN CARD
@@ -782,7 +745,6 @@ function Login() {
 
             )}
 
-
             {/* =================================================
                 FORM
             ================================================== */}
@@ -812,7 +774,6 @@ function Login() {
                 >
                   Username
                 </label>
-
 
                 <input
                   type="text"
@@ -845,7 +806,6 @@ function Login() {
 
               </div>
 
-
               {/* PASSWORD */}
 
               <div
@@ -865,7 +825,6 @@ function Login() {
                 >
                   Password
                 </label>
-
 
                 <input
                   type="password"
@@ -897,7 +856,6 @@ function Login() {
                 />
 
               </div>
-
 
               {/* LOGIN BUTTON */}
 
@@ -932,7 +890,6 @@ function Login() {
 
           </div>
 
-
           {/* =================================================
               FOOTER
           ================================================== */}
@@ -960,6 +917,5 @@ function Login() {
   );
 
 }
-
 
 export default Login;

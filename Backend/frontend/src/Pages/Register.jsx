@@ -2,11 +2,9 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-
 function Register() {
 
   const navigate = useNavigate();
-
 
   // =========================================================
   // FORM STATE
@@ -19,13 +17,11 @@ function Register() {
     confirmPassword: "",
   });
 
-
   const [error, setError] = useState("");
 
   const [success, setSuccess] = useState("");
 
   const [loading, setLoading] = useState(false);
-
 
   // =========================================================
   // HANDLE INPUT CHANGE
@@ -44,7 +40,6 @@ function Register() {
 
   };
 
-
   // =========================================================
   // HANDLE REGISTER
   // =========================================================
@@ -56,7 +51,6 @@ function Register() {
     setError("");
 
     setSuccess("");
-
 
     // =======================================================
     // CHECK PASSWORD
@@ -75,7 +69,6 @@ function Register() {
 
     }
 
-
     if (
       formData.password.length < 8
     ) {
@@ -88,9 +81,7 @@ function Register() {
 
     }
 
-
     setLoading(true);
-
 
     try {
 
@@ -100,13 +91,12 @@ function Register() {
       const email =
         formData.email.trim();
 
-
       // =====================================================
       // CREATE ACCOUNT
       // =====================================================
 
       await axios.post(
-        "http://127.0.0.1:8000/api/users/register/",
+        "https://budgetbuddy-backend-itvi.onrender.com/api/users/register/",
         {
           username: username,
           email: email,
@@ -114,20 +104,18 @@ function Register() {
         }
       );
 
-
       // =====================================================
       // AUTOMATIC LOGIN
       // =====================================================
 
       const loginResponse =
         await axios.post(
-          "http://127.0.0.1:8000/api/token/",
+          "https://budgetbuddy-backend-itvi.onrender.com/api/token/",
           {
             username: username,
             password: formData.password,
           }
         );
-
 
       // =====================================================
       // SAVE JWT TOKENS
@@ -143,7 +131,6 @@ function Register() {
         loginResponse.data.refresh
       );
 
-
       // =====================================================
       // SAVE USERNAME
       // =====================================================
@@ -153,7 +140,6 @@ function Register() {
         username
       );
 
-
       // =====================================================
       // SUCCESS
       // =====================================================
@@ -161,7 +147,6 @@ function Register() {
       setSuccess(
         "Account created successfully! Opening your dashboard..."
       );
-
 
       // =====================================================
       // CLEAR FORM
@@ -174,7 +159,6 @@ function Register() {
         confirmPassword: "",
       });
 
-
       // =====================================================
       // DASHBOARD
       // =====================================================
@@ -185,14 +169,12 @@ function Register() {
 
       }, 800);
 
-
     } catch (err) {
 
       console.error(
         "Registration error:",
         err
       );
-
 
       // =====================================================
       // BACKEND ERROR
@@ -202,7 +184,6 @@ function Register() {
 
         const data =
           err.response.data;
-
 
         if (
           typeof data === "object"
@@ -228,7 +209,6 @@ function Register() {
                 }
               )
               .join(" | ");
-
 
           setError(
             messages ||
@@ -258,7 +238,6 @@ function Register() {
     }
 
   };
-
 
   // =========================================================
   // UI
@@ -309,7 +288,6 @@ function Register() {
           "
         />
 
-
         <div
           className="
             absolute
@@ -321,7 +299,6 @@ function Register() {
             bg-[#101C2E]/15
           "
         />
-
 
         <div
           className="
@@ -370,7 +347,6 @@ function Register() {
 
             </div>
 
-
             <div className="text-left">
 
               <h2
@@ -382,7 +358,6 @@ function Register() {
               >
                 BudgetBuddy
               </h2>
-
 
               <p
                 className="
@@ -397,7 +372,6 @@ function Register() {
 
           </div>
 
-
           <h1
             className="
               text-4xl
@@ -411,7 +385,6 @@ function Register() {
             <br />
             Financial Journey
           </h1>
-
 
           <p
             className="
@@ -428,7 +401,6 @@ function Register() {
             take control of your income, expenses,
             budgets, and financial goals.
           </p>
-
 
           {/* DASHBOARD PREVIEW */}
 
@@ -485,7 +457,6 @@ function Register() {
 
                 </div>
 
-
                 <div className="text-left">
 
                   <p
@@ -497,7 +468,6 @@ function Register() {
                   >
                     Financial Dashboard
                   </p>
-
 
                   <p
                     className="
@@ -512,7 +482,6 @@ function Register() {
 
               </div>
 
-
               <div
                 className="
                   w-8
@@ -523,7 +492,6 @@ function Register() {
               />
 
             </div>
-
 
             <div
               className="
@@ -564,7 +532,6 @@ function Register() {
 
               </div>
 
-
               <div
                 className="
                   rounded-xl
@@ -595,7 +562,6 @@ function Register() {
                 </p>
 
               </div>
-
 
               <div
                 className="
@@ -629,7 +595,6 @@ function Register() {
               </div>
 
             </div>
-
 
             <div
               className="
@@ -702,7 +667,6 @@ function Register() {
 
           </div>
 
-
           <p
             className="
               mt-8
@@ -716,7 +680,6 @@ function Register() {
         </div>
 
       </div>
-
 
       {/* =====================================================
           REGISTER SECTION
@@ -784,7 +747,6 @@ function Register() {
 
             </div>
 
-
             <div>
 
               <h2
@@ -796,7 +758,6 @@ function Register() {
               >
                 BudgetBuddy
               </h2>
-
 
               <p
                 className="
@@ -810,7 +771,6 @@ function Register() {
             </div>
 
           </div>
-
 
           {/* HEADING */}
 
@@ -828,7 +788,6 @@ function Register() {
               Create Your Account
             </h1>
 
-
             <p
               className="
                 mt-2
@@ -839,7 +798,6 @@ function Register() {
             </p>
 
           </div>
-
 
           {/* CARD */}
 
@@ -878,7 +836,6 @@ function Register() {
 
             )}
 
-
             {/* SUCCESS */}
 
             {success && (
@@ -902,7 +859,6 @@ function Register() {
 
             )}
 
-
             <form
               onSubmit={handleRegister}
             >
@@ -922,7 +878,6 @@ function Register() {
                 >
                   Username
                 </label>
-
 
                 <input
                   type="text"
@@ -951,7 +906,6 @@ function Register() {
 
               </div>
 
-
               {/* EMAIL */}
 
               <div className="mb-5">
@@ -967,7 +921,6 @@ function Register() {
                 >
                   Email
                 </label>
-
 
                 <input
                   type="email"
@@ -996,7 +949,6 @@ function Register() {
 
               </div>
 
-
               {/* PASSWORD */}
 
               <div className="mb-5">
@@ -1012,7 +964,6 @@ function Register() {
                 >
                   Password
                 </label>
-
 
                 <input
                   type="password"
@@ -1039,7 +990,6 @@ function Register() {
                   required
                 />
 
-
                 <p
                   className="
                     text-xs
@@ -1051,7 +1001,6 @@ function Register() {
                 </p>
 
               </div>
-
 
               {/* CONFIRM PASSWORD */}
 
@@ -1068,7 +1017,6 @@ function Register() {
                 >
                   Confirm Password
                 </label>
-
 
                 <input
                   type="password"
@@ -1096,7 +1044,6 @@ function Register() {
                 />
 
               </div>
-
 
               {/* BUTTON */}
 
@@ -1129,7 +1076,6 @@ function Register() {
 
             </form>
 
-
             {/* LOGIN */}
 
             <div
@@ -1154,7 +1100,6 @@ function Register() {
                 Already have an account?
               </span>
 
-
               <Link
                 to="/login"
                 className="
@@ -1171,7 +1116,6 @@ function Register() {
             </div>
 
           </div>
-
 
           <p
             className="
@@ -1196,6 +1140,5 @@ function Register() {
   );
 
 }
-
 
 export default Register;
