@@ -172,6 +172,11 @@ if cors_allowed_origins_env:
 else:
     CORS_ALLOW_ALL_ORIGINS = True
 
+# CSRF Trusted Origins Configuration
+csrf_trusted_origins_env = config('CSRF_TRUSTED_ORIGINS', default='')
+if csrf_trusted_origins_env:
+    CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in csrf_trusted_origins_env.split(',') if origin.strip()]
+
 
 # Email Settings
 EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
