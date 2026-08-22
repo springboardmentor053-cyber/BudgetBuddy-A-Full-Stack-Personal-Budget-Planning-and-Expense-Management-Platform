@@ -32,7 +32,11 @@ function Login() {
       navigate('/dashboard');
     } catch (err) {
       if (err.response) {
-        setError(err.response.data?.detail || 'Login failed. Please check your username and password.');
+        setError(
+          err.response.data?.detail ||
+          err.response.data?.error ||
+          'Login failed. Please check your username and password.'
+        );
       } else {
         setError(`Cannot connect to backend server. API: ${api.defaults.baseURL}`);
       }

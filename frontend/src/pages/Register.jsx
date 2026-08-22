@@ -48,7 +48,18 @@ function Register() {
       }, 2000);
     } catch (err) {
       const data = err.response?.data || {};
-      setError(data.username?.[0] || data.email?.[0] || data.password?.[0] || 'Cannot connect to backend server.');
+      if (err.response) {
+        setError(
+          data.error ||
+          data.detail ||
+          data.username?.[0] ||
+          data.email?.[0] ||
+          data.password?.[0] ||
+          'Registration failed. Please check your details.'
+        );
+      } else {
+        setError(`Cannot connect to backend server. API: ${api.defaults.baseURL}`);
+      }
     }
   };
 
