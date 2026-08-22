@@ -69,7 +69,11 @@ def savings_goal_notification(sender, instance, created, **kwargs):
                 send_notification_email(instance.user, title, message)
                 send_fcm_push_to_user(instance.user, title, message, {"type": "savings_completed", "title": instance.goal_name})
 
-
+@receiver(pre_save, sender=Budget)
+def track_budget_definition_change(sender, instance, **kwargs):
+    if kwargs.get('raw'):
+        return
+    # ... rest of your signal logic ...
 # 2. Budget Signals
 @receiver(pre_save, sender=Budget)
 def track_budget_definition_change(sender, instance, **kwargs):

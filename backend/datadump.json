@@ -1,6 +1,691 @@
 [
 {
+    "model": "auth.permission",
+    "pk": 1,
+    "fields": {
+        "name": "Can add log entry",
+        "content_type": 1,
+        "codename": "add_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 2,
+    "fields": {
+        "name": "Can change log entry",
+        "content_type": 1,
+        "codename": "change_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 3,
+    "fields": {
+        "name": "Can delete log entry",
+        "content_type": 1,
+        "codename": "delete_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 4,
+    "fields": {
+        "name": "Can view log entry",
+        "content_type": 1,
+        "codename": "view_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 5,
+    "fields": {
+        "name": "Can add permission",
+        "content_type": 2,
+        "codename": "add_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 6,
+    "fields": {
+        "name": "Can change permission",
+        "content_type": 2,
+        "codename": "change_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 7,
+    "fields": {
+        "name": "Can delete permission",
+        "content_type": 2,
+        "codename": "delete_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 8,
+    "fields": {
+        "name": "Can view permission",
+        "content_type": 2,
+        "codename": "view_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 9,
+    "fields": {
+        "name": "Can add group",
+        "content_type": 3,
+        "codename": "add_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 10,
+    "fields": {
+        "name": "Can change group",
+        "content_type": 3,
+        "codename": "change_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 11,
+    "fields": {
+        "name": "Can delete group",
+        "content_type": 3,
+        "codename": "delete_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 12,
+    "fields": {
+        "name": "Can view group",
+        "content_type": 3,
+        "codename": "view_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 13,
+    "fields": {
+        "name": "Can add user",
+        "content_type": 4,
+        "codename": "add_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 14,
+    "fields": {
+        "name": "Can change user",
+        "content_type": 4,
+        "codename": "change_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 15,
+    "fields": {
+        "name": "Can delete user",
+        "content_type": 4,
+        "codename": "delete_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 16,
+    "fields": {
+        "name": "Can view user",
+        "content_type": 4,
+        "codename": "view_user"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 17,
+    "fields": {
+        "name": "Can add content type",
+        "content_type": 5,
+        "codename": "add_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 18,
+    "fields": {
+        "name": "Can change content type",
+        "content_type": 5,
+        "codename": "change_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 19,
+    "fields": {
+        "name": "Can delete content type",
+        "content_type": 5,
+        "codename": "delete_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 20,
+    "fields": {
+        "name": "Can view content type",
+        "content_type": 5,
+        "codename": "view_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 21,
+    "fields": {
+        "name": "Can add session",
+        "content_type": 6,
+        "codename": "add_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 22,
+    "fields": {
+        "name": "Can change session",
+        "content_type": 6,
+        "codename": "change_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 23,
+    "fields": {
+        "name": "Can delete session",
+        "content_type": 6,
+        "codename": "delete_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 24,
+    "fields": {
+        "name": "Can view session",
+        "content_type": 6,
+        "codename": "view_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 25,
+    "fields": {
+        "name": "Can add profile",
+        "content_type": 7,
+        "codename": "add_profile"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 26,
+    "fields": {
+        "name": "Can change profile",
+        "content_type": 7,
+        "codename": "change_profile"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 27,
+    "fields": {
+        "name": "Can delete profile",
+        "content_type": 7,
+        "codename": "delete_profile"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 28,
+    "fields": {
+        "name": "Can view profile",
+        "content_type": 7,
+        "codename": "view_profile"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 29,
+    "fields": {
+        "name": "Can add income",
+        "content_type": 8,
+        "codename": "add_income"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 30,
+    "fields": {
+        "name": "Can change income",
+        "content_type": 8,
+        "codename": "change_income"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 31,
+    "fields": {
+        "name": "Can delete income",
+        "content_type": 8,
+        "codename": "delete_income"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 32,
+    "fields": {
+        "name": "Can view income",
+        "content_type": 8,
+        "codename": "view_income"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 33,
+    "fields": {
+        "name": "Can add expense",
+        "content_type": 9,
+        "codename": "add_expense"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 34,
+    "fields": {
+        "name": "Can change expense",
+        "content_type": 9,
+        "codename": "change_expense"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 35,
+    "fields": {
+        "name": "Can delete expense",
+        "content_type": 9,
+        "codename": "delete_expense"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 36,
+    "fields": {
+        "name": "Can view expense",
+        "content_type": 9,
+        "codename": "view_expense"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 37,
+    "fields": {
+        "name": "Can add budget",
+        "content_type": 10,
+        "codename": "add_budget"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 38,
+    "fields": {
+        "name": "Can change budget",
+        "content_type": 10,
+        "codename": "change_budget"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 39,
+    "fields": {
+        "name": "Can delete budget",
+        "content_type": 10,
+        "codename": "delete_budget"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 40,
+    "fields": {
+        "name": "Can view budget",
+        "content_type": 10,
+        "codename": "view_budget"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 41,
+    "fields": {
+        "name": "Can add savings goal",
+        "content_type": 11,
+        "codename": "add_savingsgoal"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 42,
+    "fields": {
+        "name": "Can change savings goal",
+        "content_type": 11,
+        "codename": "change_savingsgoal"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 43,
+    "fields": {
+        "name": "Can delete savings goal",
+        "content_type": 11,
+        "codename": "delete_savingsgoal"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 44,
+    "fields": {
+        "name": "Can view savings goal",
+        "content_type": 11,
+        "codename": "view_savingsgoal"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 45,
+    "fields": {
+        "name": "Can add savings",
+        "content_type": 12,
+        "codename": "add_savings"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 46,
+    "fields": {
+        "name": "Can change savings",
+        "content_type": 12,
+        "codename": "change_savings"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 47,
+    "fields": {
+        "name": "Can delete savings",
+        "content_type": 12,
+        "codename": "delete_savings"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 48,
+    "fields": {
+        "name": "Can view savings",
+        "content_type": 12,
+        "codename": "view_savings"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 49,
+    "fields": {
+        "name": "Can add notification",
+        "content_type": 13,
+        "codename": "add_notification"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 50,
+    "fields": {
+        "name": "Can change notification",
+        "content_type": 13,
+        "codename": "change_notification"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 51,
+    "fields": {
+        "name": "Can delete notification",
+        "content_type": 13,
+        "codename": "delete_notification"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 52,
+    "fields": {
+        "name": "Can view notification",
+        "content_type": 13,
+        "codename": "view_notification"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 53,
+    "fields": {
+        "name": "Can add notification",
+        "content_type": 14,
+        "codename": "add_notification"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 54,
+    "fields": {
+        "name": "Can change notification",
+        "content_type": 14,
+        "codename": "change_notification"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 55,
+    "fields": {
+        "name": "Can delete notification",
+        "content_type": 14,
+        "codename": "delete_notification"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 56,
+    "fields": {
+        "name": "Can view notification",
+        "content_type": 14,
+        "codename": "view_notification"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 57,
+    "fields": {
+        "name": "Can add report",
+        "content_type": 15,
+        "codename": "add_report"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 58,
+    "fields": {
+        "name": "Can change report",
+        "content_type": 15,
+        "codename": "change_report"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 59,
+    "fields": {
+        "name": "Can delete report",
+        "content_type": 15,
+        "codename": "delete_report"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 60,
+    "fields": {
+        "name": "Can view report",
+        "content_type": 15,
+        "codename": "view_report"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 61,
+    "fields": {
+        "name": "Can add savings goal",
+        "content_type": 16,
+        "codename": "add_savingsgoal"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 62,
+    "fields": {
+        "name": "Can change savings goal",
+        "content_type": 16,
+        "codename": "change_savingsgoal"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 63,
+    "fields": {
+        "name": "Can delete savings goal",
+        "content_type": 16,
+        "codename": "delete_savingsgoal"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 64,
+    "fields": {
+        "name": "Can view savings goal",
+        "content_type": 16,
+        "codename": "view_savingsgoal"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 65,
+    "fields": {
+        "name": "Can add Blacklisted Token",
+        "content_type": 17,
+        "codename": "add_blacklistedtoken"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 66,
+    "fields": {
+        "name": "Can change Blacklisted Token",
+        "content_type": 17,
+        "codename": "change_blacklistedtoken"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 67,
+    "fields": {
+        "name": "Can delete Blacklisted Token",
+        "content_type": 17,
+        "codename": "delete_blacklistedtoken"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 68,
+    "fields": {
+        "name": "Can view Blacklisted Token",
+        "content_type": 17,
+        "codename": "view_blacklistedtoken"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 69,
+    "fields": {
+        "name": "Can add Outstanding Token",
+        "content_type": 18,
+        "codename": "add_outstandingtoken"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 70,
+    "fields": {
+        "name": "Can change Outstanding Token",
+        "content_type": 18,
+        "codename": "change_outstandingtoken"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 71,
+    "fields": {
+        "name": "Can delete Outstanding Token",
+        "content_type": 18,
+        "codename": "delete_outstandingtoken"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 72,
+    "fields": {
+        "name": "Can view Outstanding Token",
+        "content_type": 18,
+        "codename": "view_outstandingtoken"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 73,
+    "fields": {
+        "name": "Can add device token",
+        "content_type": 19,
+        "codename": "add_devicetoken"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 74,
+    "fields": {
+        "name": "Can change device token",
+        "content_type": 19,
+        "codename": "change_devicetoken"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 75,
+    "fields": {
+        "name": "Can delete device token",
+        "content_type": 19,
+        "codename": "delete_devicetoken"
+    }
+},
+{
+    "model": "auth.permission",
+    "pk": 76,
+    "fields": {
+        "name": "Can view device token",
+        "content_type": 19,
+        "codename": "view_devicetoken"
+    }
+},
+{
     "model": "auth.user",
+    "pk": 1,
     "fields": {
         "password": "pbkdf2_sha256$1000000$7sKChrmiklueC6cfj61XsA$H4o6F9WBzT9QCv4/oGAsgpkz52vK099EJLcoIvVdHww=",
         "last_login": "2026-07-13T12:32:20.374Z",
@@ -18,6 +703,7 @@
 },
 {
     "model": "auth.user",
+    "pk": 2,
     "fields": {
         "password": "pbkdf2_sha256$1000000$ZzA5jh1gTvUPBiZwu6pfsU$xyYQCKsPYuCs4C/1AxQpwqPiz9lmTf2QDvBr0zrR3UY=",
         "last_login": null,
@@ -35,6 +721,7 @@
 },
 {
     "model": "auth.user",
+    "pk": 3,
     "fields": {
         "password": "pbkdf2_sha256$1000000$jjVYAkL6Su1axrPhcTfYYl$l6Av7yIKcfb/MSPAo3SGwB5uX30dG7n5GhfYYGJX6Z8=",
         "last_login": null,
@@ -62,9 +749,7 @@
     "model": "users.profile",
     "pk": 1,
     "fields": {
-        "user": [
-            "admin"
-        ],
+        "user": 1,
         "bio": "",
         "role": "student"
     }
@@ -73,9 +758,7 @@
     "model": "users.profile",
     "pk": 2,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "bio": "",
         "role": "student"
     }
@@ -84,9 +767,7 @@
     "model": "users.profile",
     "pk": 3,
     "fields": {
-        "user": [
-            "test1"
-        ],
+        "user": 3,
         "bio": "",
         "role": "student"
     }
@@ -95,9 +776,7 @@
     "model": "income.income",
     "pk": 2,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "title": "Freelancing",
         "amount": "1000.00",
         "source": "FREELANCING",
@@ -111,9 +790,7 @@
     "model": "income.income",
     "pk": 6,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "title": "Other Sources",
         "amount": "20000.00",
         "source": "OTHER",
@@ -127,9 +804,7 @@
     "model": "income.income",
     "pk": 11,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "title": "Pocket Money",
         "amount": "500.00",
         "source": "POCKET_MONEY",
@@ -143,9 +818,7 @@
     "model": "income.income",
     "pk": 13,
     "fields": {
-        "user": [
-            "test1"
-        ],
+        "user": 3,
         "title": "Freelancing",
         "amount": "500.00",
         "source": "OTHER",
@@ -159,9 +832,7 @@
     "model": "income.income",
     "pk": 14,
     "fields": {
-        "user": [
-            "test1"
-        ],
+        "user": 3,
         "title": "Salary",
         "amount": "1000.00",
         "source": "OTHER",
@@ -175,9 +846,7 @@
     "model": "income.income",
     "pk": 16,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "title": "Freelancing",
         "amount": "8000.00",
         "source": "FREELANCING",
@@ -191,9 +860,7 @@
     "model": "income.income",
     "pk": 17,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "title": "Salary",
         "amount": "20000.00",
         "source": "SALARY",
@@ -207,9 +874,7 @@
     "model": "income.income",
     "pk": 18,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "title": "Salary",
         "amount": "20000.00",
         "source": "SALARY",
@@ -223,9 +888,7 @@
     "model": "income.income",
     "pk": 22,
     "fields": {
-        "user": [
-            "test1"
-        ],
+        "user": 3,
         "title": "Salary",
         "amount": "1000.00",
         "source": "SALARY",
@@ -239,9 +902,7 @@
     "model": "income.income",
     "pk": 23,
     "fields": {
-        "user": [
-            "test1"
-        ],
+        "user": 3,
         "title": "Pocket Money",
         "amount": "600.00",
         "source": "POCKET_MONEY",
@@ -255,9 +916,7 @@
     "model": "income.income",
     "pk": 24,
     "fields": {
-        "user": [
-            "test1"
-        ],
+        "user": 3,
         "title": "Scholarship",
         "amount": "100.00",
         "source": "SCHOLARSHIP",
@@ -271,9 +930,7 @@
     "model": "income.income",
     "pk": 25,
     "fields": {
-        "user": [
-            "test1"
-        ],
+        "user": 3,
         "title": "Freelancing",
         "amount": "90.00",
         "source": "FREELANCING",
@@ -287,9 +944,7 @@
     "model": "income.income",
     "pk": 26,
     "fields": {
-        "user": [
-            "test1"
-        ],
+        "user": 3,
         "title": "Business",
         "amount": "1000.00",
         "source": "BUSINESS",
@@ -303,9 +958,7 @@
     "model": "income.income",
     "pk": 27,
     "fields": {
-        "user": [
-            "test1"
-        ],
+        "user": 3,
         "title": "Other Sources",
         "amount": "100.00",
         "source": "OTHER",
@@ -319,9 +972,7 @@
     "model": "expenses.expense",
     "pk": 1,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "title": "project",
         "amount": "100.00",
         "category": "EDUCATION",
@@ -333,9 +984,7 @@
     "model": "expenses.expense",
     "pk": 7,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "title": "Lunch",
         "amount": "900.00",
         "category": "FOOD",
@@ -347,9 +996,7 @@
     "model": "expenses.expense",
     "pk": 11,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "title": "Rent",
         "amount": "7000.00",
         "category": "BILLS",
@@ -361,9 +1008,7 @@
     "model": "expenses.expense",
     "pk": 18,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "title": "dinner",
         "amount": "500.00",
         "category": "FOOD",
@@ -375,9 +1020,7 @@
     "model": "expenses.expense",
     "pk": 19,
     "fields": {
-        "user": [
-            "test1"
-        ],
+        "user": 3,
         "title": "Groceries",
         "amount": "250.00",
         "category": "SHOPPING",
@@ -389,9 +1032,7 @@
     "model": "expenses.expense",
     "pk": 22,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "title": "Bus",
         "amount": "91.00",
         "category": "TRAVEL",
@@ -403,9 +1044,7 @@
     "model": "expenses.expense",
     "pk": 23,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "title": "TextBooks",
         "amount": "500.00",
         "category": "SHOPPING",
@@ -417,9 +1056,7 @@
     "model": "expenses.expense",
     "pk": 24,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "title": "Groceries",
         "amount": "250.00",
         "category": "SHOPPING",
@@ -431,9 +1068,7 @@
     "model": "budgets.budget",
     "pk": 1,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "category": "FOOD",
         "budget_amount": "800.00",
         "current_amount": "0.00",
@@ -450,9 +1085,7 @@
     "model": "budgets.budget",
     "pk": 2,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "category": "TRAVEL",
         "budget_amount": "1500.00",
         "current_amount": "0.00",
@@ -469,9 +1102,7 @@
     "model": "budgets.budget",
     "pk": 7,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "category": "BILLS",
         "budget_amount": "9000.00",
         "current_amount": "0.00",
@@ -488,9 +1119,7 @@
     "model": "budgets.budget",
     "pk": 9,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "category": "FOOD",
         "budget_amount": "1000.00",
         "current_amount": "0.00",
@@ -507,9 +1136,7 @@
     "model": "budgets.budget",
     "pk": 10,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "category": "TRAVEL",
         "budget_amount": "1000.00",
         "current_amount": "0.00",
@@ -526,9 +1153,7 @@
     "model": "budgets.budget",
     "pk": 11,
     "fields": {
-        "user": [
-            "test1"
-        ],
+        "user": 3,
         "category": "SHOPPING",
         "budget_amount": "300.00",
         "current_amount": "0.00",
@@ -545,9 +1170,7 @@
     "model": "budgets.budget",
     "pk": 12,
     "fields": {
-        "user": [
-            "test1"
-        ],
+        "user": 3,
         "category": "FOOD",
         "budget_amount": "700.00",
         "current_amount": "0.00",
@@ -564,9 +1187,7 @@
     "model": "budgets.budget",
     "pk": 13,
     "fields": {
-        "user": [
-            "test1"
-        ],
+        "user": 3,
         "category": "TRAVEL",
         "budget_amount": "1000.00",
         "current_amount": "0.00",
@@ -583,9 +1204,7 @@
     "model": "savings.savingsgoal",
     "pk": 3,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "goal_name": "Emergency Fund",
         "target_amount": "10000.00",
         "saved_amount": "10000.00",
@@ -599,9 +1218,7 @@
     "model": "savings.savingsgoal",
     "pk": 4,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "goal_name": "laptop",
         "target_amount": "50000.00",
         "saved_amount": "11000.00",
@@ -615,9 +1232,7 @@
     "model": "savings.savingsgoal",
     "pk": 8,
     "fields": {
-        "user": [
-            "test1"
-        ],
+        "user": 3,
         "goal_name": "Candy",
         "target_amount": "10.00",
         "saved_amount": "2.00",
@@ -631,9 +1246,7 @@
     "model": "savings.savingsgoal",
     "pk": 12,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "goal_name": "watch",
         "target_amount": "1000.00",
         "saved_amount": "500.00",
@@ -647,9 +1260,7 @@
     "model": "notifications.notification",
     "pk": 2,
     "fields": {
-        "user": [
-            "anagha"
-        ],
+        "user": 2,
         "title": "High Alert",
         "message": "High Alert: You have used 90% of your monthly Food Budget.",
         "notification_type": "BUDGET_ALERT",
@@ -657,4 +1268,804 @@
         "is_read": true,
         "created_at": "2026-07-31T12:22:04.885Z"
     }
+},
+{
+    "model": "notifications.notification",
+    "pk": 3,
+    "fields": {
+        "user": 2,
+        "title": "Budget Updated ✏️",
+        "message": "Budget for 'FOOD' was updated to ₹1000.00.",
+        "notification_type": "BUDGET_UPDATED",
+        "priority": "MEDIUM",
+        "is_read": true,
+        "created_at": "2026-07-31T12:22:04.903Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 4,
+    "fields": {
+        "user": 2,
+        "title": "Budget Exceeded",
+        "message": "Your Bills Budget has been exceeded.",
+        "notification_type": "BUDGET_ALERT",
+        "priority": "CRITICAL",
+        "is_read": true,
+        "created_at": "2026-07-31T12:22:04.915Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 5,
+    "fields": {
+        "user": 2,
+        "title": "Budget Updated ✏️",
+        "message": "Budget for 'BILLS' was updated to ₹6000.00.",
+        "notification_type": "BUDGET_UPDATED",
+        "priority": "MEDIUM",
+        "is_read": true,
+        "created_at": "2026-07-31T12:22:04.929Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 6,
+    "fields": {
+        "user": 2,
+        "title": "Savings Goal Created 🎯",
+        "message": "Savings goal 'laptop' with target ₹50000.00 was created.",
+        "notification_type": "SAVINGS_GOAL_CREATED",
+        "priority": "LOW",
+        "is_read": true,
+        "created_at": "2026-07-31T12:31:10.296Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 7,
+    "fields": {
+        "user": 2,
+        "title": "Savings Goal Completed 🎉",
+        "message": "Congratulations! You reached your savings goal 'laptop'!",
+        "notification_type": "SAVINGS_GOAL_COMPLETED",
+        "priority": "HIGH",
+        "is_read": true,
+        "created_at": "2026-07-31T12:54:33.473Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 8,
+    "fields": {
+        "user": 2,
+        "title": "Savings Goal Created 🎯",
+        "message": "Savings goal 'hospital emergency' with target ₹100000.00 was created.",
+        "notification_type": "SAVINGS_GOAL_CREATED",
+        "priority": "LOW",
+        "is_read": true,
+        "created_at": "2026-07-31T12:56:13.073Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 9,
+    "fields": {
+        "user": 2,
+        "title": "Savings Goal Created 🎯",
+        "message": "Savings goal 'laptop' with target ₹50000.00 was created.",
+        "notification_type": "SAVINGS_GOAL_CREATED",
+        "priority": "LOW",
+        "is_read": true,
+        "created_at": "2026-07-31T12:56:53.808Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 11,
+    "fields": {
+        "user": 2,
+        "title": "Budget Exceeded",
+        "message": "Your Travel Budget has been exceeded.",
+        "notification_type": "BUDGET_ALERT",
+        "priority": "CRITICAL",
+        "is_read": true,
+        "created_at": "2026-08-03T09:39:51.679Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 12,
+    "fields": {
+        "user": 2,
+        "title": "Savings Goal Created 🎯",
+        "message": "Savings goal 'mom' with target ₹9000.00 was created.",
+        "notification_type": "SAVINGS_GOAL_CREATED",
+        "priority": "LOW",
+        "is_read": true,
+        "created_at": "2026-08-03T09:44:21.588Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 15,
+    "fields": {
+        "user": 2,
+        "title": "Budget Updated",
+        "message": "Budget for 'BILLS' was updated to ₹9000.00.",
+        "notification_type": "BUDGET_UPDATED",
+        "priority": "LOW",
+        "is_read": true,
+        "created_at": "2026-08-05T12:37:39.702Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 16,
+    "fields": {
+        "user": 3,
+        "title": "Budget Created 📊",
+        "message": "Budget of ₹300.00 set for category 'SHOPPING'.",
+        "notification_type": "BUDGET_CREATED",
+        "priority": "LOW",
+        "is_read": false,
+        "created_at": "2026-08-05T12:40:16.902Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 17,
+    "fields": {
+        "user": 3,
+        "title": "Savings Goal Created 🎯",
+        "message": "Savings goal 'Candy' with target ₹10.00 was created.",
+        "notification_type": "SAVINGS_GOAL_CREATED",
+        "priority": "LOW",
+        "is_read": false,
+        "created_at": "2026-08-05T12:41:43.274Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 18,
+    "fields": {
+        "user": 3,
+        "title": "Budget Created 📊",
+        "message": "Budget of ₹700.00 set for category 'FOOD'.",
+        "notification_type": "BUDGET_CREATED",
+        "priority": "LOW",
+        "is_read": false,
+        "created_at": "2026-08-05T12:43:02.416Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 19,
+    "fields": {
+        "user": 3,
+        "title": "Warning",
+        "message": "Warning: You have used 83% of your monthly Shopping Budget.",
+        "notification_type": "BUDGET_ALERT",
+        "priority": "MEDIUM",
+        "is_read": true,
+        "created_at": "2026-08-05T13:43:11.429Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 20,
+    "fields": {
+        "user": 2,
+        "title": "Savings Goal Completed 🎉",
+        "message": "Congratulations! You reached your savings goal 'Emergency Fund'!",
+        "notification_type": "SAVINGS_GOAL_COMPLETED",
+        "priority": "HIGH",
+        "is_read": true,
+        "created_at": "2026-08-05T14:15:30.535Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 21,
+    "fields": {
+        "user": 2,
+        "title": "Income Added 💰",
+        "message": "New income 'Freelancing' worth ₹10000.00 was recorded.",
+        "notification_type": "INCOME_CREATED",
+        "priority": "LOW",
+        "is_read": true,
+        "created_at": "2026-08-06T12:22:41.607Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 22,
+    "fields": {
+        "user": 2,
+        "title": "Expense Added 💸",
+        "message": "New expense 'Bus' worth ₹91.00 was added.",
+        "notification_type": "EXPENSE_CREATED",
+        "priority": "LOW",
+        "is_read": true,
+        "created_at": "2026-08-06T12:23:19.053Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 24,
+    "fields": {
+        "user": 2,
+        "title": "Income Added 💰",
+        "message": "New income 'Salary' worth ₹20000.00 was recorded.",
+        "notification_type": "INCOME_CREATED",
+        "priority": "LOW",
+        "is_read": true,
+        "created_at": "2026-08-06T13:12:17.441Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 25,
+    "fields": {
+        "user": 2,
+        "title": "Expense Added 💸",
+        "message": "New expense 'TextBooks' worth ₹500.00 was added.",
+        "notification_type": "EXPENSE_CREATED",
+        "priority": "LOW",
+        "is_read": true,
+        "created_at": "2026-08-06T13:13:16.916Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 26,
+    "fields": {
+        "user": 2,
+        "title": "Expense Added 💸",
+        "message": "New expense 'Groceries' worth ₹250.00 was added.",
+        "notification_type": "EXPENSE_CREATED",
+        "priority": "LOW",
+        "is_read": true,
+        "created_at": "2026-08-06T14:17:17.716Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 43,
+    "fields": {
+        "user": 2,
+        "title": "Savings Goal Created 🎯",
+        "message": "Savings goal 'watch' with target ₹1000.00 was created.",
+        "notification_type": "SAVINGS_GOAL_CREATED",
+        "priority": "LOW",
+        "is_read": true,
+        "created_at": "2026-08-07T12:08:37.177Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 44,
+    "fields": {
+        "user": 3,
+        "title": "Income Added 💰",
+        "message": "New income 'Salary' worth ₹1000.00 was recorded.",
+        "notification_type": "INCOME_CREATED",
+        "priority": "LOW",
+        "is_read": true,
+        "created_at": "2026-08-11T12:12:57.141Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 45,
+    "fields": {
+        "user": 3,
+        "title": "Income Added 💰",
+        "message": "New income 'Pocket Money' worth ₹600.00 was recorded.",
+        "notification_type": "INCOME_CREATED",
+        "priority": "LOW",
+        "is_read": true,
+        "created_at": "2026-08-11T12:13:15.769Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 46,
+    "fields": {
+        "user": 3,
+        "title": "Income Added 💰",
+        "message": "New income 'Scholarship' worth ₹100.00 was recorded.",
+        "notification_type": "INCOME_CREATED",
+        "priority": "LOW",
+        "is_read": true,
+        "created_at": "2026-08-11T12:13:30.309Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 47,
+    "fields": {
+        "user": 3,
+        "title": "Income Added 💰",
+        "message": "New income 'Freelancing' worth ₹90.00 was recorded.",
+        "notification_type": "INCOME_CREATED",
+        "priority": "LOW",
+        "is_read": true,
+        "created_at": "2026-08-11T12:13:54.045Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 48,
+    "fields": {
+        "user": 3,
+        "title": "Income Added 💰",
+        "message": "New income 'Business' worth ₹1000.00 was recorded.",
+        "notification_type": "INCOME_CREATED",
+        "priority": "LOW",
+        "is_read": true,
+        "created_at": "2026-08-11T12:14:14.289Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 49,
+    "fields": {
+        "user": 3,
+        "title": "Income Added 💰",
+        "message": "New income 'Other Sources' worth ₹100.00 was recorded.",
+        "notification_type": "INCOME_CREATED",
+        "priority": "LOW",
+        "is_read": true,
+        "created_at": "2026-08-11T12:14:46.426Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 50,
+    "fields": {
+        "user": 3,
+        "title": "Expense Added 💸",
+        "message": "New expense 'book' worth ₹200.00 was added.",
+        "notification_type": "EXPENSE_CREATED",
+        "priority": "LOW",
+        "is_read": true,
+        "created_at": "2026-08-12T11:51:43.245Z"
+    }
+},
+{
+    "model": "notifications.notification",
+    "pk": 51,
+    "fields": {
+        "user": 3,
+        "title": "Budget Created 📊",
+        "message": "Budget of ₹1000.00 set for category 'TRAVEL'.",
+        "notification_type": "BUDGET_CREATED",
+        "priority": "LOW",
+        "is_read": true,
+        "created_at": "2026-08-18T16:13:21.883Z"
+    }
+},
+{
+    "model": "notifications.devicetoken",
+    "pk": 1,
+    "fields": {
+        "user": 3,
+        "token": "e0gY9XCUQsJGvxg6ZFrRK6:APA91bEDt6D-dZQ7Rcu8dZoxCHiwFzbPFBB9FtW0IhvCDmSy4PRCnAkY9Odvg_EE_v_LvhbgvWITIAAn_xO6_YruXdazPhZ4NM_QVAUx4DDrDV3m_FjlHac",
+        "created_at": "2026-08-18T12:32:25.547Z",
+        "updated_at": "2026-08-18T12:32:25.547Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 1,
+    "fields": {
+        "user": 2,
+        "jti": "0d6bbd51d51c49a58be2c14e9ae26c5f",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjM2ODAxMiwiaWF0IjoxNzg1NzYzMjEyLCJqdGkiOiIwZDZiYmQ1MWQ1MWM0OWE1OGJlMmMxNGU5YWUyNmM1ZiIsInVzZXJfaWQiOiIyIn0.6HWj_DQ7LEIcAWpCRBxADbRv3t3rc7Zn5f7qOR-mX6E",
+        "created_at": "2026-08-03T13:20:12.770Z",
+        "expires_at": "2026-08-10T13:20:12Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 2,
+    "fields": {
+        "user": 2,
+        "jti": "de5294cc2b1b41f68caa6d66cc462435",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjM1OTMwNSwiaWF0IjoxNzg1NzU0NTA1LCJqdGkiOiJkZTUyOTRjYzJiMWI0MWY2OGNhYTZkNjZjYzQ2MjQzNSIsInVzZXJfaWQiOiIyIn0.H9MW8OfE5x4N7U6F_X0VNh_3rwrNZnz0HCkNOWfl65U",
+        "created_at": "2026-08-04T12:26:30.476Z",
+        "expires_at": "2026-08-10T10:55:05Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 3,
+    "fields": {
+        "user": 2,
+        "jti": "8a20e6f67d2b4cdcaac80afd9da9fefe",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjQ1MTE5MCwiaWF0IjoxNzg1ODQ2MzkwLCJqdGkiOiI4YTIwZTZmNjdkMmI0Y2RjYWFjODBhZmQ5ZGE5ZmVmZSIsInVzZXJfaWQiOiIyIn0.b-tug5jZygmYfc4tTFpjWeo4Bt0ohp6HckqQsVeLPPc",
+        "created_at": "2026-08-04T12:26:30.476Z",
+        "expires_at": "2026-08-11T12:26:30Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 4,
+    "fields": {
+        "user": 2,
+        "jti": "4a74bb5ebe7b4e2ab6082a95c37deef8",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjQ1MTE5MCwiaWF0IjoxNzg1ODQ2MzkwLCJqdGkiOiI0YTc0YmI1ZWJlN2I0ZTJhYjYwODJhOTVjMzdkZWVmOCIsInVzZXJfaWQiOiIyIn0.AtvZyduY46ZpWryW0VmFYnv7Kd8nBAPw9e9R6PKKgx0",
+        "created_at": "2026-08-04T12:26:30.479Z",
+        "expires_at": "2026-08-11T12:26:30Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 5,
+    "fields": {
+        "user": 2,
+        "jti": "05fe6b54adb84d588e89d5489352cbb4",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjQ1MTE5MCwiaWF0IjoxNzg1ODQ2MzkwLCJqdGkiOiIwNWZlNmI1NGFkYjg0ZDU4OGU4OWQ1NDg5MzUyY2JiNCIsInVzZXJfaWQiOiIyIn0.88n9l5X9PNG68Gxr5b3wtfnWXzl7jU8SnzUdX1wDBk0",
+        "created_at": "2026-08-04T12:26:30.481Z",
+        "expires_at": "2026-08-11T12:26:30Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 6,
+    "fields": {
+        "user": 2,
+        "jti": "283578ce851e4dd2a00cd47a933c7266",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjQ1MTE5MCwiaWF0IjoxNzg1ODQ2MzkwLCJqdGkiOiIyODM1NzhjZTg1MWU0ZGQyYTAwY2Q0N2E5MzNjNzI2NiIsInVzZXJfaWQiOiIyIn0.tn5r53tBj8IHxNhIjIQAxVzu0UlP5f8G3IcK-mV_KbQ",
+        "created_at": "2026-08-04T12:26:30.480Z",
+        "expires_at": "2026-08-11T12:26:30Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 7,
+    "fields": {
+        "user": 2,
+        "jti": "d733fb403f71468da4bc2e60b6d075f9",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjQ1NDY3MCwiaWF0IjoxNzg1ODQ5ODcwLCJqdGkiOiJkNzMzZmI0MDNmNzE0NjhkYTRiYzJlNjBiNmQwNzVmOSIsInVzZXJfaWQiOiIyIn0.zjyIUI2X6p6xaLKgQn1tAbnlpJtRJ4BMK55xR_B1aDY",
+        "created_at": "2026-08-04T13:24:30.411Z",
+        "expires_at": "2026-08-11T13:24:30Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 8,
+    "fields": {
+        "user": 2,
+        "jti": "15b35c9e89e14cffae713f0ca8e1a23c",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjUzNTgyNCwiaWF0IjoxNzg1OTMxMDI0LCJqdGkiOiIxNWIzNWM5ZTg5ZTE0Y2ZmYWU3MTNmMGNhOGUxYTIzYyIsInVzZXJfaWQiOiIyIn0.GkzwCB2Qz-Pl3oRTkHQ4Y93Z9k6m-8e_EITlPtiH4pg",
+        "created_at": "2026-08-05T11:57:04.005Z",
+        "expires_at": "2026-08-12T11:57:04Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 9,
+    "fields": {
+        "user": 3,
+        "jti": "9df0f08de0534b43b9be32cd3436f20c",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjUzODM2OCwiaWF0IjoxNzg1OTMzNTY4LCJqdGkiOiI5ZGYwZjA4ZGUwNTM0YjQzYjliZTMyY2QzNDM2ZjIwYyIsInVzZXJfaWQiOiIzIn0.yzkHhTaTPUqkVnkWlJ6uVhbSAfgk2YE8rNaqqCG7D5w",
+        "created_at": "2026-08-05T12:39:28.240Z",
+        "expires_at": "2026-08-12T12:39:28Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 10,
+    "fields": {
+        "user": 2,
+        "jti": "a9064640705b4232853f1a498b41725f",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjUzOTA4NCwiaWF0IjoxNzg1OTM0Mjg0LCJqdGkiOiJhOTA2NDY0MDcwNWI0MjMyODUzZjFhNDk4YjQxNzI1ZiIsInVzZXJfaWQiOiIyIn0.BkwLHFId5_6uFgu9Jj81PlMlG9LW7SFQZBDK9jr9kFo",
+        "created_at": "2026-08-05T12:51:24.836Z",
+        "expires_at": "2026-08-12T12:51:24Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 11,
+    "fields": {
+        "user": 2,
+        "jti": "643ff5a732f84d80b2b0d12e12e9cbd3",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjU0NDMxNywiaWF0IjoxNzg1OTM5NTE3LCJqdGkiOiI2NDNmZjVhNzMyZjg0ZDgwYjJiMGQxMmUxMmU5Y2JkMyIsInVzZXJfaWQiOiIyIn0.WbnHGsYYe7W_jQ8_NeB8HAugwyX_Zo3HYvxMG90wRRo",
+        "created_at": "2026-08-05T14:18:37.186Z",
+        "expires_at": "2026-08-12T14:18:37Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 12,
+    "fields": {
+        "user": 2,
+        "jti": "6ca06ccce42c4e92b3a897cfc7dda4fe",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjU1NTc5MSwiaWF0IjoxNzg1OTUwOTkxLCJqdGkiOiI2Y2EwNmNjY2U0MmM0ZTkyYjNhODk3Y2ZjN2RkYTRmZSIsInVzZXJfaWQiOiIyIn0.cpo2euhwm94939ZnARV1k7ds8OOKxFZGLE7CpEEOBmY",
+        "created_at": "2026-08-05T17:29:51.693Z",
+        "expires_at": "2026-08-12T17:29:51Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 13,
+    "fields": {
+        "user": 2,
+        "jti": "aaf2c3e4da0d4cde95887d5a29aec90b",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjYyMDUxNSwiaWF0IjoxNzg2MDE1NzE1LCJqdGkiOiJhYWYyYzNlNGRhMGQ0Y2RlOTU4ODdkNWEyOWFlYzkwYiIsInVzZXJfaWQiOiIyIn0.1MPH6LkenigzNdMGlRnGm1SnJ8dG7fWP0jjpfopljU4",
+        "created_at": "2026-08-06T11:28:35.618Z",
+        "expires_at": "2026-08-13T11:28:35Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 14,
+    "fields": {
+        "user": 2,
+        "jti": "1dbd0be761ac495aa736fea1c6c74965",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjYyMTc1MywiaWF0IjoxNzg2MDE2OTUzLCJqdGkiOiIxZGJkMGJlNzYxYWM0OTVhYTczNmZlYTFjNmM3NDk2NSIsInVzZXJfaWQiOiIyIn0.uWOOej3U17KRW52LRDTmefGJ9KrHOFvyZprnJBLOa-Y",
+        "created_at": "2026-08-06T11:49:13.508Z",
+        "expires_at": "2026-08-13T11:49:13Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 15,
+    "fields": {
+        "user": 2,
+        "jti": "ee19dbd3b94049409788ecba7abfb1ef",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjYyODcxOCwiaWF0IjoxNzg2MDIzOTE4LCJqdGkiOiJlZTE5ZGJkM2I5NDA0OTQwOTc4OGVjYmE3YWJmYjFlZiIsInVzZXJfaWQiOiIyIn0.AByR4nGZ9ERSFrRXGdkKdya78eTWRuzz0KIHuK6r7gQ",
+        "created_at": "2026-08-06T13:45:18.268Z",
+        "expires_at": "2026-08-13T13:45:18Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 16,
+    "fields": {
+        "user": 2,
+        "jti": "552c57b0eeaf4dd9b0cdba36441cf548",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjYyODg1OSwiaWF0IjoxNzg2MDI0MDU5LCJqdGkiOiI1NTJjNTdiMGVlYWY0ZGQ5YjBjZGJhMzY0NDFjZjU0OCIsInVzZXJfaWQiOiIyIn0.ZwwttZOM_o26yDhngv1ucuJwrXP7Cas7gQAYTVPmZfI",
+        "created_at": "2026-08-06T13:47:39.839Z",
+        "expires_at": "2026-08-13T13:47:39Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 17,
+    "fields": {
+        "user": 2,
+        "jti": "878b10b2f50d4bf4a92023d8f9a2f419",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjY5NzQ3MiwiaWF0IjoxNzg2MDkyNjcyLCJqdGkiOiI4NzhiMTBiMmY1MGQ0YmY0YTkyMDIzZDhmOWEyZjQxOSIsInVzZXJfaWQiOiIyIn0.9zr-btwtcrmiQ9jPSS_4WM31iFC8NTfIH8P6RF9WtDk",
+        "created_at": "2026-08-07T08:51:12.272Z",
+        "expires_at": "2026-08-14T08:51:12Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 18,
+    "fields": {
+        "user": 2,
+        "jti": "37f770d20cd44de98faf5bc6fea4f01f",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjY5ODA4NywiaWF0IjoxNzg2MDkzMjg3LCJqdGkiOiIzN2Y3NzBkMjBjZDQ0ZGU5OGZhZjViYzZmZWE0ZjAxZiIsInVzZXJfaWQiOiIyIn0.5YDpv5xloRipKqIwKiGU9xyz3Nof7BZcibjLH6F8IYc",
+        "created_at": "2026-08-07T09:01:27.719Z",
+        "expires_at": "2026-08-14T09:01:27Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 19,
+    "fields": {
+        "user": 2,
+        "jti": "cc23b395c3994104b430543289c56737",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjcwNzIwMywiaWF0IjoxNzg2MTAyNDAzLCJqdGkiOiJjYzIzYjM5NWMzOTk0MTA0YjQzMDU0MzI4OWM1NjczNyIsInVzZXJfaWQiOiIyIn0.g2y64sesr4g3oj3FvhX9Hd478OkalhdKvGqb8MFFS7g",
+        "created_at": "2026-08-07T11:33:23.383Z",
+        "expires_at": "2026-08-14T11:33:23Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 20,
+    "fields": {
+        "user": 2,
+        "jti": "beaa5b30334e4c6ca5bbcd043a6d0ab7",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjcwNzk0MCwiaWF0IjoxNzg2MTAzMTQwLCJqdGkiOiJiZWFhNWIzMDMzNGU0YzZjYTViYmNkMDQzYTZkMGFiNyIsInVzZXJfaWQiOiIyIn0.vcJPGvYVoBEGuD4ck4QpE74bOqYOH8uC_Es3p9xADOI",
+        "created_at": "2026-08-07T11:45:40.508Z",
+        "expires_at": "2026-08-14T11:45:40Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 21,
+    "fields": {
+        "user": 2,
+        "jti": "cff67dd1f69a4b8794a176794d02f324",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjcwODYzMiwiaWF0IjoxNzg2MTAzODMyLCJqdGkiOiJjZmY2N2RkMWY2OWE0Yjg3OTRhMTc2Nzk0ZDAyZjMyNCIsInVzZXJfaWQiOiIyIn0.J-_8xBbz2PyhQRuxP4RnzJFvUjfT2kkrTv6siA4jTS8",
+        "created_at": "2026-08-07T11:57:12.508Z",
+        "expires_at": "2026-08-14T11:57:12Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 22,
+    "fields": {
+        "user": 2,
+        "jti": "dd556cce5ca14245a569e83590353e08",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjcwOTI3OSwiaWF0IjoxNzg2MTA0NDc5LCJqdGkiOiJkZDU1NmNjZTVjYTE0MjQ1YTU2OWU4MzU5MDM1M2UwOCIsInVzZXJfaWQiOiIyIn0.un3erX0r-n_7M4lc-5GHQgAzTfGo6quCjGk3k8Rx-SQ",
+        "created_at": "2026-08-07T12:07:59.309Z",
+        "expires_at": "2026-08-14T12:07:59Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 23,
+    "fields": {
+        "user": 2,
+        "jti": "25276db69623476989f80191d79c1ce1",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NzA1NTEzMywiaWF0IjoxNzg2NDUwMzMzLCJqdGkiOiIyNTI3NmRiNjk2MjM0NzY5ODlmODAxOTFkNzljMWNlMSIsInVzZXJfaWQiOiIyIn0.TkHxlRcNJ59vYADBz2wdsNLoXiy4eWI4OdmBHceaGqI",
+        "created_at": "2026-08-11T12:12:13.198Z",
+        "expires_at": "2026-08-18T12:12:13Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 24,
+    "fields": {
+        "user": 3,
+        "jti": "0b0a43bac990403086b46ad24ad77d76",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NzA1NTE2MSwiaWF0IjoxNzg2NDUwMzYxLCJqdGkiOiIwYjBhNDNiYWM5OTA0MDMwODZiNDZhZDI0YWQ3N2Q3NiIsInVzZXJfaWQiOiIzIn0.p1ObwHPQb5-oR8iJ2BDWDtYkdluPV9-oHdqtts7bW9Y",
+        "created_at": "2026-08-11T12:12:41.657Z",
+        "expires_at": "2026-08-18T12:12:41Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 25,
+    "fields": {
+        "user": 3,
+        "jti": "249bbac55228475e9d4cd8fd9ddf05af",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NzE0MDIyOSwiaWF0IjoxNzg2NTM1NDI5LCJqdGkiOiIyNDliYmFjNTUyMjg0NzVlOWQ0Y2Q4ZmQ5ZGRmMDVhZiIsInVzZXJfaWQiOiIzIn0.AymhzKZ-UyF_0U5U7DqvExn_apqalS-DkRZ_D2rfP2g",
+        "created_at": "2026-08-12T11:50:29.050Z",
+        "expires_at": "2026-08-19T11:50:29Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 26,
+    "fields": {
+        "user": 3,
+        "jti": "02789053e15743758c72ee7854cbd609",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NzU3NDk5MywiaWF0IjoxNzg2OTcwMTkzLCJqdGkiOiIwMjc4OTA1M2UxNTc0Mzc1OGM3MmVlNzg1NGNiZDYwOSIsInVzZXJfaWQiOiIzIn0.w-NwJBy0G9i5D1tvPXFlQSBnFbHvWcRlRSBud0gAyHc",
+        "created_at": "2026-08-17T12:36:33.685Z",
+        "expires_at": "2026-08-24T12:36:33Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 27,
+    "fields": {
+        "user": 3,
+        "jti": "fb52135578124b78add3c4bf3a3ac3a2",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NzU3NTAwNywiaWF0IjoxNzg2OTcwMjA3LCJqdGkiOiJmYjUyMTM1NTc4MTI0Yjc4YWRkM2M0YmYzYTNhYzNhMiIsInVzZXJfaWQiOiIzIn0.uXLGavdLSA2Y6fV9E3Nd50WwDHgYBVhV14fV_ROBN_Q",
+        "created_at": "2026-08-17T12:36:47.979Z",
+        "expires_at": "2026-08-24T12:36:47Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 28,
+    "fields": {
+        "user": 3,
+        "jti": "8df4bb14c0cf42cc95b029a9fe1f7881",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NzU3NTAwNywiaWF0IjoxNzg2OTcwMjA3LCJqdGkiOiI4ZGY0YmIxNGMwY2Y0MmNjOTViMDI5YTlmZTFmNzg4MSIsInVzZXJfaWQiOiIzIn0.VzytpQk2n8S6C5y0u0o9j4lg0zyjAEm9SqbqLIy56qA",
+        "created_at": "2026-08-17T12:36:47.975Z",
+        "expires_at": "2026-08-24T12:36:47Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 29,
+    "fields": {
+        "user": 3,
+        "jti": "d5cb6f3857a546b09856b7c83b3eb197",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NzU3NTAwNywiaWF0IjoxNzg2OTcwMjA3LCJqdGkiOiJkNWNiNmYzODU3YTU0NmIwOTg1NmI3YzgzYjNlYjE5NyIsInVzZXJfaWQiOiIzIn0.AHfIYVUnet2RcFl1j2wEUHF4xw-z8l39TfMA-KZxd8A",
+        "created_at": "2026-08-17T12:36:47.989Z",
+        "expires_at": "2026-08-24T12:36:47Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 30,
+    "fields": {
+        "user": 3,
+        "jti": "def6ca6d332546bfac94414e8ce07b8b",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NzU3NTAwNywiaWF0IjoxNzg2OTcwMjA3LCJqdGkiOiJkZWY2Y2E2ZDMzMjU0NmJmYWM5NDQxNGU4Y2UwN2I4YiIsInVzZXJfaWQiOiIzIn0.o3IpHd52Y5vIftOd9RD9Rs2CtEbK8oy60-Ky2baxK78",
+        "created_at": "2026-08-17T12:36:47.997Z",
+        "expires_at": "2026-08-24T12:36:47Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 31,
+    "fields": {
+        "user": 3,
+        "jti": "d27cac62d9b74a32980ea02b062983ee",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NzU3NTAwNywiaWF0IjoxNzg2OTcwMjA3LCJqdGkiOiJkMjdjYWM2MmQ5Yjc0YTMyOTgwZWEwMmIwNjI5ODNlZSIsInVzZXJfaWQiOiIzIn0.vWf5WJG_nLo5kHWM9syTD1BS125ueIeMU48XDhtRKjg",
+        "created_at": "2026-08-17T12:36:47.994Z",
+        "expires_at": "2026-08-24T12:36:47Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 32,
+    "fields": {
+        "user": 3,
+        "jti": "39ec9722ce7d41a680e7c70fdd9af5df",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NzU3NTAwNywiaWF0IjoxNzg2OTcwMjA3LCJqdGkiOiIzOWVjOTcyMmNlN2Q0MWE2ODBlN2M3MGZkZDlhZjVkZiIsInVzZXJfaWQiOiIzIn0.1ZGCg4KTWoGgPnwzmB_l9mwKeZmW9tWlpTwYIQFuENA",
+        "created_at": "2026-08-17T12:36:47.982Z",
+        "expires_at": "2026-08-24T12:36:47Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 33,
+    "fields": {
+        "user": 3,
+        "jti": "0af613d085264aca99c34e763ff3b4ff",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NzU3NTAyMiwiaWF0IjoxNzg2OTcwMjIyLCJqdGkiOiIwYWY2MTNkMDg1MjY0YWNhOTljMzRlNzYzZmYzYjRmZiIsInVzZXJfaWQiOiIzIn0.M7RRZAUAT9pNwzqLGOjU8_F_nTFJazQWgZM_aPDRJ9o",
+        "created_at": "2026-08-17T12:37:02.546Z",
+        "expires_at": "2026-08-24T12:37:02Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 34,
+    "fields": {
+        "user": 3,
+        "jti": "8bfb56e23f534eef9003d9e8a04b9df8",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NzY2MTExNSwiaWF0IjoxNzg3MDU2MzE1LCJqdGkiOiI4YmZiNTZlMjNmNTM0ZWVmOTAwM2Q5ZThhMDRiOWRmOCIsInVzZXJfaWQiOiIzIn0.FQa_0hEz_6z1FQE_vT-g9eNUh8CAHAhpzSWLrXE5gB0",
+        "created_at": "2026-08-18T12:31:55.480Z",
+        "expires_at": "2026-08-25T12:31:55Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 35,
+    "fields": {
+        "user": 3,
+        "jti": "a59353dc8d5a42bf90e1358e18cc0c6d",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NzY3NDMwOCwiaWF0IjoxNzg3MDY5NTA4LCJqdGkiOiJhNTkzNTNkYzhkNWE0MmJmOTBlMTM1OGUxOGNjMGM2ZCIsInVzZXJfaWQiOiIzIn0.efTASyH6PnqR3HRXlR-ZHiwlu3yMkv246hpyOLsA96I",
+        "created_at": "2026-08-18T16:11:48.407Z",
+        "expires_at": "2026-08-25T16:11:48Z"
+    }
+},
+{
+    "model": "token_blacklist.outstandingtoken",
+    "pk": 36,
+    "fields": {
+        "user": 2,
+        "jti": "445edd3575de4fbe9fb7f3856ba20ccf",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NzY3NjA5NSwiaWF0IjoxNzg3MDcxMjk1LCJqdGkiOiI0NDVlZGQzNTc1ZGU0ZmJlOWZiN2YzODU2YmEyMGNjZiIsInVzZXJfaWQiOiIyIn0.5zy8CZLinM8DlLL7pPAuF8rw5e0EcFtoEG-lxD1QxjI",
+        "created_at": "2026-08-18T16:41:35.955Z",
+        "expires_at": "2026-08-25T16:41:35Z"
+    }
+},
+{
+    "model": "token_blacklist.blacklistedtoken",
+    "pk": 1,
+    "fields": {
+        "token": 2,
+        "blacklisted_at": "2026-08-04T12:26:30.498Z"
+    }
+},
+{
+    "model": "token_blacklist.blacklistedtoken",
+    "pk": 2,
+    "fields": {
+        "token": 25,
+        "blacklisted_at": "2026-08-17T12:36:48.030Z"
+    }
 }
+]
