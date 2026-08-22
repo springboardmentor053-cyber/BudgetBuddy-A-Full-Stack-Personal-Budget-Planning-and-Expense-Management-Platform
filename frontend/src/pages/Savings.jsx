@@ -77,10 +77,11 @@ function Savings() {
       setSavedAmount('');
       setTargetDate('');
       setStatus('IN_PROGRESS');
-      fetchGoals();
+      await fetchGoals();
     } catch (err) {
       const errorMsg = err.response?.data ? JSON.stringify(err.response.data) : 'Failed to create savings goal.';
-      alert(errorMsg);
+      await fetchGoals();
+      alert(`${errorMsg}\n\nIf the new goal appears after this message, the save worked and the response failed afterward.`);
     }
   };
 
@@ -101,9 +102,10 @@ function Savings() {
       });
       setActiveDepositId(null);
       setDepositAmount('');
-      fetchGoals();
+      await fetchGoals();
     } catch (err) {
-      alert('Error updating savings progress.');
+      await fetchGoals();
+      alert('Savings progress may have been updated even though the server returned an error. Please refresh to confirm.');
     }
   };
 
@@ -138,9 +140,10 @@ function Savings() {
         status: autoStatus,
       });
       setEditingGoal(null);
-      fetchGoals();
+      await fetchGoals();
     } catch (err) {
-      alert('Failed to update savings goal.');
+      await fetchGoals();
+      alert('Savings goal may have been updated even though the server returned an error. Please refresh to confirm.');
     }
   };
 

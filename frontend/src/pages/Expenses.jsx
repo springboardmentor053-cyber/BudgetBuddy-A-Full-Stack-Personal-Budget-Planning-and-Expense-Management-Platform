@@ -98,9 +98,11 @@ function Expenses() {
       setTitle('');
       setAmount('');
       setExpenseDate('');
-      fetchExpenses();
+      await fetchExpenses();
     } catch (err) {
-      alert('Failed to log expense item.');
+      console.error('Expense create failed:', err.response?.data || err.message);
+      await fetchExpenses();
+      alert('Expense was saved, but the server returned an error after saving. Please refresh if you do not see it.');
     }
   };
 

@@ -83,7 +83,7 @@ function Budgets() {
       setSelectedMonth(parseInt(month, 10));
       setSelectedYear(parseInt(year, 10));
       setAmount('');
-      fetchBudgets();
+      await fetchBudgets();
     } catch (err) {
       const errorData = err.response?.data;
       console.error("Backend validation or database error details:", errorData);
@@ -98,7 +98,8 @@ function Budgets() {
           errorMsg = String(errorData);
         }
       }
-      alert(errorMsg);
+      await fetchBudgets();
+      alert(`${errorMsg}\n\nIf the budget row appears after this, the save worked and only the response handling failed.`);
     }
   };
 
