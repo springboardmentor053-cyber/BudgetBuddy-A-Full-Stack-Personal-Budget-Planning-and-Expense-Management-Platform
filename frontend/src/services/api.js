@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://budgetbuddy-2-3k0o.onrender.com/api/';
+const rawApiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://budgetbuddy-2-3k0o.onrender.com/api/';
+const normalizedApiBaseUrl = rawApiBaseUrl.endsWith('/') ? rawApiBaseUrl : `${rawApiBaseUrl}/`;
+const API_BASE_URL = normalizedApiBaseUrl.endsWith('/api/')
+  ? normalizedApiBaseUrl
+  : `${normalizedApiBaseUrl}api/`;
 
 // Create an axios instance pointing to your Django backend
 const api = axios.create({

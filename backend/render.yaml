@@ -3,7 +3,7 @@ services:
     name: BudgetBuddy-2
     env: python
     buildCommand: "pip install -r requirements.txt && python manage.py migrate"
-    startCommand: "gunicorn backend.wsgi:application --workers 1 --threads 2 --timeout 120"
+    startCommand: "gunicorn config.wsgi:application --workers 1 --threads 2 --timeout 120"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
