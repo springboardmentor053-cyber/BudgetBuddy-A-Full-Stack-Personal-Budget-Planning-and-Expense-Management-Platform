@@ -33,6 +33,9 @@ def send_notification_email(user, title, message):
 # 1. Savings Goal Created & Completed Signals
 @receiver(post_save, sender=SavingsGoal)
 def savings_goal_notification(sender, instance, created, **kwargs):
+    if kwargs.get('raw'):
+        return
+
     if created:
         title = "Savings Goal Created 🎯"
         message = f"Savings goal '{instance.goal_name}' with target ₹{instance.target_amount} was created."
@@ -69,27 +72,32 @@ def savings_goal_notification(sender, instance, created, **kwargs):
                 send_notification_email(instance.user, title, message)
                 send_fcm_push_to_user(instance.user, title, message, {"type": "savings_completed", "title": instance.goal_name})
 
+
+# 2. Budget Signals
 @receiver(pre_save, sender=Budget)
 def track_budget_definition_change(sender, instance, **kwargs):
     if kwargs.get('raw'):
         return
-    # ... rest of your signal logic ...
-# 2. Budget Signals
-@receiver(pre_save, sender=Budget)
-def track_budget_definition_change(sender, instance, **kwargs):
+
     if not instance.pk:
         instance._definition_changed = False
         return
 
-    previous = sender.objects.get(pk=instance.pk)
-    instance._definition_changed = any(
-        getattr(previous, field) != getattr(instance, field)
-        for field in ("category", "budget_amount", "month", "year")
-    )
+    try:
+        previous = sender.objects.get(pk=instance.pk)
+        instance._definition_changed = any(
+            getattr(previous, field) != getattr(instance, field)
+            for field in ("category", "budget_amount", "month", "year")
+        )
+    except sender.DoesNotExist:
+        instance._definition_changed = False
 
 
 @receiver(post_save, sender=Budget)
 def budget_update_notification(sender, instance, created, **kwargs):
+    if kwargs.get('raw'):
+        return
+
     if not created and getattr(instance, "_definition_changed", False):
         title = "Budget Updated 📊"
         message = f"Budget for '{instance.category}' was updated to ₹{instance.budget_amount}."
@@ -106,6 +114,9 @@ def budget_update_notification(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Budget)
 def budget_notification(sender, instance, created, **kwargs):
+    if kwargs.get('raw'):
+        return
+
     if created:
         title = "Budget Created 📊"
         message = f"Budget of ₹{instance.budget_amount} set for category '{instance.category}'."
@@ -124,6 +135,9 @@ def budget_notification(sender, instance, created, **kwargs):
 # 3. Expense Creation Signal
 @receiver(post_save, sender=Expense)
 def expense_creation_notification(sender, instance, created, **kwargs):
+    if kwargs.get('raw'):
+        return
+
     if created:
         title = "Expense Added 💸"
         message = f"New expense '{instance.title}' worth ₹{instance.amount} was added."
@@ -142,6 +156,9 @@ def expense_creation_notification(sender, instance, created, **kwargs):
 # 4. Income Creation Signal
 @receiver(post_save, sender=Income)
 def income_creation_notification(sender, instance, created, **kwargs):
+    if kwargs.get('raw'):
+        return
+
     if created:
         title = "Income Added 💰"
         message = f"New income '{instance.title}' worth ₹{instance.amount} was recorded."
