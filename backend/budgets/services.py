@@ -1,5 +1,5 @@
 from decimal import Decimal
-from notifications.models import Notification
+from notifications.utils import create_notification_safe
 
 
 def check_and_trigger_budget_alert(budget, total_expense):
@@ -17,12 +17,12 @@ def check_and_trigger_budget_alert(budget, total_expense):
         alert_message = f"Your {category_display} Budget has been exceeded."
         
         if not budget.alert_100_sent:
-            Notification.objects.create(
-                user=budget.user,
-                title="Budget Exceeded",
-                message=alert_message,
-                priority="CRITICAL",
-                notification_type="BUDGET_ALERT"
+            create_notification_safe(
+                budget.user,
+                "Budget Exceeded",
+                alert_message,
+                "BUDGET_ALERT",
+                "CRITICAL",
             )
             budget.alert_100_sent = True
             # Only update the flag field to prevent triggering save hooks repeatedly
@@ -34,12 +34,12 @@ def check_and_trigger_budget_alert(budget, total_expense):
         alert_message = f"High Alert: You have used {int(utilization)}% of your monthly {category_display} Budget."
         
         if not budget.alert_90_sent:
-            Notification.objects.create(
-                user=budget.user,
-                title="High Alert",
-                message=alert_message,
-                priority="HIGH",
-                notification_type="BUDGET_ALERT"
+            create_notification_safe(
+                budget.user,
+                "High Alert",
+                alert_message,
+                "BUDGET_ALERT",
+                "HIGH",
             )
             budget.alert_90_sent = True
             budget.save(update_fields=['alert_90_sent'])
@@ -50,12 +50,12 @@ def check_and_trigger_budget_alert(budget, total_expense):
         alert_message = f"Warning: You have used {int(utilization)}% of your monthly {category_display} Budget."
         
         if not budget.alert_80_sent:
-            Notification.objects.create(
-                user=budget.user,
-                title="Warning",
-                message=alert_message,
-                priority="MEDIUM",
-                notification_type="BUDGET_ALERT"
+            create_notification_safe(
+                budget.user,
+                "Warning",
+                alert_message,
+                "BUDGET_ALERT",
+                "MEDIUM",
             )
             budget.alert_80_sent = True
             budget.save(update_fields=['alert_80_sent'])

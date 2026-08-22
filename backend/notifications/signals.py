@@ -7,8 +7,7 @@ from expenses.models import Expense
 from income.models import Income
 from savings.models import SavingsGoal
 from budgets.models import Budget
-from .models import Notification
-from .utils import send_fcm_push_to_user
+from .utils import create_notification_safe, send_fcm_push_to_user
 
 
 # Helper function to trigger email reliably with error logging
@@ -37,12 +36,12 @@ def savings_goal_notification(sender, instance, created, **kwargs):
         title = "Savings Goal Created 🎯"
         message = f"Savings goal '{instance.goal_name}' with target ₹{instance.target_amount} was created."
 
-        Notification.objects.create(
-            user=instance.user,
-            title=title,
-            message=message,
-            notification_type="SAVINGS_GOAL_CREATED",
-            priority="LOW"
+        create_notification_safe(
+            instance.user,
+            title,
+            message,
+            "SAVINGS_GOAL_CREATED",
+            "LOW",
         )
         
         # 📧 Send Email to Gmail
@@ -61,12 +60,12 @@ def savings_goal_notification(sender, instance, created, **kwargs):
                 title = "Savings Goal Completed 🎉"
                 message = f"Congratulations! You reached your savings goal '{instance.goal_name}'!"
 
-                Notification.objects.create(
-                    user=instance.user,
-                    title=title,
-                    message=message,
-                    notification_type="SAVINGS_GOAL_COMPLETED",
-                    priority="HIGH"
+                create_notification_safe(
+                    instance.user,
+                    title,
+                    message,
+                    "SAVINGS_GOAL_COMPLETED",
+                    "HIGH",
                 )
 
                 # 📧 Send Email to Gmail
@@ -93,12 +92,12 @@ def budget_update_notification(sender, instance, created, **kwargs):
     if not created and getattr(instance, "_definition_changed", False):
         title = "Budget Updated"
         message = f"Budget for '{instance.category}' was updated to ₹{instance.budget_amount}."
-        Notification.objects.create(
-            user=instance.user,
-            title=title,
-            message=message,
-            notification_type="BUDGET_UPDATED",
-            priority="LOW",
+        create_notification_safe(
+            instance.user,
+            title,
+            message,
+            "BUDGET_UPDATED",
+            "LOW",
         )
         send_notification_email(instance.user, title, message)
 
@@ -109,12 +108,12 @@ def budget_notification(sender, instance, created, **kwargs):
         title = "Budget Created 📊"
         message = f"Budget of ₹{instance.budget_amount} set for category '{instance.category}'."
 
-        Notification.objects.create(
-            user=instance.user,
-            title=title,
-            message=message,
-            notification_type="BUDGET_CREATED",
-            priority="LOW"
+        create_notification_safe(
+            instance.user,
+            title,
+            message,
+            "BUDGET_CREATED",
+            "LOW",
         )
 
         # 📧 Send Email to Gmail
@@ -127,12 +126,12 @@ def expense_creation_notification(sender, instance, created, **kwargs):
         title = "Expense Added 💸"
         message = f"New expense '{instance.title}' worth ₹{instance.amount} was added."
 
-        Notification.objects.create(
-            user=instance.user,
-            title=title,
-            message=message,
-            notification_type="EXPENSE_CREATED",
-            priority="LOW",
+        create_notification_safe(
+            instance.user,
+            title,
+            message,
+            "EXPENSE_CREATED",
+            "LOW",
         )
         send_notification_email(instance.user, title, message)
         send_fcm_push_to_user(instance.user, title, message, {"type": "expense", "title": instance.title})
@@ -144,12 +143,12 @@ def income_creation_notification(sender, instance, created, **kwargs):
         title = "Income Added 💰"
         message = f"New income '{instance.title}' worth ₹{instance.amount} was recorded."
 
-        Notification.objects.create(
-            user=instance.user,
-            title=title,
-            message=message,
-            notification_type="INCOME_CREATED",
-            priority="LOW",
+        create_notification_safe(
+            instance.user,
+            title,
+            message,
+            "INCOME_CREATED",
+            "LOW",
         )
         send_notification_email(instance.user, title, message)
         send_fcm_push_to_user(instance.user, title, message, {"type": "income", "title": instance.title})
