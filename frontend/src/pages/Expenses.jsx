@@ -98,7 +98,11 @@ function Expenses() {
       setTitle('');
       setAmount('');
       setExpenseDate('');
-      await fetchExpenses();
+      try {
+        await fetchExpenses();
+      } catch (refreshErr) {
+        console.error('Expense saved but refresh failed:', refreshErr);
+      }
     } catch (err) {
       console.error('Expense create failed:', err.response?.data || err.message);
       await fetchExpenses();
