@@ -61,31 +61,31 @@ def send_fcm_push_to_user(user, title, body, data=None):
     if not server_key:
         return
 
-    tokens = list(DeviceToken.objects.filter(user=user).values_list('token', flat=True))
-    if not tokens:
-        return
-
-    payload = {
-        'registration_ids': tokens,
-        'notification': {
-            'title': title,
-            'body': body,
-        },
-        'data': data or {},
-        'priority': 'high',
-    }
-
-    request = urllib.request.Request(
-        'https://fcm.googleapis.com/fcm/send',
-        data=json.dumps(payload).encode('utf-8'),
-        headers={
-            'Content-Type': 'application/json',
-            'Authorization': f'key={server_key}',
-        },
-        method='POST',
-    )
-
     try:
+        tokens = list(DeviceToken.objects.filter(user=user).values_list('token', flat=True))
+        if not tokens:
+            return
+
+        payload = {
+            'registration_ids': tokens,
+            'notification': {
+                'title': title,
+                'body': body,
+            },
+            'data': data or {},
+            'priority': 'high',
+        }
+
+        request = urllib.request.Request(
+            'https://fcm.googleapis.com/fcm/send',
+            data=json.dumps(payload).encode('utf-8'),
+            headers={
+                'Content-Type': 'application/json',
+                'Authorization': f'key={server_key}',
+            },
+            method='POST',
+        )
+
         with urllib.request.urlopen(request, timeout=20) as response:
             response.read()
     except urllib.error.HTTPError as exc:
