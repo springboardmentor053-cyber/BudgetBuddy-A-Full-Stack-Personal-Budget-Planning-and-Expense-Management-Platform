@@ -96,9 +96,13 @@ class ExpenseListCreateView(APIView):
         if serializer.is_valid():
             expense = serializer.save(user=request.user)
 
-            # Recalculate budget utilization and check threshold
-            expense_date = getattr(expense, 'expense_date', None) or getattr(expense, 'created_at', None)
-            sync_budget_alert(request.user, expense.category, expense_date)
+            # Recalculate budget utilization and check threshold, but never let
+            # alert side effects fail the actual expense save.
+            try:
+                expense_date = getattr(expense, 'expense_date', None) or getattr(expense, 'created_at', None)
+                sync_budget_alert(request.user, expense.category, expense_date)
+            except Exception as exc:
+                print(f"Expense alert sync failed for expense={expense.id}: {exc}")
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -117,13 +121,16 @@ class ExpenseDetailView(APIView):
         if serializer.is_valid():
             updated_expense = serializer.save()
 
-            # Recalculate budget for the updated category/date
-            new_date = getattr(updated_expense, 'expense_date', None) or getattr(updated_expense, 'created_at', None)
-            sync_budget_alert(request.user, updated_expense.category, new_date)
+            try:
+                # Recalculate budget for the updated category/date
+                new_date = getattr(updated_expense, 'expense_date', None) or getattr(updated_expense, 'created_at', None)
+                sync_budget_alert(request.user, updated_expense.category, new_date)
 
-            # If category changed, recalculate the old category as well
-            if old_category != updated_expense.category:
-                sync_budget_alert(request.user, old_category, old_date)
+                # If category changed, recalculate the old category as well
+                if old_category != updated_expense.category:
+                    sync_budget_alert(request.user, old_category, old_date)
+            except Exception as exc:
+                print(f"Expense alert sync failed for expense={updated_expense.id}: {exc}")
 
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -153,8 +160,11 @@ class ExpenseDetailView(APIView):
 
         expense.delete()
 
-        # Recalculate budget utilization after deletion
-        sync_budget_alert(request.user, category, expense_date)
+        try:
+            # Recalculate budget utilization after deletion
+            sync_budget_alert(request.user, category, expense_date)
+        except Exception as exc:
+            print(f"Expense alert sync failed on delete for expense={pk}: {exc}")
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 

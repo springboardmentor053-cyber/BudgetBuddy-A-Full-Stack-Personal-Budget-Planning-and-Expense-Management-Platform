@@ -59,14 +59,17 @@ class BudgetListCreateView(generics.ListCreateAPIView):
             budget = serializer.save(user=self.request.user)
             
             # Check spending immediately after a new budget is created
-            total_expense = Expense.objects.filter(
-                user=self.request.user,
-                category=budget.category,
-                created_at__month=budget.month,
-                created_at__year=budget.year
-            ).aggregate(total=Sum('amount'))['total'] or 0.00
-            
-            check_and_trigger_budget_alert(budget, total_expense)
+            try:
+                total_expense = Expense.objects.filter(
+                    user=self.request.user,
+                    category=budget.category,
+                    created_at__month=budget.month,
+                    created_at__year=budget.year
+                ).aggregate(total=Sum('amount'))['total'] or 0.00
+                
+                check_and_trigger_budget_alert(budget, total_expense)
+            except Exception as exc:
+                print(f"Budget alert check failed on create for budget={budget.id}: {exc}")
 
         except IntegrityError:
             from rest_framework.exceptions import ValidationError
