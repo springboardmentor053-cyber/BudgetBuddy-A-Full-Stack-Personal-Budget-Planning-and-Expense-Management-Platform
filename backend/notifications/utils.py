@@ -62,7 +62,8 @@ def send_fcm_push_to_user(user, title, body, data=None):
         return
 
     try:
-        tokens = list(DeviceToken.objects.filter(user=user).values_list('token', flat=True))
+        # Get unique active tokens for the user to prevent duplicate push popups
+        tokens = list(DeviceToken.objects.filter(user=user).values_list('token', flat=True).distinct())
         if not tokens:
             return
 
@@ -86,9 +87,11 @@ def send_fcm_push_to_user(user, title, body, data=None):
             method='POST',
         )
 
-        with urllib.request.urlopen(request, timeout=20) as response:
+        with urllib.request.urlopen(request, timeout=5) as response:
             response.read()
+            print(f"🚀 FCM Push successfully dispatched to {len(tokens)} device(s) for user {user.username}")
+
     except urllib.error.HTTPError as exc:
-        print(f'FCM push failed: {exc.read().decode("utf-8", errors="ignore")}')
+        print(f'⚠️ FCM push HTTP error (bypassed): {exc.read().decode("utf-8", errors="ignore")}')
     except Exception as exc:
-        print(f'FCM push failed: {exc}')
+        print(f'⚠️ FCM push network/timeout error (bypassed): {exc}')

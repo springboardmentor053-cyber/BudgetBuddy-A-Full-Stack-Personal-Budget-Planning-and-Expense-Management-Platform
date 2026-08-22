@@ -7,6 +7,7 @@ from expenses.models import Expense
 from income.models import Income
 from savings.models import SavingsGoal
 from budgets.models import Budget
+from .models import Notification
 from .utils import create_notification_safe, send_fcm_push_to_user
 
 
@@ -22,7 +23,7 @@ def send_notification_email(user, title, message):
             message=message,
             from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'budgetbuddyassistant@gmail.com'),
             recipient_list=[user.email],
-            fail_silently=False,  # Set to False so SendGrid/SMTP errors pop up in terminal
+            fail_silently=False,
         )
         print(f"✅ Notification email sent successfully to {user.email}")
     except Exception as e:
@@ -43,13 +44,11 @@ def savings_goal_notification(sender, instance, created, **kwargs):
             "SAVINGS_GOAL_CREATED",
             "LOW",
         )
-        
-        # 📧 Send Email to Gmail
         send_notification_email(instance.user, title, message)
+        send_fcm_push_to_user(instance.user, title, message, {"type": "savings", "title": instance.goal_name})
 
     else:
         if instance.status == 'COMPLETED' or instance.saved_amount >= instance.target_amount:
-            # Prevent duplicate completed notifications if already sent
             already_notified = Notification.objects.filter(
                 user=instance.user,
                 notification_type="SAVINGS_GOAL_COMPLETED",
@@ -67,15 +66,13 @@ def savings_goal_notification(sender, instance, created, **kwargs):
                     "SAVINGS_GOAL_COMPLETED",
                     "HIGH",
                 )
-
-                # 📧 Send Email to Gmail
                 send_notification_email(instance.user, title, message)
+                send_fcm_push_to_user(instance.user, title, message, {"type": "savings_completed", "title": instance.goal_name})
 
 
 # 2. Budget Signals
 @receiver(pre_save, sender=Budget)
 def track_budget_definition_change(sender, instance, **kwargs):
-    """Ignore alert-flag saves; notify only when the budget itself changes."""
     if not instance.pk:
         instance._definition_changed = False
         return
@@ -90,7 +87,7 @@ def track_budget_definition_change(sender, instance, **kwargs):
 @receiver(post_save, sender=Budget)
 def budget_update_notification(sender, instance, created, **kwargs):
     if not created and getattr(instance, "_definition_changed", False):
-        title = "Budget Updated"
+        title = "Budget Updated 📊"
         message = f"Budget for '{instance.category}' was updated to ₹{instance.budget_amount}."
         create_notification_safe(
             instance.user,
@@ -100,6 +97,7 @@ def budget_update_notification(sender, instance, created, **kwargs):
             "LOW",
         )
         send_notification_email(instance.user, title, message)
+        send_fcm_push_to_user(instance.user, title, message, {"type": "budget_update", "title": str(instance.category)})
 
 
 @receiver(post_save, sender=Budget)
@@ -115,11 +113,11 @@ def budget_notification(sender, instance, created, **kwargs):
             "BUDGET_CREATED",
             "LOW",
         )
-
-        # 📧 Send Email to Gmail
         send_notification_email(instance.user, title, message)
+        send_fcm_push_to_user(instance.user, title, message, {"type": "budget_created", "title": str(instance.category)})
 
 
+# 3. Expense Creation Signal
 @receiver(post_save, sender=Expense)
 def expense_creation_notification(sender, instance, created, **kwargs):
     if created:
@@ -137,6 +135,7 @@ def expense_creation_notification(sender, instance, created, **kwargs):
         send_fcm_push_to_user(instance.user, title, message, {"type": "expense", "title": instance.title})
 
 
+# 4. Income Creation Signal
 @receiver(post_save, sender=Income)
 def income_creation_notification(sender, instance, created, **kwargs):
     if created:
