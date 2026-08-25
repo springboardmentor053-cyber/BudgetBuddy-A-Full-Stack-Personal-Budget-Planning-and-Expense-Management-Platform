@@ -15,7 +15,9 @@ from dotenv import load_dotenv
 # ============================================================
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 load_dotenv(BASE_DIR / ".env")
+
 
 # ============================================================
 # SECURITY
@@ -26,7 +28,11 @@ SECRET_KEY = os.getenv(
     "django-insecure-development-key"
 )
 
-DEBUG = os.getenv("DEBUG", "True").lower() == "true"
+DEBUG = os.getenv(
+    "DEBUG",
+    "True"
+).lower() == "true"
+
 
 ALLOWED_HOSTS = [
     "localhost",
@@ -252,11 +258,17 @@ REST_FRAMEWORK = {
 # ============================================================
 
 CORS_ALLOWED_ORIGINS = [
+
+    # Local frontend
     "http://localhost:5173",
+
+    # Deployed Vercel frontend
+    "https://budgetbuddy-frontend-nine.vercel.app",
 ]
 
-# Render/Vercel frontend URL can be added later
+# Optional environment variable
 if os.getenv("FRONTEND_URL"):
+
     CORS_ALLOWED_ORIGINS.append(
         os.getenv("FRONTEND_URL")
     )
@@ -267,10 +279,17 @@ if os.getenv("FRONTEND_URL"):
 # ============================================================
 
 CSRF_TRUSTED_ORIGINS = [
+
+    # Local frontend
     "http://localhost:5173",
+
+    # Deployed Vercel frontend
+    "https://budgetbuddy-frontend-nine.vercel.app",
 ]
 
+# Optional environment variable
 if os.getenv("FRONTEND_URL"):
+
     CSRF_TRUSTED_ORIGINS.append(
         os.getenv("FRONTEND_URL")
     )
