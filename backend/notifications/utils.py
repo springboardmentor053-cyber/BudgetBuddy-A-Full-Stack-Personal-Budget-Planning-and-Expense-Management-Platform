@@ -17,8 +17,8 @@ logger = logging.getLogger(__name__)
 def _send_email_thread(subject, message, recipient_list):
     """Send an email and report delivery results from the background thread."""
     try:
-        sender_email = settings.EMAIL_HOST_USER
-        print(f"[EMAIL ENGINE] Attempting to send '{subject}' from {sender_email} to {recipient_list}...")
+        sender_email = settings.DEFAULT_FROM_EMAIL
+        logger.info("Sending notification email subject=%r recipients=%s", subject, recipient_list)
 
         html_message = f"""
         <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #0f172a; color: #f8fafc; border-radius: 12px;">
@@ -37,9 +37,9 @@ def _send_email_thread(subject, message, recipient_list):
             html_message=html_message,
             fail_silently=False,
         )
-        print("[EMAIL ENGINE] Email sent successfully!")
-    except Exception as e:
-        print(f"[EMAIL ERROR] Delivery failed: {e}")
+        logger.info("Notification email sent to %s", recipient_list)
+    except Exception:
+        logger.error("Notification email delivery failed for recipients=%s", recipient_list, exc_info=True)
 
 
 def check_and_send_budget_alert(user, category, total_spent, budget_limit):
@@ -86,7 +86,7 @@ def check_and_send_budget_alert(user, category, total_spent, budget_limit):
     try:
         validate_email(user.email)
     except (AttributeError, TypeError, ValidationError):
-        print(f'[BUDGET ALERT WARNING] Email not sent: user has no valid email address ({getattr(user, "email", "")!r}).')
+        logger.warning('Budget alert email skipped because user_id=%s has no valid email address.', user.pk)
         return notification
 
     recipient_list = [user.email]

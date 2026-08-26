@@ -1,3 +1,4 @@
+import logging
 import threading
 
 from django.conf import settings
@@ -21,6 +22,7 @@ from .serializers import (
 )
 
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 
 def send_welcome_email(user):
@@ -45,15 +47,17 @@ def send_welcome_email(user):
                 message=message,
                 from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', None),
                 recipient_list=[user.email],
-                fail_silently=True,
+                # The background thread catches failures, so a failed SMTP
+                # connection can never make registration fail.
+                fail_silently=False,
             )
         except Exception as exc:
-            print(f"[EMAIL ERROR] Failed to send welcome email: {exc}")
+            logger.error("Failed to send welcome email for user_id=%s", user.pk, exc_info=exc)
 
     try:
         threading.Thread(target=_send, daemon=True).start()
     except Exception as exc:
-        print(f"[EMAIL ERROR] Failed to queue welcome email: {exc}")
+        logger.error("Failed to queue welcome email for user_id=%s", user.pk, exc_info=exc)
 
 
 class RegisterView(generics.CreateAPIView):

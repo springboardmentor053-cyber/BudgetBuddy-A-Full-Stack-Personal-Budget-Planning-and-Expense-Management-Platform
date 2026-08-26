@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+from django.http import HttpResponse
 from django.db.models import Q, Sum
 from django.apps import apps
 from datetime import datetime, date, timedelta
@@ -11,6 +12,7 @@ from budgets.models import Budget
 from income.models import Income
 from savings.models import SavingsGoal
 from users.models import Expense
+from .statement_generator import generate_statement
 
 
 def get_model_safely(model_name):
@@ -85,6 +87,32 @@ def budget_period_filter(start_date, end_date):
             else date(month_cursor.year, month_cursor.month + 1, 1)
         )
     return query
+
+
+class StatementPdfExportView(APIView):
+    """Download a professional, user-scoped PDF statement for a date range."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            start_date, end_date = resolve_date_range(request)
+        except (TypeError, ValueError):
+            return Response(
+                {'error': 'Dates must use YYYY-MM-DD and form a valid range.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if start_date > end_date:
+            return Response(
+                {'error': 'start_date must be on or before end_date.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        pdf = generate_statement(request.user, start_date, end_date)
+        filename_period = start_date.strftime('%b_%Y') if start_date.year == end_date.year and start_date.month == end_date.month else f'{start_date:%Y%m%d}_to_{end_date:%Y%m%d}'
+        response = HttpResponse(pdf.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="BudgetBuddy_Statement_{filename_period}.pdf"'
+        return response
 
 
 # --- TASK 2: Monthly Financial Report API ---

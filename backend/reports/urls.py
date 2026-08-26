@@ -3,7 +3,8 @@ from .views import (
     MonthlyFinancialReportView,
     ExpenseReportView,
     SavingsReportView,
-    FinancialSummaryReportView
+    FinancialSummaryReportView,
+    StatementPdfExportView,
 )
 
 urlpatterns = [
@@ -11,4 +12,5 @@ urlpatterns = [
     path('expenses-range/', ExpenseReportView.as_view(), name='expense-report'),
     path('savings/', SavingsReportView.as_view(), name='savings-report'),
     path('financial-summary/', FinancialSummaryReportView.as_view(), name='financial-summary-report'),
+    path('export/pdf/', StatementPdfExportView.as_view(), name='statement-pdf-export'),
 ]

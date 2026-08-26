@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'income',
     'budgets',
     'savings',
+    'reports',
     'notifications.apps.NotificationsConfig',
 ]
 
@@ -152,16 +153,19 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-# Email Settings
+# Email settings. Configure these values in Render rather than committing SMTP
+# credentials to source control. Gmail requires an App Password, not the normal
+# Google account password.
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() in ('true', '1', 'yes')
 EMAIL_USE_SSL = False
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = f"BudgetBuddy <{EMAIL_HOST_USER}>" if EMAIL_HOST_USER else 'webmaster@localhost'
-SERVER_EMAIL = EMAIL_HOST_USER or 'webmaster@localhost'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+EMAIL_TIMEOUT = int(os.getenv('EMAIL_TIMEOUT', '15'))
 
 # Groq AI Key
 GROQ_API_KEY = os.getenv('GROQ_API_KEY', '')

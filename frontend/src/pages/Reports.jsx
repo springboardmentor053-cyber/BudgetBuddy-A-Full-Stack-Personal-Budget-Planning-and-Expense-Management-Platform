@@ -39,6 +39,11 @@ const downloadBlob = (blob, filename) => {
   window.setTimeout(() => window.URL.revokeObjectURL(url), 0);
 };
 
+const filenameFromDisposition = (contentDisposition, fallback) => {
+  const match = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(contentDisposition || '');
+  return match?.[1]?.replace(/['"]/g, '') || fallback;
+};
+
 const parseLocalDate = (value, endOfDay = false) => {
   const [year, month, day] = String(value || '').slice(0, 10).split('-').map(Number);
   if (!year || !month || !day) return null;
@@ -246,9 +251,12 @@ export default function Reports() {
         params: exportParams,
         responseType: 'blob',
       });
-      downloadBlob(response.data, `financial-statement-${filter}.pdf`);
+      downloadBlob(
+        response.data,
+        filenameFromDisposition(response.headers['content-disposition'], `BudgetBuddy_Statement_${filter}.pdf`),
+      );
     } catch (error) {
-      window.print();
+      setError('Your statement could not be generated. Please try again.');
     } finally {
       setExporting('');
     }
