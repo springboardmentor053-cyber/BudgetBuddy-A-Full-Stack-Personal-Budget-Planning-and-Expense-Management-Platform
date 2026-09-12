@@ -186,6 +186,10 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 _database_url = os.environ.get("DATABASE_URL")
 
+# psycopg2 requires 'postgresql://' not 'postgres://'
+if _database_url and _database_url.startswith("postgres://"):
+    _database_url = _database_url.replace("postgres://", "postgresql://", 1)
+
 if _database_url:
     DATABASES = {
         "default": dj_database_url.parse(
