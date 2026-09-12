@@ -21,9 +21,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # LOAD ENVIRONMENT VARIABLES
 # =====================================================
 
-load_dotenv(
-    BASE_DIR.parent / ".env"
-)
+# Only load .env for local development.
+# On Render, environment variables are injected directly.
+_env_path = BASE_DIR / ".env"
+if _env_path.exists():
+    load_dotenv(_env_path)
 
 # =====================================================
 # SECURITY
@@ -179,15 +181,15 @@ WSGI_APPLICATION = "config.wsgi.application"
 # DATABASE
 # =====================================================
 
-# Render provides DATABASE_URL automatically.
-# For local dev, fall back to individual DB_* vars.
+# Render injects DATABASE_URL automatically.
+# Locally, fall back to individual DB_* vars from .env.
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+_database_url = os.environ.get("DATABASE_URL")
 
-if DATABASE_URL:
+if _database_url:
     DATABASES = {
-        "default": dj_database_url.config(
-            default=DATABASE_URL,
+        "default": dj_database_url.parse(
+            _database_url,
             conn_max_age=600,
             ssl_require=not DEBUG,
         )
@@ -196,11 +198,11 @@ else:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.getenv("DB_NAME", "budgetbuddy"),
-            "USER": os.getenv("DB_USER", "postgres"),
-            "PASSWORD": os.getenv("DB_PASSWORD", ""),
-            "HOST": os.getenv("DB_HOST", "localhost"),
-            "PORT": os.getenv("DB_PORT", "5432"),
+            "NAME": os.environ.get("DB_NAME", "budgetbuddy"),
+            "USER": os.environ.get("DB_USER", "postgres"),
+            "PASSWORD": os.environ.get("DB_PASSWORD", ""),
+            "HOST": os.environ.get("DB_HOST", "localhost"),
+            "PORT": os.environ.get("DB_PORT", "5432"),
         }
     }
 
