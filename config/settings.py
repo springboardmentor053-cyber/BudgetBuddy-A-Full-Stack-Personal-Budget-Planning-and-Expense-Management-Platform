@@ -46,6 +46,7 @@ DEBUG = os.getenv(
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
+    ".onrender.com",
 ]
 
 if os.getenv("RENDER_EXTERNAL_HOSTNAME"):
@@ -178,6 +179,9 @@ WSGI_APPLICATION = "config.wsgi.application"
 # DATABASE
 # =====================================================
 
+# Render provides DATABASE_URL automatically.
+# For local dev, fall back to individual DB_* vars.
+
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if DATABASE_URL:
@@ -185,34 +189,19 @@ if DATABASE_URL:
         "default": dj_database_url.config(
             default=DATABASE_URL,
             conn_max_age=600,
-            ssl_require=True,
+            ssl_require=not DEBUG,
         )
     }
 else:
     DATABASES = {
-
         "default": {
-
-            "ENGINE":
-                "django.db.backends.postgresql",
-
-            "NAME":
-                os.getenv("DB_NAME"),
-
-            "USER":
-                os.getenv("DB_USER"),
-
-            "PASSWORD":
-                os.getenv("DB_PASSWORD"),
-
-            "HOST":
-                os.getenv("DB_HOST"),
-
-            "PORT":
-                os.getenv("DB_PORT", "5432"),
-
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("DB_NAME", "budgetbuddy"),
+            "USER": os.getenv("DB_USER", "postgres"),
+            "PASSWORD": os.getenv("DB_PASSWORD", ""),
+            "HOST": os.getenv("DB_HOST", "localhost"),
+            "PORT": os.getenv("DB_PORT", "5432"),
         }
-
     }
 
 
