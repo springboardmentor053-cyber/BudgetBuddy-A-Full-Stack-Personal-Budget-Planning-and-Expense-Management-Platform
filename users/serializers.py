@@ -56,6 +56,11 @@ class ProfileSerializer(serializers.ModelSerializer):
         allow_blank=True
     )
 
+    profile_picture = serializers.ImageField(
+        required=False,
+        allow_null=True
+    )
+
     class Meta:
         model = Profile
         fields = [
@@ -65,6 +70,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "last_name",
             "phone",
             "address",
+            "profile_picture",
         ]
 
     def update(self, instance, validated_data):
@@ -104,6 +110,9 @@ class ProfileSerializer(serializers.ModelSerializer):
             "address",
             instance.address
         )
+
+        if "profile_picture" in validated_data:
+            instance.profile_picture = validated_data["profile_picture"]
 
         instance.save()
 

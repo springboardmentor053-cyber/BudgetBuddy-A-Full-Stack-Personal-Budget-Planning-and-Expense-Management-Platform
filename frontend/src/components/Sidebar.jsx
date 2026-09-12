@@ -76,7 +76,7 @@ function Sidebar() {
     const profilePictureUrl = profile.profile_picture
     ? profile.profile_picture.startsWith("http")
         ? profile.profile_picture
-        : `${import.meta.env.VITE_API_URL.replace("/api/", "")}${profile.profile_picture}`
+        : `http://127.0.0.1:8000${profile.profile_picture}`
     : "";
 
     // =====================================================

@@ -2,6 +2,7 @@ import { useState } from "react";
 import api from "../api";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import "../styles/reports.css";
 
 function Reports() {
 
@@ -996,952 +997,1058 @@ function Reports() {
   // =====================================================
 
   return (
+    <div className="reports-page">
 
-    <div className="container-fluid mt-4 mb-5">
+        {/* =================================================
+            HEADER
+        ================================================= */}
 
+        <div className="reports-header">
 
-      {/* ================================================= */}
-      {/* HEADER */}
-      {/* ================================================= */}
+            <div>
+                <div className="reports-eyebrow">
+                    PERSONAL FINANCE
+                </div>
 
-      <div className="card shadow-lg border-0 bg-dark text-white mb-4">
+                <h1>
+                    Financial Reports
+                </h1>
 
-        <div className="card-body p-4">
+                <p>
+                    Analyze your income, expenses, budgets and savings.
+                </p>
+            </div>
 
-          <h2 className="mb-2">
-            📊 Financial Reports
-          </h2>
-
-          <p className="mb-0">
-            Analyze your income, expenses,
-            budgets and savings.
-          </p>
+            <div className="reports-header-icon">
+                <i className="bi bi-bar-chart-line-fill"></i>
+            </div>
 
         </div>
 
-      </div>
 
+        {/* =================================================
+            MONTHLY REPORT
+        ================================================= */}
 
-      {/* ================================================= */}
-      {/* MONTHLY REPORT */}
-      {/* ================================================= */}
+        <section className="report-section">
 
-      <div className="card shadow border-0 mb-4">
+            <div className="report-section-header">
 
-        <div className="card-body">
+                <div className="report-section-title">
 
-          <h4 className="mb-4">
-            📅 Monthly Financial Report
-          </h4>
+                    <div className="report-section-icon">
+                        <i className="bi bi-calendar3"></i>
+                    </div>
 
+                    <div>
+                        <h2>
+                            Monthly Financial Report
+                        </h2>
 
-          <div className="row">
-
-
-            <div className="col-md-4 mb-3">
-
-              <label className="form-label fw-bold">
-                Month
-              </label>
-
-              <select
-                className="form-select"
-                value={month}
-                onChange={(e) =>
-                  setMonth(
-                    Number(e.target.value)
-                  )
-                }
-              >
-
-                {months.map((item) => (
-
-                  <option
-                    key={item.value}
-                    value={item.value}
-                  >
-
-                    {item.name}
-
-                  </option>
-
-                ))}
-
-              </select>
-
-            </div>
-
-
-            <div className="col-md-3 mb-3">
-
-              <label className="form-label fw-bold">
-                Year
-              </label>
-
-              <input
-                type="number"
-                className="form-control"
-                value={year}
-                onChange={(e) =>
-                  setYear(
-                    Number(e.target.value)
-                  )
-                }
-              />
-
-            </div>
-
-
-            <div className="col-md-5 mb-3 d-flex align-items-end">
-
-              <button
-                className="btn btn-primary w-100"
-                onClick={
-                  generateMonthlyReport
-                }
-                disabled={
-                  monthlyLoading
-                }
-              >
-
-                {monthlyLoading
-                  ? "Generating..."
-                  : "📊 Generate Monthly Report"}
-
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      {/* ================================================= */}
-      {/* MONTHLY RESULT */}
-      {/* ================================================= */}
-
-      {monthlyReport && (
-
-        <>
-
-          <div className="row mb-4">
-
-
-            <div className="col-lg-3 col-md-6 mb-3">
-
-              <div className="card shadow border-0 h-100">
-
-                <div className="card-body">
-
-                  <h6 className="text-muted">
-                    💰 Total Income
-                  </h6>
-
-                  <h3 className="text-success fw-bold">
-                    Rs. {monthlyReport.total_income}
-                  </h3>
+                        <p>
+                            Generate a detailed report for a selected month.
+                        </p>
+                    </div>
 
                 </div>
 
-              </div>
-
             </div>
 
 
-            <div className="col-lg-3 col-md-6 mb-3">
-
-              <div className="card shadow border-0 h-100">
-
-                <div className="card-body">
-
-                  <h6 className="text-muted">
-                    💸 Total Expense
-                  </h6>
-
-                  <h3 className="text-danger fw-bold">
-                    Rs. {monthlyReport.total_expense}
-                  </h3>
-
-                </div>
-
-              </div>
-
-            </div>
-
-
-            <div className="col-lg-3 col-md-6 mb-3">
-
-              <div className="card shadow border-0 h-100">
-
-                <div className="card-body">
-
-                  <h6 className="text-muted">
-                    🏦 Current Balance
-                  </h6>
-
-                  <h3
-                    className={
-                      monthlyReport.current_balance >= 0
-                        ? "text-primary fw-bold"
-                        : "text-danger fw-bold"
-                    }
-                  >
-
-                    Rs. {monthlyReport.current_balance}
-
-                  </h3>
-
-                </div>
-
-              </div>
-
-            </div>
-
-
-            <div className="col-lg-3 col-md-6 mb-3">
-
-              <div className="card shadow border-0 h-100">
-
-                <div className="card-body">
-
-                  <h6 className="text-muted">
-                    📊 Remaining Budget
-                  </h6>
-
-                  <h3
-                    className={
-                      monthlyReport.remaining_budget >= 0
-                        ? "text-warning fw-bold"
-                        : "text-danger fw-bold"
-                    }
-                  >
-
-                    Rs. {monthlyReport.remaining_budget}
-
-                  </h3>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <div className="card shadow border-0 mb-4">
-
-            <div className="card-body">
-
-              <h4>
-                📅 {monthlyReport.month}{" "}
-                {monthlyReport.year}
-              </h4>
-
-              <hr />
-
-              <div className="row text-center">
-
-
-                <div className="col-md-4 mb-3">
-
-                  <h6 className="text-muted">
-                    Income
-                  </h6>
-
-                  <h4 className="text-success">
-                    Rs. {monthlyReport.total_income}
-                  </h4>
-
-                </div>
-
-
-                <div className="col-md-4 mb-3">
-
-                  <h6 className="text-muted">
-                    Expenses
-                  </h6>
-
-                  <h4 className="text-danger">
-                    Rs. {monthlyReport.total_expense}
-                  </h4>
-
-                </div>
-
-
-                <div className="col-md-4 mb-3">
-
-                  <h6 className="text-muted">
-                    Savings
-                  </h6>
-
-                  <h4 className="text-primary">
-                    Rs. {monthlyReport.total_savings}
-                  </h4>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </>
-
-      )}
-
-
-      {/* ================================================= */}
-      {/* EXPENSE REPORT */}
-      {/* ================================================= */}
-
-      <div className="card shadow border-0 mb-4">
-
-        <div className="card-body">
-
-          <h4 className="mb-4">
-            💸 Expense Report
-          </h4>
-
-
-          <div className="row">
-
-
-            <div className="col-md-4 mb-3">
-
-              <label className="form-label fw-bold">
-                Start Date
-              </label>
-
-              <input
-                type="date"
-                className="form-control"
-                value={startDate}
-                onChange={(e) =>
-                  setStartDate(
-                    e.target.value
-                  )
-                }
-              />
-
-            </div>
-
-
-            <div className="col-md-4 mb-3">
-
-              <label className="form-label fw-bold">
-                End Date
-              </label>
-
-              <input
-                type="date"
-                className="form-control"
-                value={endDate}
-                onChange={(e) =>
-                  setEndDate(
-                    e.target.value
-                  )
-                }
-              />
-
-            </div>
-
-
-            <div className="col-md-4 mb-3 d-flex align-items-end">
-
-              <button
-                className="btn btn-danger w-100"
-                onClick={
-                  generateExpenseReport
-                }
-                disabled={
-                  expenseLoading
-                }
-              >
-
-                {expenseLoading
-                  ? "Loading..."
-                  : "💸 Generate Expense Report"}
-
-              </button>
-
-            </div>
-
-          </div>
-
-
-          {expenseReport.length > 0 ? (
-
-            <div className="table-responsive mt-4">
-
-              <table className="table table-hover table-bordered align-middle">
-
-                <thead className="table-danger">
-
-                  <tr>
-
-                    <th>Date</th>
-                    <th>Title</th>
-                    <th>Category</th>
-                    <th>Amount</th>
-
-                  </tr>
-
-                </thead>
-
-                <tbody>
-
-                  {expenseReport.map(
-                    (expense, index) => (
-
-                      <tr
-                        key={`${expense.title}-${expense.date}-${index}`}
-                      >
-
-                        <td>
-                          {expense.date}
-                        </td>
-
-                        <td>
-                          {expense.title}
-                        </td>
-
-                        <td>
-                          {expense.category}
-                        </td>
-
-                        <td className="text-danger fw-bold">
-                          Rs. {expense.amount}
-                        </td>
-
-                      </tr>
-
-                    )
-                  )}
-
-                </tbody>
-
-              </table>
-
-            </div>
-
-          ) : (
-
-            <div className="alert alert-light border mt-3 mb-0">
-
-              No expense report generated yet.
-
-            </div>
-
-          )}
-
-        </div>
-
-      </div>
-
-
-      {/* ================================================= */}
-      {/* SAVINGS REPORT */}
-      {/* ================================================= */}
-
-      <div className="card shadow border-0 mb-4">
-
-        <div className="card-body">
-
-          <div className="d-flex justify-content-between align-items-center mb-4">
-
-            <h4 className="mb-0">
-              🎯 Savings Goals Report
-            </h4>
-
-            <button
-              className="btn btn-primary"
-              onClick={
-                generateSavingsReport
-              }
-              disabled={
-                savingsLoading
-              }
-            >
-
-              {savingsLoading
-                ? "Loading..."
-                : "🎯 Generate Report"}
-
-            </button>
-
-          </div>
-
-
-          {savingsReport.length > 0 ? (
-
-            <div className="table-responsive">
-
-              <table className="table table-hover table-bordered align-middle">
-
-                <thead className="table-primary">
-
-                  <tr>
-
-                    <th>Goal</th>
-                    <th>Target</th>
-                    <th>Saved</th>
-                    <th>Remaining</th>
-                    <th>Progress</th>
-                    <th>Status</th>
-                    <th>Target Date</th>
-
-                  </tr>
-
-                </thead>
-
-                <tbody>
-
-                  {savingsReport.map(
-                    (goal, index) => (
-
-                      <tr
-                        key={`${goal.goal_name}-${index}`}
-                      >
-
-                        <td>
-                          {goal.goal_name}
-                        </td>
-
-                        <td>
-                          Rs. {goal.target_amount}
-                        </td>
-
-                        <td className="text-success fw-bold">
-                          Rs. {goal.saved_amount}
-                        </td>
-
-                        <td>
-                          Rs. {goal.remaining_amount}
-                        </td>
-
-                        <td style={{ minWidth: "150px" }}>
-
-                          <div className="progress">
-
-                            <div
-                              className="progress-bar bg-success"
-                              style={{
-                                width: `${Math.min(
-                                  Number(
-                                    goal.progress_percentage
-                                  ) || 0,
-                                  100
-                                )}%`
-                              }}
+            <div className="report-filters">
+
+                <div className="report-field">
+
+                    <label>
+                        Month
+                    </label>
+
+                    <select
+                        value={month}
+                        onChange={(e) =>
+                            setMonth(
+                                Number(e.target.value)
+                            )
+                        }
+                    >
+
+                        {months.map((item) => (
+
+                            <option
+                                key={item.value}
+                                value={item.value}
                             >
+                                {item.name}
+                            </option>
 
-                              {goal.progress_percentage}%
+                        ))}
+
+                    </select>
+
+                </div>
+
+
+                <div className="report-field">
+
+                    <label>
+                        Year
+                    </label>
+
+                    <input
+                        type="number"
+                        value={year}
+                        onChange={(e) =>
+                            setYear(
+                                Number(e.target.value)
+                            )
+                        }
+                    />
+
+                </div>
+
+
+                <button
+                    className="report-action-btn"
+                    onClick={generateMonthlyReport}
+                    disabled={monthlyLoading}
+                >
+
+                    <i className="bi bi-bar-chart-line me-1"></i>
+
+                    {monthlyLoading
+                        ? "Generating..."
+                        : "Generate Monthly Report"}
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        {/* =================================================
+            MONTHLY RESULT
+        ================================================= */}
+
+        {monthlyReport && (
+
+            <section className="report-section">
+
+                <div className="report-summary-grid">
+
+                    <div className="report-summary-card income">
+
+                        <span>
+                            TOTAL INCOME
+                        </span>
+
+                        <strong>
+                            ₹{Number(
+                                monthlyReport.total_income || 0
+                            ).toLocaleString("en-IN")}
+                        </strong>
+
+                        <small>
+                            Money received
+                        </small>
+
+                    </div>
+
+
+                    <div className="report-summary-card expense">
+
+                        <span>
+                            TOTAL EXPENSE
+                        </span>
+
+                        <strong>
+                            ₹{Number(
+                                monthlyReport.total_expense || 0
+                            ).toLocaleString("en-IN")}
+                        </strong>
+
+                        <small>
+                            Money spent
+                        </small>
+
+                    </div>
+
+
+                    <div className="report-summary-card balance">
+
+                        <span>
+                            CURRENT BALANCE
+                        </span>
+
+                        <strong>
+                            ₹{Number(
+                                monthlyReport.current_balance || 0
+                            ).toLocaleString("en-IN")}
+                        </strong>
+
+                        <small>
+                            Available balance
+                        </small>
+
+                    </div>
+
+
+                    <div className="report-summary-card savings">
+
+                        <span>
+                            REMAINING BUDGET
+                        </span>
+
+                        <strong>
+                            ₹{Number(
+                                monthlyReport.remaining_budget || 0
+                            ).toLocaleString("en-IN")}
+                        </strong>
+
+                        <small>
+                            Budget remaining
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div className="report-section-body">
+
+                    <div className="report-panel">
+
+                        <h3>
+                            {monthlyReport.month}{" "}
+                            {monthlyReport.year}
+                        </h3>
+
+                        <p>
+                            Monthly financial overview
+                        </p>
+
+                        <div className="report-grid-two">
+
+                            <div>
+
+                                <span className="report-badge success">
+                                    <i className="bi bi-arrow-down-circle"></i>
+                                    Income
+                                </span>
+
+                                <h3 style={{ marginTop: "10px" }}>
+                                    ₹{Number(
+                                        monthlyReport.total_income || 0
+                                    ).toLocaleString("en-IN")}
+                                </h3>
 
                             </div>
 
-                          </div>
 
-                        </td>
+                            <div>
 
-                        <td>
+                                <span className="report-badge danger">
+                                    <i className="bi bi-arrow-up-circle"></i>
+                                    Expenses
+                                </span>
 
-                          <span
-                            className={
-                              goal.status === "Completed"
-                                ? "badge bg-success"
-                                : "badge bg-warning text-dark"
-                            }
-                          >
+                                <h3 style={{ marginTop: "10px" }}>
+                                    ₹{Number(
+                                        monthlyReport.total_expense || 0
+                                    ).toLocaleString("en-IN")}
+                                </h3>
 
-                            {goal.status}
-
-                          </span>
-
-                        </td>
-
-                        <td>
-                          {goal.target_date}
-                        </td>
-
-                      </tr>
-
-                    )
-                  )}
-
-                </tbody>
-
-              </table>
-
-            </div>
-
-          ) : (
-
-            <div className="alert alert-light border mb-0">
-
-              Click <strong>Generate Report</strong>{" "}
-              to view your savings goals.
-
-            </div>
-
-          )}
-
-        </div>
-
-      </div>
+                            </div>
 
 
-      {/* ================================================= */}
-      {/* FINANCIAL SUMMARY */}
-      {/* ================================================= */}
+                            <div>
 
-      <div className="card shadow border-0 mb-4">
+                                <span className="report-badge info">
+                                    <i className="bi bi-piggy-bank"></i>
+                                    Savings
+                                </span>
 
-        <div className="card-body">
+                                <h3 style={{ marginTop: "10px" }}>
+                                    ₹{Number(
+                                        monthlyReport.total_savings || 0
+                                    ).toLocaleString("en-IN")}
+                                </h3>
 
-          <h4 className="mb-4">
-            📈 Financial Summary
-          </h4>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        )}
 
 
-          <div className="row">
+        {/* =================================================
+            EXPENSE REPORT
+        ================================================= */}
 
-            <div className="col-md-4 mb-3">
+        <section className="report-section">
 
-              <label className="form-label fw-bold">
-                Period
-              </label>
+            <div className="report-section-header">
 
-              <select
-                className="form-select"
-                value={summaryFilter}
-                onChange={(e) =>
-                  setSummaryFilter(
-                    e.target.value
-                  )
-                }
-              >
+                <div className="report-section-title">
 
-                <option value="current_month">
-                  Current Month
-                </option>
+                    <div
+                        className="report-section-icon"
+                        style={{
+                            background: "#fef2f2",
+                            color: "#dc2626"
+                        }}
+                    >
+                        <i className="bi bi-credit-card"></i>
+                    </div>
 
-                <option value="previous_month">
-                  Previous Month
-                </option>
+                    <div>
 
-              </select>
+                        <h2>
+                            Expense Report
+                        </h2>
+
+                        <p>
+                            Review expenses between two dates.
+                        </p>
+
+                    </div>
+
+                </div>
 
             </div>
 
 
-            <div className="col-md-4 mb-3 d-flex align-items-end">
+            <div className="report-filters">
 
-              <button
-                className="btn btn-info text-white w-100"
-                onClick={
-                  generateSummaryReport
-                }
-                disabled={
-                  summaryLoading
-                }
-              >
+                <div className="report-field">
 
-                {summaryLoading
-                  ? "Loading..."
-                  : "📈 Generate Summary"}
+                    <label>
+                        Start Date
+                    </label>
 
-              </button>
+                    <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) =>
+                            setStartDate(
+                                e.target.value
+                            )
+                        }
+                    />
+
+                </div>
+
+
+                <div className="report-field">
+
+                    <label>
+                        End Date
+                    </label>
+
+                    <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) =>
+                            setEndDate(
+                                e.target.value
+                            )
+                        }
+                    />
+
+                </div>
+
+
+                <button
+                    className="report-action-btn"
+                    style={{
+                        background: "#dc2626"
+                    }}
+                    onClick={generateExpenseReport}
+                    disabled={expenseLoading}
+                >
+
+                    <i className="bi bi-search me-1"></i>
+
+                    {expenseLoading
+                        ? "Loading..."
+                        : "Generate Expense Report"}
+
+                </button>
 
             </div>
 
-          </div>
 
+            <div className="report-section-body">
 
-          {summaryReport && (
+                {expenseReport.length > 0 ? (
 
-            <div className="row mt-3">
+                    <div className="report-table-wrapper">
 
+                        <table className="report-table">
 
-              <div className="col-lg-3 col-md-6 mb-3">
+                            <thead>
 
-                <div className="card border-0 bg-light h-100">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Amount</th>
+                                </tr>
 
-                  <div className="card-body">
+                            </thead>
 
-                    <h6 className="text-muted">
-                      Total Income
-                    </h6>
+                            <tbody>
 
-                    <h4 className="text-success">
+                                {expenseReport.map(
+                                    (expense, index) => (
 
-                      Rs.{" "}
-                      {
-                        summaryReport
-                          .financial_summary
-                          ?.total_income
-                      }
+                                        <tr
+                                            key={`${expense.title}-${expense.date}-${index}`}
+                                        >
 
-                    </h4>
+                                            <td>
+                                                {expense.date}
+                                            </td>
 
-                  </div>
+                                            <td>
+                                                {expense.title}
+                                            </td>
 
-                </div>
+                                            <td>
+                                                <span className="report-badge info">
+                                                    {expense.category}
+                                                </span>
+                                            </td>
 
-              </div>
+                                            <td className="report-negative">
+                                                ₹{Number(
+                                                    expense.amount || 0
+                                                ).toLocaleString("en-IN")}
+                                            </td>
 
+                                        </tr>
 
-              <div className="col-lg-3 col-md-6 mb-3">
+                                    )
+                                )}
 
-                <div className="card border-0 bg-light h-100">
+                            </tbody>
 
-                  <div className="card-body">
+                        </table>
 
-                    <h6 className="text-muted">
-                      Total Expense
-                    </h6>
-
-                    <h4 className="text-danger">
-
-                      Rs.{" "}
-                      {
-                        summaryReport
-                          .financial_summary
-                          ?.total_expense
-                      }
-
-                    </h4>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-
-              <div className="col-lg-3 col-md-6 mb-3">
-
-                <div className="card border-0 bg-light h-100">
-
-                  <div className="card-body">
-
-                    <h6 className="text-muted">
-                      Current Balance
-                    </h6>
-
-                    <h4 className="text-primary">
-
-                      Rs.{" "}
-                      {
-                        summaryReport
-                          .financial_summary
-                          ?.current_balance
-                      }
-
-                    </h4>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-
-              <div className="col-lg-3 col-md-6 mb-3">
-
-                <div className="card border-0 bg-light h-100">
-
-                  <div className="card-body">
-
-                    <h6 className="text-muted">
-                      Remaining Budget
-                    </h6>
-
-                    <h4 className="text-warning">
-
-                      Rs.{" "}
-                      {
-                        summaryReport
-                          .financial_summary
-                          ?.remaining_budget
-                      }
-
-                    </h4>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-
-              {/* EXPENSE DETAILS */}
-
-              <div className="col-12 mt-3">
-
-                <h5 className="mb-3">
-                  💸 Expenses in Selected Period
-                </h5>
-
-
-                {summaryReport.expense_summary?.length > 0 ? (
-
-                  <div className="table-responsive">
-
-                    <table className="table table-bordered table-hover">
-
-                      <thead className="table-danger">
-
-                        <tr>
-
-                          <th>Date</th>
-                          <th>Title</th>
-                          <th>Category</th>
-                          <th>Amount</th>
-
-                        </tr>
-
-                      </thead>
-
-                      <tbody>
-
-                        {summaryReport.expense_summary.map(
-                          (expense, index) => (
-
-                            <tr
-                              key={`${expense.title}-${expense.date}-${index}`}
-                            >
-
-                              <td>
-                                {expense.date}
-                              </td>
-
-                              <td>
-                                {expense.title}
-                              </td>
-
-                              <td>
-                                {expense.category}
-                              </td>
-
-                              <td className="text-danger fw-bold">
-                                Rs. {expense.amount}
-                              </td>
-
-                            </tr>
-
-                          )
-                        )}
-
-                      </tbody>
-
-                    </table>
-
-                  </div>
+                    </div>
 
                 ) : (
 
-                  <p className="text-muted">
-                    No expenses found for this period.
-                  </p>
+                    <div className="report-empty">
+
+                        <i className="bi bi-receipt"></i>
+
+                        <strong>
+                            No expense report generated
+                        </strong>
+
+                        <span>
+                            Select a date range and generate the report.
+                        </span>
+
+                    </div>
 
                 )}
 
-              </div>
+            </div>
+
+        </section>
+
+
+        {/* =================================================
+            SAVINGS REPORT
+        ================================================= */}
+
+        <section className="report-section">
+
+            <div className="report-section-header">
+
+                <div className="report-section-title">
+
+                    <div
+                        className="report-section-icon"
+                        style={{
+                            background: "#ecfdf5",
+                            color: "#059669"
+                        }}
+                    >
+                        <i className="bi bi-piggy-bank-fill"></i>
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Savings Goals Report
+                        </h2>
+
+                        <p>
+                            Track your savings goals and progress.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    className="report-action-btn"
+                    style={{
+                        background: "#059669"
+                    }}
+                    onClick={generateSavingsReport}
+                    disabled={savingsLoading}
+                >
+
+                    <i className="bi bi-bullseye me-1"></i>
+
+                    {savingsLoading
+                        ? "Loading..."
+                        : "Generate Report"}
+
+                </button>
 
             </div>
 
-          )}
 
-        </div>
+            <div className="report-section-body">
 
-      </div>
+                {savingsReport.length > 0 ? (
 
+                    <div className="report-table-wrapper">
 
-      {/* ================================================= */}
-      {/* EXPORT */}
-      {/* ================================================= */}
+                        <table className="report-table">
 
-      <div className="card shadow border-0 mb-5">
+                            <thead>
 
-        <div className="card-body">
+                                <tr>
+                                    <th>Goal</th>
+                                    <th>Target</th>
+                                    <th>Saved</th>
+                                    <th>Remaining</th>
+                                    <th>Progress</th>
+                                    <th>Status</th>
+                                    <th>Target Date</th>
+                                </tr>
 
-          <h4 className="mb-3">
-            📥 Export Financial Data
-          </h4>
+                            </thead>
 
-          <p className="text-muted">
-            Download your complete BudgetBuddy
-            financial data in your preferred format.
-          </p>
+                            <tbody>
 
+                                {savingsReport.map(
+                                    (goal, index) => {
 
-          <div className="d-flex flex-wrap gap-2">
+                                        const progress =
+                                            Math.min(
+                                                Number(
+                                                    goal.progress_percentage
+                                                ) || 0,
+                                                100
+                                            );
 
+                                        return (
 
-            {/* PDF */}
+                                            <tr
+                                                key={`${goal.goal_name}-${index}`}
+                                            >
 
-            <button
-              className="btn btn-danger"
-              onClick={exportPDF}
-              disabled={exportLoading}
-            >
+                                                <td>
+                                                    <strong>
+                                                        {goal.goal_name}
+                                                    </strong>
+                                                </td>
 
-              📄 Download PDF
+                                                <td>
+                                                    ₹{Number(
+                                                        goal.target_amount || 0
+                                                    ).toLocaleString("en-IN")}
+                                                </td>
 
-            </button>
+                                                <td className="report-positive">
+                                                    ₹{Number(
+                                                        goal.saved_amount || 0
+                                                    ).toLocaleString("en-IN")}
+                                                </td>
 
+                                                <td>
+                                                    ₹{Number(
+                                                        goal.remaining_amount || 0
+                                                    ).toLocaleString("en-IN")}
+                                                </td>
 
-            {/* CSV */}
+                                                <td style={{ minWidth: "160px" }}>
 
-            <button
-              className="btn btn-success"
-              onClick={exportCSV}
-              disabled={exportLoading}
-            >
+                                                    <div
+                                                        style={{
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            gap: "8px"
+                                                        }}
+                                                    >
 
-              📊 Download CSV
+                                                        <div
+                                                            style={{
+                                                                flex: 1,
+                                                                height: "7px",
+                                                                background: "#e2e8f0",
+                                                                borderRadius: "999px",
+                                                                overflow: "hidden"
+                                                            }}
+                                                        >
 
-            </button>
+                                                            <div
+                                                                style={{
+                                                                    width: `${progress}%`,
+                                                                    height: "100%",
+                                                                    background: "#10b981",
+                                                                    borderRadius: "999px"
+                                                                }}
+                                                            ></div>
 
+                                                        </div>
 
-            {/* JSON */}
+                                                        <strong>
+                                                            {progress.toFixed(0)}%
+                                                        </strong>
 
-            <button
-              className="btn btn-primary"
-              onClick={exportJSON}
-              disabled={exportLoading}
-            >
+                                                    </div>
 
-              💾 Download JSON
+                                                </td>
 
-            </button>
+                                                <td>
 
-          </div>
+                                                    <span
+                                                        className={
+                                                            goal.status === "Completed"
+                                                                ? "report-badge success"
+                                                                : "report-badge warning"
+                                                        }
+                                                    >
 
+                                                        <i
+                                                            className={
+                                                                goal.status === "Completed"
+                                                                    ? "bi bi-check-circle"
+                                                                    : "bi bi-clock"
+                                                            }
+                                                        ></i>
 
-          {exportLoading && (
+                                                        {goal.status}
 
-            <div className="mt-3 text-muted">
+                                                    </span>
 
-              Preparing your financial data...
+                                                </td>
+
+                                                <td>
+                                                    {goal.target_date}
+                                                </td>
+
+                                            </tr>
+
+                                        );
+
+                                    }
+                                )}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                ) : (
+
+                    <div className="report-empty">
+
+                        <i className="bi bi-piggy-bank"></i>
+
+                        <strong>
+                            No savings report generated
+                        </strong>
+
+                        <span>
+                            Click Generate Report to view your savings goals.
+                        </span>
+
+                    </div>
+
+                )}
 
             </div>
 
-          )}
+        </section>
 
-        </div>
 
-      </div>
+        {/* =================================================
+            FINANCIAL SUMMARY
+        ================================================= */}
 
+        <section className="report-section">
+
+            <div className="report-section-header">
+
+                <div className="report-section-title">
+
+                    <div
+                        className="report-section-icon"
+                        style={{
+                            background: "#f5f3ff",
+                            color: "#7c3aed"
+                        }}
+                    >
+                        <i className="bi bi-graph-up-arrow"></i>
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Financial Summary
+                        </h2>
+
+                        <p>
+                            Compare your financial position for a selected period.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div className="report-filters">
+
+                <div className="report-field">
+
+                    <label>
+                        Period
+                    </label>
+
+                    <select
+                        value={summaryFilter}
+                        onChange={(e) =>
+                            setSummaryFilter(
+                                e.target.value
+                            )
+                        }
+                    >
+
+                        <option value="current_month">
+                            Current Month
+                        </option>
+
+                        <option value="previous_month">
+                            Previous Month
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <button
+                    className="report-action-btn"
+                    style={{
+                        background: "#7c3aed"
+                    }}
+                    onClick={generateSummaryReport}
+                    disabled={summaryLoading}
+                >
+
+                    <i className="bi bi-graph-up me-1"></i>
+
+                    {summaryLoading
+                        ? "Loading..."
+                        : "Generate Summary"}
+
+                </button>
+
+            </div>
+
+
+            {summaryReport && (
+
+                <div className="report-section-body">
+
+                    <div className="report-summary-grid">
+
+                        <div className="report-summary-card income">
+
+                            <span>
+                                TOTAL INCOME
+                            </span>
+
+                            <strong>
+                                ₹{Number(
+                                    summaryReport
+                                        .financial_summary
+                                        ?.total_income || 0
+                                ).toLocaleString("en-IN")}
+                            </strong>
+
+                        </div>
+
+
+                        <div className="report-summary-card expense">
+
+                            <span>
+                                TOTAL EXPENSE
+                            </span>
+
+                            <strong>
+                                ₹{Number(
+                                    summaryReport
+                                        .financial_summary
+                                        ?.total_expense || 0
+                                ).toLocaleString("en-IN")}
+                            </strong>
+
+                        </div>
+
+
+                        <div className="report-summary-card balance">
+
+                            <span>
+                                CURRENT BALANCE
+                            </span>
+
+                            <strong>
+                                ₹{Number(
+                                    summaryReport
+                                        .financial_summary
+                                        ?.current_balance || 0
+                                ).toLocaleString("en-IN")}
+                            </strong>
+
+                        </div>
+
+
+                        <div className="report-summary-card savings">
+
+                            <span>
+                                REMAINING BUDGET
+                            </span>
+
+                            <strong>
+                                ₹{Number(
+                                    summaryReport
+                                        .financial_summary
+                                        ?.remaining_budget || 0
+                                ).toLocaleString("en-IN")}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div className="report-panel">
+
+                        <h3>
+                            Expenses in Selected Period
+                        </h3>
+
+                        <p>
+                            Detailed expense activity for this period.
+                        </p>
+
+
+                        {summaryReport.expense_summary?.length > 0 ? (
+
+                            <div className="report-table-wrapper">
+
+                                <table className="report-table">
+
+                                    <thead>
+
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Title</th>
+                                            <th>Category</th>
+                                            <th>Amount</th>
+                                        </tr>
+
+                                    </thead>
+
+                                    <tbody>
+
+                                        {summaryReport.expense_summary.map(
+                                            (expense, index) => (
+
+                                                <tr
+                                                    key={`${expense.title}-${expense.date}-${index}`}
+                                                >
+
+                                                    <td>
+                                                        {expense.date}
+                                                    </td>
+
+                                                    <td>
+                                                        {expense.title}
+                                                    </td>
+
+                                                    <td>
+                                                        <span className="report-badge info">
+                                                            {expense.category}
+                                                        </span>
+                                                    </td>
+
+                                                    <td className="report-negative">
+                                                        ₹{Number(
+                                                            expense.amount || 0
+                                                        ).toLocaleString("en-IN")}
+                                                    </td>
+
+                                                </tr>
+
+                                            )
+                                        )}
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                        ) : (
+
+                            <div className="report-empty">
+
+                                <i className="bi bi-receipt"></i>
+
+                                <strong>
+                                    No expenses found
+                                </strong>
+
+                                <span>
+                                    No expenses were recorded for this period.
+                                </span>
+
+                            </div>
+
+                        )}
+
+                    </div>
+
+                </div>
+
+            )}
+
+        </section>
+
+
+        {/* =================================================
+            EXPORT
+        ================================================= */}
+
+        <section className="report-section">
+
+            <div className="report-section-header">
+
+                <div className="report-section-title">
+
+                    <div
+                        className="report-section-icon"
+                        style={{
+                            background: "#f1f5f9",
+                            color: "#475569"
+                        }}
+                    >
+                        <i className="bi bi-download"></i>
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Export Financial Data
+                        </h2>
+
+                        <p>
+                            Download your complete BudgetBuddy financial data.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div className="report-export-grid">
+
+                <button
+                    className="report-export-btn"
+                    onClick={exportPDF}
+                    disabled={exportLoading}
+                >
+
+                    <i className="bi bi-file-earmark-pdf-fill"></i>
+
+                    Download PDF
+
+                </button>
+
+
+                <button
+                    className="report-export-btn"
+                    onClick={exportCSV}
+                    disabled={exportLoading}
+                >
+
+                    <i className="bi bi-file-earmark-spreadsheet-fill"></i>
+
+                    Download CSV
+
+                </button>
+
+
+                <button
+                    className="report-export-btn"
+                    onClick={exportJSON}
+                    disabled={exportLoading}
+                >
+
+                    <i className="bi bi-filetype-json"></i>
+
+                    Download JSON
+
+                </button>
+
+            </div>
+
+
+            {exportLoading && (
+
+                <div
+                    style={{
+                        padding: "0 22px 20px",
+                        color: "#64748b",
+                        fontSize: "11px"
+                    }}
+                >
+
+                    <i className="bi bi-arrow-repeat me-1"></i>
+
+                    Preparing your financial data...
+
+                </div>
+
+            )}
+
+        </section>
 
     </div>
-
-  );
+);
 
 }
 

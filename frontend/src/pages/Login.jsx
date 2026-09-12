@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import api from "../api";
+import axios from "axios";
 import "../styles/login.css";
 
 function Login() {
@@ -27,13 +27,13 @@ function Login() {
 
     try {
 
-      const response = await api.post(
-  "login/",
-  {
-    username,
-    password,
-  }
-);
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/login/",
+        {
+          username,
+          password,
+        }
+      );
 
 
       // Store authentication tokens

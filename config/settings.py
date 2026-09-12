@@ -3,6 +3,7 @@ Django settings for config project.
 """
 
 import os
+import dj_database_url
 
 from pathlib import Path
 
@@ -106,6 +107,8 @@ MIDDLEWARE = [
 
     "django.middleware.security.SecurityMiddleware",
 
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+
     "corsheaders.middleware.CorsMiddleware",
 
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -175,31 +178,42 @@ WSGI_APPLICATION = "config.wsgi.application"
 # DATABASE
 # =====================================================
 
-DATABASES = {
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-    "default": {
+if DATABASE_URL:
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True,
+        )
+    }
+else:
+    DATABASES = {
 
-        "ENGINE":
-            "django.db.backends.postgresql",
+        "default": {
 
-        "NAME":
-            os.getenv("DB_NAME"),
+            "ENGINE":
+                "django.db.backends.postgresql",
 
-        "USER":
-            os.getenv("DB_USER"),
+            "NAME":
+                os.getenv("DB_NAME"),
 
-        "PASSWORD":
-            os.getenv("DB_PASSWORD"),
+            "USER":
+                os.getenv("DB_USER"),
 
-        "HOST":
-            os.getenv("DB_HOST"),
+            "PASSWORD":
+                os.getenv("DB_PASSWORD"),
 
-        "PORT":
-            os.getenv("DB_PORT", "5432"),
+            "HOST":
+                os.getenv("DB_HOST"),
+
+            "PORT":
+                os.getenv("DB_PORT", "5432"),
+
+        }
 
     }
-
-}
 
 
 # =====================================================
@@ -260,6 +274,10 @@ STATIC_URL = "static/"
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+STATICFILES_STORAGE = (
+    "whitenoise.storage.CompressedManifestStaticFilesStorage"
+)
+
 
 # =====================================================
 # REST FRAMEWORK
@@ -318,3 +336,5 @@ EMAIL_HOST_PASSWORD = os.getenv(
 DEFAULT_FROM_EMAIL = os.getenv(
     "DEFAULT_FROM_EMAIL"
 )
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
