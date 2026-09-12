@@ -45,3 +45,6 @@ frontend/dist/
 
 .DS_Store
 Thumbs.db
+
+# Frontend env (keep local overrides out of git)
+frontend/.env
