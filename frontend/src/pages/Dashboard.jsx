@@ -85,15 +85,7 @@ function Dashboard() {
       });
     } catch (error) {
       console.error("Dashboard error:", error);
-
-      if (error.response?.status === 401) {
-        alert("Session expired. Please login again.");
-
-        localStorage.removeItem("access");
-        localStorage.removeItem("refresh");
-
-        window.location.href = "/login";
-      }
+      // 401 is handled globally by api.js interceptor
     } finally {
       setLoading(false);
     }
