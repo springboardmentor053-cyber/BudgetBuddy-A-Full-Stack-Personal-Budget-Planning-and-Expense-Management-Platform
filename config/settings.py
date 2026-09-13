@@ -72,18 +72,17 @@ INSTALLED_APPS = [
 
     "django.contrib.messages",
 
+    "cloudinary_storage",
+
     "django.contrib.staticfiles",
 
+    "cloudinary",
 
     # Third-party
 
     "rest_framework",
 
     "corsheaders",
-
-    "cloudinary",
-
-    "cloudinary_storage",
 
 
     # Project apps
@@ -377,3 +376,11 @@ if os.getenv("CLOUDINARY_CLOUD_NAME"):
     DEFAULT_FILE_STORAGE = (
         "cloudinary_storage.storage.MediaCloudinaryStorage"
     )
+    STORAGES = {
+        "default": {
+            "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
