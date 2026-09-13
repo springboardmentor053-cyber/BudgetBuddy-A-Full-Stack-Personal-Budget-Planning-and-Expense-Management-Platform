@@ -72,8 +72,6 @@ INSTALLED_APPS = [
 
     "django.contrib.messages",
 
-    "cloudinary_storage",
-
     "django.contrib.staticfiles",
 
     "cloudinary",
@@ -354,14 +352,10 @@ MEDIA_ROOT = BASE_DIR / "media"
 # =====================================================
 # CLOUDINARY
 # =====================================================
+# CLOUDINARY
+# =====================================================
 
 import cloudinary
-
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
-    "API_KEY": os.getenv("CLOUDINARY_API_KEY"),
-    "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
-}
 
 cloudinary.config(
     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
@@ -370,14 +364,11 @@ cloudinary.config(
     secure=True,
 )
 
-# Use Cloudinary for media files in production
+# Use custom Cloudinary storage for media files in production
 if os.getenv("CLOUDINARY_CLOUD_NAME"):
-    DEFAULT_FILE_STORAGE = (
-        "cloudinary_storage.storage.MediaCloudinaryStorage"
-    )
     STORAGES = {
         "default": {
-            "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+            "BACKEND": "users.cloudinary_storage.CloudinaryMediaStorage",
         },
         "staticfiles": {
             "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
