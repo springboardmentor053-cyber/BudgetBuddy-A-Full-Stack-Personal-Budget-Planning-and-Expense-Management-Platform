@@ -545,3 +545,49 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+/* =====================================================
+   DARK MODE
+   ===================================================== */
+
+[data-theme="dark"] .sidebar {
+    background: #1e293b;
+    border-right-color: #334155;
+}
+
+[data-theme="dark"] .sidebar-brand-text h2,
+[data-theme="dark"] .sidebar-link-text,
+[data-theme="dark"] .sidebar-heading,
+[data-theme="dark"] .sidebar-user-info strong,
+[data-theme="dark"] .sidebar-user-info span {
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .sidebar-link {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .sidebar-link:hover,
+[data-theme="dark"] .sidebar-link.active {
+    background: #0f172a;
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .sidebar-logout {
+    color: #94a3b8;
+    border-color: #334155;
+}
+
+[data-theme="dark"] .sidebar-logout:hover {
+    background: #0f172a;
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .main-content {
+    background: #0f172a;
+}
+
+[data-theme="dark"] .avatar {
+    background: #334155;
+    color: #f1f5f9;
+}

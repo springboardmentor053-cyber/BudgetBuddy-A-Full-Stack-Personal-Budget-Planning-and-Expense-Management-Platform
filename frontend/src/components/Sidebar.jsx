@@ -1,9 +1,11 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "../api";
+import useDarkMode from "../hooks/useDarkMode";
 
 function Sidebar() {
     const navigate = useNavigate();
+    const { isDark, toggle } = useDarkMode();
 
     const [profile, setProfile] = useState({
     username: "",
@@ -303,6 +305,22 @@ function Sidebar() {
 
                 </div>
 
+
+                {/* DARK MODE TOGGLE */}
+
+                <button
+                    type="button"
+                    className="sidebar-logout"
+                    onClick={toggle}
+                    style={{ marginBottom: "8px" }}
+                >
+                    <span className="sidebar-logout-icon">
+                        <i className={isDark ? "bi bi-sun-fill" : "bi bi-moon-fill"}></i>
+                    </span>
+                    <span>
+                        {isDark ? "Light Mode" : "Dark Mode"}
+                    </span>
+                </button>
 
                 {/* LOGOUT */}
 

@@ -293,6 +293,34 @@
         box-shadow 0.18s ease;
 }
 
+.expenses-field textarea {
+    width: 100%;
+    min-height: 95px;
+    padding: 12px 13px;
+
+    border: 1px solid #dbe3ed;
+    border-radius: 10px;
+
+    background: #ffffff;
+
+    color: #1e293b;
+
+    font-family: inherit;
+    font-size: 12px;
+
+    outline: none;
+    resize: vertical;
+
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.expenses-field textarea:focus {
+    border-color: #fca5a5;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+}
+
 .expenses-input-wrapper input:focus,
 .expenses-input-wrapper select:focus {
     border-color: #fca5a5;
