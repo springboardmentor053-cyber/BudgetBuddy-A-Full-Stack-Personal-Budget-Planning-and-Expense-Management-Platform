@@ -1137,7 +1137,7 @@ function Reports() {
                         </span>
 
                         <strong>
-                            Γé╣{Number(
+                            ₹{Number(
                                 monthlyReport.total_income || 0
                             ).toLocaleString("en-IN")}
                         </strong>
@@ -1156,7 +1156,7 @@ function Reports() {
                         </span>
 
                         <strong>
-                            Γé╣{Number(
+                            ₹{Number(
                                 monthlyReport.total_expense || 0
                             ).toLocaleString("en-IN")}
                         </strong>
@@ -1175,7 +1175,7 @@ function Reports() {
                         </span>
 
                         <strong>
-                            Γé╣{Number(
+                            ₹{Number(
                                 monthlyReport.current_balance || 0
                             ).toLocaleString("en-IN")}
                         </strong>
@@ -1194,7 +1194,7 @@ function Reports() {
                         </span>
 
                         <strong>
-                            Γé╣{Number(
+                            ₹{Number(
                                 monthlyReport.remaining_budget || 0
                             ).toLocaleString("en-IN")}
                         </strong>
@@ -1231,7 +1231,7 @@ function Reports() {
                                 </span>
 
                                 <h3 style={{ marginTop: "10px" }}>
-                                    Γé╣{Number(
+                                    ₹{Number(
                                         monthlyReport.total_income || 0
                                     ).toLocaleString("en-IN")}
                                 </h3>
@@ -1247,7 +1247,7 @@ function Reports() {
                                 </span>
 
                                 <h3 style={{ marginTop: "10px" }}>
-                                    Γé╣{Number(
+                                    ₹{Number(
                                         monthlyReport.total_expense || 0
                                     ).toLocaleString("en-IN")}
                                 </h3>
@@ -1263,7 +1263,7 @@ function Reports() {
                                 </span>
 
                                 <h3 style={{ marginTop: "10px" }}>
-                                    Γé╣{Number(
+                                    ₹{Number(
                                         monthlyReport.total_savings || 0
                                     ).toLocaleString("en-IN")}
                                 </h3>
@@ -1421,7 +1421,7 @@ function Reports() {
                                             </td>
 
                                             <td className="report-negative">
-                                                Γé╣{Number(
+                                                ₹{Number(
                                                     expense.amount || 0
                                                 ).toLocaleString("en-IN")}
                                             </td>
@@ -1563,19 +1563,19 @@ function Reports() {
                                                 </td>
 
                                                 <td>
-                                                    Γé╣{Number(
+                                                    ₹{Number(
                                                         goal.target_amount || 0
                                                     ).toLocaleString("en-IN")}
                                                 </td>
 
                                                 <td className="report-positive">
-                                                    Γé╣{Number(
+                                                    ₹{Number(
                                                         goal.saved_amount || 0
                                                     ).toLocaleString("en-IN")}
                                                 </td>
 
                                                 <td>
-                                                    Γé╣{Number(
+                                                    ₹{Number(
                                                         goal.remaining_amount || 0
                                                     ).toLocaleString("en-IN")}
                                                 </td>
@@ -1783,7 +1783,7 @@ function Reports() {
                             </span>
 
                             <strong>
-                                Γé╣{Number(
+                                ₹{Number(
                                     summaryReport
                                         .financial_summary
                                         ?.total_income || 0
@@ -1800,7 +1800,7 @@ function Reports() {
                             </span>
 
                             <strong>
-                                Γé╣{Number(
+                                ₹{Number(
                                     summaryReport
                                         .financial_summary
                                         ?.total_expense || 0
@@ -1817,7 +1817,7 @@ function Reports() {
                             </span>
 
                             <strong>
-                                Γé╣{Number(
+                                ₹{Number(
                                     summaryReport
                                         .financial_summary
                                         ?.current_balance || 0
@@ -1834,7 +1834,7 @@ function Reports() {
                             </span>
 
                             <strong>
-                                Γé╣{Number(
+                                ₹{Number(
                                     summaryReport
                                         .financial_summary
                                         ?.remaining_budget || 0
@@ -1898,7 +1898,7 @@ function Reports() {
                                                     </td>
 
                                                     <td className="report-negative">
-                                                        Γé╣{Number(
+                                                        ₹{Number(
                                                             expense.amount || 0
                                                         ).toLocaleString("en-IN")}
                                                     </td>
