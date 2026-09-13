@@ -29,7 +29,10 @@ class ProfileView(APIView):
             user=request.user
         )
 
-        serializer = ProfileSerializer(profile)
+        serializer = ProfileSerializer(
+            profile,
+            context={"request": request}
+        )
 
         return Response(serializer.data)
 
@@ -42,7 +45,8 @@ class ProfileView(APIView):
         serializer = ProfileSerializer(
             profile,
             data=request.data,
-            partial=True
+            partial=True,
+            context={"request": request}
         )
 
         if serializer.is_valid():

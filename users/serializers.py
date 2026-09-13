@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Profile
+import cloudinary
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -61,6 +62,8 @@ class ProfileSerializer(serializers.ModelSerializer):
         allow_null=True
     )
 
+    profile_picture_url = serializers.SerializerMethodField()
+
     class Meta:
         model = Profile
         fields = [
@@ -71,7 +74,23 @@ class ProfileSerializer(serializers.ModelSerializer):
             "phone",
             "address",
             "profile_picture",
+            "profile_picture_url",
         ]
+
+    def get_profile_picture_url(self, obj):
+        if not obj.profile_picture:
+            return None
+        url = str(obj.profile_picture)
+        # Already a full Cloudinary URL
+        if url.startswith("http"):
+            return url
+        # Local file path
+        request = self.context.get("request")
+        if request:
+            return request.build_absolute_uri(
+                f"/media/{url}"
+            )
+        return url
 
     def update(self, instance, validated_data):
 

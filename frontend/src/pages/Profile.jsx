@@ -58,11 +58,11 @@ function Profile() {
 
       setProfile(response.data);
 
-      if (response.data.profile_picture) {
+      if (response.data.profile_picture_url) {
+        setImagePreview(response.data.profile_picture_url);
+      } else if (response.data.profile_picture) {
         setImagePreview(
-          getProfilePictureUrl(
-            response.data.profile_picture
-          )
+          getProfilePictureUrl(response.data.profile_picture)
         );
       }
 
@@ -237,11 +237,11 @@ function Profile() {
 
       setSelectedImage(null);
 
-      if (response.data.profile_picture) {
+      if (response.data.profile_picture_url) {
+        setImagePreview(response.data.profile_picture_url);
+      } else if (response.data.profile_picture) {
         setImagePreview(
-          getProfilePictureUrl(
-            response.data.profile_picture
-          )
+          getProfilePictureUrl(response.data.profile_picture)
         );
       }
 

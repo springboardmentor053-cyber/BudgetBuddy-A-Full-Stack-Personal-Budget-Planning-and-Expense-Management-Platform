@@ -81,6 +81,10 @@ INSTALLED_APPS = [
 
     "corsheaders",
 
+    "cloudinary",
+
+    "cloudinary_storage",
+
 
     # Project apps
 
@@ -347,3 +351,23 @@ DEFAULT_FROM_EMAIL = os.getenv(
 )
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+
+# =====================================================
+# CLOUDINARY
+# =====================================================
+
+import cloudinary
+
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True,
+)
+
+# Use Cloudinary for media files in production
+if os.getenv("CLOUDINARY_CLOUD_NAME"):
+    DEFAULT_FILE_STORAGE = (
+        "cloudinary_storage.storage.MediaCloudinaryStorage"
+    )

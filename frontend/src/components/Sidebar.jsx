@@ -33,7 +33,7 @@ function Sidebar() {
                 setProfile({
     username: response.data.username,
     email: response.data.email,
-    profile_picture: response.data.profile_picture || "",
+    profile_picture: response.data.profile_picture_url || response.data.profile_picture || "",
 });
             } catch (error) {
                 console.error(
