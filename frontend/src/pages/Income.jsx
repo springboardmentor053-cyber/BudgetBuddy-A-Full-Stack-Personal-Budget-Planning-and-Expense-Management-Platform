@@ -242,7 +242,7 @@ function Income() {
     // =====================================================
 
     const formatCurrency = (value) => {
-        return `â‚¹${Number(value || 0).toLocaleString("en-IN")}`;
+        return `₹${Number(value || 0).toLocaleString("en-IN")}`;
     };
 
     // =====================================================
@@ -350,7 +350,7 @@ function Income() {
                                 ? formatCurrency(
                                     latestIncome.amount
                                 )
-                                : "â‚¹0"
+                                : "₹0"
                             }
                         </strong>
 

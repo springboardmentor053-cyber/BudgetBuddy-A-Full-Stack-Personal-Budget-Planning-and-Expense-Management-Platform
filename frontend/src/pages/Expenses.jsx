@@ -140,7 +140,7 @@ function Expenses() {
     // =====================================================
 
     const formatCurrency = (value) => {
-        return `â‚¹${Number(value || 0).toLocaleString("en-IN")}`;
+        return `₹${Number(value || 0).toLocaleString("en-IN")}`;
     };
 
     // =====================================================

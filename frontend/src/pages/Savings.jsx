@@ -203,7 +203,7 @@ function Savings() {
     // =====================================================
 
     const formatCurrency = (value) => {
-        return `â‚¹${Number(
+        return `₹${Number(
             value || 0
         ).toLocaleString("en-IN")}`;
     };
