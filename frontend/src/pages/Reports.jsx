@@ -104,14 +104,6 @@ function Reports() {
       if (error.response) {
         showToast(JSON.stringify(error.response.data), "error");
       } else {
-        showToast(JSON.stringify(error.response.data), "error");
-      } else {
-        showToast(JSON.stringify(error.response.data), "error");
-      } else {
-        showToast(JSON.stringify(error.response.data), "error");
-      } else {
-        showToast(JSON.stringify(error.response.data), "error");
-      } else {
         showToast(error.message, "error");
       }
 
