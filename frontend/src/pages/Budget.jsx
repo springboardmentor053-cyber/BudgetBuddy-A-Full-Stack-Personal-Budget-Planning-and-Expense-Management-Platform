@@ -201,7 +201,7 @@ function Budget() {
         try {
             await api.post("budgets/", {
                 category,
-                amount,
+                budget_amount: amount,
                 month: Number(month),
                 year: Number(year),
             });
