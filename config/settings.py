@@ -273,6 +273,9 @@ STATIC_URL = "static/"
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+# Required by django-cloudinary-storage compatibility with Django 6
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+
 
 # =====================================================
 # REST FRAMEWORK
