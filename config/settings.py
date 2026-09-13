@@ -2,6 +2,7 @@
 Django settings for config project.
 """
 
+from datetime import timedelta
 import os
 import dj_database_url
 
@@ -286,6 +287,19 @@ REST_FRAMEWORK = {
 
     ),
 
+}
+
+
+# =====================================================
+# JWT SETTINGS
+# =====================================================
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 
