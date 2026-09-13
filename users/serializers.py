@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import Profile
-import cloudinary
 import os
 
 
@@ -84,14 +83,31 @@ class ProfileSerializer(serializers.ModelSerializer):
 
         url = str(obj.profile_picture)
 
-        # Cloudinary storage returns full URL directly
+        print(f"[DEBUG] profile_picture raw value: '{url}'")
+
+        # Already a full URL
         if url.startswith("http"):
             return url
 
-        # If stored as public_id, build URL from cloud name
+        # Use Cloudinary SDK to build URL from public_id
         cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME", "")
+        print(f"[DEBUG] cloud_name from env: '{cloud_name}'")
+
         if cloud_name:
-            # Remove any leading slash
+            try:
+                import cloudinary
+                import cloudinary.utils
+                cloudinary_url, _ = cloudinary.utils.cloudinary_url(
+                    url,
+                    resource_type="image",
+                )
+                print(f"[DEBUG] cloudinary_url built: '{cloudinary_url}'")
+                if cloudinary_url and cloudinary_url.startswith("http"):
+                    return cloudinary_url
+            except Exception as e:
+                print(f"[DEBUG] cloudinary_url error: {e}")
+
+            # Fallback manual URL construction
             public_id = url.lstrip("/")
             return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
 
