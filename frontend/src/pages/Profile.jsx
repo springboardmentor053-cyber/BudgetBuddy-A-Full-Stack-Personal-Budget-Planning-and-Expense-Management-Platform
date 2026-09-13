@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api";
+import API_BASE_URL from "../config";
 import "../styles/profile.css";
 
 function Profile() {
@@ -29,15 +30,7 @@ function Profile() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  const token = localStorage.getItem("access");
-
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-
-  const API_BASE = "http://127.0.0.1:8000";
+  const API_BASE = API_BASE_URL.replace("/api/", "");
 
   // =====================================================
   // PROFILE PICTURE URL
@@ -61,10 +54,7 @@ function Profile() {
 
   const fetchProfile = async () => {
     try {
-      const response = await axios.get(
-        `${API_BASE}/api/profile/`,
-        config
-      );
+      const response = await api.get("profile/");
 
       setProfile(response.data);
 
@@ -237,15 +227,10 @@ function Profile() {
         );
       }
 
-      const response = await axios.put(
-        `${API_BASE}/api/profile/`,
+      const response = await api.put(
+        "profile/",
         formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
 
       setProfile(response.data);
@@ -327,10 +312,9 @@ function Profile() {
     }
 
     try {
-      const response = await axios.post(
-        `${API_BASE}/api/profile/change-password/`,
-        password,
-        config
+      const response = await api.post(
+        "profile/change-password/",
+        password
       );
 
       setMessage(response.data.message);
