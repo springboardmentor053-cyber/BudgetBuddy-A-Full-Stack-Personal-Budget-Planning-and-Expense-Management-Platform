@@ -10,7 +10,6 @@ class IncomeSerializer(serializers.ModelSerializer):
 
         fields = [
             "id",
-            "title",
             "amount",
             "source",
             "description",
@@ -31,20 +30,6 @@ class IncomeSerializer(serializers.ModelSerializer):
 
             raise serializers.ValidationError(
                 "Amount must be greater than zero."
-            )
-
-        return value
-
-    # =====================================================
-    # TITLE VALIDATION
-    # =====================================================
-
-    def validate_title(self, value):
-
-        if not value.strip():
-
-            raise serializers.ValidationError(
-                "Title cannot be empty."
             )
 
         return value

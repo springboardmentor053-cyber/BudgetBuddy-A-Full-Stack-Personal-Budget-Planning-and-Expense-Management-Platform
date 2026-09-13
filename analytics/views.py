@@ -227,40 +227,40 @@ def expense_statistics(request):
 
         "highest_expense": {
 
-            "title": highest.title,
             "amount": highest.amount,
             "category": highest.category,
             "date": highest.date,
+            "description": highest.description,
 
         } if highest else None,
 
 
         "lowest_expense": {
 
-            "title": lowest.title,
             "amount": lowest.amount,
             "category": lowest.category,
             "date": lowest.date,
+            "description": lowest.description,
 
         } if lowest else None,
 
 
         "latest_expense": {
 
-            "title": latest.title,
             "amount": latest.amount,
             "category": latest.category,
             "date": latest.date,
+            "description": latest.description,
 
         } if latest else None,
 
 
         "oldest_expense": {
 
-            "title": oldest.title,
             "amount": oldest.amount,
             "category": oldest.category,
             "date": oldest.date,
+            "description": oldest.description,
 
         } if oldest else None,
 
@@ -496,9 +496,6 @@ def dashboard(request):
                 "id":
                     income.id,
 
-                "title":
-                    income.title,
-
                 "source":
                     income.source,
 
@@ -507,6 +504,9 @@ def dashboard(request):
 
                 "income_date":
                     income.income_date,
+
+                "description":
+                    income.description,
 
             }
 
@@ -526,9 +526,6 @@ def dashboard(request):
                 "id":
                     expense.id,
 
-                "title":
-                    expense.title,
-
                 "category":
                     expense.category,
 
@@ -537,6 +534,9 @@ def dashboard(request):
 
                 "date":
                     expense.date,
+
+                "description":
+                    expense.description,
 
             }
 

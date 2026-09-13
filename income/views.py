@@ -347,10 +347,10 @@ def transaction_dashboard(request):
         .order_by("-id")[:5]
         .values(
             "id",
-            "title",
             "source",
             "amount",
             "income_date",
+            "description",
         )
 
     )
@@ -367,10 +367,10 @@ def transaction_dashboard(request):
         .order_by("-id")[:5]
         .values(
             "id",
-            "title",
             "amount",
             "category",
             "date",
+            "description",
         )
 
     )
