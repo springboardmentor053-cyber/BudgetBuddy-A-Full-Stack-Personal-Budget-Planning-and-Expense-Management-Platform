@@ -81,19 +81,25 @@ class ProfileSerializer(serializers.ModelSerializer):
     def get_profile_picture_url(self, obj):
         if not obj.profile_picture:
             return None
+
         url = str(obj.profile_picture)
-        # Already a full Cloudinary or http URL
+
+        # Cloudinary storage returns full URL directly
         if url.startswith("http"):
             return url
-        # Cloudinary stores as public_id — build URL
-        import cloudinary.utils
-        cloudinary_name = os.getenv("CLOUDINARY_CLOUD_NAME")
-        if cloudinary_name:
-            return f"https://res.cloudinary.com/{cloudinary_name}/image/upload/{url}"
-        # Local fallback
+
+        # If stored as public_id, build URL from cloud name
+        cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME", "")
+        if cloud_name:
+            # Remove any leading slash
+            public_id = url.lstrip("/")
+            return f"https://res.cloudinary.com/{cloud_name}/image/upload/{public_id}"
+
+        # Local dev fallback
         request = self.context.get("request")
         if request:
             return request.build_absolute_uri(f"/media/{url}")
+
         return url
 
     def update(self, instance, validated_data):

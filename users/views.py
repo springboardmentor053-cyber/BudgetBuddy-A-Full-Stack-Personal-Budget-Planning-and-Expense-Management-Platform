@@ -52,6 +52,11 @@ class ProfileView(APIView):
         if serializer.is_valid():
             serializer.save()
 
+            # Log what was saved for debugging
+            profile.refresh_from_db()
+            print(f"[DEBUG] profile_picture value: {profile.profile_picture}")
+            print(f"[DEBUG] profile_picture str: {str(profile.profile_picture)}")
+
             return Response(
                 serializer.data,
                 status=status.HTTP_200_OK
