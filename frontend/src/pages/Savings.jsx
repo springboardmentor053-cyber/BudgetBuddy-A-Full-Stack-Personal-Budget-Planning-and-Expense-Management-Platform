@@ -1,4 +1,5 @@
 ﻿import Toast from "../components/Toast";
+import ConfirmModal from "../components/ConfirmModal";
 import useToast from "../hooks/useToast";
 import { useEffect, useMemo, useState } from "react";
 import api from "../api";
@@ -14,6 +15,7 @@ function Savings() {
     const [targetDate, setTargetDate] = useState("");
 
     const [editingId, setEditingId] = useState(null);
+    const [confirmId, setConfirmId] = useState(null);
     const { toast, showToast, hideToast } = useToast();
 
     // =====================================================
@@ -157,29 +159,18 @@ function Savings() {
     // =====================================================
 
     const deleteGoal = async (id) => {
-        if (
-            !window.confirm(
-                "Delete this savings goal?"
-            )
-        ) {
-            return;
-        }
+        setConfirmId(id);
+    };
 
+    const confirmDeleteGoal = async () => {
+        const id = confirmId;
+        setConfirmId(null);
         try {
-            await api.delete(
-                `savings/${id}/`
-            );
-
+            await api.delete(`savings/${id}/`);
             showToast("Savings Goal Deleted Successfully");
-
             fetchGoals();
-
         } catch (error) {
-            console.error(
-                "Savings delete error:",
-                error
-            );
-
+            console.error("Savings delete error:", error);
             if (error.response?.status !== 401) {
                 showToast(getErrorMessage(error), "error");
             }
@@ -286,10 +277,15 @@ function Savings() {
     // UI
     // =====================================================
 
-        <Toast message={toast.message} type={toast.type} onClose={hideToast} />
-
     return (
         <div className="savings-page">
+
+            <Toast message={toast.message} type={toast.type} onClose={hideToast} />
+            <ConfirmModal
+                message={confirmId ? "Delete this savings goal? This cannot be undone." : null}
+                onConfirm={confirmDeleteGoal}
+                onCancel={() => setConfirmId(null)}
+            />
 
             {/* =================================================
                 HEADER

@@ -1,4 +1,5 @@
 ﻿import Toast from "../components/Toast";
+import ConfirmModal from "../components/ConfirmModal";
 import useToast from "../hooks/useToast";
 import { useEffect, useMemo, useState } from "react";
 import api from "../api";
@@ -16,6 +17,7 @@ function Expenses() {
 
     const [editingId, setEditingId] = useState(null);
     const [search, setSearch] = useState("");
+    const [confirmId, setConfirmId] = useState(null);
     const { toast, showToast, hideToast } = useToast();
 
     // =====================================================
@@ -163,7 +165,12 @@ function Expenses() {
     // =====================================================
 
     const deleteExpense = async (id) => {
-        if (!window.confirm("Delete this expense?")) return;
+        setConfirmId(id);
+    };
+
+    const confirmDeleteExpense = async () => {
+        const id = confirmId;
+        setConfirmId(null);
         try {
             await api.delete(`expenses/${id}/`);
             showToast("Expense Deleted Successfully");
@@ -184,6 +191,11 @@ function Expenses() {
         <div className="expenses-page">
 
             <Toast message={toast.message} type={toast.type} onClose={hideToast} />
+            <ConfirmModal
+                message={confirmId ? "Delete this expense? This cannot be undone." : null}
+                onConfirm={confirmDeleteExpense}
+                onCancel={() => setConfirmId(null)}
+            />
 
             {/* HEADER */}
             <div className="expenses-header">

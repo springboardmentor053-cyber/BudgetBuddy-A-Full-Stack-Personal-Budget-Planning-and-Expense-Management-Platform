@@ -1,4 +1,5 @@
 ﻿import Toast from "../components/Toast";
+import ConfirmModal from "../components/ConfirmModal";
 import useToast from "../hooks/useToast";
 import { useEffect, useMemo, useState } from "react";
 import api from "../api";
@@ -15,6 +16,7 @@ function Budget() {
     const [year, setYear] = useState(new Date().getFullYear());
 
     const [search, setSearch] = useState("");
+    const [confirmId, setConfirmId] = useState(null);
     const { toast, showToast, hideToast } = useToast();
 
     // =====================================================
@@ -228,20 +230,18 @@ function Budget() {
     // =====================================================
 
     const deleteBudget = async (id) => {
-        if (!window.confirm("Delete this budget?")) {
-            return;
-        }
+        setConfirmId(id);
+    };
 
+    const confirmDeleteBudget = async () => {
+        const id = confirmId;
+        setConfirmId(null);
         try {
             await api.delete(`budgets/${id}/`);
-
             showToast("Budget Deleted Successfully");
-
             fetchBudgets();
-
         } catch (error) {
             console.error("Budget deletion error:", error);
-
             if (error.response?.status !== 401) {
                 showToast(getErrorMessage(error), "error");
             }
@@ -252,10 +252,15 @@ function Budget() {
     // UI
     // =====================================================
 
-        <Toast message={toast.message} type={toast.type} onClose={hideToast} />
-
     return (
         <div className="budget-page">
+
+            <Toast message={toast.message} type={toast.type} onClose={hideToast} />
+            <ConfirmModal
+                message={confirmId ? "Delete this budget? This cannot be undone." : null}
+                onConfirm={confirmDeleteBudget}
+                onCancel={() => setConfirmId(null)}
+            />
 
             {/* =================================================
                 HEADER

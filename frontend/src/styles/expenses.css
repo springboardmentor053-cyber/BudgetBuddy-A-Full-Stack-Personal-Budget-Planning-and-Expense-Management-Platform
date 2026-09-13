@@ -797,3 +797,17 @@
         min-height: 42px;
     }
 }
+
+/* =====================================================
+   DESCRIPTION
+   ===================================================== */
+
+.expense-description {
+    display: block;
+    font-size: 13px;
+    color: #475569;
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

@@ -1,6 +1,7 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import api from "../api";
 import { getErrorMessage } from "../utils/errorHandler";
+import ConfirmModal from "../components/ConfirmModal";
 import Toast from "../components/Toast";
 import useToast from "../hooks/useToast";
 import "../styles/income.css";
@@ -9,6 +10,7 @@ function Income() {
     const [incomeList, setIncomeList] = useState([]);
     const [filteredIncome, setFilteredIncome] = useState([]);
     const { toast, showToast, hideToast } = useToast();
+    const [confirmId, setConfirmId] = useState(null);
 
     const [source, setSource] = useState("SALARY");
     const [description, setDescription] = useState("");
@@ -168,7 +170,12 @@ function Income() {
     // =====================================================
 
     const deleteIncome = async (id) => {
-        if (!window.confirm("Delete this income?")) return;
+        setConfirmId(id);
+    };
+
+    const confirmDeleteIncome = async () => {
+        const id = confirmId;
+        setConfirmId(null);
         try {
             await api.delete(`income/${id}/`);
             showToast("Income Deleted Successfully");
@@ -191,7 +198,13 @@ function Income() {
     return (
         <div className="income-page">
 
+            
             <Toast message={toast.message} type={toast.type} onClose={hideToast} />
+            <ConfirmModal
+                message={confirmId ? "Delete this income record? This cannot be undone." : null}
+                onConfirm={confirmDeleteIncome}
+                onCancel={() => setConfirmId(null)}
+            />
 
             {/* HEADER */}
             <div className="income-header">
