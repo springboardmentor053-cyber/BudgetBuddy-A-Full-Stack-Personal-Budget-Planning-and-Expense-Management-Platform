@@ -1,11 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import api from "../api";
 import { getErrorMessage } from "../utils/errorHandler";
+import Toast from "../components/Toast";
+import useToast from "../hooks/useToast";
 import "../styles/income.css";
 
 function Income() {
     const [incomeList, setIncomeList] = useState([]);
     const [filteredIncome, setFilteredIncome] = useState([]);
+    const { toast, showToast, hideToast } = useToast();
 
     const [title, setTitle] = useState("");
     const [source, setSource] = useState("SALARY");
@@ -34,7 +37,7 @@ function Income() {
             console.error("Error fetching income:", error);
 
             if (error.response?.status !== 401) {
-                alert(getErrorMessage(error));
+                showToast(getErrorMessage(error), "error");
             }
         }
     };
@@ -151,22 +154,22 @@ function Income() {
         e.preventDefault();
 
         if (!title.trim()) {
-            alert("Title cannot be empty.");
+            showToast("Title cannot be empty.", "error");
             return;
         }
 
         if (!amount || Number(amount) <= 0) {
-            alert("Amount must be greater than zero.");
+            showToast("Amount must be greater than zero.", "error");
             return;
         }
 
         if (!source) {
-            alert("Income source is required.");
+            showToast("Income source is required.", "error");
             return;
         }
 
         if (!incomeDate) {
-            alert("Income date is required.");
+            showToast("Income date is required.", "error");
             return;
         }
 
@@ -185,14 +188,10 @@ function Income() {
                     incomeData
                 );
 
-                alert("Income Updated Successfully");
+                showToast("Income Updated Successfully");
             } else {
-                await api.post(
-                    "income/",
-                    incomeData
-                );
-
-                alert("Income Added Successfully");
+                await api.post("income/", incomeData);
+                showToast("Income Added Successfully");
             }
 
             clearForm();
@@ -205,7 +204,7 @@ function Income() {
             );
 
             if (error.response?.status !== 401) {
-                alert(getErrorMessage(error));
+                showToast(getErrorMessage(error), "error");
             }
         }
     };
@@ -222,7 +221,7 @@ function Income() {
         try {
             await api.delete(`income/${id}/`);
 
-            alert("Income Deleted Successfully");
+            showToast("Income Deleted Successfully");
 
             fetchIncome();
 
@@ -233,7 +232,7 @@ function Income() {
             );
 
             if (error.response?.status !== 401) {
-                alert(getErrorMessage(error));
+                showToast(getErrorMessage(error), "error");
             }
         }
     };
@@ -243,12 +242,14 @@ function Income() {
     // =====================================================
 
     const formatCurrency = (value) => {
-        return `₹${Number(value || 0).toLocaleString("en-IN")}`;
+        return `â‚¹${Number(value || 0).toLocaleString("en-IN")}`;
     };
 
     // =====================================================
     // UI
     // =====================================================
+
+        <Toast message={toast.message} type={toast.type} onClose={hideToast} />
 
     return (
         <div className="income-page">
@@ -349,7 +350,7 @@ function Income() {
                                 ? formatCurrency(
                                     latestIncome.amount
                                 )
-                                : "₹0"
+                                : "â‚¹0"
                             }
                         </strong>
 

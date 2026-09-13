@@ -1,3 +1,5 @@
+﻿import Toast from "../components/Toast";
+import useToast from "../hooks/useToast";
 import { useEffect, useMemo, useState } from "react";
 import api from "../api";
 import { getErrorMessage } from "../utils/errorHandler";
@@ -12,6 +14,7 @@ function Savings() {
     const [targetDate, setTargetDate] = useState("");
 
     const [editingId, setEditingId] = useState(null);
+    const { toast, showToast, hideToast } = useToast();
 
     // =====================================================
     // FETCH SAVINGS GOALS
@@ -30,7 +33,7 @@ function Savings() {
             console.error("Error fetching savings:", error);
 
             if (error.response?.status !== 401) {
-                alert(getErrorMessage(error));
+                showToast(getErrorMessage(error), "error");
             }
         }
     };
@@ -47,12 +50,12 @@ function Savings() {
         e.preventDefault();
 
         if (!goalName.trim()) {
-            alert("Goal name cannot be empty.");
+            showToast("Goal name cannot be empty.", "error");
             return;
         }
 
         if (!targetAmount || Number(targetAmount) <= 0) {
-            alert("Target amount must be greater than zero.");
+            showToast("Target amount must be greater than zero.", "error");
             return;
         }
 
@@ -60,19 +63,17 @@ function Savings() {
             savedAmount === "" ||
             Number(savedAmount) < 0
         ) {
-            alert("Saved amount cannot be negative.");
+            showToast("Saved amount cannot be negative.", "error");
             return;
         }
 
         if (Number(savedAmount) > Number(targetAmount)) {
-            alert(
-                "Saved amount cannot be greater than the target amount."
-            );
+            showToast("Saved amount cannot exceed the target amount.", "error");
             return;
         }
 
         if (!targetDate) {
-            alert("Target date is required.");
+            showToast("Target date is required.", "error");
             return;
         }
 
@@ -85,12 +86,12 @@ function Savings() {
         today.setHours(0, 0, 0, 0);
 
         if (isNaN(selectedDate.getTime())) {
-            alert("Please enter a valid target date.");
+            showToast("Please enter a valid target date.", "error");
             return;
         }
 
         if (selectedDate < today) {
-            alert("Target date cannot be in the past.");
+            showToast("Target date cannot be in the past.", "error");
             return;
         }
 
@@ -108,18 +109,14 @@ function Savings() {
                     goalData
                 );
 
-                alert(
-                    "Savings Goal Updated Successfully"
-                );
+                showToast("Savings Goal Updated Successfully");
             } else {
                 await api.post(
                     "savings/",
                     goalData
                 );
 
-                alert(
-                    "Savings Goal Added Successfully"
-                );
+                showToast("Savings Goal Added Successfully");
             }
 
             clearForm();
@@ -132,7 +129,7 @@ function Savings() {
             );
 
             if (error.response?.status !== 401) {
-                alert(getErrorMessage(error));
+                showToast(getErrorMessage(error), "error");
             }
         }
     };
@@ -173,9 +170,7 @@ function Savings() {
                 `savings/${id}/`
             );
 
-            alert(
-                "Savings Goal Deleted Successfully"
-            );
+            showToast("Savings Goal Deleted Successfully");
 
             fetchGoals();
 
@@ -186,7 +181,7 @@ function Savings() {
             );
 
             if (error.response?.status !== 401) {
-                alert(getErrorMessage(error));
+                showToast(getErrorMessage(error), "error");
             }
         }
     };
@@ -208,7 +203,7 @@ function Savings() {
     // =====================================================
 
     const formatCurrency = (value) => {
-        return `₹${Number(
+        return `â‚¹${Number(
             value || 0
         ).toLocaleString("en-IN")}`;
     };
@@ -290,6 +285,8 @@ function Savings() {
     // =====================================================
     // UI
     // =====================================================
+
+        <Toast message={toast.message} type={toast.type} onClose={hideToast} />
 
     return (
         <div className="savings-page">
@@ -889,7 +886,7 @@ function Savings() {
                                     <span>
                                         {completed
                                             ? "Congratulations! You reached your goal."
-                                            : "Keep saving — you're making progress."}
+                                            : "Keep saving â€” you're making progress."}
                                     </span>
 
                                 </div>

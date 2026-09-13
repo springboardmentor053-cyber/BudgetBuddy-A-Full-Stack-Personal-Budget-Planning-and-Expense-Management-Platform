@@ -1,3 +1,5 @@
+﻿import Toast from "../components/Toast";
+import useToast from "../hooks/useToast";
 import { useEffect, useMemo, useState } from "react";
 import api from "../api";
 import { getErrorMessage } from "../utils/errorHandler";
@@ -14,6 +16,7 @@ function Expenses() {
 
     const [editingId, setEditingId] = useState(null);
     const [search, setSearch] = useState("");
+    const { toast, showToast, hideToast } = useToast();
 
     // =====================================================
     // FETCH EXPENSES
@@ -37,7 +40,7 @@ function Expenses() {
             );
 
             if (error.response?.status !== 401) {
-                alert(getErrorMessage(error));
+                showToast(getErrorMessage(error), "error");
             }
         }
     };
@@ -137,7 +140,7 @@ function Expenses() {
     // =====================================================
 
     const formatCurrency = (value) => {
-        return `₹${Number(value || 0).toLocaleString("en-IN")}`;
+        return `â‚¹${Number(value || 0).toLocaleString("en-IN")}`;
     };
 
     // =====================================================
@@ -178,22 +181,22 @@ function Expenses() {
         e.preventDefault();
 
         if (!title.trim()) {
-            alert("Title cannot be empty.");
+            showToast("Title cannot be empty.", "error");
             return;
         }
 
         if (!amount || Number(amount) <= 0) {
-            alert("Amount must be greater than zero.");
+            showToast("Amount must be greater than zero.", "error");
             return;
         }
 
         if (!category) {
-            alert("Expense category is required.");
+            showToast("Expense category is required.", "error");
             return;
         }
 
         if (!date) {
-            alert("Expense date is required.");
+            showToast("Expense date is required.", "error");
             return;
         }
 
@@ -211,14 +214,14 @@ function Expenses() {
                     expenseData
                 );
 
-                alert("Expense Updated Successfully");
+                showToast("Expense Updated Successfully");
             } else {
                 await api.post(
                     "expenses/",
                     expenseData
                 );
 
-                alert("Expense Added Successfully");
+                showToast("Expense Added Successfully");
             }
 
             clearForm();
@@ -231,7 +234,7 @@ function Expenses() {
             );
 
             if (error.response?.status !== 401) {
-                alert(getErrorMessage(error));
+                showToast(getErrorMessage(error), "error");
             }
         }
     };
@@ -248,7 +251,7 @@ function Expenses() {
         try {
             await api.delete(`expenses/${id}/`);
 
-            alert("Expense Deleted Successfully");
+            showToast("Expense Deleted Successfully");
 
             fetchExpenses();
 
@@ -259,7 +262,7 @@ function Expenses() {
             );
 
             if (error.response?.status !== 401) {
-                alert(getErrorMessage(error));
+                showToast(getErrorMessage(error), "error");
             }
         }
     };
@@ -267,6 +270,8 @@ function Expenses() {
     // =====================================================
     // UI
     // =====================================================
+
+        <Toast message={toast.message} type={toast.type} onClose={hideToast} />
 
     return (
         <div className="expenses-page">

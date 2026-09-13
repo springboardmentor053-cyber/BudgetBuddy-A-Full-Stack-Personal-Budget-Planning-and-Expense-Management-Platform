@@ -1,3 +1,5 @@
+﻿import Toast from "../components/Toast";
+import useToast from "../hooks/useToast";
 import { useEffect, useMemo, useState } from "react";
 import api from "../api";
 import { getErrorMessage } from "../utils/errorHandler";
@@ -13,6 +15,7 @@ function Budget() {
     const [year, setYear] = useState(new Date().getFullYear());
 
     const [search, setSearch] = useState("");
+    const { toast, showToast, hideToast } = useToast();
 
     // =====================================================
     // FETCH BUDGETS
@@ -33,7 +36,7 @@ function Budget() {
             console.error("Error fetching budgets:", error);
 
             if (error.response?.status !== 401) {
-                alert(getErrorMessage(error));
+                showToast(getErrorMessage(error), "error");
             }
         }
     };
@@ -109,7 +112,7 @@ function Budget() {
     // =====================================================
 
     const formatCurrency = (value) => {
-        return `₹${Number(value || 0).toLocaleString("en-IN")}`;
+        return `â‚¹${Number(value || 0).toLocaleString("en-IN")}`;
     };
 
     // =====================================================
@@ -165,22 +168,22 @@ function Budget() {
         e.preventDefault();
 
         if (!category) {
-            alert("Please select a category.");
+            showToast("Please select a category.", "error");
             return;
         }
 
         if (!amount || Number(amount) <= 0) {
-            alert("Budget amount must be greater than zero.");
+            showToast("Budget amount must be greater than zero.", "error");
             return;
         }
 
         if (!month) {
-            alert("Please select a month.");
+            showToast("Please select a month.", "error");
             return;
         }
 
         if (!year) {
-            alert("Please select a year.");
+            showToast("Please select a year.", "error");
             return;
         }
 
@@ -192,9 +195,7 @@ function Budget() {
         );
 
         if (exists) {
-            alert(
-                "A budget already exists for this category and month."
-            );
+            showToast("A budget already exists for this category and month.", "error");
             return;
         }
 
@@ -206,7 +207,7 @@ function Budget() {
                 year: Number(year),
             });
 
-            alert("Budget Created Successfully");
+            showToast("Budget Created Successfully");
 
             setAmount("");
             setMonth("");
@@ -217,7 +218,7 @@ function Budget() {
             console.error("Budget creation error:", error);
 
             if (error.response?.status !== 401) {
-                alert(getErrorMessage(error));
+                showToast(getErrorMessage(error), "error");
             }
         }
     };
@@ -234,7 +235,7 @@ function Budget() {
         try {
             await api.delete(`budgets/${id}/`);
 
-            alert("Budget Deleted Successfully");
+            showToast("Budget Deleted Successfully");
 
             fetchBudgets();
 
@@ -242,7 +243,7 @@ function Budget() {
             console.error("Budget deletion error:", error);
 
             if (error.response?.status !== 401) {
-                alert(getErrorMessage(error));
+                showToast(getErrorMessage(error), "error");
             }
         }
     };
@@ -250,6 +251,8 @@ function Budget() {
     // =====================================================
     // UI
     // =====================================================
+
+        <Toast message={toast.message} type={toast.type} onClose={hideToast} />
 
     return (
         <div className="budget-page">

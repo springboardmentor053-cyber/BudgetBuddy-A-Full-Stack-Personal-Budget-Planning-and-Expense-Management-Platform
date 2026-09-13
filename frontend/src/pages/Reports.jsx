@@ -1,3 +1,5 @@
+﻿import Toast from "../components/Toast";
+import useToast from "../hooks/useToast";
 import { useState } from "react";
 import api from "../api";
 import jsPDF from "jspdf";
@@ -100,202 +102,17 @@ function Reports() {
       );
 
       if (error.response) {
-        alert(
-          JSON.stringify(error.response.data)
-        );
+        showToast(JSON.stringify(error.response.data), "error");
       } else {
-        alert(error.message);
-      }
-
-    } finally {
-
-      setMonthlyLoading(false);
-
-    }
-
-  };
-
-
-  // =====================================================
-  // EXPENSE REPORT
-  // =====================================================
-
-  const generateExpenseReport = async () => {
-
-    if (startDate && endDate && startDate > endDate) {
-
-      alert(
-        "Start date cannot be after end date."
-      );
-
-      return;
-
-    }
-
-    setExpenseLoading(true);
-
-    try {
-
-      let url = "reports/expenses/";
-
-      if (startDate && endDate) {
-
-        url +=
-          `?start_date=${startDate}&end_date=${endDate}`;
-
-      }
-
-      const response = await api.get(url);
-
-      setExpenseReport(
-        Array.isArray(response.data)
-          ? response.data
-          : []
-      );
-
-    } catch (error) {
-
-      console.error(
-        "Expense report error:",
-        error
-      );
-
-      if (error.response) {
-        alert(
-          JSON.stringify(error.response.data)
-        );
+        showToast(JSON.stringify(error.response.data), "error");
       } else {
-        alert(error.message);
-      }
-
-    } finally {
-
-      setExpenseLoading(false);
-
-    }
-
-  };
-
-
-  // =====================================================
-  // SAVINGS REPORT
-  // =====================================================
-
-  const generateSavingsReport = async () => {
-
-    setSavingsLoading(true);
-
-    try {
-
-      const response = await api.get(
-        "reports/savings/"
-      );
-
-      setSavingsReport(
-        Array.isArray(response.data)
-          ? response.data
-          : []
-      );
-
-    } catch (error) {
-
-      console.error(
-        "Savings report error:",
-        error
-      );
-
-      if (error.response) {
-        alert(
-          JSON.stringify(error.response.data)
-        );
+        showToast(JSON.stringify(error.response.data), "error");
       } else {
-        alert(error.message);
-      }
-
-    } finally {
-
-      setSavingsLoading(false);
-
-    }
-
-  };
-
-
-  // =====================================================
-  // FINANCIAL SUMMARY
-  // =====================================================
-
-  const generateSummaryReport = async () => {
-
-    setSummaryLoading(true);
-
-    try {
-
-      const response = await api.get(
-        `reports/summary/?filter=${summaryFilter}`
-      );
-
-      setSummaryReport(response.data);
-
-    } catch (error) {
-
-      console.error(
-        "Financial summary error:",
-        error
-      );
-
-      if (error.response) {
-        alert(
-          JSON.stringify(error.response.data)
-        );
+        showToast(JSON.stringify(error.response.data), "error");
       } else {
-        alert(error.message);
-      }
-
-    } finally {
-
-      setSummaryLoading(false);
-
-    }
-
-  };
-
-
-  // =====================================================
-  // FETCH COMPLETE EXPORT DATA
-  // =====================================================
-
-  const fetchExportData = async () => {
-
-    if (exportData) {
-      return exportData;
-    }
-
-    setExportLoading(true);
-
-    try {
-
-      const response = await api.get(
-        "reports/export/"
-      );
-
-      setExportData(response.data);
-
-      return response.data;
-
-    } catch (error) {
-
-      console.error(
-        "Export data error:",
-        error
-      );
-
-      if (error.response) {
-        alert(
-          JSON.stringify(error.response.data)
-        );
+        showToast(JSON.stringify(error.response.data), "error");
       } else {
-        alert(error.message);
+        showToast(error.message, "error");
       }
 
       return null;
@@ -1143,7 +960,7 @@ function Reports() {
                         </span>
 
                         <strong>
-                            ₹{Number(
+                            â‚¹{Number(
                                 monthlyReport.total_income || 0
                             ).toLocaleString("en-IN")}
                         </strong>
@@ -1162,7 +979,7 @@ function Reports() {
                         </span>
 
                         <strong>
-                            ₹{Number(
+                            â‚¹{Number(
                                 monthlyReport.total_expense || 0
                             ).toLocaleString("en-IN")}
                         </strong>
@@ -1181,7 +998,7 @@ function Reports() {
                         </span>
 
                         <strong>
-                            ₹{Number(
+                            â‚¹{Number(
                                 monthlyReport.current_balance || 0
                             ).toLocaleString("en-IN")}
                         </strong>
@@ -1200,7 +1017,7 @@ function Reports() {
                         </span>
 
                         <strong>
-                            ₹{Number(
+                            â‚¹{Number(
                                 monthlyReport.remaining_budget || 0
                             ).toLocaleString("en-IN")}
                         </strong>
@@ -1237,7 +1054,7 @@ function Reports() {
                                 </span>
 
                                 <h3 style={{ marginTop: "10px" }}>
-                                    ₹{Number(
+                                    â‚¹{Number(
                                         monthlyReport.total_income || 0
                                     ).toLocaleString("en-IN")}
                                 </h3>
@@ -1253,7 +1070,7 @@ function Reports() {
                                 </span>
 
                                 <h3 style={{ marginTop: "10px" }}>
-                                    ₹{Number(
+                                    â‚¹{Number(
                                         monthlyReport.total_expense || 0
                                     ).toLocaleString("en-IN")}
                                 </h3>
@@ -1269,7 +1086,7 @@ function Reports() {
                                 </span>
 
                                 <h3 style={{ marginTop: "10px" }}>
-                                    ₹{Number(
+                                    â‚¹{Number(
                                         monthlyReport.total_savings || 0
                                     ).toLocaleString("en-IN")}
                                 </h3>
@@ -1427,7 +1244,7 @@ function Reports() {
                                             </td>
 
                                             <td className="report-negative">
-                                                ₹{Number(
+                                                â‚¹{Number(
                                                     expense.amount || 0
                                                 ).toLocaleString("en-IN")}
                                             </td>
@@ -1569,19 +1386,19 @@ function Reports() {
                                                 </td>
 
                                                 <td>
-                                                    ₹{Number(
+                                                    â‚¹{Number(
                                                         goal.target_amount || 0
                                                     ).toLocaleString("en-IN")}
                                                 </td>
 
                                                 <td className="report-positive">
-                                                    ₹{Number(
+                                                    â‚¹{Number(
                                                         goal.saved_amount || 0
                                                     ).toLocaleString("en-IN")}
                                                 </td>
 
                                                 <td>
-                                                    ₹{Number(
+                                                    â‚¹{Number(
                                                         goal.remaining_amount || 0
                                                     ).toLocaleString("en-IN")}
                                                 </td>
@@ -1789,7 +1606,7 @@ function Reports() {
                             </span>
 
                             <strong>
-                                ₹{Number(
+                                â‚¹{Number(
                                     summaryReport
                                         .financial_summary
                                         ?.total_income || 0
@@ -1806,7 +1623,7 @@ function Reports() {
                             </span>
 
                             <strong>
-                                ₹{Number(
+                                â‚¹{Number(
                                     summaryReport
                                         .financial_summary
                                         ?.total_expense || 0
@@ -1823,7 +1640,7 @@ function Reports() {
                             </span>
 
                             <strong>
-                                ₹{Number(
+                                â‚¹{Number(
                                     summaryReport
                                         .financial_summary
                                         ?.current_balance || 0
@@ -1840,7 +1657,7 @@ function Reports() {
                             </span>
 
                             <strong>
-                                ₹{Number(
+                                â‚¹{Number(
                                     summaryReport
                                         .financial_summary
                                         ?.remaining_budget || 0
@@ -1904,7 +1721,7 @@ function Reports() {
                                                     </td>
 
                                                     <td className="report-negative">
-                                                        ₹{Number(
+                                                        â‚¹{Number(
                                                             expense.amount || 0
                                                         ).toLocaleString("en-IN")}
                                                     </td>

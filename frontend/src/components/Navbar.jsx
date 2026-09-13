@@ -5,12 +5,8 @@ function Navbar() {
     const navigate = useNavigate();
 
     const logout = () => {
-
         localStorage.removeItem("access");
         localStorage.removeItem("refresh");
-
-        alert("Logged Out Successfully");
-
         navigate("/login");
     };
 
