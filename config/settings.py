@@ -273,10 +273,6 @@ STATIC_URL = "static/"
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_STORAGE = (
-    "whitenoise.storage.CompressedManifestStaticFilesStorage"
-)
-
 
 # =====================================================
 # REST FRAMEWORK
@@ -381,6 +377,6 @@ if os.getenv("CLOUDINARY_CLOUD_NAME"):
             "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
         },
         "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
         },
     }
