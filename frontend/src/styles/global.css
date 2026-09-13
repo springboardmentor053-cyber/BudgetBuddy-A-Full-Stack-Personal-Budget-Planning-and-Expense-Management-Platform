@@ -62,101 +62,175 @@
 
 
 /* =====================================================
-   DARK MODE
+   DARK MODE - UNIVERSAL OVERRIDES
+   This uses high-specificity selectors to override
+   hardcoded colors in individual CSS files.
    ===================================================== */
 
-[data-theme="dark"] {
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --bg-muted: #1e293b;
-
-    --text-primary: #f1f5f9;
-    --text-secondary: #cbd5e1;
-    --text-muted: #94a3b8;
-    --text-light: #64748b;
-
-    --border: #334155;
-    --border-light: #1e293b;
-
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.4);
-
-    --primary-light: #1e3a5f;
-    --success-light: #052e16;
-    --warning-light: #1c1408;
-    --danger-light: #1c0a0a;
-    --info-light: #0a1f26;
+/* Base page background */
+[data-theme="dark"],
+[data-theme="dark"] body,
+[data-theme="dark"] #root {
+    background: #0f172a !important;
+    color: #f1f5f9 !important;
 }
 
-[data-theme="dark"] body {
-    background: var(--bg-primary);
-    color: var(--text-primary);
+/* All text elements */
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6 {
+    color: #f1f5f9 !important;
 }
 
-/* Dark mode card/form overrides */
+[data-theme="dark"] p,
+[data-theme="dark"] span:not(.expense-category-badge):not(.income-source-badge):not(.savings-status):not(.report-badge),
+[data-theme="dark"] label,
+[data-theme="dark"] small,
+[data-theme="dark"] li,
+[data-theme="dark"] strong,
+[data-theme="dark"] div {
+    color: #f1f5f9 !important;
+}
+
+/* Muted/secondary text */
+[data-theme="dark"] small,
+[data-theme="dark"] .text-muted,
+[data-theme="dark"] [class*="-eyebrow"],
+[data-theme="dark"] [class*="-date"],
+[data-theme="dark"] [class*="-description"] {
+    color: #94a3b8 !important;
+}
+
+/* All white card backgrounds */
+[data-theme="dark"] [class*="-card"],
+[data-theme="dark"] [class*="-section"],
+[data-theme="dark"] [class*="-panel"],
+[data-theme="dark"] [class*="-wrapper"]:not([class*="input"]):not([class*="table"]) {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+}
+
+/* Page backgrounds */
+[data-theme="dark"] [class*="-page"] {
+    background: #0f172a !important;
+}
+
+/* All input elements */
 [data-theme="dark"] input,
 [data-theme="dark"] select,
 [data-theme="dark"] textarea {
-    background: #1e293b !important;
+    background: #0f172a !important;
     color: #f1f5f9 !important;
     border-color: #334155 !important;
 }
 
 [data-theme="dark"] input::placeholder,
 [data-theme="dark"] textarea::placeholder {
-    color: #64748b !important;
+    color: #475569 !important;
 }
 
-/* Dark mode for white card backgrounds */
-[data-theme="dark"] .income-form-card,
-[data-theme="dark"] .income-history-card,
-[data-theme="dark"] .expenses-form-card,
-[data-theme="dark"] .expenses-history-card,
-[data-theme="dark"] .budget-form-card,
-[data-theme="dark"] .budget-history-card,
-[data-theme="dark"] .savings-form-card,
-[data-theme="dark"] .savings-goal-card,
-[data-theme="dark"] .notifications-card,
-[data-theme="dark"] .report-section,
-[data-theme="dark"] .profile-card,
-[data-theme="dark"] .dashboard-card,
-[data-theme="dark"] .income-summary-card,
-[data-theme="dark"] .expenses-summary-card,
-[data-theme="dark"] .budget-summary-card,
-[data-theme="dark"] .savings-summary-card,
-[data-theme="dark"] .notifications-summary-card,
-[data-theme="dark"] .report-summary-card {
-    background: #1e293b !important;
-    border-color: #334155 !important;
+/* Input wrappers */
+[data-theme="dark"] [class*="input-wrapper"],
+[data-theme="dark"] [class*="-search"],
+[data-theme="dark"] [class*="-field"] {
+    background: transparent !important;
 }
 
-[data-theme="dark"] table {
-    background: #1e293b !important;
-}
-
-[data-theme="dark"] thead tr {
-    background: #0f172a !important;
-}
-
-[data-theme="dark"] tbody tr:hover {
-    background: #263348 !important;
-}
-
-[data-theme="dark"] tbody tr {
-    border-color: #334155 !important;
-}
-
+/* Tables */
+[data-theme="dark"] table,
+[data-theme="dark"] thead,
+[data-theme="dark"] tbody,
+[data-theme="dark"] tr,
 [data-theme="dark"] th,
 [data-theme="dark"] td {
+    background: #1e293b !important;
     color: #f1f5f9 !important;
     border-color: #334155 !important;
 }
 
+[data-theme="dark"] thead tr,
+[data-theme="dark"] thead th {
+    background: #0f172a !important;
+    color: #94a3b8 !important;
+}
 
-/* =====================================================
-   RESET
-   ===================================================== */
+[data-theme="dark"] tbody tr:hover td {
+    background: #263348 !important;
+}
+
+/* Icons */
+[data-theme="dark"] i {
+    color: inherit !important;
+}
+
+/* Borders */
+[data-theme="dark"] [class*="-header"],
+[data-theme="dark"] [class*="-footer"] {
+    border-color: #334155 !important;
+}
+
+/* Summary icons keep their colors */
+[data-theme="dark"] [class*="summary-icon"] {
+    filter: brightness(0.9);
+}
+
+/* Notification items */
+[data-theme="dark"] .notification-item {
+    border-color: #334155 !important;
+    background: #1e293b !important;
+}
+
+/* Savings goal cards */
+[data-theme="dark"] .savings-goal-card {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+}
+
+[data-theme="dark"] .savings-progress-track {
+    background: #334155 !important;
+}
+
+[data-theme="dark"] .savings-goal-footer {
+    background: #263348 !important;
+}
+
+/* Profile */
+[data-theme="dark"] .profile-picture-placeholder {
+    background: #334155 !important;
+    color: #f1f5f9 !important;
+}
+
+/* Report summary cards keep their colored top borders */
+[data-theme="dark"] .report-summary-card.income {
+    border-top-color: #16a34a !important;
+}
+[data-theme="dark"] .report-summary-card.expense {
+    border-top-color: #dc2626 !important;
+}
+[data-theme="dark"] .report-summary-card.balance {
+    border-top-color: #2563eb !important;
+}
+[data-theme="dark"] .report-summary-card.savings {
+    border-top-color: #0891b2 !important;
+}
+
+/* Keep category badges visible */
+[data-theme="dark"] .expense-category-badge {
+    opacity: 0.9;
+}
+
+/* Scrollbar */
+[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: #1e293b;
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: #475569;
+}
+
+/* RESET */
 
 * {
     margin: 0;
@@ -302,289 +376,4 @@ img {
 :focus-visible {
     outline: 3px solid rgba(37, 99, 235, 0.2);
     outline-offset: 2px;
-}
-
-/* =====================================================
-   DARK MODE - PAGE CONTENT OVERRIDES
-   ===================================================== */
-
-/* Headers and text */
-[data-theme="dark"] h1,
-[data-theme="dark"] h2,
-[data-theme="dark"] h3,
-[data-theme="dark"] h4,
-[data-theme="dark"] h5,
-[data-theme="dark"] p,
-[data-theme="dark"] span,
-[data-theme="dark"] label,
-[data-theme="dark"] strong,
-[data-theme="dark"] small {
-    color: #f1f5f9;
-}
-
-/* Eyebrow labels */
-[data-theme="dark"] .income-eyebrow,
-[data-theme="dark"] .expenses-eyebrow,
-[data-theme="dark"] .budget-eyebrow,
-[data-theme="dark"] .savings-eyebrow,
-[data-theme="dark"] .reports-eyebrow,
-[data-theme="dark"] .notifications-eyebrow,
-[data-theme="dark"] .profile-eyebrow {
-    color: #94a3b8 !important;
-}
-
-/* Page backgrounds */
-[data-theme="dark"] .income-page,
-[data-theme="dark"] .expenses-page,
-[data-theme="dark"] .budget-page,
-[data-theme="dark"] .savings-page,
-[data-theme="dark"] .reports-page,
-[data-theme="dark"] .notifications-page,
-[data-theme="dark"] .profile-page,
-[data-theme="dark"] .dashboard-page {
-    background: #0f172a;
-    color: #f1f5f9;
-}
-
-/* Summary cards */
-[data-theme="dark"] .income-summary-card,
-[data-theme="dark"] .expenses-summary-card,
-[data-theme="dark"] .budget-summary-card,
-[data-theme="dark"] .savings-summary-card,
-[data-theme="dark"] .notifications-summary-card {
-    background: #1e293b !important;
-    border: 1px solid #334155 !important;
-    color: #f1f5f9 !important;
-}
-
-/* Form cards */
-[data-theme="dark"] .income-form-card,
-[data-theme="dark"] .expenses-form-card,
-[data-theme="dark"] .budget-form-card,
-[data-theme="dark"] .savings-form-card,
-[data-theme="dark"] .income-history-card,
-[data-theme="dark"] .expenses-history-card,
-[data-theme="dark"] .budget-history-card,
-[data-theme="dark"] .notifications-card,
-[data-theme="dark"] .report-section,
-[data-theme="dark"] .profile-card,
-[data-theme="dark"] .savings-goals-heading {
-    background: #1e293b !important;
-    border: 1px solid #334155 !important;
-    color: #f1f5f9 !important;
-}
-
-/* Goal cards */
-[data-theme="dark"] .savings-goal-card {
-    background: #1e293b !important;
-    border: 1px solid #334155 !important;
-}
-
-/* Inputs */
-[data-theme="dark"] .income-input-wrapper,
-[data-theme="dark"] .expenses-input-wrapper,
-[data-theme="dark"] .budget-input-wrapper,
-[data-theme="dark"] .savings-input-wrapper,
-[data-theme="dark"] .profile-input-wrapper,
-[data-theme="dark"] .report-field {
-    background: #0f172a !important;
-    border-color: #334155 !important;
-}
-
-[data-theme="dark"] .income-input-wrapper input,
-[data-theme="dark"] .income-input-wrapper select,
-[data-theme="dark"] .income-field textarea,
-[data-theme="dark"] .expenses-input-wrapper input,
-[data-theme="dark"] .expenses-input-wrapper select,
-[data-theme="dark"] .expenses-field textarea,
-[data-theme="dark"] .budget-input-wrapper input,
-[data-theme="dark"] .budget-input-wrapper select,
-[data-theme="dark"] .savings-input-wrapper input,
-[data-theme="dark"] .savings-input-wrapper select,
-[data-theme="dark"] .savings-field textarea,
-[data-theme="dark"] .profile-input-wrapper input,
-[data-theme="dark"] .profile-input-wrapper select,
-[data-theme="dark"] .profile-input-wrapper textarea,
-[data-theme="dark"] .report-field input,
-[data-theme="dark"] .report-field select {
-    background: #0f172a !important;
-    color: #f1f5f9 !important;
-    border-color: #334155 !important;
-}
-
-/* Icons inside inputs */
-[data-theme="dark"] .income-input-wrapper i,
-[data-theme="dark"] .expenses-input-wrapper i,
-[data-theme="dark"] .budget-input-wrapper i,
-[data-theme="dark"] .savings-input-wrapper i,
-[data-theme="dark"] .profile-input-wrapper i {
-    color: #64748b !important;
-}
-
-/* Labels */
-[data-theme="dark"] .income-field label,
-[data-theme="dark"] .expenses-field label,
-[data-theme="dark"] .budget-field label,
-[data-theme="dark"] .savings-field label,
-[data-theme="dark"] .profile-field label {
-    color: #cbd5e1 !important;
-}
-
-/* Search bars */
-[data-theme="dark"] .income-search,
-[data-theme="dark"] .expenses-search,
-[data-theme="dark"] .budget-search {
-    background: #0f172a !important;
-    border-color: #334155 !important;
-}
-
-[data-theme="dark"] .income-search input,
-[data-theme="dark"] .expenses-search input,
-[data-theme="dark"] .budget-search input {
-    background: transparent !important;
-    color: #f1f5f9 !important;
-}
-
-/* Tables */
-[data-theme="dark"] .income-table,
-[data-theme="dark"] .expenses-table,
-[data-theme="dark"] .report-table {
-    background: #1e293b !important;
-    color: #f1f5f9 !important;
-}
-
-[data-theme="dark"] .income-table thead tr,
-[data-theme="dark"] .expenses-table thead tr,
-[data-theme="dark"] .report-table thead tr {
-    background: #0f172a !important;
-}
-
-[data-theme="dark"] .income-table th,
-[data-theme="dark"] .expenses-table th,
-[data-theme="dark"] .report-table th {
-    color: #94a3b8 !important;
-    border-color: #334155 !important;
-}
-
-[data-theme="dark"] .income-table td,
-[data-theme="dark"] .expenses-table td,
-[data-theme="dark"] .report-table td {
-    color: #f1f5f9 !important;
-    border-color: #334155 !important;
-}
-
-[data-theme="dark"] .income-table tbody tr:hover,
-[data-theme="dark"] .expenses-table tbody tr:hover {
-    background: #263348 !important;
-}
-
-/* Amounts and dates */
-[data-theme="dark"] .income-amount,
-[data-theme="dark"] .expense-amount {
-    color: #f1f5f9 !important;
-}
-
-[data-theme="dark"] .income-date,
-[data-theme="dark"] .expense-date {
-    color: #94a3b8 !important;
-}
-
-[data-theme="dark"] .income-description,
-[data-theme="dark"] .expense-description {
-    color: #94a3b8 !important;
-}
-
-/* Badges */
-[data-theme="dark"] .income-source-badge {
-    background: #334155 !important;
-    color: #f1f5f9 !important;
-}
-
-/* Header icons */
-[data-theme="dark"] .income-header-icon,
-[data-theme="dark"] .expenses-header-icon,
-[data-theme="dark"] .budget-header-icon,
-[data-theme="dark"] .savings-header-icon,
-[data-theme="dark"] .reports-header-icon,
-[data-theme="dark"] .notifications-header-icon {
-    background: #1e293b !important;
-    color: #94a3b8 !important;
-}
-
-/* Card headers */
-[data-theme="dark"] .income-card-header,
-[data-theme="dark"] .expenses-card-header,
-[data-theme="dark"] .budget-card-header,
-[data-theme="dark"] .income-history-header,
-[data-theme="dark"] .expenses-history-header,
-[data-theme="dark"] .budget-card-header {
-    border-bottom-color: #334155 !important;
-}
-
-/* Empty states */
-[data-theme="dark"] .income-empty,
-[data-theme="dark"] .expenses-empty,
-[data-theme="dark"] .budget-empty,
-[data-theme="dark"] .savings-empty,
-[data-theme="dark"] .notifications-empty {
-    color: #94a3b8 !important;
-}
-
-/* Dashboard cards */
-[data-theme="dark"] .dashboard-summary-card,
-[data-theme="dark"] .dashboard-card,
-[data-theme="dark"] [class*="-card"] {
-    background: #1e293b !important;
-    border-color: #334155 !important;
-}
-
-/* Count badges */
-[data-theme="dark"] .income-count,
-[data-theme="dark"] .expenses-count,
-[data-theme="dark"] .budget-count,
-[data-theme="dark"] .savings-goal-count,
-[data-theme="dark"] .notifications-count {
-    background: #334155 !important;
-    color: #f1f5f9 !important;
-}
-
-/* Savings goal footer */
-[data-theme="dark"] .savings-goal-footer {
-    background: #263348 !important;
-    color: #94a3b8 !important;
-}
-
-/* Progress bar track */
-[data-theme="dark"] .savings-progress-track {
-    background: #334155 !important;
-}
-
-/* Notification items */
-[data-theme="dark"] .notification-item {
-    border-color: #334155 !important;
-}
-
-[data-theme="dark"] .notification-item:hover {
-    background: #263348 !important;
-}
-
-/* Profile */
-[data-theme="dark"] .profile-picture-placeholder {
-    background: #334155 !important;
-    color: #f1f5f9 !important;
-}
-
-/* Reports */
-[data-theme="dark"] .report-summary-card {
-    background: #1e293b !important;
-    border-color: #334155 !important;
-}
-
-[data-theme="dark"] .report-filters {
-    background: #1e293b !important;
-}
-
-[data-theme="dark"] .report-panel {
-    background: #0f172a !important;
-    border-color: #334155 !important;
 }
