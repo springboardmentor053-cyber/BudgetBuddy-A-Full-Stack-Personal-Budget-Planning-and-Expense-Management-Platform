@@ -12,29 +12,26 @@ def _send_email(
 ):
     """
     Sends the email in a background thread.
-
-    The API request does not wait for the
-    email server to finish.
     """
 
     try:
 
         send_mail(
             subject=subject,
-
             message=message,
-
             from_email=from_email,
-
             recipient_list=recipient_list,
+            fail_silently=False,
+        )
 
-            fail_silently=True,
+        print(
+            f"[EMAIL] Sent successfully to {recipient_list}"
         )
 
     except Exception as error:
 
         print(
-            f"Email notification failed: {error}"
+            f"[EMAIL] Failed to send to {recipient_list}: {error}"
         )
 
 
