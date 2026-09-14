@@ -39,59 +39,29 @@ def send_notification_email(notification):
 
     user = notification.user
 
-    # =====================================================
-    # NO EMAIL ADDRESS
-    # =====================================================
-
     if not user.email:
-
+        print("[EMAIL] No email address for user, skipping")
         return False
 
-
-    # =====================================================
-    # EMAIL DETAILS
-    # =====================================================
-
-    subject = (
-        f"BudgetBuddy - "
-        f"{notification.title}"
-    )
-
+    subject = f"BudgetBuddy - {notification.title}"
     message = notification.message
+    from_email = settings.DEFAULT_FROM_EMAIL
+    recipient_list = [user.email]
 
-    from_email = (
-        settings.DEFAULT_FROM_EMAIL
-    )
-
-    recipient_list = [
-        user.email
-    ]
-
-
-    # =====================================================
-    # SEND EMAIL IN BACKGROUND
-    # =====================================================
+    # Log configuration for debugging
+    print(f"[EMAIL] Attempting to send to: {user.email}")
+    print(f"[EMAIL] From: {from_email}")
+    print(f"[EMAIL] Host: {settings.EMAIL_HOST}:{settings.EMAIL_PORT}")
+    print(f"[EMAIL] SSL: {settings.EMAIL_USE_SSL}, TLS: {settings.EMAIL_USE_TLS}")
+    print(f"[EMAIL] Host user set: {bool(settings.EMAIL_HOST_USER)}")
+    print(f"[EMAIL] Host password set: {bool(settings.EMAIL_HOST_PASSWORD)}")
 
     email_thread = threading.Thread(
-
         target=_send_email,
-
-        args=(
-            subject,
-            message,
-            from_email,
-            recipient_list,
-        ),
-
+        args=(subject, message, from_email, recipient_list),
         daemon=True,
-
     )
 
     email_thread.start()
-
-
-    # =====================================================
-    # API DOES NOT WAIT FOR EMAIL
-    # =====================================================
 
     return True
