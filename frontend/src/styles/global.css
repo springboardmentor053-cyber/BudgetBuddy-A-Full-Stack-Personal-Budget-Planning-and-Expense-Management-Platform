@@ -377,3 +377,126 @@ img {
     outline: 3px solid rgba(37, 99, 235, 0.2);
     outline-offset: 2px;
 }
+
+/* =====================================================
+   DARK MODE - ICON BACKGROUNDS
+   ===================================================== */
+
+/* Header icons */
+[data-theme="dark"] .income-header-icon,
+[data-theme="dark"] .expenses-header-icon,
+[data-theme="dark"] .budget-header-icon,
+[data-theme="dark"] .savings-header-icon,
+[data-theme="dark"] .reports-header-icon,
+[data-theme="dark"] .notifications-header-icon,
+[data-theme="dark"] .profile-header-icon {
+    background: #1e3a5f !important;
+    color: #93c5fd !important;
+}
+
+/* Summary icons — green */
+[data-theme="dark"] [class*="summary-icon"].green,
+[data-theme="dark"] [class*="summary-icon"]:has(.bi-cash-stack),
+[data-theme="dark"] [class*="summary-icon"]:has(.bi-wallet2) {
+    background: #052e16 !important;
+    color: #4ade80 !important;
+}
+
+/* Summary icons — blue */
+[data-theme="dark"] [class*="summary-icon"].blue {
+    background: #1e3a5f !important;
+    color: #60a5fa !important;
+}
+
+/* Summary icons — purple */
+[data-theme="dark"] [class*="summary-icon"].purple {
+    background: #2e1065 !important;
+    color: #c084fc !important;
+}
+
+/* Summary icons — orange */
+[data-theme="dark"] [class*="summary-icon"].orange {
+    background: #431407 !important;
+    color: #fb923c !important;
+}
+
+/* Summary icons — red */
+[data-theme="dark"] [class*="summary-icon"].red {
+    background: #450a0a !important;
+    color: #f87171 !important;
+}
+
+/* Summary icons — generic fallback */
+[data-theme="dark"] [class*="summary-icon"] {
+    filter: none !important;
+    background: #1e293b !important;
+}
+
+/* Report section icons */
+[data-theme="dark"] .report-section-icon {
+    background: #1e3a5f !important;
+    color: #60a5fa !important;
+}
+
+/* Card form icons (+ button) */
+[data-theme="dark"] .income-form-icon,
+[data-theme="dark"] .expenses-form-icon,
+[data-theme="dark"] .budget-form-icon,
+[data-theme="dark"] .savings-form-icon {
+    background: #1e293b !important;
+    color: #94a3b8 !important;
+}
+
+/* Notification item icon */
+[data-theme="dark"] .notification-item-icon {
+    background: #1e3a5f !important;
+    color: #60a5fa !important;
+}
+
+/* Savings goal icon */
+[data-theme="dark"] .savings-goal-icon {
+    background: #1e293b !important;
+    color: #4ade80 !important;
+}
+
+/* Dashboard summary card icons */
+[data-theme="dark"] .summary-icon {
+    background: #1e293b !important;
+}
+
+[data-theme="dark"] .income-card .summary-icon {
+    background: #052e16 !important;
+}
+
+[data-theme="dark"] .expense-card .summary-icon {
+    background: #450a0a !important;
+}
+
+[data-theme="dark"] .balance-card .summary-icon {
+    background: #1e3a5f !important;
+}
+
+[data-theme="dark"] .savings-card .summary-icon {
+    background: #1c1408 !important;
+}
+
+/* Budget row category icon */
+[data-theme="dark"] .budget-category-icon {
+    background: #1e293b !important;
+    color: #94a3b8 !important;
+}
+
+/* Profile card icon */
+[data-theme="dark"] .profile-card-icon {
+    background: #1e293b !important;
+}
+
+/* Savings empty / notifications empty icons */
+[data-theme="dark"] .savings-empty-icon,
+[data-theme="dark"] .income-empty-icon,
+[data-theme="dark"] .expenses-empty-icon,
+[data-theme="dark"] .budget-empty-icon,
+[data-theme="dark"] .notifications-empty-icon {
+    background: #1e293b !important;
+    color: #475569 !important;
+}

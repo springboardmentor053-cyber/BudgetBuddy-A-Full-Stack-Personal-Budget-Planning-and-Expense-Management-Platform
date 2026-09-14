@@ -92,7 +92,7 @@ def expense_report(request):
 
     report = [
         {
-            "title": expense.title,
+            "description": expense.description,
             "category": expense.category,
             "amount": expense.amount,
             "date": expense.date,
@@ -228,20 +228,19 @@ def financial_summary_report(request):
     # Expense Summary
     expense_summary = list(
         expense_queryset.values(
-            "title",
+            "description",
             "category",
             "amount",
             "date",
         )
     )
 
-    # Income Summary
     income_summary = list(
         income_queryset.values(
-            "title",
             "source",
             "amount",
             "income_date",
+            "description",
         )
     )
 
@@ -346,7 +345,7 @@ def export_report(request):
 
             Expense.objects.filter(user=request.user).values(
 
-                "title",
+                "description",
 
                 "category",
 
@@ -362,9 +361,9 @@ def export_report(request):
 
             Income.objects.filter(user=request.user).values(
 
-                "title",
-
                 "source",
+
+                "description",
 
                 "amount",
 

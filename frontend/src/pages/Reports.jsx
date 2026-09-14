@@ -458,7 +458,7 @@ function Reports() {
         (expense) => {
 
           rows.push([
-            expense.title,
+            expense.description,
             expense.category,
             expense.amount,
             expense.date
@@ -495,7 +495,7 @@ function Reports() {
         (income) => {
 
           rows.push([
-            income.title,
+            income.source,
             income.source,
             income.amount,
             income.income_date
@@ -763,7 +763,7 @@ function Reports() {
 
               expense.date,
 
-              expense.title,
+              expense.description,
 
               expense.category,
 
@@ -816,7 +816,7 @@ function Reports() {
 
               income.income_date,
 
-              income.title,
+              income.source,
 
               income.source,
 
@@ -1403,7 +1403,7 @@ function Reports() {
                                     (expense, index) => (
 
                                         <tr
-                                            key={`${expense.title}-${expense.date}-${index}`}
+                                            key={`${expense.category}-${expense.date}-${index}`}
                                         >
 
                                             <td>
@@ -1411,7 +1411,7 @@ function Reports() {
                                             </td>
 
                                             <td>
-                                                {expense.title}
+                                                {expense.description}
                                             </td>
 
                                             <td>
@@ -1880,7 +1880,7 @@ function Reports() {
                                             (expense, index) => (
 
                                                 <tr
-                                                    key={`${expense.title}-${expense.date}-${index}`}
+                                                    key={`${expense.category}-${expense.date}-${index}`}
                                                 >
 
                                                     <td>
@@ -1888,7 +1888,7 @@ function Reports() {
                                                     </td>
 
                                                     <td>
-                                                        {expense.title}
+                                                        {expense.description}
                                                     </td>
 
                                                     <td>
