@@ -56,7 +56,12 @@ def send_notification_email(notification):
     print(f"[EMAIL] Host user set: {bool(settings.EMAIL_HOST_USER)}")
     print(f"[EMAIL] Host password set: {bool(settings.EMAIL_HOST_PASSWORD)}")
 
-    # Send synchronously so errors appear in logs
-    _send_email(subject, message, from_email, recipient_list)
+    # Send in background thread to avoid blocking the API
+    email_thread = threading.Thread(
+        target=_send_email,
+        args=(subject, message, from_email, recipient_list),
+        daemon=True,
+    )
+    email_thread.start()
 
     return True

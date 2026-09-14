@@ -329,10 +329,12 @@ EMAIL_BACKEND = (
 
 EMAIL_HOST = "smtp.gmail.com"
 
-EMAIL_PORT = 465
+# Port 587 with STARTTLS works on most cloud providers
+# Port 465 with SSL is blocked by some providers including Render free tier
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
 
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() == "true"
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "False").lower() == "true"
 
 EMAIL_HOST_USER = os.getenv(
     "EMAIL_HOST_USER"
