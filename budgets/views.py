@@ -36,27 +36,28 @@ class BudgetViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
 
         budget = serializer.save(
-            user=self.request.user
+            user=self.request.user,
+            alert_80_sent=False,
+            alert_90_sent=False,
+            alert_100_sent=False,
         )
 
         notification = Notification.objects.create(
-
             user=self.request.user,
-
             title="Budget Created",
-
             message=(
                 f"Your budget for "
                 f"'{budget.category}' "
                 f"has been created successfully."
             ),
-
             notification_type="budget_created",
-
             priority="medium",
         )
 
         send_notification_email(notification)
+
+        # Check immediately if existing expenses already exceed thresholds
+        self._check_budget_alert(budget)
 
     # =====================================================
     # UPDATE BUDGET
@@ -64,26 +65,108 @@ class BudgetViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
 
-        budget = serializer.save()
+        # Reset alert flags when budget amount changes
+        budget = serializer.save(
+            alert_80_sent=False,
+            alert_90_sent=False,
+            alert_100_sent=False,
+        )
 
         notification = Notification.objects.create(
-
             user=self.request.user,
-
             title="Budget Updated",
-
             message=(
                 f"Your budget for "
                 f"'{budget.category}' "
                 f"has been updated successfully."
             ),
-
             notification_type="budget_updated",
-
             priority="medium",
         )
 
         send_notification_email(notification)
+
+        # Re-check alert thresholds with new amount
+        self._check_budget_alert(budget)
+
+    # =====================================================
+    # BUDGET ALERT CHECK
+    # =====================================================
+
+    def _check_budget_alert(self, budget):
+        """Check and fire alerts based on current spending vs budget."""
+        from decimal import Decimal
+        import calendar as cal
+
+        # Get month number from month name
+        month_map = {name: num for num, name in enumerate(cal.month_name)}
+        month_num = month_map.get(budget.month, 0)
+
+        if not month_num:
+            return
+
+        total_expense = (
+            Expense.objects.filter(
+                user=self.request.user,
+                category=budget.category,
+                date__month=month_num,
+                date__year=budget.year,
+            ).aggregate(total=Sum("amount"))["total"]
+            or Decimal("0")
+        )
+
+        if budget.budget_amount <= 0:
+            return
+
+        utilization = (total_expense / budget.budget_amount) * 100
+
+        # 80% warning
+        if utilization >= 80 and not budget.alert_80_sent:
+            n = Notification.objects.create(
+                user=self.request.user,
+                title="Budget Warning",
+                message=(
+                    f"Warning: You have used 80% of your "
+                    f"monthly {budget.category} budget."
+                ),
+                notification_type="budget_warning",
+                priority="medium",
+            )
+            send_notification_email(n)
+            budget.alert_80_sent = True
+            budget.save(update_fields=["alert_80_sent"])
+
+        # 90% warning
+        if utilization >= 90 and not budget.alert_90_sent:
+            n = Notification.objects.create(
+                user=self.request.user,
+                title="High Budget Warning",
+                message=(
+                    f"High Alert: You have used 90% of your "
+                    f"monthly {budget.category} budget."
+                ),
+                notification_type="budget_warning",
+                priority="high",
+            )
+            send_notification_email(n)
+            budget.alert_90_sent = True
+            budget.save(update_fields=["alert_90_sent"])
+
+        # 100% exceeded
+        if utilization >= 100 and not budget.alert_100_sent:
+            n = Notification.objects.create(
+                user=self.request.user,
+                title="Budget Exceeded",
+                message=(
+                    f"Budget Exceeded: Your {budget.category} "
+                    f"budget has been exceeded."
+                ),
+                notification_type="budget_exceeded",
+                priority="high",
+            )
+            send_notification_email(n)
+            budget.alert_100_sent = True
+            budget.save(update_fields=["alert_100_sent"])
 
     # =====================================================
     # DELETE BUDGET
