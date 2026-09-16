@@ -187,7 +187,7 @@ class BudgetViewSet(viewsets.ModelViewSet):
 
             message=(
                 f"Your {category} budget of "
-                f"₹{amount} for {month} {year} "
+                f"â‚¹{amount} for {month} {year} "
                 f"was deleted successfully."
             ),
 
